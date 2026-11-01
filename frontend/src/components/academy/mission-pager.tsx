@@ -43,6 +43,9 @@ export function MissionPager({
   const missions = useCallback(() => Array.from(root.current?.querySelectorAll<HTMLElement>(".ad-mission") ?? []), []);
   const brief = useCallback(() => root.current?.querySelector<HTMLElement>(".ad-brief") ?? null, []);
   const [onBrief, setOnBrief] = useState(false);
+  // Whether the section has a brief, read from the page when it is measured
+  // rather than during render, where the ref can be out of date.
+  const [hasBrief, setHasBrief] = useState(false);
 
   const measure = useCallback(() => {
     const list = missions();
@@ -53,7 +56,9 @@ export function MissionPager({
     setFlagged((prev) => (prev.length === flags.length && prev.every((v, i) => v === flags[i]) ? prev : flags));
     const any = list.some((m) => Boolean(stored[m.getAttribute("data-id") || ""]));
     setStarted((prev) => (prev === any ? prev : any));
-  }, [missions]);
+    const b = Boolean(brief());
+    setHasBrief((prev) => (prev === b ? prev : b));
+  }, [missions, brief]);
 
   // Follow mission blocks as they render, restore, or become solved.
   // Layout effect so a section jump (new key) sees the tickets on the
@@ -62,6 +67,9 @@ export function MissionPager({
     root.current?.querySelectorAll(".ad-guess__feedback, .ad-win__copy").forEach((el) => {
       if (/ticket is closed|Nice work/i.test(el.textContent || "")) el.remove();
     });
+    // Reading the rendered tickets is the point of this effect: the page is the
+    // external system, and its state is only known once it has painted.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     measure();
     const el = root.current;
     const hash = typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : "";
@@ -194,7 +202,7 @@ export function MissionPager({
       <TrailDock
         prev={{
           go: () => (at > 0 ? setStep(at - 1) : brief() ? setOnBrief(true) : prevSection?.go()),
-          disabled: at === 0 && !brief() && !prevSection,
+          disabled: at === 0 && !hasBrief && !prevSection,
         }}
         next={{
           go: () => {

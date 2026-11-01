@@ -12,8 +12,6 @@ import {
   BackButton,
   GoogleMark,
   PasswordInput,
-  AuthTerms,
-  TERMS_ERROR,
 } from "@/components/auth/auth-minimal";
 import { signInWithPassword, signInWithGoogle, hasPortalAccount, markPortalAccount, resendConfirmation } from "@/lib/portal-auth";
 
@@ -51,7 +49,6 @@ function PortalLoginContent() {
   const [bounce, setBounce] = useState<boolean | undefined>(undefined);
   useEffect(() => {
     const send = !forceSignIn && !hasPortalAccount();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBounce(send);
     if (send) router.replace(`/account/signup?next=${encodeURIComponent(next)}`);
   }, [router, next, forceSignIn]);
@@ -72,17 +69,12 @@ function PortalLoginContent() {
   const [unconfirmed, setUnconfirmed] = useState(false);
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
-  const [agreed, setAgreed] = useState(false);
   // A ref is checked and set synchronously, so a fast double-click cannot
   // send two sign-in requests before the disabled state renders.
   const busyRef = useRef(false);
 
   async function handleGoogle() {
     if (busyRef.current) return;
-    if (!agreed) {
-      setError(TERMS_ERROR);
-      return;
-    }
     busyRef.current = true;
     setError(null);
     setPhase("google");
@@ -104,10 +96,6 @@ function PortalLoginContent() {
     const value = email.trim();
     if (!value || !value.includes("@") || !value.includes(".")) {
       setError("Enter a valid email address.");
-      return;
-    }
-    if (!agreed) {
-      setError(TERMS_ERROR);
       return;
     }
     setEmail(value);
@@ -194,15 +182,7 @@ function PortalLoginContent() {
               onChange={(e) => setEmail(e.target.value)}
               className="am-input"
               aria-label="Email"
-              aria-invalid={Boolean(error) && error !== TERMS_ERROR}
-              disabled={isLoading}
-            />
-            <AuthTerms
-              checked={agreed}
-              onChange={(v) => {
-                setAgreed(v);
-                if (error) setError(null);
-              }}
+              aria-invalid={Boolean(error)}
               disabled={isLoading}
             />
             <AuthError>{error}</AuthError>

@@ -22,8 +22,6 @@ Get-ADUser -Filter * -SearchBase "OU=Departments,$((Get-ADDomain).DistinguishedN
 Get-ADGroupMember -Identity "IT Admins"
 ```
 
-**A note on the workstation.** The Environment tab lists it as "IT WKS01." AD computer names cannot contain spaces, so the script creates the object as `IT-WKS01`. It is the same machine with a valid name.
-
 Once the lab is built and verified, you have a live copy of the environment the baseline tabs describe. The challenges start from here.
 
 ### If the Script Will Not Run
@@ -61,7 +59,7 @@ A few errors account for almost every "it will not run" report. Each one is easy
 
 <div class="ad-trouble__item">
 <span class="ad-trouble__label">Running scripts is disabled on this system</span>
-<p>PowerShell blocks unsigned scripts by default. This allows them for your own user account only:</p>
+<p>Windows client editions block unsigned scripts by default, and some servers are locked down the same way. This allows them for your own user account only:</p>
 <div class="ad-code">
 <div class="ad-code__bar">
 <span class="ad-code__label">PowerShell</span>
@@ -72,7 +70,13 @@ A few errors account for almost every "it will not run" report. Each one is easy
 </div>
 </div>
 
-If you hit all three of these errors in one session, fix them in order. Elevate first and unblock the file before you relax the execution policy. Each is a one-time fix per machine.
+Three of these are machine setup rather than account or input problems, and they can show up together in the same session:
+
+1. Elevate.
+2. Unblock the file.
+3. Relax the execution policy.
+
+Each is a one-time fix per machine.
 
 ### Start Over
 

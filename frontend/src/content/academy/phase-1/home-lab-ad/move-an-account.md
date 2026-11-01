@@ -38,4 +38,4 @@ Picture Taylor Osei transferring from Operations into Compliance. Choose **Move*
 
 A common mistake is updating the job title without moving the AD object. The old department's policies then stay in effect.
 
-The transfer is finished only when the account sits in the new OU. Confirm the folders above the account before you close the ticket.
+Moving the account is only half of a transfer, because the OU sets location and policy, not access. Taylor also needs `Compliance Users` added and `Operations Users` removed in the same change, or the old department's access rides along. The transfer is finished when the folders above the account and its Member Of both match the new job, so confirm both before you close the ticket.

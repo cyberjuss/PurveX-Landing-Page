@@ -1,5 +1,4 @@
 import { isBrowserLab } from "@/lib/academy-lab-briefs";
-import type { LabWidget } from "@/lib/academy-content";
 
 // Where a student is in the Academy: the page, the tab, and inside a browser
 // lab the step. The page reports it so MCP clients, which cannot see the
@@ -8,7 +7,7 @@ import type { LabWidget } from "@/lib/academy-content";
 export const ACTIVITY_KINDS = ["section", "quiz", "lab", "challenge", "troubleshooting"] as const;
 export type ActivityKind = (typeof ACTIVITY_KINDS)[number];
 
-export type ActivityPlace = { phase: string; entry: string; tab: string; kind: ActivityKind; lab?: LabWidget; at?: string };
+export type ActivityPlace = { phase: string; entry: string; tab: string; kind: ActivityKind; lab?: never; at?: string };
 export type StudentActivity = { place: ActivityPlace; updatedAt: string };
 
 const clean = (v: unknown, max: number) => (typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, max) : "");

@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
 import { challengeHref, challengeTabHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
@@ -24,10 +25,22 @@ import {
   type Summary,
 } from "@/lib/academy-score";
 
+// Every challenge a student can actually reach, in the order they meet them.
+// This used to list only three groups from before Phase 2 existed, so every
+// mission added since (Wire, Crypto, the Client Data Review, Who Can Open the
+// Compliance Case Files, and all four Phase 2 campaigns) never got its own
+// row here even though it already counted toward the overall score.
 const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb: string }[] = [
   { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory." },
   { key: "ticket-queue", label: "Ticket Queue", blurb: "Help desk tickets you change in the directory." },
-  { key: "alert-queue", label: "The 2 AM Login", blurb: "SIEM alert and log analysis." },
+  { key: "crypto", label: "The Mirror That Does Not Match", blurb: "Hash, compare and crack files to catch a bad build." },
+  { key: "wire", label: "The Nightly Settlement Push", blurb: "Capture and read cleartext credentials off the wire." },
+  { key: "access-alert", label: "Who Can Open the Compliance Case Files?", blurb: "Audit a group against what its share actually grants." },
+  { key: "client-data", label: "The Client Data Review", blurb: "Review what your own shares hold on real clients." },
+  { key: "credential-campaign", label: "The Credential Campaign", blurb: "A password-spray intrusion, start to finish." },
+  { key: "phishing-chain", label: "The Phishing Chain", blurb: "A phishing attachment, start to finish." },
+  { key: "open-door", label: "The Open Door", blurb: "A forgotten firewall rule, exploited and closed." },
+  { key: "keys-to-the-domain", label: "The Keys to the Domain", blurb: "Kerberoasting and DCSync, the two techniques CISA names most." },
 ];
 
 type Tone = "good" | "warn" | "bad" | "live" | "none";
@@ -79,15 +92,15 @@ const WORK: Record<Summary["skills"][number]["key"], string> = {
   accounts: "open Member Of and count before you add or remove anyone",
   directory: "walk Departments and AccessLevels until you can find an object without searching",
   troubleshooting: "open the account first and see if the caller is actually right",
-  security: "start The 2 AM Login and read the log before you change anything",
+  security: "start The Credential Campaign and read the log before you change anything",
   logs: "open the Read the Sign-In Log lab and count before you name a pattern",
   access: "open the Who Can Open This? lab and check both share and NTFS permissions",
-  risk: "open the Monday Morning Risk Triage lab and score likelihood and impact before you rank",
+  risk: "open the Risk Assessment and Triage lab and score likelihood and impact before you rank",
 };
 
 function verdict(s: Summary) {
   if (s.finished === 0) {
-    return "None of the competencies have work on them yet. Start Operation Day One. Look people up in the directory and we will see what you can already do.";
+    return "None of the competencies have work on them yet. Start Operation Day One and look people up in the directory to see what you can already do.";
   }
   // A skill is only called competent or weak once half its missions are finished.
   const strong = s.skills.filter(skillCompetent);
@@ -100,13 +113,13 @@ function verdict(s: Summary) {
   const nextSkill = weak[0] ?? early[0] ?? untouched[0];
   const next = nextSkill ? ` Next, ${WORK[nextSkill.key]}.` : "";
   if (s.level === "ready" && weak.length === 0) {
-    return `You are competent in ${strongNames}. You can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
+    return `You are competent in ${strongNames}, and you can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
   }
   if (strong.length === 0 && weak.length === 0) {
     return `You have started, but no competency has enough work finished to rate yet. Finish at least half the missions and labs in one to get a rating.${next}`;
   }
   const parts: string[] = [];
-  if (strong.length) parts.push(`You are competent in ${strongNames}. You can ${joinNames(can)}.`);
+  if (strong.length) parts.push(`You are competent in ${strongNames}, and you can ${joinNames(can)}.`);
   if (weak.length) parts.push(`${weakNames} still need${weak.length === 1 ? "s" : ""} work.`);
   if (!weak.length) parts.push("Finish the remaining missions and labs so this is a full rating.");
   return parts.join(" ") + next;
@@ -154,6 +167,14 @@ export function ReadinessDashboard() {
   const lv = LEVELS[s.level];
   const scoreTone: Tone = s.finished === 0 ? "none" : s.level === "ready" ? "good" : s.level === "almost" ? "warn" : s.level === "practice" ? "bad" : "live";
   const focusKey = s.finished > 0 ? s.focus[0]?.key : undefined;
+  // The mission log used to show every row of every challenge at once, which
+  // read fine back when there were three challenges and unreadable once
+  // readiness started counting every real one. Each group opens on its own
+  // now, collapsed until asked for, so the page is thirteen compact lines to
+  // scan instead of a hundred rows to scroll past.
+  const [openLog, setOpenLog] = useState<Record<string, boolean>>({});
+  const logOpen = (key: string) => openLog[key] === true;
+  const toggleLog = (key: string) => setOpenLog((prev) => ({ ...prev, [key]: !prev[key] }));
 
   function reset() {
     if (!window.confirm("Reset your readiness score? This clears every mission result.")) return;
@@ -197,7 +218,7 @@ export function ReadinessDashboard() {
                   ask(
                     s.finished === 0
                       ? "I'm just getting started. How should I start Operation Day One?"
-                      : "What should I work on next. Say why. Do not read my report back to me."
+                      : "What should I work on next, and why? Do not read my report back to me."
                   )
                 }
               >
@@ -259,7 +280,7 @@ export function ReadinessDashboard() {
                   className="rd-link"
                   onClick={() =>
                     ask(
-                      `Help me get better at ${k.label} in my own lab. Do not read a score back. Do not give mission answers.`
+                      `Help me get better at ${k.label} in my own lab. Do not read a score back or give mission answers.`
                     )
                   }
                 >
@@ -282,13 +303,17 @@ export function ReadinessDashboard() {
           const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === ch.key);
           const done = list.filter((m) => missionPoints(results[m.id]) !== null).length;
           const locked = isLockedHref(challengeTabHref(ch.key));
+          const open = logOpen(ch.key);
           return (
             <div key={ch.key} className="rd-log">
               <div className="rd-log__head">
-                <div>
-                  <h3>{ch.label}</h3>
-                  <p>{ch.blurb}</p>
-                </div>
+                <button type="button" className="rd-log__toggle" onClick={() => toggleLog(ch.key)} aria-expanded={open}>
+                  <ChevronDown className={`rd-log__chevron h-4 w-4 ${open ? "" : "-rotate-90"}`} aria-hidden />
+                  <span>
+                    <h3>{ch.label}</h3>
+                    <p>{ch.blurb}</p>
+                  </span>
+                </button>
                 <span className="rd-log__count">
                   {done}/{list.length}
                 </span>
@@ -300,6 +325,7 @@ export function ReadinessDashboard() {
                   </Link>
                 )}
               </div>
+              {open && (
               <ol>
                 {list.map((m, i) => {
                   const st = missionStatus(results[m.id]);
@@ -339,19 +365,24 @@ export function ReadinessDashboard() {
                   );
                 })}
               </ol>
+              )}
             </div>
           );
         })}
         <div className="rd-log">
           <div className="rd-log__head">
-            <div>
-              <h3>Scored labs</h3>
-              <p>Your first finished score counts. Replays do not change it.</p>
-            </div>
+            <button type="button" className="rd-log__toggle" onClick={() => toggleLog("labs")} aria-expanded={logOpen("labs")}>
+              <ChevronDown className={`rd-log__chevron h-4 w-4 ${logOpen("labs") ? "" : "-rotate-90"}`} aria-hidden />
+              <span>
+                <h3>Scored labs</h3>
+                <p>Your first finished score counts, so later replays do not change it.</p>
+              </span>
+            </button>
             <span className="rd-log__count">
               {LAB_CATALOG.filter((l) => labPoints(results[l.id]) !== null).length}/{LAB_CATALOG.length}
             </span>
           </div>
+          {logOpen("labs") && (
           <ol>
             {LAB_CATALOG.map((l, i) => {
               const st = labStatus(results[l.id]);
@@ -375,6 +406,7 @@ export function ReadinessDashboard() {
               );
             })}
           </ol>
+          )}
         </div>
       </section>
 

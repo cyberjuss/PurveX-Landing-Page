@@ -57,20 +57,27 @@ if ($laptop -and $laptop.DistinguishedName -like "*,CN=Computers,$domainDN" -and
     Write-Host "  Deleted: $($laptop.DistinguishedName)" -ForegroundColor Green
 }
 
-# Tickets INC-1052 to INC-1055 live outside Active Directory.
+# Tickets INC-1052 to INC-1058, INC-1064, INC-1067, INC-1069, INC-1074 to
+# INC-1078 live outside Active Directory. The share folders hold the
+# INC-1057 settlement batch, the INC-1058 installer mirrors, the INC-1074
+# phishing attachment and the INC-1076/INC-1078 staged exports, so clearing
+# C:\PurveX\Shares and the Quarantine folder removes them too.
 $zone = (Get-ADDomain).DNSRoot
-if ($PSCmdlet.ShouldProcess("DNS, firewall, Group Policy and share tickets", "Remove")) {
+if ($PSCmdlet.ShouldProcess("DNS, firewall, Group Policy, scheduled task and share tickets", "Remove")) {
     foreach ($recordName in @("files", "payroll")) {
         Get-DnsServerResourceRecord -ZoneName $zone -Name $recordName -RRType A -ErrorAction SilentlyContinue |
             Remove-DnsServerResourceRecord -ZoneName $zone -Force -ErrorAction SilentlyContinue
     }
     Get-NetFirewallRule -Group "PurveX Lab" -ErrorAction SilentlyContinue | Remove-NetFirewallRule -ErrorAction SilentlyContinue
     try { Import-Module GroupPolicy -ErrorAction Stop; Remove-GPO -Name "PurveX - Finance Screen Lock" -ErrorAction SilentlyContinue } catch {}
+    foreach ($taskName in @("WindowsDiagnosticsSync", "SystemIndexMaintenance", "OfficeTelemetryAgent", "DirectoryReplicationHelper")) {
+        Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+    }
     Remove-SmbShare -Name "Shares" -Force -ErrorAction SilentlyContinue
     foreach ($item in @("C:\PurveX\Shares", "C:\PurveX\Quarantine", "C:\PurveX\tickets.txt")) {
         if (Test-Path -LiteralPath $item) { Remove-Item -LiteralPath $item -Recurse -Force -ErrorAction SilentlyContinue }
     }
-    Write-Host "  Deleted: DNS, firewall, Group Policy and share tickets" -ForegroundColor Green
+    Write-Host "  Deleted: DNS, firewall, Group Policy, scheduled task and share tickets" -ForegroundColor Green
 }
 
 Write-Host "`nDone. Run Build-Environment.ps1 to rebuild the lab." -ForegroundColor Cyan

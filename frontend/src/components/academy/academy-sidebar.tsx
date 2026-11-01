@@ -3,8 +3,8 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookMarked, Check, ChevronDown, FlaskConical, Hammer, Lock } from "lucide-react";
-import { type PhaseDef } from "@/lib/academy-content";
+import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, FlaskConical, Hammer, Lock } from "lucide-react";
+import { type ContentSection, type PhaseDef } from "@/lib/academy-content";
 import { entriesOf, labLinksOf } from "@/lib/academy-entries";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
@@ -12,17 +12,21 @@ import { isPhaseLocked } from "@/lib/academy-locks";
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
   const { isComplete, isPhaseComplete, isLabDone, requirements, completedCount, totalCount } = useAcademyProgress();
-  // Only the Home Lab group collapses now, so one Set of open slugs is enough.
-  const [manualOpen, setManualOpen] = useState<Set<string>>(new Set());
-
-
-  const toggleManualOpen = (slug: string) =>
-    setManualOpen((prev) => {
-      const next = new Set(prev);
-      if (next.has(slug)) next.delete(slug);
-      else next.add(slug);
-      return next;
-    });
+  // What the reader chose for each group (a phase, a Home Lab list, a Labs
+  // list): open or closed. A group with no choice follows the page, open when
+  // you are inside it. This used to store "the opposite of the default", so a
+  // phase opened by hand from elsewhere flipped shut the moment you went into
+  // it. Now a choice is a plain open or closed.
+  const [chosen, setChosen] = useState<Record<string, boolean>>({});
+  const openOf = (key: string, inside: boolean) => (key in chosen ? chosen[key] : inside);
+  const toggle = (key: string, isOpen: boolean) => setChosen((prev) => ({ ...prev, [key]: !isOpen }));
+  // Moving to another page keeps what you opened, and forgets what you closed,
+  // so the section you just went into is never left shut.
+  const [seenPath, setSeenPath] = useState(pathname);
+  if (seenPath !== pathname) {
+    setSeenPath(pathname);
+    setChosen((prev) => Object.fromEntries(Object.entries(prev).filter(([, open]) => open)));
+  }
 
   return (
     <nav className="ax-scroll flex h-full flex-col gap-6 overflow-y-auto px-5 py-6">
@@ -66,7 +70,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // The chevron flips whichever default applies, so the phase you are in
         // can be closed and one you are not in can be opened. ORing the two
         // meant the phase you were reading could never be collapsed.
-        const phaseOpen = manualOpen.has(phase.slug) ? !phaseActive : phaseActive;
+        const phaseOpen = openOf(phase.slug, phaseActive);
         const phaseDone = isPhaseComplete(phase.slug);
         const headerContent = (
           <span className="flex min-w-0 items-center gap-1.5">
@@ -87,7 +91,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             className="ax-phasecaret"
             aria-expanded={phaseOpen}
             aria-label={`${phaseOpen ? "Collapse" : "Expand"} ${phase.label}`}
-            onClick={() => toggleManualOpen(phase.slug)}
+            onClick={() => toggle(phase.slug, phaseOpen)}
           >
             <ChevronDown className={`h-3 w-3 transition-transform duration-300 ${phaseOpen ? "" : "-rotate-90"}`} />
           </button>
@@ -96,7 +100,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           return (
             <div
               key={phase.slug}
-              className="flex items-center justify-between gap-2 font-mono text-[length:var(--ty-body)] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] opacity-70"
+              className="flex items-center justify-between gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] opacity-70"
               title="Locked for now"
             >
               <span className="truncate">{phase.label} — {phase.title}</span>
@@ -104,13 +108,42 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
             </div>
           );
         }
-        const labs = phase.homeLabs ?? [];
+        // Challenges reads as its own kind of work, not one more sitting in
+        // the Home Lab list, so it gets its own section rather than being the
+        // last row in this one. Detected by content (every section labeled
+        // "Challenge: ...") rather than a fixed slug, so a phase whose
+        // homeLabs is entirely a capstone -- Phase 2 has no "home lab"
+        // sittings at all, just the one capstone entry -- still gets routed
+        // into Challenges instead of showing up under "The Company".
+        const allHomeLabs = phase.homeLabs ?? [];
+        const isChallengesEntry = (l: PhaseDef["weeks"][number]) => l.sections.length > 0 && l.sections.every((s) => s.label.startsWith("Challenge:"));
+        const labs = allHomeLabs.filter((l) => !isChallengesEntry(l));
+        const challenges = allHomeLabs.find((l) => isChallengesEntry(l)) ?? null;
+        // A grouped Challenges entry reads as sub-sections (a storyline, a
+        // review) rather than one long flat list. Grouped by each section's
+        // own `group`, not by where it sits in the array, so two items
+        // sharing a group still land together even when something else's
+        // entries sit between them in the page's own reading order.
+        // Ungrouped sections (none of today's Phase 2 entries lack a group,
+        // but earlier phases' Challenges entries do) fall into one group
+        // with no heading.
+        const challengeGroups: { label: string | null; items: ContentSection[] }[] = [];
+        if (challenges) {
+          for (const s of challenges.sections) {
+            const label = s.group ?? null;
+            const last = challengeGroups[challengeGroups.length - 1];
+            if (last && last.label === label) last.items.push(s);
+            else {
+              const existing = label !== null ? challengeGroups.find((g) => g.label === label) : undefined;
+              if (existing) existing.items.push(s);
+              else challengeGroups.push({ label, items: [s] });
+            }
+          }
+        }
         const labsKey = `${phase.slug}:labs`;
         // Open when you are inside one of them, or when you have opened it by
         // hand. Collapsed otherwise, so four sittings do not crowd the weeks.
-        const labsOpen = manualOpen.has(labsKey)
-          ? !labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`)
-          : labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`);
+        const labsOpen = openOf(labsKey, labs.some((l) => pathname === `/range/${phase.slug}/${l.slug}`));
         const row = (entry: PhaseDef["weeks"][number]) => {
           const href = `/range/${phase.slug}/${entry.slug}`;
           // Each sitting is titled "Home Lab — X". The group heading carries
@@ -136,6 +169,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                   onClick={onNavigate}
                   className={`ax-week${active ? " ax-week--on" : ""}${done ? " ax-week--done" : ""}`}
                 >
+                  {active && <span className="ax-week__bar" aria-hidden />}
                   <span className="ax-week__name truncate">{label}</span>
                   {done ? (
                     <Check className="ax-week__tick h-4 w-4" strokeWidth={2.5} aria-label="Complete" />
@@ -153,15 +187,15 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           <div>
             <button
               type="button"
-              onClick={() => toggleManualOpen(labsKey)}
+              onClick={() => toggle(labsKey, labsOpen)}
               aria-expanded={labsOpen}
-              className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[length:var(--ty-small)] font-bold uppercase tracking-[0.1em] transition ${
+              className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
                 labsOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
               }`}
             >
               <span className="flex min-w-0 items-center gap-1.5">
                 <Hammer className="h-3 w-3 shrink-0" aria-hidden />
-                <span className="truncate">Home Lab</span>
+                <span className="truncate">The Company</span>
               </span>
               <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsOpen ? "" : "-rotate-90"}`} />
             </button>
@@ -173,6 +207,58 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               <ul className="ax-list flex flex-col overflow-hidden">
                 {labs.map(row)}
               </ul>
+            </div>
+          </div>
+        );
+
+        const challengesKey = `${phase.slug}:challenges`;
+        const challengesOpen = openOf(challengesKey, challenges !== null && pathname === `/range/${phase.slug}/${challenges.slug}`);
+        const challengesSection = challenges && (
+          <div>
+            <button
+              type="button"
+              onClick={() => toggle(challengesKey, challengesOpen)}
+              aria-expanded={challengesOpen}
+              className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
+                challengesOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
+              }`}
+            >
+              <span className="flex min-w-0 items-center gap-1.5">
+                <Flag className="h-3 w-3 shrink-0" aria-hidden />
+                <span className="truncate">Challenges</span>
+              </span>
+              <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${challengesOpen ? "" : "-rotate-90"}`} />
+            </button>
+            <div
+              className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
+                challengesOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <div className="min-h-0 overflow-hidden">
+              {challengeGroups.map((g, i) => (
+              <Fragment key={g.label ?? `_${i}`}>
+              {g.label && <p className="ax-labweek">{g.label}</p>}
+              <ul className="ax-list flex flex-col overflow-hidden">
+                {g.items.map((s) => {
+                  // The challenges all live as tabs on one page, addressed by
+                  // hash the same way SectionTabs itself resolves one. phase-entry.tsx
+                  // strips "Challenge: " before SectionTabs ever sees the label, so
+                  // indexForHash matches against the stripped form -- slugify it
+                  // the same way here, or the hash points at the wrong tab.
+                  const label = s.label.replace(/^Challenge:\s*/, "");
+                  const href = `/range/${phase.slug}/${challenges.slug}#${slugify(label)}`;
+                  return (
+                    <li key={s.label}>
+                      <Link href={href} onClick={onNavigate} className="ax-week">
+                        <span className="ax-week__name truncate">{label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+              </Fragment>
+              ))}
+              </div>
             </div>
           </div>
         );
@@ -193,25 +279,33 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           else labWeeks.push({ entrySlug: lab.entrySlug, label: lab.entryTitle.split("—")[0].trim() || lab.entryTitle, labs: [lab] });
         }
         const labsListKey = `${phase.slug}:labslist`;
-        const labsListOpen = manualOpen.has(labsListKey)
-          ? !phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`)
-          : phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`);
+        const labsListOpen = openOf(labsListKey, phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`));
         const labsListSection = phaseLabs.length > 0 && (
           <div>
-            <button
-              type="button"
-              onClick={() => toggleManualOpen(labsListKey)}
-              aria-expanded={labsListOpen}
-              className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[length:var(--ty-small)] font-bold uppercase tracking-[0.1em] transition ${
-                labsListOpen ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
+            <div
+              className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
+                labsListOpen || pathname === "/range/labs" ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)]"
               }`}
             >
-              <span className="flex min-w-0 items-center gap-1.5">
+              <Link
+                href="/range/labs"
+                onClick={onNavigate}
+                aria-current={pathname === "/range/labs" ? "page" : undefined}
+                className="flex min-w-0 flex-1 items-center gap-1.5 hover:text-[var(--rd-accent)]"
+              >
                 <FlaskConical className="h-3 w-3 shrink-0" aria-hidden />
                 <span className="truncate">Labs</span>
-              </span>
-              <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsListOpen ? "" : "-rotate-90"}`} />
-            </button>
+              </Link>
+              <button
+                type="button"
+                onClick={() => toggle(labsListKey, labsListOpen)}
+                aria-expanded={labsListOpen}
+                aria-label={labsListOpen ? "Hide the list of labs" : "Show the list of labs"}
+                className="-m-1 p-1 hover:text-[var(--rd-accent)]"
+              >
+                <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsListOpen ? "" : "-rotate-90"}`} />
+              </button>
+            </div>
             <div
               className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
                 labsListOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
@@ -239,6 +333,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
                         onClick={onNavigate}
                         className={`ax-week${pathname === href ? " ax-week--on" : ""}`}
                       >
+                        {pathname === href && <span className="ax-week__bar" aria-hidden />}
                         <span className="ax-week__name truncate">{lab.title}</span>
                         {labDone && (
                           <Check className="ax-week__tick h-4 w-4" strokeWidth={2.5} aria-label="Complete" />
@@ -258,25 +353,30 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           <Fragment key={phase.slug}>
           <div>
             <span className="ax-phaserow">
-              {hasDestination ? (
+              {/* The name opens and closes the phase, the way a panel is
+                  expected to. It used to be a link, so clicking it to expand
+                  took the reader to another page. The phase page is still
+                  one small arrow away. */}
+              <button
+                type="button"
+                onClick={() => toggle(phase.slug, phaseOpen)}
+                aria-expanded={phaseOpen}
+                className={`flex min-w-0 flex-1 items-center gap-2 text-left font-mono text-[13.5px] font-bold uppercase tracking-[0.08em] transition ${
+                  phaseActive ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
+                }`}
+              >
+                {headerContent}
+              </button>
+              {hasDestination && (
                 <Link
                   href={`/range/${phase.slug}`}
                   onClick={onNavigate}
-                  className={`flex min-w-0 flex-1 items-center gap-2 font-mono text-[length:var(--ty-body)] font-bold uppercase tracking-[0.08em] transition ${
-                    phaseActive ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
-                  }`}
+                  className="ax-phasego"
+                  aria-label={`Open the ${phase.label} overview`}
+                  title={`${phase.label} overview`}
                 >
-                  {headerContent}
+                  <ArrowUpRight className="h-3 w-3" />
                 </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => toggleManualOpen(phase.slug)}
-                  aria-expanded={phaseOpen}
-                  className="flex min-w-0 flex-1 items-center gap-2 font-mono text-[length:var(--ty-body)] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] transition hover:text-[var(--rd-ink-2)]"
-                >
-                  {headerContent}
-                </button>
               )}
               {phaseCaret}
             </span>
@@ -290,13 +390,17 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               }`}
             >
               {/* One child, so the row animation has a single thing to
-                  measure. The weeks and the home lab both sit in it. */}
-              <div className="min-h-0 overflow-hidden">
+                  measure. The weeks, Labs, Company and Challenges all sit in
+                  it, spaced by this flex gap rather than each section's own
+                  margin, so the four read as evenly spaced whichever of them
+                  is actually present for a given phase. */}
+              <div className="flex min-h-0 flex-col gap-[10px] overflow-hidden">
                 <ul className="ax-list flex flex-col">
                   {phase.weeks.map(row)}
                 </ul>
                 {labsListSection}
                 {labSection}
+                {challengesSection}
               </div>
             </div>
           </div>
@@ -307,7 +411,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
       <Link
         href="/range/reference"
         onClick={onNavigate}
-        className={`flex items-center gap-2 font-mono text-[length:var(--ty-body)] font-bold uppercase tracking-[0.08em] transition ${
+        className={`flex items-center gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.08em] transition ${
           pathname === "/range/reference" ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)] hover:text-[var(--rd-accent)]"
         }`}
       >

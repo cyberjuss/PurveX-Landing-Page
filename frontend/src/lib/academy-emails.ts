@@ -79,6 +79,66 @@ export function studentNudgeEmail(student: Named, o: string): Built {
   return { subject: "The lab is waiting for you", html };
 }
 
+/** Retention: an account with no sign-in or portal activity for about a week.
+ *  `started` is false for a signup who never trained, which is a different
+ *  message from a student who has a lab to come back to. */
+export function dormantNudgeEmail(student: Named, started: boolean, o: string): Built {
+  const url = base(o);
+  const html = started
+    ? pre("Your training is where you left it.") +
+      h(`Pick up where you left off, ${first(student.name)}`) +
+      p("You have not signed in for about a week. Your progress and your lab are exactly where you left them, so a ten minute session is enough to get moving again.") +
+      button(`${url}/range`, "Open the portal") +
+      note("A single drill a day is enough to keep your streak alive.")
+    : pre("Your first lesson takes about ten minutes.") +
+      h(`Ready when you are, ${first(student.name)}`) +
+      p("You made a PurveX Range account about a week ago and have not started yet. The first lesson takes about ten minutes and ends in a hands-on task, so you finish it with something real to show.") +
+      button(`${url}/range`, "Start training") +
+      note("You can stop and pick up any time. Nothing you finish is lost.");
+  return { subject: started ? "Pick up where you left off" : "Your PurveX Range account is ready", html };
+}
+
+/** Sent as a cohort student's 12 weeks of free access runs out. `ended` is
+ *  false a week before it lapses and true once it has, which changes only the
+ *  framing. Either way the choice is the same: Range Pro, or stay free. */
+export function cohortEndingEmail(student: Named, ended: boolean, o: string): Built {
+  const url = base(o);
+  const html =
+    pre(ended ? "Keep your lab, or stay on the free plan." : "Your cohort access ends in a week.") +
+    h(ended ? `Your cohort access has ended, ${first(student.name)}` : `Your cohort access ends soon, ${first(student.name)}`) +
+    p(
+      ended
+        ? "Your 12 weeks with the class are up, so your cloud lab, PurveX Coach and Proof Profile publishing are paused for now. You can turn them back on any time."
+        : "You are about a week from the end of your 12 weeks with the class. After that your cloud lab, PurveX Coach and Proof Profile publishing pause unless you continue on Range Pro."
+    ) +
+    p("Range Pro is $49 a month and keeps all of it: your own cloud lab in a browser tab, the coach that reads your lab, and a Proof Profile any employer can verify.") +
+    button(`${url}/range/upgrade`, "Get Range Pro") +
+    p("Prefer to stay free? You keep every lesson, every challenge, the Ticket Queue and the in-browser labs. Nothing you have finished goes away.") +
+    note("Cancel in one click, any time.") +
+    fallback(`${url}/range/upgrade`, "Or open this link:");
+  return { subject: ended ? "Your PurveX cohort access has ended" : "Your PurveX cohort access ends in a week", html };
+}
+
+/** Sent a day before a Range Pro free trial ends, so the charge that follows
+ *  it is never a surprise. The trial auto-continues into a paid subscription
+ *  unless the student cancels first -- this is the one chance to say so
+ *  before the card is charged, not after. */
+export function trialEndingEmail(student: Named, until: Date, o: string): Built {
+  const url = base(o);
+  const when = until.toLocaleDateString(undefined, { dateStyle: "long" });
+  const html =
+    pre(`Your trial ends ${when}. $49 bills then unless you cancel.`) +
+    h(`Your Range Pro trial ends ${when}, ${first(student.name)}`) +
+    p(
+      `Your free trial ends ${when}. After that, $49 bills to the card on file and you carry on with everything Pro: your own cloud lab, PurveX Coach, and a Proof Profile you can publish.`
+    ) +
+    p("Want to keep it? Nothing to do. It continues on its own.") +
+    button(`${url}/range/upgrade`, "Manage billing or cancel") +
+    note("Cancel before the trial ends and you will not be charged.") +
+    fallback(`${url}/range/upgrade`, "Or open this link:");
+  return { subject: `Your Range Pro trial ends ${when}`, html };
+}
+
 export type DigestInput = {
   className: string;
   students: number;

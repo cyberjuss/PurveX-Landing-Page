@@ -24,10 +24,13 @@ import { daysUntil, passedExamDates, todayLocal } from "@/lib/academy-goals";
 // a step-by-step flow.
 export function GoalsPanel({
   profile,
+  accountName,
   onClose,
   onSaved,
 }: {
   profile: StudentProfile;
+  /** What the greeting says today, so the field can offer it rather than sit empty. */
+  accountName?: string | null;
   onClose: () => void;
   onSaved: (profile: StudentProfile) => void;
 }) {
@@ -35,6 +38,7 @@ export function GoalsPanel({
   const [roles, setRoles] = useState<RoleId[]>(profile.roles);
   const [start, setStart] = useState<StartLevel>(profile.start);
   const [background, setBackground] = useState(profile.background);
+  const [callMe, setCallMe] = useState(profile.callMe ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [chrome] = useState(() => {
@@ -66,7 +70,8 @@ export function GoalsPanel({
     JSON.stringify(certs) !== JSON.stringify(profile.certs) ||
     roles.join() !== profile.roles.join() ||
     start !== profile.start ||
-    background.trim() !== profile.background;
+    background.trim() !== profile.background ||
+    callMe.trim() !== (profile.callMe ?? "");
 
   function toggleRole(id: RoleId) {
     setRoles((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : prev.length >= MAX_ROLES ? [prev[1], id] : [...prev, id]));
@@ -84,7 +89,7 @@ export function GoalsPanel({
       const res = await academyFetch("/academy/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile: { certs, otherCerts: profile.otherCerts, roles, start, background } }),
+        body: JSON.stringify({ profile: { certs, otherCerts: profile.otherCerts, roles, start, background, callMe } }),
       });
       const data = (await res.json().catch(() => ({}))) as { profile?: StudentProfile; error?: string };
       if (!res.ok || !data.profile) throw new Error(data.error || "Unable to save your goals. Check your connection and try again.");
@@ -208,6 +213,21 @@ export function GoalsPanel({
             <label className="gp-field">
               <span>Current role · Optional</span>
               <input type="text" maxLength={280} placeholder="e.g. Retail manager, student, veteran" value={background} onChange={(e) => setBackground(e.target.value)} />
+            </label>
+            {/* The one thing on this page that is not about the job they
+                want. It is here because this is the page that asks about
+                them, and because the name Range greets people with came
+                from whatever the sign-up form said and could not be
+                changed anywhere. */}
+            <label className="gp-field">
+              <span>What should we call you? · Optional</span>
+              <input
+                type="text"
+                maxLength={40}
+                placeholder={accountName ? `We use ${accountName} today` : "e.g. Justin"}
+                value={callMe}
+                onChange={(e) => setCallMe(e.target.value)}
+              />
             </label>
           </section>
         </div>

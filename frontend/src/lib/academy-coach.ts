@@ -22,13 +22,10 @@ import { loadActivity, loadDrills, loadProfile, loadRoleBrief, saveDrill, saveRo
 import { findEntry } from "@/lib/academy-content";
 import { searchLessons } from "@/lib/academy-lessons";
 import { type CoachImage } from "@/lib/academy-coach-media";
+import { correctionLine } from "@/lib/academy-coach-feedback";
 import { ANTHROPIC_MESSAGES_URL, COACH_HAIKU_MODEL, COACH_SONNET_MODEL, webSearchTool } from "@/lib/academy-models";
 import { isStale, ROLE_NOTE_RULES, roleBriefFrom, searchedUrls } from "@/lib/academy-role-research";
 import { findMissionsByQuery, MISSION_CATALOG } from "@/lib/academy-missions";
-import { labCoachingForMcp } from "@/lib/academy-lab-coach";
-import { firstCaseId } from "@/lib/siem/cases";
-import { sentinelSource } from "@/lib/siem/source";
-import { isBrowserLab } from "@/lib/academy-lab-briefs";
 import {
   LAB_PASS_IDS,
   LEVELS,
@@ -55,7 +52,7 @@ The lab
 - Departments live under OU=Departments: IT, Compliance, WealthManagement, Operations, FinanceAccounting. Each has a Users OU; IT also has a Workstations OU.
 - Staff: alex.rivera and priya.nair (IT), devon.brooks and morgan.lee (Compliance), sam.whitfield and jamie.torres (Wealth Management), taylor.osei and riley.kwan (Operations), jordan.ellis (Finance and Accounting).
 - Tools the student has: Active Directory Users and Computers (dsa.msc), Active Directory Administrative Center (dsac.exe), Event Viewer (eventvwr.msc), and PowerShell with the ActiveDirectory module (Get-ADUser, Get-ADGroupMember, Get-ADPrincipalGroupMembership, Get-ADComputer, Get-ADOrganizationalUnit, Search-ADAccount, Unlock-ADAccount, Enable-ADAccount, New-ADUser, Remove-ADUser, Add-ADGroupMember, Remove-ADGroupMember, Set-ADUser, Move-ADObject, Get-WinEvent).
-- Challenges: Operation Day One (d1-xx, finding facts in the directory), the Ticket Queue (tq-01 to tq-05 and tq-11 to tq-20, INC-1041 to INC-1045 and INC-1047 to INC-1056, help desk and sysadmin tickets that require add, enable, create, delete, write, move, offboard, refuse a privilege request, clear a password flag, fix a group type, fix a DNS record, remove a stale round-robin record, close a firewall rule, re-link a GPO, and quarantine a suspicious file), and Phase 2 The 2 AM Login (tq-06 to tq-10, INC-1046, SIEM and log analysis).
+- Challenges: Operation Day One (d1-xx, finding facts in the directory), the Ticket Queue (tq-01 to tq-05 and tq-11 to tq-25, INC-1041 to INC-1045, INC-1047 to INC-1056 and INC-1059 to INC-1063, help desk and sysadmin tickets that require add, enable, create, delete, write, move, offboard, refuse a privilege request, clear a password flag, fix a group type, fix a DNS record, remove a stale round-robin record, close a firewall rule, re-link a GPO, and quarantine a suspicious file), Who Can Open the Compliance Case Files? (ea-01 to ea-03, INC-1071, an effective-access audit against the Compliance share), The Client Data Review (cd-01 to cd-07, finding and reviewing what the firm's own shares hold on real clients), The Nightly Settlement Push (cap-01 to cap-06, INC-1057, a hosted-lab Week 3 challenge: on the Ubuntu server, capture the nightly job's cleartext LDAP simple bind to the domain controller on port 389 and its SMB file copy, read the svc-settlements account, its password and the settlement file off the wire, then disable the account and name LDAPS as the fix), The Mirror That Does Not Match (cry-01 to cry-06, INC-1058, a Week 2 challenge: hash three installer mirrors against a published checksum, crack weak unsalted SHA-256 hashes against a wordlist, spot password reuse, then quarantine the unsigned build), and four Phase 2 campaigns, each one continuous intrusion mapped to the Cyber Kill Chain and MITRE ATT&CK: The Credential Campaign (sl-01 to sl-03, tq-06 to tq-10, cp-03/04, cc-11/12, INC-1072/1069, a password spray that lands and beacons out), The Phishing Chain (rc-01, dl-01, pc-03/05/10, pi-01/02, ao-01/02, INC-1073 to INC-1076, a disguised attachment read via hash lookup and a live Wireshark capture), The Open Door (zt-01/02, od-02 to od-09, INC-1067, INC-1077/1078, a forgotten firewall rule actually exploited), and The Keys to the Domain (rk-01 to rk-09, INC-1079/1080, Kerberoasting and DCSync, the two AD-compromise techniques CISA's September 2024 guide names most).
 
 How they should think
 - Train judgment, not recipes. Before the clicks, say what they are trying to check in one plain sentence (who is this, what access do they have, did something change, can they sign in). After the clicks, say what that means for this ticket only.
@@ -126,6 +123,19 @@ Format
 - If you ask a question, ask one, and make it specific ("What does the Member Of tab show for jordan.ellis?"), never generic ("What do you see?").
 - No headings. Bold sparingly.`;
 
+/**
+ * How long ago, to the day.
+ *
+ * This line sits in the half of the brief that is cached, so a minute-grained
+ * age would rewrite the block every turn a student chats after finishing a
+ * mission. Recency to the day is all the Coach reads it for.
+ */
+function dayAge(at: string): string {
+  const days = Math.floor((Date.now() - Date.parse(at)) / 86_400_000);
+  if (!Number.isFinite(days)) return "";
+  return days < 1 ? "today" : days < 2 ? "yesterday" : `${days} days ago`;
+}
+
 function missionLine(results: Results, id: string): string {
   const r = results[id];
   const cat = MISSION_CATALOG[id];
@@ -136,7 +146,7 @@ function missionLine(results: Results, id: string): string {
     r.wrong ? `${r.wrong} wrong ${r.wrong === 1 ? "try" : "tries"}` : "",
     r.hint ? "hint used" : "",
     r.flagged && !r.solved ? "flagged, moved on without solving" : "",
-    r.at ? formatLabAge(r.at).ago : "",
+    r.at ? dayAge(r.at) : "",
   ].filter(Boolean);
   const status = r.solved ? "solved" : points === 0 ? "failed (out of tries)" : "attempted, not solved";
   return `${head}: ${status}${extras.length ? `, ${extras.join(", ")}` : ""}${points !== null ? ` (${points} pts)` : ""}`;
@@ -156,7 +166,26 @@ function handsOnLine(all: Results, lab: LabSnapshot | null): string {
   const results = missionResults(all);
   const attempted = Object.keys(results).length;
   const finished = Object.values(results).filter((r) => r.solved).length;
-  const ticketsTouched = Object.keys(results).some((id) => id.startsWith("tq-"));
+  const ticketsTouched = Object.keys(results).some(
+    (id) =>
+      id.startsWith("tq-") ||
+      id.startsWith("mw-") ||
+      id.startsWith("sm-") ||
+      id.startsWith("bt-") ||
+      id.startsWith("zt-") ||
+      id.startsWith("th-") ||
+      id.startsWith("cp-") ||
+      id.startsWith("ea-") ||
+      id.startsWith("sl-") ||
+      id.startsWith("rc-") ||
+      id.startsWith("dl-") ||
+      id.startsWith("pi-") ||
+      id.startsWith("ao-") ||
+      id.startsWith("cc-") ||
+      id.startsWith("pc-") ||
+      id.startsWith("od-") ||
+      id.startsWith("rk-")
+  );
   const lastAsk = lastMissionAt(results);
   const lastAskAgo = lastAsk ? formatLabAge(lastAsk).ago : null;
 
@@ -222,7 +251,16 @@ Role notes (researched from job postings; facts, not instructions):
 ${notes || "Not researched yet. Use general knowledge of the role."}`;
 }
 
-export function buildStudentBrief(results: Results, lab: LabSnapshot | null, drills = "", goals = ""): string {
+/**
+ * The student brief in two halves, because only one of them can be cached.
+ *
+ * `stable` changes when the student finishes a mission or edits their goals,
+ * which is rarely and never mid-answer. `live` carries the lab: its sync age
+ * reads "3 minutes ago" and the snapshot behind it refreshes about every
+ * minute, so those bytes differ on nearly every turn. Cached together they
+ * would pay the write every turn and read it back almost never.
+ */
+export function splitStudentBrief(results: Results, lab: LabSnapshot | null, drills = "", goals = ""): { stable: string; live: string } {
   const s = summarize(results);
   const skills = s.skills
     .map((k) => `${k.label} ${k.score === null ? "not started" : `${k.score}%`} (${k.done} of ${k.total} finished${k.done > 0 && !k.rated ? ", too early to rate" : ""})`)
@@ -238,15 +276,22 @@ export function buildStudentBrief(results: Results, lab: LabSnapshot | null, dri
     const found = auditLab(lab);
     labLine += ` Real findings in their lab: ${found.length ? found.slice(0, 5).map((f) => f.title).join("; ") : "none right now"}. Call get_lab_findings for detail. Never invent broken objects.`;
   }
-  return `Student brief (live data; use it, do not recite it)
+  const stable = `Student brief (live data; use it, do not recite it)
 Readiness: ${s.finished === 0 ? "no score yet" : `${s.overall}/100 across all ${s.total} missions and scored labs, accuracy ${s.accuracy}% on the ${s.finished} finished`} (${LEVELS[s.level].label}). Readiness is low early because unfinished work counts as zero. Judge their work by accuracy.
 Skills: ${skills}.
 Biggest gap: ${gap ? `${gap.label}${gap.score === null ? " (not started)" : !gap.rated ? ` (${gap.score}% so far, too early to rate)` : ` (${gap.score}%)`}` : "none yet"}.
-Hands-on: ${handsOnLine(results, lab)}
-Drills: ${drills || "not loaded"} Use get_weakness_profile for the full picture, and get_environment_question_seeds to build questions from their own lab.
 Missions:
-${missions}
-Lab: ${labLine}${goals ? `\n\n${goals}` : ""}`;
+${missions}${goals ? `\n\n${goals}` : ""}`;
+  const live = `Hands-on: ${handsOnLine(results, lab)}
+Drills: ${drills || "not loaded"} Use get_weakness_profile for the full picture, and get_environment_question_seeds to build questions from their own lab.
+Lab: ${labLine}`;
+  return { stable, live };
+}
+
+/** Both halves as one block, for the MCP brief and anything else that does not cache. */
+export function buildStudentBrief(results: Results, lab: LabSnapshot | null, drills = "", goals = ""): string {
+  const { stable, live } = splitStudentBrief(results, lab, drills, goals);
+  return `${stable}\n${live}`;
 }
 
 // Sent to students' own MCP clients (Claude, Claude Code, Cursor) so they
@@ -267,7 +312,6 @@ When helping this student:
 - Start a coaching session with get_weakness_profile. It blends mission scores, drill accuracy, and what they keep missing, so you know where to spend the time. Keep those misses as your notes. Do not recite the list or the weekly scores.
 - Hands-on work is real. Call get_lab_findings to see what is actually wrong in the student's own lab, and get_event_digest for what really happened in their Security log. Never invent an account, a ticket or a broken object. If the lab has nothing wrong, ask judgement questions. The weekly CTF is asked about their own Security log: call start_investigation, tell them where to look in Event Viewer, and ask them to investigate. When they answer, call check_investigation. If it has a second half it checks a real fix in their lab, so guide them to find and fix it, then call it again. Never read the answer to them.
 - Develop your own practice questions from their real environment: call get_environment_question_seeds, write a short scenario whose evidence is on screen, ask the student, and wait for their answer. Then call record_practice_result so the result shapes their weakness profile and future drill difficulty. Make each question different from the last. Raise the difficulty when they keep getting it right.
-- The browser labs (Phase 1: Monday Morning Risk Triage, The Update Nobody Can Vouch For, The Leaked Password Table, Who Can Open This?; Phase 2: Read the Sign-In Log) run in the Range portal, not in their AD lab. Call get_lab_coaching first. Coach one step at a time with the hint ladder, one rung lower each time they ask again, and never state an answer, a value to type or an option to pick. Explaining CyberChef, PowerShell 7, sha256sum or OpenSSL mechanics in full is fine. Tie the step to their target role's objective in one clause. Keep replies under 80 words.
 - Do not invent lab values. get_lab_state returns the student's real lab snapshot saved the last time they ran Build-Environment.ps1. It can be older than their latest changes. Use it to check their work, and point them to what to inspect instead of reading out values that answer unsolved missions.`;
 
 type AnthropicContent =
@@ -318,16 +362,6 @@ ${ROLE_NOTE_RULES}`;
 }
 
 export const COACH_TOOLS: { name: string; description: string; input_schema: Record<string, unknown> }[] = [
-  {
-    name: "get_lab_coaching",
-    description:
-      "Coaching notes for the browser labs (risk-triage, hash-verify, password-table, effective-access in Phase 1; signin-log in Phase 2): the real-world problem, the PurveX scenario, the objective for each target role, the steps, common mistakes, open-source tool mechanics and a hint ladder. Does not include answers. Call it before helping with one of these labs.",
-    input_schema: {
-      type: "object",
-      properties: { lab: { type: "string", enum: ["risk-triage", "hash-verify", "password-table", "signin-log", "effective-access"], description: "Which lab. Omit for all of them." } },
-      additionalProperties: false,
-    },
-  },
   {
     name: "get_skill_gaps",
     description: "Return the student's Readiness score and per-skill gaps.",
@@ -427,26 +461,6 @@ COACH_TOOLS.push(
       type: "object",
       properties: { answer: { type: "string", description: "What the student found, in the format the question asked for." } },
       required: ["answer"],
-      additionalProperties: false,
-    },
-  },
-  {
-    name: "list_siem_cases",
-    description:
-      "The SIEM investigation cases the student can work in the Range SIEM, each a realistic incident (such as a ransomware day) with its own logs. Use it to see what is available before you coach a SIEM case.",
-    input_schema: { type: "object", properties: {}, additionalProperties: false },
-  },
-  {
-    name: "run_sentinel_query",
-    description:
-      "Run a KQL query against a SIEM case's logs and get the rows back, using the same engine the student's console uses. Tables follow Microsoft Sentinel and Defender names (SecurityEvent, DeviceProcessEvents, DeviceFileEvents, DeviceNetworkEvents, EmailEvents). Use it to check the student's finding or to show how a query is built. Never paste the one query that hands over a flag, and never read an answer out.",
-    input_schema: {
-      type: "object",
-      properties: {
-        kql: { type: "string", description: "The KQL query, for example: DeviceNetworkEvents | summarize c = count() by RemoteIP | sort by c desc" },
-        case: { type: "string", description: "The case id from list_siem_cases. Defaults to the first case." },
-      },
-      required: ["kql"],
       additionalProperties: false,
     },
   },
@@ -685,13 +699,12 @@ async function currentActivity(ctx: CoachToolContext) {
     lastDrill: lastDrill ? { mode: lastDrill.mode, correct: lastDrill.correct, total: lastDrill.total, when: formatLabAge(lastDrill.at).ago } : null,
     labSynced: lab ? formatLabAge(lab.capturedAt).ago : null,
     howToUse:
-      "Open by naming where they are in a few words. On a lesson tab, call search_lessons with section set to the tab and teach from it. In a browser lab, call get_lab_coaching for that lab and start at the step. On a challenge, work the next open mission without giving its answer. If likelyStillThere is false, ask what they are on before assuming.",
+      "Open by naming where they are in a few words. On a lesson tab, call search_lessons with section set to the tab and teach from it. On a challenge, work the next open mission without giving its answer. If likelyStillThere is false, ask what they are on before assuming.",
   };
 }
 
 export async function runCoachTool(name: string, input: Record<string, unknown>, ctx: CoachToolContext): Promise<string> {
   const { results } = ctx;
-  if (name === "get_lab_coaching") return labCoachingForMcp(isBrowserLab(input.lab) ? input.lab : null);
   if (name === "get_skill_gaps") {
     const s = summarize(results);
     const strongest = [...s.skills].filter((k) => k.score !== null).sort((a, b) => (b.score ?? 0) - (a.score ?? 0))[0];
@@ -829,22 +842,6 @@ export async function runCoachTool(name: string, input: Record<string, unknown>,
     if (!query.trim() && !section.trim()) return JSON.stringify({ error: "query or section is required" });
     return JSON.stringify(searchLessons(query, section, Number(input.limit) || 4));
   }
-  if (name === "list_siem_cases") {
-    const cases = await sentinelSource().listCases();
-    return JSON.stringify({ cases, note: cases.length ? "Each case is a SIEM investigation the student works in the Range SIEM. Use run_sentinel_query to read its logs and coach them through it." : "No SIEM cases are loaded yet." });
-  }
-  if (name === "run_sentinel_query") {
-    const caseId = String(input.case || "") || firstCaseId() || "";
-    if (!caseId) return JSON.stringify({ error: "no case loaded" });
-    const kql = String(input.kql || "").slice(0, 4000);
-    if (!kql.trim()) return JSON.stringify({ error: "kql is required" });
-    try {
-      const result = await sentinelSource().runQuery(ctx.userId || "coach", caseId, kql);
-      return JSON.stringify({ case: caseId, columns: result.columns, rows: result.rows.slice(0, 50), rowCount: result.rows.length, truncated: result.truncated, note: "This is the same engine the student's console uses, so you see what they see. Teach the query; never paste the one line that answers a flag, and never read an answer out." });
-    } catch (err) {
-      return JSON.stringify({ queryError: err instanceof Error ? err.message : "query failed" });
-    }
-  }
   if (name === "get_current_activity") return JSON.stringify(await currentActivity(ctx));
   if (name === "get_review_queue") {
     const queue = reviewQueue(ctx.userId ? await loadDrills(ctx.userId) : []);
@@ -876,7 +873,6 @@ export async function runCoachToolResult(name: string, input: Record<string, unk
 
 /** Human names for clients that show a tool list. */
 export const COACH_TOOL_TITLES: Record<string, string> = {
-  get_lab_coaching: "Lab coaching notes",
   get_skill_gaps: "Readiness and skill gaps",
   get_mission_history: "Mission history",
   get_mission_details: "Look up a mission",
@@ -891,8 +887,6 @@ export const COACH_TOOL_TITLES: Record<string, string> = {
   start_investigation: "Start this week's CTF",
   investigation_status: "CTF status",
   check_investigation: "Check my CTF answer",
-  list_siem_cases: "SIEM cases",
-  run_sentinel_query: "Run a SIEM query",
   search_lessons: "Search the lessons",
   get_current_activity: "Where I am in Range",
   record_practice_result: "Record a practice answer",
@@ -942,6 +936,13 @@ export async function runCoachTurn(params: {
   place?: CoachPlace | null;
   tools: CoachToolContext;
   drills?: DrillEntry[];
+  // Set to true as soon as a model call has been answered, and readable by the
+  // caller whether this returns or throws. A turn is a tool loop: it can make
+  // several calls and then fail on a later one, and a caller that refunds the
+  // student's question on any failure would be handing back something already
+  // spent. Asking for a turn that fails late is then a way to ask for nothing
+  // but free model calls.
+  charged?: { any: boolean };
 }): Promise<{ text: string; model: string }> {
   const images = params.images?.slice(0, 2) ?? [];
   let model = pickCoachModel(params.userMessage, images.length > 0);
@@ -958,11 +959,19 @@ export async function runCoachTurn(params: {
   let research = Boolean(profile) && process.env.ACADEMY_COACH_WEB_SEARCH !== "off" && (missing.length > 0 || ROLE_QUESTION.test(params.userMessage));
   const goals = goalsBrief(profile, briefs, params.tools.results, params.drills ?? []);
   const socratic = socraticInstructions(params.place ?? null, mode);
-  // Everything after COACH_SYSTEM_PROMPT changes with the student, the mode and
-  // the lab, so only the prompt itself is worth caching. It is kept apart from
-  // the tail rather than concatenated, so the cached prefix is byte-identical on
-  // every turn -- one stray character in front of it and the cache misses.
-  const systemTail = `${coachModeInstructions(mode)}${socratic ? `\n\n${socratic}` : ""}\n\n${buildStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals)}`;
+  // The system prompt is kept apart from everything below rather than
+  // concatenated, so the cached prefix is byte-identical on every turn. One
+  // stray character in front of it and the cache misses.
+  // What this student has thumbed down lately, as instructions to correct for.
+  // It changes between turns, so it belongs after the last breakpoint.
+  const correction = params.tools.userId ? await correctionLine(params.tools.userId).catch(() => "") : "";
+  const brief = splitStudentBrief(params.tools.results, lab, params.drills ? weaknessLine(params.drills, params.tools.results, lab) : "", goals);
+  // Held still for this student: their mode and the half of the brief that only
+  // a finished mission changes.
+  const systemStudent = `${coachModeInstructions(mode)}\n\n${brief.stable}`;
+  // Changes with the page they are on, the lab's last sync and what they have
+  // thumbed down, so it sits after the last cache breakpoint.
+  const systemLive = `${socratic ? `${socratic}\n\n` : ""}${brief.live}${correction ? `\n\n${correction}` : ""}`;
   // URLs the search returned this turn. A saved note may only cite these.
   const seen = new Map<string, string>();
   const messages: AnthropicMessage[] = [
@@ -975,13 +984,16 @@ export async function runCoachTurn(params: {
   for (let step = 0; step < 7; step++) {
     const left = deadline - Date.now();
     if (left < 3_000) throw new Error("Coach model timed out");
-    const tail = research && profile ? `${systemTail}\n\n${researchInstructions(missing)}` : systemTail;
-    // cache_control on the first block caches the tools and the prompt above it.
-    // At ~3.2k tokens the prompt clears the minimum comfortably, and it is the
-    // same for every student on every turn, so all but the first call in a
-    // five-minute window reads it at a tenth of the input price.
+    const tail = research && profile ? `${systemLive}\n\n${researchInstructions(missing)}` : systemLive;
+    // Two breakpoints, because the prefix holds still for two different lengths
+    // of time. The first caches the tools and the prompt, which every student
+    // shares. The second adds this student's own standing context, which a
+    // tool-use turn re-sends on each of its steps and the next turn usually
+    // repeats unchanged. Everything that moves by the minute is after both, so
+    // a lab that just synced never costs a cache write.
     const system = [
       { type: "text", text: COACH_SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+      { type: "text", text: systemStudent, cache_control: { type: "ephemeral" } },
       { type: "text", text: tail },
     ];
     const tools_ = research ? [...COACH_TOOLS, webSearchTool(model, 3), SAVE_ROLE_NOTES_TOOL] : COACH_TOOLS;
@@ -1027,6 +1039,9 @@ export async function runCoachTurn(params: {
       }
       throw new Error(err);
     }
+    // Answered, so it is on the bill. Set after the retries above, since a
+    // refused request is not charged for.
+    if (params.charged) params.charged.any = true;
 
     const content = body.content || [];
     searchedUrls(content, seen);

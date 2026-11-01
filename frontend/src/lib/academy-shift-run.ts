@@ -1,5 +1,7 @@
 import "server-only";
-import { responseGrader, shiftNarrator } from "@/lib/academy-scenario";
+import type { LabSnapshot } from "@/lib/academy-lab";
+import { confirmOnLab } from "@/lib/academy-lab-pull";
+import { HANDOFF_GRADES, handoffReviewer, responseGrader, shiftNarrator, type HandoffReview } from "@/lib/academy-scenario";
 import { cleanupShiftLab, hostedLabStatus, injectIncident, requestLabSync } from "@/lib/academy-hosted";
 import { roleLabel } from "@/lib/academy-certs";
 import { levelFor, type DrillEntry, type Item } from "@/lib/academy-drills";
@@ -7,11 +9,29 @@ import type { Results, Skill } from "@/lib/academy-score";
 import { loadDrills, loadLabState, loadProfile, loadProgress, loadShift, saveDrill, saveShift } from "@/lib/academy-store";
 import { SHIFT_JOB } from "@/lib/academy-proof";
 import {
+  deskArrived,
+  deskLapsed,
+  deskMax,
+  deskScore,
+  gradeChoice,
+  gradeStatus,
+  planDesk,
+  shiftMetrics,
+  shiftTimeline,
+  toPublicDesk,
+  triage,
+  type PublicDesk,
+  type TimelineItem,
+} from "@/lib/academy-shift-desk";
+import {
   effectiveIncident,
   gradeIncidentLab,
   HINT_COST,
   incidentArrived,
   incidentDef,
+  canAlternate,
+  damageVisible,
+  eventsSince,
   newShiftRun,
   resolvedOnTime,
   scoreIncident,
@@ -20,6 +40,7 @@ import {
   SHIFT_SECONDS,
   type IncidentDef,
   type IncidentRun,
+  type ShiftMix,
   type ShiftRun,
 } from "@/lib/academy-shift";
 
@@ -56,6 +77,8 @@ export type PublicIncident = {
   shownHints: string[];
   diagnosis: string;
   responseSaved: boolean;
+  /** They have pressed Submit and check at least once, which escalating needs. */
+  submitted: boolean;
 };
 
 export type IncidentReport = {
@@ -71,6 +94,8 @@ export type IncidentReport = {
   hintsUsed: number;
   score: number;
   max: number;
+  /** Tier 2's review, on an escalated incident. */
+  review: HandoffReview | null;
 };
 
 export type ShiftReport = {
@@ -82,6 +107,11 @@ export type ShiftReport = {
   incidents: IncidentReport[];
   headline: string;
   habit: string;
+  /** The desk around the incidents, triage order, timing and the replay. */
+  desk: { title: string; correct: boolean; score: number; max: number; lesson: string }[];
+  triage: { score: number; max: number; misses: { opened: string; waiting: string; atSec: number }[] };
+  metrics: { timeToAckSec: number | null; timeToResolveSec: number | null; breaches: number; arrived: number };
+  timeline: TimelineItem[];
 };
 
 export type PublicShift = {
@@ -91,15 +121,17 @@ export type PublicShift = {
   secondsLeft: number;
   phase: number;
   level: number;
+  mix: ShiftMix | null;
   status: "active" | "done";
   incidents: PublicIncident[];
+  desk: PublicDesk[];
   report: ShiftReport | null;
 };
 
 // ---- context --------------------------------------------------------------
 
 function phaseFor(results: Results): number {
-  const p2 = ["lab-signin-log", "tq-06", "tq-07", "tq-08", "tq-09", "tq-10"].some((id) => results[id]?.solved);
+  const p2 = ["sl-01", "tq-06", "tq-07", "tq-08", "tq-09", "tq-10"].some((id) => results[id]?.solved);
   return p2 ? 2 : 1;
 }
 
@@ -142,6 +174,7 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
     shownHints: def.hints.slice(0, inc.hintsUsed),
     diagnosis: inc.diagnosis,
     responseSaved: inc.response.trim().length > 0,
+    submitted: (inc.submits ?? 0) > 0,
   };
 }
 
@@ -154,8 +187,10 @@ function publicShift(run: ShiftRun, now = Date.now()): PublicShift {
     secondsLeft: Math.max(0, SHIFT_SECONDS - elapsed),
     phase: run.phase,
     level: run.level,
+    mix: run.mix ?? null,
     status: run.status,
     incidents: run.incidents.map((inc) => toPublic(run, inc, elapsed)).filter((x): x is PublicIncident => x !== null),
+    desk: (run.desk ?? []).map((d) => toPublicDesk(d, elapsed)).filter((x): x is PublicDesk => x !== null),
     report: run.status === "done" ? buildReport(run) : null,
   };
 }
@@ -171,11 +206,66 @@ async function injectArrived(userId: string, run: ShiftRun, elapsed: number): Pr
     const ok = await injectIncident(userId, def.script, inc.bind?.args);
     if (ok) {
       inc.injected = true;
+      inc.injectedAt = new Date().toISOString();
       changed = true;
     }
   }
   return changed;
 }
+
+/**
+ * Note each fired incident the first time the lab shows it: a snapshot taken
+ * after it was fired with its damage in place, or the Security log showing the
+ * attack after that moment. A run from before this existed has no injectedAt
+ * and keeps the old evidence check.
+ */
+function markLanded(run: ShiftRun, lab: { snapshot: LabSnapshot; uploadedAt: string } | null): boolean {
+  if (!lab) return false;
+  let changed = false;
+  for (const inc of run.incidents) {
+    if (!inc.injected || !inc.injectedAt || inc.landedAt) continue;
+    if (Date.parse(lab.uploadedAt) <= Date.parse(inc.injectedAt)) continue;
+    const def = incidentDef(inc.defId);
+    if (!def) continue;
+    const eff = effectiveIncident(def, inc);
+    const logged = Boolean(eff.evidence) && eff.evidence!(eventsSince(lab.snapshot.events, inc.injectedAt));
+    if (damageVisible(def, eff.resolve, lab.snapshot) || logged) {
+      inc.landedAt = lab.uploadedAt;
+      changed = true;
+    }
+  }
+  return changed;
+}
+
+/**
+ * Save one incident's work onto the newest copy of the run. Submit and check
+ * can wait several seconds for the lab, and the console keeps polling and
+ * acting meanwhile: writing back the copy read at the click undid whatever
+ * happened in between, an email answered or an incident fired (and a lost
+ * "fired" flag fires it into the lab a second time). So the run is read
+ * again and only this incident's fields, and any landings seen, are written.
+ */
+async function saveIncident(userId: string, run: ShiftRun, inc: IncidentRun): Promise<void> {
+  const latest = await loadShift(userId);
+  if (!latest || latest.id !== run.id) return saveShift(userId, run);
+  const target = latest.incidents.find((i) => i.uid === inc.uid);
+  if (target) {
+    target.diagnosis = inc.diagnosis;
+    target.response = inc.response;
+    target.submits = Math.max(target.submits ?? 0, inc.submits ?? 0);
+    target.resolvedAtSec = target.resolvedAtSec ?? inc.resolvedAtSec;
+    target.escalatedAtSec = target.escalatedAtSec ?? inc.escalatedAtSec;
+    if (inc.verified) target.verified = true;
+  }
+  for (const i of run.incidents) {
+    const t = latest.incidents.find((x) => x.uid === i.uid);
+    if (t && i.landedAt && !t.landedAt) t.landedAt = i.landedAt;
+  }
+  await saveShift(userId, latest);
+}
+
+/** Landed for grading: known on a run that records it, unknown on an older one. */
+const landedOf = (inc: IncidentRun): boolean | undefined => (inc.injectedAt ? Boolean(inc.landedAt) : undefined);
 
 // ---- read / start ---------------------------------------------------------
 
@@ -186,8 +276,9 @@ export async function getShift(userId: string): Promise<PublicShift | null> {
   if (run.status === "done") return publicShift(run);
   const now = Date.now();
   if (shiftOver(run, now)) return finishAndReturn(userId, run);
-  const changed = await injectArrived(userId, run, shiftElapsed(run, now));
-  if (changed) await saveShift(userId, run);
+  const fired = await injectArrived(userId, run, shiftElapsed(run, now));
+  const landed = run.incidents.some((i) => i.injectedAt && !i.landedAt) ? markLanded(run, await loadLabState(userId).catch(() => null)) : false;
+  if (fired || landed) await saveShift(userId, run);
   return publicShift(run, now);
 }
 
@@ -234,7 +325,14 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
   }
   const [entries, results, profile] = await Promise.all([loadDrills(userId), loadProgress(userId), loadProfile(userId)]);
   const roles = profile?.roles ?? [];
-  const run = newShiftRun(`${userId}:${Date.now()}`, phaseFor(results), levelFor(entries), roles);
+  // Alternate the lean: the shift after a ticket night is an alert night, and
+  // the other way round. A first shift leans on alerts. A beginner with too few
+  // incidents of one kind gets a plain mixed shift instead.
+  const phase = phaseFor(results);
+  const level = levelFor(entries);
+  const mix: ShiftMix | undefined = canAlternate(phase, level) ? (existing?.mix === "alerts" ? "tickets" : "alerts") : undefined;
+  const run = newShiftRun(`${userId}:${Date.now()}`, phase, level, roles, Date.now(), mix);
+  run.desk = planDesk(run.id, run.level, run.incidents);
   // Composing the shift (Claude's wording) takes a few seconds; don't let that
   // eat the clock. Stamp the start once setup is done, so the timer begins when
   // the student actually sees the queue.
@@ -287,6 +385,10 @@ export type SubmitOutcome = {
   results: { label: string; ok: boolean }[];
   waiting: boolean;
   needFinding: boolean;
+  /** The fix may be in, but the attack has not reached the lab's Security log yet. */
+  evidencePending?: boolean;
+  /** Whether the finding answers the incident's question. Null on a handoff. */
+  answerRight: boolean | null;
 };
 
 /**
@@ -313,63 +415,163 @@ export async function submitIncident(
   inc.response = response.slice(0, 4000);
 
   if (escalate) {
+    // Tier 2 takes what tier 1 tried, not a first look: one Submit and check,
+    // a finding and a closing note before it can go up.
+    if (!(inc.submits ?? 0)) return { error: "Submit and check first. Tier 2 takes an incident after you have tried it." };
     if (!inc.diagnosis.trim()) return { error: "Answer the question before you hand this to tier 2." };
+    if (!inc.response.trim()) return { error: "Write a closing note first. It is what tier 2 reads." };
     if (inc.escalatedAtSec == null && inc.resolvedAtSec === null) inc.escalatedAtSec = elapsed;
-    await saveShift(userId, run);
-    return { resolved: false, escalated: true, onTime: false, results: [], waiting: false, needFinding: false };
+    await saveIncident(userId, run, inc);
+    return { resolved: false, escalated: true, onTime: false, results: [], waiting: false, needFinding: false, answerRight: null };
   }
 
-  // Push a fresh snapshot from the lab now and wait briefly for it, so a change
-  // the student just made is graded on this click instead of the next one.
-  const before = await loadLabState(userId);
-  const beforeAt = before ? Date.parse(before.uploadedAt) : 0;
-  let lab = before;
-  // The lab's own change-watch loop pushes a fresh snapshot within a fraction of a
-  // second of the fix; also force one over SSM for changes it doesn't watch. Poll
-  // tightly and take whichever fresher snapshot lands first.
-  void requestLabSync(userId, true);
-  const deadline = Date.now() + 8000;
-  while (Date.now() < deadline) {
-    await new Promise((r) => setTimeout(r, 200));
-    const next = await loadLabState(userId);
-    if (next && Date.parse(next.uploadedAt) > beforeAt) {
+  inc.submits = (inc.submits ?? 0) + 1;
+
+  const eff = effectiveIncident(def, inc);
+  const grade = (l: typeof lab) => {
+    markLanded(run, l);
+    return gradeIncidentLab(eff, l?.snapshot ?? null, inc.diagnosis, landedOf(inc));
+  };
+
+  // The lab pushes a snapshot within a second of any change in the directory,
+  // so the one already here usually shows the fix. Grade it first: a fix that
+  // is in, on an incident that has landed, closes on the click with no wait.
+  let lab = await loadLabState(userId);
+  let graded = grade(lab);
+  let arrived = Boolean(lab && inc.injectedAt && Date.parse(lab.uploadedAt) > Date.parse(inc.injectedAt));
+  if (!(graded.resolved && graded.diagnosisRight)) {
+    // Not closed on what is here: ask for a fresh report and grade that. The
+    // Security log only rides a full report, so ask for one only when landing
+    // has to be proven from the log.
+    const needsLog = landedOf(inc) === false || (landedOf(inc) === undefined && Boolean(eff.evidence));
+    const seenAt = lab ? Date.parse(lab.uploadedAt) : 0;
+    void requestLabSync(userId, true, needsLog && Boolean(eff.evidence));
+    arrived = false;
+    const deadline = Date.now() + 10_000;
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 150));
+      const next = await loadLabState(userId);
+      if (!next || Date.parse(next.uploadedAt) <= seenAt) continue;
       lab = next;
-      break;
+      arrived = true;
+      graded = grade(next);
+      // A light report can arrive before the full one that carries the log;
+      // when landing still has to be proven from the log, keep waiting for it.
+      if (!(needsLog && eff.evidence && landedOf(inc) !== true)) break;
     }
   }
 
-  const graded = gradeIncidentLab(effectiveIncident(def, inc), lab?.snapshot ?? null, inc.diagnosis);
   const fresh = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(run.startedAt));
   // An incident closes only when the lab shows the fix AND the finding is answered
   // correctly. A correct fix with a wrong or blank finding stays open with a nudge.
-  const needFinding = graded.resolved && !graded.diagnosisRight;
-  const closed = graded.resolved && graded.diagnosisRight;
+  let needFinding = graded.resolved && !graded.diagnosisRight;
+  let closed = graded.resolved && graded.diagnosisRight;
+  // The lab's own report says the fix is in. On a hosted lab, ask the domain
+  // controller directly before the incident closes: a report it contradicts
+  // does not close anything, and one it confirms is Verified by Range.
+  if (graded.resolved && inc.resolvedAtSec === null) {
+    const pull = await confirmOnLab(userId, eff.resolve);
+    if (pull.status === "contradicted") {
+      console.warn("lab report contradicted by the lab itself", userId, inc.uid);
+      closed = false;
+      needFinding = false;
+      graded.resolved = false;
+      graded.results = pull.results;
+    } else if (pull.status === "confirmed" && closed) {
+      inc.verified = true;
+    }
+  }
   if (closed && inc.resolvedAtSec === null) inc.resolvedAtSec = elapsed;
-  await saveShift(userId, run);
+  await saveIncident(userId, run, inc);
   return {
     resolved: closed,
     escalated: false,
     onTime: inc.resolvedAtSec !== null && resolvedOnTime(inc),
     results: graded.results,
-    // Not resolved and the lab has not reported since the shift began: the change may just be in flight.
-    waiting: !graded.resolved && !fresh,
+    // Not resolved and no report arrived after the click (or none since the
+    // shift began): the lab was not read, so it is not "not fixed", it is
+    // "not heard from yet".
+    waiting: !graded.resolved && (!fresh || !arrived),
     needFinding,
+    // The fix may be in, but the incident has not reached the lab yet.
+    evidencePending: landedOf(inc) === false || (landedOf(inc) === undefined && Boolean(eff.evidence) && !eff.evidence!(lab?.snapshot.events)),
+    answerRight: graded.diagnosisRight,
   };
+}
+
+// ---- the desk: calls, status requests, urgent asks -------------------------
+
+/**
+ * Answer a desk event. A call or an urgent ask takes a choice; a status
+ * request takes a line of text, graded against the incidents open right now.
+ * One answer each, and only while it is open: a caller who has hung up has
+ * hung up. Returns the shift, whose desk entry now carries the verdict and the
+ * reasoning behind every option.
+ */
+export async function answerDesk(userId: string, uid: string, choice: string, text: string): Promise<PublicShift | { error: string }> {
+  const run = await loadShift(userId);
+  if (!run || run.status !== "active" || shiftOver(run)) return { error: "Your shift is not running." };
+  const d = (run.desk ?? []).find((x) => x.uid === uid);
+  const elapsed = shiftElapsed(run);
+  if (!d || !deskArrived(d, elapsed)) return { error: "That has not come in yet." };
+  if (d.answeredAtSec !== null) return { error: "You already answered that." };
+  if (deskLapsed(d, elapsed)) return { error: "Too late, they have moved on." };
+
+  if (d.kind === "reply") {
+    const line = text.replace(/\s+/g, " ").trim().slice(0, 280);
+    if (!line) return { error: "Write your one-line status first." };
+    const open = run.incidents
+      .filter((i) => incidentArrived(i, elapsed) && i.resolvedAtSec === null && i.escalatedAtSec == null)
+      .map((i) => {
+        const def = incidentDef(i.defId);
+        const who = i.bind?.args ? Object.values(i.bind.args).map(String).find((v) => v.includes(".")) : undefined;
+        return { title: i.text?.title ?? def?.title ?? i.defId, severity: i.severity, who };
+      });
+    const g = gradeStatus(line, open);
+    Object.assign(d, { text: line, score: g.score, hits: g.hits, misses: g.misses, answeredAtSec: elapsed });
+  } else {
+    const g = gradeChoice(d.defId, d.who, choice);
+    if (!g) return { error: "Pick one of the options." };
+    Object.assign(d, { choice, score: g.score, answeredAtSec: elapsed });
+  }
+  await saveShift(userId, run);
+  return publicShift(run);
 }
 
 // ---- grading at the end ---------------------------------------------------
 
+/**
+ * Tier 2's review when Coach cannot be reached: graded from the facts alone.
+ * A note that names the right finding and says what was tried is usable; the
+ * fix is stated from the incident's own resolve checks and guidance.
+ */
+function factReview(c: { finding: string; note: string; fix: string[]; path: string[] }, findingRight: boolean): HandoffReview {
+  const words = c.note.trim().split(/\s+/).filter(Boolean).length;
+  const score = Math.min(3, (findingRight ? 1 : 0) + (words >= 15 ? 1 : 0) + (words >= 40 ? 1 : 0));
+  return {
+    score,
+    grade: HANDOFF_GRADES[score],
+    handoff: findingRight
+      ? `Your finding was right${words < 15 ? ", but the note was too short for tier 2 to act on without calling you back" : ", and tier 2 had a note to work from"}.`
+      : "Your finding did not answer the question, so tier 2 would start the investigation again.",
+    couldHave: `What would have closed it at tier 1: ${c.fix.join("; ")}. ${c.path[c.path.length - 1] ?? ""}`.trim(),
+    by: "facts",
+  };
+}
+
 async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
   const lab = await loadLabState(userId);
+  markLanded(run, lab);
   const snapshot = lab?.snapshot ?? null;
   const apiKey = process.env.ANTHROPIC_API_KEY;
   const grade = apiKey ? responseGrader(apiKey) : null;
+  const review = apiKey ? handoffReviewer(apiKey) : null;
 
   for (const inc of run.incidents) {
     const def = incidentDef(inc.defId);
     if (!def) continue;
     const eff = effectiveIncident(def, inc);
-    const lg = gradeIncidentLab(eff, snapshot, inc.diagnosis);
+    const lg = gradeIncidentLab(eff, snapshot, inc.diagnosis, landedOf(inc));
     // An incident is only closed when the lab shows the fix AND the finding is right.
     // Once it was closed during the shift it stays closed: a later incident (e.g. a
     // spray re-locking an account) must not strip credit the student already earned.
@@ -381,7 +583,22 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
     const onTime = inc.resolvedAtSec !== null && resolvedOnTime(inc);
 
     let writeUp: number | null = null;
-    if (grade && inc.response.trim()) {
+    if (escalated) {
+      // Tier 2 reads the handoff, and its grade is the write-up score.
+      const c = {
+        title: inc.text?.title ?? def.title,
+        brief: inc.text?.brief ?? eff.brief,
+        question: eff.diagnosis.prompt,
+        answer: eff.diagnosis.accept[0] ?? "",
+        fix: eff.resolve.map((r) => r.label),
+        path: def.hints,
+        rubric: def.rubric,
+        finding: inc.diagnosis,
+        note: inc.response,
+      };
+      inc.review = (review ? await review(c).catch(() => null) : null) ?? factReview(c, lg.diagnosisRight);
+      writeUp = inc.review.score / 3;
+    } else if (grade && inc.response.trim()) {
       const item = { title: def.title, story: eff.brief, prompt: eff.diagnosis.prompt, rubric: def.rubric } as unknown as Item;
       const marked = await grade(item, inc.response).catch(() => null);
       if (marked) writeUp = marked.total ? marked.hits / marked.total : null;
@@ -401,8 +618,12 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
     inc.score = scoreIncident(def, { resolved: closed, onTime, noHarm: lg.noHarm, diagnosisRight: lg.diagnosisRight, writeUp, touched }, inc.hintsUsed);
   }
 
-  run.totalScore = run.incidents.reduce((s, i) => s + (i.score ?? 0), 0);
-  run.maxScore = run.incidents.reduce((s, i) => s + (incidentDef(i.defId)?.points ?? 0), 0);
+  // The desk and the order of work count too: the call handled right, the
+  // status given, and the P1 worked before the P3.
+  const desk = run.desk ?? [];
+  const order = triage(run.incidents);
+  run.totalScore = run.incidents.reduce((s, i) => s + (i.score ?? 0), 0) + deskScore(desk) + (run.incidents.length ? order.score : 0);
+  run.maxScore = run.incidents.reduce((s, i) => s + (incidentDef(i.defId)?.points ?? 0), 0) + deskMax(desk) + (run.incidents.length ? order.max : 0);
   run.status = "done";
   run.finishedAt = new Date().toISOString();
   return run;
@@ -423,6 +644,7 @@ function buildReport(run: ShiftRun): ShiftReport {
       hintsUsed: inc.hintsUsed,
       score: inc.score ?? 0,
       max: def?.points ?? 0,
+      review: inc.escalated ? (inc.review ?? null) : null,
     };
   });
   const resolvedCount = incidents.filter((i) => i.resolved).length;
@@ -434,7 +656,7 @@ function buildReport(run: ShiftRun): ShiftReport {
   if (incidents.some((i) => i.resolved && !i.onTime)) habit = "You fixed the right things, but watch the clock: acknowledge and work the P1s first.";
   else if (incidents.some((i) => !i.noHarm)) habit = "Contain the real problem without touching the accounts that were fine.";
   else if (incidents.some((i) => i.resolved && !i.diagnosisRight)) habit = "Name the evidence (event IDs, accounts, times), not just the fix.";
-  else if (resolvedCount === incidents.length && incidents.length) habit = "Strong. Try a harder shift, or one with more incidents.";
+  else if (resolvedCount === incidents.length && incidents.length) habit = "Strong. Every incident closed. Your level rises with your accuracy across drills and shifts, and the incidents get harder with it.";
   // Said last so it outranks the generic advice: escalating everything is the
   // habit that most needs naming, and it is invisible in the score alone.
   if (escalatedCount && escalatedCount >= resolvedCount) habit = "You handed up more than you fixed. Escalate what is above your access, and work the rest yourself.";
@@ -443,7 +665,43 @@ function buildReport(run: ShiftRun): ShiftReport {
   const workedCount = incidents.filter((i) => i.touched).length;
   if (!workedCount && incidents.length) habit = "Nothing on the queue was worked. Open the top incident, find the evidence, and write what you found before the clock runs out.";
   else if (workedCount < incidents.length / 2) habit = "Most of the queue went untouched. Work them in severity order and put a finding against each one, even the ones you hand up.";
-  return { totalScore: run.totalScore ?? 0, maxScore: run.maxScore ?? 0, resolvedCount, escalatedCount, onTimeCount, incidents, headline, habit };
+  const end = run.finishedAt ? shiftElapsed(run, Date.parse(run.finishedAt)) : SHIFT_SECONDS;
+  const titleOf = (inc: IncidentRun) => inc.text?.title ?? incidentDef(inc.defId)?.title ?? inc.defId;
+  const byUid = new Map(run.incidents.map((i) => [i.uid, i]));
+  const order = triage(run.incidents);
+  const deskRuns = run.desk ?? [];
+  const desk = deskRuns.map((d) => {
+    const pub = toPublicDesk(d, end);
+    return { title: pub?.title ?? d.defId, correct: Boolean(pub?.verdict?.correct), score: d.score ?? 0, max: pub?.verdict?.max ?? 0, lesson: pub?.verdict?.lesson ?? "" };
+  });
+  // Said last, so a desk mistake outranks the generic advice: these are the
+  // habits that cost most on a real desk and never show up in a lab check.
+  const emailWrong = deskRuns.find((d) => d.kind === "email" && d.answeredAtSec !== null && (d.score ?? 0) === 0);
+  if (order.misses.length) habit = "You opened lower-severity work while a higher one waited. Scan the queue and open the P1 first, every time.";
+  // The email's own lesson is the habit: it is the one thing the inbox taught.
+  if (emailWrong) habit = `The email talked you into the wrong move. ${toPublicDesk(emailWrong, end)?.verdict?.lesson ?? "Verify through what is already on file before you act on a request."}`;
+  return {
+    totalScore: run.totalScore ?? 0,
+    maxScore: run.maxScore ?? 0,
+    resolvedCount,
+    escalatedCount,
+    onTimeCount,
+    incidents,
+    headline,
+    habit,
+    desk,
+    triage: {
+      score: run.incidents.length ? order.score : 0,
+      max: run.incidents.length ? order.max : 0,
+      misses: order.misses.map((m) => ({
+        opened: `${m.opened} ${titleOf(byUid.get(m.openedUid)!)}`,
+        waiting: `${m.waiting} ${titleOf(byUid.get(m.waitingUid)!)}`,
+        atSec: m.atSec,
+      })),
+    },
+    metrics: shiftMetrics(run.incidents, end),
+    timeline: shiftTimeline(run.incidents, deskRuns, titleOf, end),
+  };
 }
 
 async function recordAndClose(userId: string, run: ShiftRun) {
@@ -457,6 +715,7 @@ async function recordAndClose(userId: string, run: ShiftRun) {
       th: `shift:${inc.defId}`,
       // The portfolio job this incident proves, so a resolved shift task joins the portfolio.
       j: inc.resolved ? SHIFT_JOB[inc.defId] : undefined,
+      ...(inc.resolved && inc.verified ? { v: 1 as const } : {}),
     };
   });
   const entry: DrillEntry = {

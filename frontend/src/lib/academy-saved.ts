@@ -22,15 +22,18 @@ export type Saved = {
   quizzes: Record<string, QuizState>;
   /** Text in a challenge box, by mission id. */
   drafts: Record<string, string>;
+  /** One-time onboarding steps seen (lab briefing, terms, tour), by name. Only ever set true. */
+  flags: Record<string, boolean>;
 };
 
-/** A change to send. Lists and lastStop replace; quizzes and drafts merge by key, and null removes one. */
+/** A change to send. Lists and lastStop replace; quizzes, drafts and flags merge by key, and null removes one (flags cannot be unset). */
 export type SavedPatch = Partial<Pick<Saved, "completed" | "quizPasses" | "labsDone" | "lastStop">> & {
   quizzes?: Record<string, QuizState | null>;
   drafts?: Record<string, string | null>;
+  flags?: Record<string, boolean>;
 };
 
-export const EMPTY_SAVED: Saved = { completed: [], quizPasses: [], labsDone: [], lastStop: null, quizzes: {}, drafts: {} };
+export const EMPTY_SAVED: Saved = { completed: [], quizPasses: [], labsDone: [], lastStop: null, quizzes: {}, drafts: {}, flags: {} };
 
 // A challenge answer is checked up to 120 characters, so a longer draft is never needed.
 const DRAFT_MAX = 120;
@@ -38,6 +41,7 @@ const KEY_MAX = 120;
 const LIST_MAX = 500;
 const MAP_MAX = 400;
 const QUIZ_QUESTIONS_MAX = 50;
+const FLAGS_MAX = 100;
 
 const key = (v: unknown): v is string => typeof v === "string" && v.length > 0 && v.length <= KEY_MAX;
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -86,6 +90,12 @@ export function sanitizePatch(raw: unknown): SavedPatch {
       if (v === null || d !== null) out.drafts[k] = d;
     }
   }
+  if (isRecord(raw.flags)) {
+    out.flags = {};
+    for (const [k, v] of Object.entries(raw.flags).slice(0, FLAGS_MAX)) {
+      if (key(k) && v) out.flags[k] = true;
+    }
+  }
   return out;
 }
 
@@ -95,7 +105,7 @@ export function sanitizeSaved(raw: unknown): Saved {
 }
 
 export function applyPatch(base: Saved, patch: SavedPatch): Saved {
-  const next: Saved = { ...base, quizzes: { ...base.quizzes }, drafts: { ...base.drafts } };
+  const next: Saved = { ...base, quizzes: { ...base.quizzes }, drafts: { ...base.drafts }, flags: { ...base.flags } };
   if (patch.completed) next.completed = patch.completed;
   if (patch.quizPasses) next.quizPasses = patch.quizPasses;
   if (patch.labsDone) next.labsDone = patch.labsDone;
@@ -108,9 +118,14 @@ export function applyPatch(base: Saved, patch: SavedPatch): Saved {
     if (v) next.drafts[k] = v;
     else delete next.drafts[k];
   }
+  // Flags only ever turn on, so two tabs setting different flags at once never lose one.
+  for (const [k, v] of Object.entries(patch.flags ?? {})) {
+    if (v) next.flags[k] = true;
+  }
   // Caps hold after a merge too, so many small patches cannot grow a row without bound.
   next.quizzes = Object.fromEntries(Object.entries(next.quizzes).slice(-MAP_MAX));
   next.drafts = Object.fromEntries(Object.entries(next.drafts).slice(-MAP_MAX));
+  next.flags = Object.fromEntries(Object.entries(next.flags).slice(-FLAGS_MAX));
   return next;
 }
 
@@ -124,5 +139,6 @@ export function mergeSaved(a: Saved, b: Saved): Saved {
     lastStop: a.lastStop ?? b.lastStop,
     quizzes: { ...b.quizzes, ...a.quizzes },
     drafts: { ...b.drafts, ...a.drafts },
+    flags: { ...b.flags, ...a.flags },
   };
 }

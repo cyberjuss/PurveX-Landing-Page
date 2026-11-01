@@ -62,13 +62,6 @@ done
 
 Read the list. Some ports connect and some do not. The capture is about to explain why each one answered the way it did.
 
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-scan-results.png" alt="Terminal on the Ubuntu server showing each tested port of the domain controller marked open or no connection" />
-<figcaption>Screenshot 1. [ADD IMAGE] Eight ports of the domain controller, tested from Ubuntu.</figcaption>
-</figure>
-</div>
-
 ### Read the Three Answers
 
 Stop the capture in Wireshark. The Info column on each line tells you how a port replied, and a port can answer in three different ways.
@@ -79,62 +72,168 @@ Stop the capture in Wireshark. The Info column on each line tells you how a port
 
 Find one of each in the Packet List. The gap between a RST and total silence is the whole point. One tells the scanner a port is simply shut, the other tells them a firewall is in the way.
 
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-scan-capture.png" alt="Wireshark showing an open port completing the handshake, a closed port answered with RST, and a filtered port with repeated SYNs and no reply" />
-<figcaption>Screenshot 2. [ADD IMAGE] Open, closed and filtered, side by side.</figcaption>
-</figure>
-</div>
-
 ### See the Whole Scan at Once
 
 Wireshark can show the shape rather than the single packets. Open Statistics → Conversations and select the TCP tab. Each row is one connection, with its port and how many packets it carried.
 
 One machine opening a row for port after port of the same target, each only a packet or two, is a scan laid out in a table. A normal session would be a few rows with many packets each. This is many rows with almost none.
 
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-3/PLACEHOLDER-conversations.png" alt="Wireshark Statistics Conversations window showing many short connections from the Ubuntu box to different ports of the domain controller" />
-<figcaption>Screenshot 3. [ADD IMAGE] The scan as a table, one row per port.</figcaption>
-</figure>
+That shape, one source spraying SYNs across many ports fast, is a scan. It looks nothing like normal traffic, which settles into a few steady conversations. Seeing it in a real capture is often the first sign that someone is mapping a machine before they move on it.
+
+### Confirm It With the Tool the Job Actually Uses
+
+You just read a scan by hand, one packet at a time. On the job, almost every posting for this role names the same tool for this exact task: Nmap. It is not doing anything the bash loop did not already do. It is reporting the same three answers, just faster and in its own column.
+
+Install it on the Ubuntu server.
+
+```bash
+sudo apt install -y nmap
+```
+
+Then scan the same ports with a connect scan, the same handshake you just read packet by packet.
+
+```bash
+nmap -sT -p 53,88,389,445,3389,23,8080,9999 dc01
+```
+
+Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the exact three answers you already read from raw packets, just labeled for you instead of worked out by hand.
+
+<div class="ad-mission" data-id="w3m-c5" data-attempts="0">
+<p><strong>Task:</strong> Run the Nmap scan above. What does it report for port 445?</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what Nmap reports on port 445" placeholder="open, closed, or filtered" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{open}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>open</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A real scanner lands on the same answer as the raw packets did, because it is reading the same handshake. Knowing the tool matters on the job, but reading the traffic underneath it is what tells you whether the tool is right.</p>
+</div>
+</div>
+</div>
 </div>
 
-That shape, one source spraying SYNs across many ports fast, is a scan. It looks nothing like normal traffic, which settles into a few steady conversations. Seeing it in a real capture is often the first sign that someone is mapping a machine before they move on it.
+### Weigh a Stealthier Scan
+
+<div class="ad-mission" data-id="w3m-c6" data-attempts="0">
+<p><strong>Task:</strong> The scan you just ran (<code>-sT</code>) completes the full three-way handshake on every open port, same as your bash loop. A SYN scan (<code>-sS</code>) instead sends SYN, reads SYN-ACK, then sends RST instead of finishing with ACK. Why might an attacker prefer that? Type its letter.<br><strong>A</strong> It is faster, and it never fully opens a connection the target's own application might log.<br><strong>B</strong> It is slower but gives a more accurate result.<br><strong>C</strong> There is no real difference between the two on the wire.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for why an attacker might prefer a SYN scan" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>A. Faster, and it never fully opens a connection the target's own application might log</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Some application-level logging only records a connection once it is fully established, so a SYN scan can slip past that layer entirely. It cannot slip past the packet capture, though, which is exactly why a defender who reads the wire catches what an application log alone would miss.</p>
+</div>
+</div>
+</div>
+</div>
 
 ### Check Yourself
 
 Answer from what you captured, not from what you remember reading.
 
-<div class="ad-check" data-check="w3m-c1" data-answer="0">
-<p class="ad-check__q">For an open port like 445, how did the handshake end?</p>
-<button type="button" class="ad-check__opt" data-i="0">It completed, SYN then SYN-ACK then ACK</button>
-<button type="button" class="ad-check__opt" data-i="1">The domain controller sent a RST</button>
-<button type="button" class="ad-check__opt" data-i="2">Nothing came back</button>
-<p class="ad-check__note">A listening service with the firewall open completes the handshake. That completion is how a scanner confirms the port is open.</p>
+<div class="ad-mission" data-id="w3m-c1" data-attempts="0">
+<p><strong>Task:</strong> For an open port like 445 in your capture, how did the handshake end? Name all three packets in order, comma-separated.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for how the handshake ended on an open port" placeholder="first, second, third" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{syn, syn-ack, ack}" data-accept="syn,syn-ack,ack|syn, syn ack, ack">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>SYN, SYN-ACK, ACK</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A listening service with the firewall open completes the handshake. That completion is how a scanner confirms the port is open.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w3m-c2" data-answer="2">
-<p class="ad-check__q">A port where the firewall drops the traffic looks like what in the capture?</p>
-<button type="button" class="ad-check__opt" data-i="0">A completed handshake</button>
-<button type="button" class="ad-check__opt" data-i="1">A single RST</button>
-<button type="button" class="ad-check__opt" data-i="2">A SYN sent again and again with no reply</button>
-<p class="ad-check__note">A firewall that drops rather than refuses leaves the sender guessing. Repeated SYNs with no answer is the filtered signature, and it tells you a firewall is working.</p>
+### Read a Filtered Port
+
+<div class="ad-mission" data-id="w3m-c2" data-attempts="0">
+<p><strong>Task:</strong> A port where the firewall drops the traffic looks like what in your capture? Type its letter.<br><strong>A</strong> A completed handshake.<br><strong>B</strong> A single RST.<br><strong>C</strong> A SYN sent again and again with no reply.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what a filtered port looks like in the capture" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>C. A SYN sent again and again with no reply</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A firewall that drops rather than refuses leaves the sender guessing. Repeated SYNs with no answer are the filtered signature, and it tells you a firewall is working.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w3m-c3" data-answer="1">
-<p class="ad-check__q">What is the difference between a closed port and a filtered port?</p>
-<button type="button" class="ad-check__opt" data-i="0">There is none, both are shut</button>
-<button type="button" class="ad-check__opt" data-i="1">Closed answers with a RST, filtered answers with silence</button>
-<button type="button" class="ad-check__opt" data-i="2">Closed is slower than filtered</button>
-<p class="ad-check__note">A closed port is reachable and refuses with a RST. A filtered port is behind a firewall that drops the packet, so nothing comes back. The scanner learns different things from each.</p>
+### Tell Closed From Filtered
+
+<div class="ad-mission" data-id="w3m-c3" data-attempts="0">
+<p><strong>Task:</strong> What is the difference between a closed port and a filtered port? Type its letter.<br><strong>A</strong> There is none, both are shut.<br><strong>B</strong> Closed answers with a RST, filtered answers with silence.<br><strong>C</strong> Closed is slower than filtered.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the difference between closed and filtered" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Closed answers with a RST, filtered answers with silence</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A closed port is reachable and refuses with a RST. A filtered port is behind a firewall that drops the packet, so nothing comes back. The scanner learns different things from each.</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="ad-check" data-check="w3m-c4" data-answer="1">
-<p class="ad-check__q">The scan used a plain bash loop, not a hacking tool. What does that mean for detection?</p>
-<button type="button" class="ad-check__opt" data-i="0">Scans cannot be detected</button>
-<button type="button" class="ad-check__opt" data-i="1">You detect the pattern in the traffic, not a banned tool</button>
-<button type="button" class="ad-check__opt" data-i="2">Only special attacker tools leave a trace</button>
-<p class="ad-check__note">The same loop inventories a server or maps it for attack. You cannot ban the tool, so detection rests on the behaviour, the burst of SYNs to many ports.</p>
+### Name What Detection Rests On
+
+<div class="ad-mission ad-mission--capstone" data-id="w3m-c4" data-attempts="0">
+<p><strong>Task:</strong> The scan used a plain bash loop, not a hacking tool. What does that mean for detection? Type its letter.<br><strong>A</strong> Scans cannot be detected.<br><strong>B</strong> You detect the pattern in the traffic, not a banned tool.<br><strong>C</strong> Only special attacker tools leave a trace.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for what detection actually relies on" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. You detect the pattern in the traffic, not a banned tool</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The same loop inventories a server or maps it for attack. You cannot ban the tool, so detection rests on the behavior, the burst of SYNs to many ports. The next lab turns that exact behavior into a rule an IDS checks for automatically, instead of a pattern only a human reading a capture would ever notice.</p>
+</div>
+</div>
+</div>
 </div>
 
 ### Take It Further

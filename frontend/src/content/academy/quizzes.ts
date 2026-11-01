@@ -47,10 +47,10 @@ export const quizzes: Quiz[] = [
         explanation: "A vulnerability is the weakness. A threat is what could exploit it. Risk exists only when both are present.",
       },
       {
-        question: "The formula is Risk = Threat × Vulnerability × Impact. A server has a known critical vulnerability but is completely air-gapped, with no possible attacker access. There is no threat. What is the risk?",
+        question: "The formula is Risk = Threat × Vulnerability × Impact. A server has a known critical vulnerability, but suppose no threat could ever reach it. Under the formula, what is the risk?",
         options: ["Still critical, because the vulnerability is severe", "Zero, because no threat means no risk, regardless of the vulnerability", "Impossible to calculate", "Moderate, as a precaution"],
         correctIndex: 1,
-        explanation: "The lesson's own rule is that no threat means no risk, even if the vulnerability exists. Risk requires a realistic path for a threat to reach and exploit the vulnerability.",
+        explanation: "The lesson's own rule is that no threat means no risk, even if the vulnerability exists. Risk requires a realistic path for a threat to reach and exploit the vulnerability. Real servers rarely get there. Even an air-gapped machine is reached by USB drives and insiders, so an air gap lowers the threat rather than removing it.",
       },
       {
         question: "Which of these is a control for integrity rather than confidentiality?",

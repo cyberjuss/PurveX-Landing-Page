@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import { X, CheckCircle2, AlertCircle, AlertTriangle, Info, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +50,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toasts, toast, dismiss }}>
       {children}
+      {/* The provider kept the list but never drew it, so a toast raised
+          anywhere would have stayed invisible. */}
+      <ToastContainer toasts={toasts} dismiss={dismiss} />
     </ToastContext.Provider>
   );
 }

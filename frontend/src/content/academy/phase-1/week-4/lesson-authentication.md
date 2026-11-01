@@ -1,8 +1,9 @@
 ### Authentication
 
-Authentication is the work of proving an identity. It answers a single question, which is who you are, and it has nothing at all to say about what you may do once the answer is established. Everything in this section is about making that proof hard to fake, because every permission the system grants afterwards rests on the assumption that it got this first step right.
+Authentication is the work of proving an identity. It answers a single question: who you are. It says nothing about what you may do once that is established. Everything in this section is about making that proof hard to fake, because every permission the system grants afterwards rests on the assumption that it got this first step right.
 
 ### Factors
+<!-- art: mfa -->
 
 | Factor | Examples |
 |---|---|
@@ -10,14 +11,21 @@ Authentication is the work of proving an identity. It answers a single question,
 | Something you have | Phone with an authenticator app, security key, smart card |
 | Something you are | Fingerprint, face |
 
-**Multi-factor authentication**, almost always shortened to MFA, requires proof drawn from two different rows of that table. The word different is doing real work there. A password combined with a security question is not multi-factor at all, because both are things you know and both are lost in the same way, usually in the same breach.
+**Multi-factor authentication**, almost always shortened to MFA, requires proof drawn from two different rows of that table. A password combined with a security question is not multi-factor at all, because both are things you know. Both are usually lost in the same breach.
 
-MFA matters for a blunt reason: passwords leak, constantly and at scale, and a password that has leaked offers no protection whatsoever to the account it guards. In 2021 attackers walked into Colonial Pipeline through a VPN account that had a leaked password and no second factor. The result was a ransomware incident that interrupted fuel supply across much of the US East Coast.
+MFA matters for a blunt reason: passwords leak, constantly and at scale. A password that has leaked offers no protection whatsoever to the account it guards. In 2021 attackers walked into Colonial Pipeline through a VPN account that had a leaked password and no second factor. The result was a ransomware incident that interrupted fuel supply across much of the US East Coast.
 
-It is a mistake, though, to treat MFA as a single thing that is either present or absent. The methods vary considerably in how much they protect you:
+It is a mistake to treat MFA as a single thing that is either present or absent. The methods vary considerably in how much they protect you:
 
 - **Text and app codes** can be captured by a convincing fake sign-in page and replayed within seconds, because the user hands the code over willingly.
 - **Security keys and passkeys** check the real address of the site before responding, so a fake page receives nothing it can use.
+
+```sort
+prompt: Which kind of factor is each one?
+Something you know: A password | A PIN
+Something you have: A phone with an authenticator app | A security key | A smart card
+Something you are: A fingerprint | Your face
+```
 
 ### Account states
 
@@ -35,16 +43,23 @@ Unlock-ADAccount jamie.torres
 
 Do not re-enable a disabled account on request. Find out who disabled it and why.
 
+```sort
+prompt: Match each cause to the account state it produces.
+Locked out: A device still using an old password | Someone guessing
+Disabled: The person left | The account is under investigation
+Password expired: Policy requires a new password
+```
+
 ### Resets
 
-A password or MFA reset is not an administrative chore. It is an authentication decision, and for the duration of that call you are the authentication system. Whatever controls the organization has invested in, you are briefly in a position to set them aside for one account, which is precisely why this is attacked. In 2023 attackers breached MGM Resorts by doing nothing more technical than talking the IT help desk into resetting an employee's MFA.
+A password or MFA reset is not an administrative chore. It is an authentication decision, and for the duration of that call you are the authentication system. Whatever controls the organization has invested in, you can briefly set aside for one account. That is precisely why attackers target this call. In 2023 attackers reportedly got their first foothold at MGM Resorts with no technical exploit at all, by talking the IT help desk into resetting an employee's MFA.
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-One situation deserves to be recognized instantly. A user reporting MFA prompts they did not trigger is telling you that somebody already holds their password and is standing at the door waiting for approval, which means the second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and terminate active sessions before you escalate. The last step matters because a reset on its own leaves any session the attacker has already established untouched.
+One situation deserves to be recognized instantly. A user reporting MFA prompts they did not trigger is telling you that somebody already holds their password and is waiting at the door for approval. The second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and terminate active sessions before you escalate. The last step matters because a reset on its own leaves any session the attacker has already established untouched.
 
 ### Escalate
 
@@ -53,10 +68,7 @@ One situation deserves to be recognized instantly. A user reporting MFA prompts 
 - a Remote Desktop sign-in to a machine the person never uses
 - several reset or MFA change requests for one person in a short time
 
-<details class="academy-deeper">
-<summary>Go deeper</summary>
-
-#### How strong is the MFA?
+### How strong is the MFA?
 
 From weakest to strongest:
 
@@ -66,13 +78,13 @@ From weakest to strongest:
 4. **Push with number matching.** The user types a number shown on the sign-in screen, so a blind approval fails.
 5. **Security keys and passkeys (FIDO2).** The key checks the site's real address, so a fake page gets nothing. These are **phishing-resistant**.
 
-#### What the system issues after sign-in
+### What the system issues after sign-in
 
 After sign-in the system issues a **session token**, usually a cookie. The browser sends it with every request, so it stands in for the password. A stolen token bypasses both the password and MFA.
 
 In a Windows domain, **Kerberos** plays the same role. The domain controller checks the password once and issues a ticket that the computer shows to other services.
 
-#### Reading sign-in events
+### Reading sign-in events
 
 Event **4624** is a successful sign-in. Its **logon type** shows how:
 
@@ -83,8 +95,6 @@ Event **4624** is a successful sign-in. Its **logon type** shows how:
 | 10 | Remote Desktop |
 
 Event **4625** is a failed sign-in. `0xC000006A` is a wrong password for a real account. `0xC0000064` is an account name that does not exist, a sign of username guessing. `0xC0000234` is a locked account.
-
-</details>
 
 ### Check yourself
 

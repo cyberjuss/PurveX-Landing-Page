@@ -9,6 +9,13 @@ create table if not exists public.academy_progress (
   updated_at timestamptz not null default now()
 );
 
+-- UI progress that is not a mission score: week completions, quiz passes, labs
+-- done, last stop, and one-time onboarding flags (lab briefing, etc.). Lives in
+-- its own column of the same row, so a new browser or device restores a
+-- student's place once they sign in. Added after launch, so it runs as an alter.
+alter table public.academy_progress
+  add column if not exists portal jsonb not null default '{}'::jsonb;
+
 create table if not exists public.academy_coach_usage (
   user_id uuid not null references auth.users (id) on delete cascade,
   day date not null,
@@ -385,3 +392,159 @@ drop policy if exists "Students read their own saved work" on public.academy_sav
 create policy "Students read their own saved work"
   on public.academy_saved for select
   using (auth.uid() = user_id);
+
+-- Charge and refund in one statement. The server used to read the month, add
+-- its minutes and write the total back: a start and a refund landing in the
+-- same second each wrote their own total and whichever arrived last won. The
+-- clamp keeps a refund from pushing a month below zero, on the insert as well,
+-- since the first thing a new month sees can be a refund.
+create or replace function public.academy_add_lab_minutes(p_user uuid, p_month text, p_minutes integer)
+returns integer
+language sql
+as $func$
+  insert into public.academy_lab_usage (user_id, month, minutes, updated_at)
+  values (p_user, p_month, greatest(0, p_minutes), now())
+  on conflict (user_id, month) do update
+    set minutes = greatest(0, academy_lab_usage.minutes + p_minutes),
+        updated_at = now()
+  returning minutes;
+$func$;
+
+-- Service role only: a student who could call this could grant themselves lab
+-- hours. It runs as its caller, so the service role's own RLS bypass is what
+-- lets it write, not the function.
+revoke all on function public.academy_add_lab_minutes(uuid, text, integer) from public, anon, authenticated;
+grant execute on function public.academy_add_lab_minutes(uuid, text, integer) to service_role;
+
+-- Thumbs up or down on a PurveX Coach reply (see lib/academy-coach-feedback.ts).
+-- The exchange is stored next to the rating so a bad answer becomes a test
+-- case: without the question and the reply, a count of thumbs-down says
+-- something is wrong but never what. `tags` is a closed set the student picks
+-- from; `note` is free text they typed, which is read by a human and never put
+-- into a prompt.
+--
+-- Written by the server only, through the service-role key. The student's own
+-- browser never writes here: it posts a sealed receipt to the feedback route,
+-- which is what proves the reply being rated is one the Coach actually sent.
+create table if not exists public.academy_coach_feedback (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  turn_id text not null,
+  rating text not null check (rating in ('up', 'down')),
+  tags text[] not null default '{}',
+  note text,
+  question text,
+  reply text,
+  model text,
+  mode text,
+  lab text,
+  created_at timestamptz not null default now(),
+  primary key (user_id, turn_id)
+);
+
+-- The review query is "worst first, newest first", so index what it filters on.
+create index if not exists academy_coach_feedback_rating_created
+  on public.academy_coach_feedback (rating, created_at desc);
+-- The correction line reads one student's recent rows on every coach turn.
+create index if not exists academy_coach_feedback_user_created
+  on public.academy_coach_feedback (user_id, created_at desc);
+
+-- RLS on with no anon/authenticated policy: service-role only, same as the
+-- rest of this file. Students rate through the API, never by writing a row.
+alter table public.academy_coach_feedback enable row level security;
+
+-- Claim one Coach question, cap and all, in a single statement.
+--
+-- The server used to read the day's count, compare it to the cap, call the
+-- model, and then write count + 1. The model call sits in the middle of that,
+-- so every request sent at once read the same number, every one passed the
+-- cap, and every one wrote the same total back. The cap was a suggestion, and
+-- the bill was not.
+--
+-- The conflict target takes a row lock, so concurrent claims queue behind each
+-- other rather than racing. When the WHERE fails the update is skipped, the
+-- statement returns no row, and the function returns null: that is "no, you
+-- are at the cap", and it is the same answer whether one request asked or two
+-- hundred did.
+--
+-- The cap is passed in rather than stored, because it is the base allowance
+-- plus whatever drills earned today, and that belongs with the code that
+-- knows about drills.
+create or replace function public.academy_claim_coach_question(p_user uuid, p_day date, p_limit integer)
+returns integer
+language plpgsql
+as $func$
+declare
+  v_count integer;
+begin
+  if p_limit <= 0 then
+    return null;
+  end if;
+  insert into public.academy_coach_usage (user_id, day, count, updated_at)
+  values (p_user, p_day, 1, now())
+  on conflict (user_id, day) do update
+    set count = academy_coach_usage.count + 1,
+        updated_at = now()
+    where academy_coach_usage.count < p_limit
+  returning count into v_count;
+  return v_count;
+end;
+$func$;
+
+-- Hand a claimed question back when the model call failed. A student should not
+-- lose a question to our outage. Floored at zero, so a stray release cannot
+-- mint questions.
+create or replace function public.academy_release_coach_question(p_user uuid, p_day date)
+returns integer
+language sql
+as $func$
+  update public.academy_coach_usage
+    set count = greatest(0, count - 1),
+        updated_at = now()
+  where user_id = p_user and day = p_day
+  returning count;
+$func$;
+
+-- The same pair for the per-lab cap, which exists so one browser lab cannot
+-- spend the whole day's allowance.
+create or replace function public.academy_claim_lab_coach_question(p_user uuid, p_day date, p_lab text, p_limit integer)
+returns integer
+language plpgsql
+as $func$
+declare
+  v_count integer;
+begin
+  if p_limit <= 0 then
+    return null;
+  end if;
+  insert into public.academy_lab_coach_usage (user_id, day, lab, count, updated_at)
+  values (p_user, p_day, p_lab, 1, now())
+  on conflict (user_id, day, lab) do update
+    set count = academy_lab_coach_usage.count + 1,
+        updated_at = now()
+    where academy_lab_coach_usage.count < p_limit
+  returning count into v_count;
+  return v_count;
+end;
+$func$;
+
+create or replace function public.academy_release_lab_coach_question(p_user uuid, p_day date, p_lab text)
+returns integer
+language sql
+as $func$
+  update public.academy_lab_coach_usage
+    set count = greatest(0, count - 1),
+        updated_at = now()
+  where user_id = p_user and day = p_day and lab = p_lab
+  returning count;
+$func$;
+
+-- Service role only, like academy_add_lab_minutes: a student who could call
+-- the release functions could hand themselves back every question they spent.
+revoke all on function public.academy_claim_coach_question(uuid, date, integer) from public, anon, authenticated;
+revoke all on function public.academy_release_coach_question(uuid, date) from public, anon, authenticated;
+revoke all on function public.academy_claim_lab_coach_question(uuid, date, text, integer) from public, anon, authenticated;
+revoke all on function public.academy_release_lab_coach_question(uuid, date, text) from public, anon, authenticated;
+grant execute on function public.academy_claim_coach_question(uuid, date, integer) to service_role;
+grant execute on function public.academy_release_coach_question(uuid, date) to service_role;
+grant execute on function public.academy_claim_lab_coach_question(uuid, date, text, integer) to service_role;
+grant execute on function public.academy_release_lab_coach_question(uuid, date, text) to service_role;

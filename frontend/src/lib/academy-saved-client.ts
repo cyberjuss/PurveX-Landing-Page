@@ -120,6 +120,16 @@ export function subscribeSaved(fn: () => void) {
   };
 }
 
+/** Whether a one-time onboarding step (lab briefing, terms, tour) has been seen. */
+export function hasSeenFlag(name: string): boolean {
+  return saved.flags[name] === true;
+}
+
+/** Remembers a one-time onboarding step on the account, so a new browser or device does not show it again. */
+export function markFlagSeen(name: string) {
+  updateSaved({ flags: { [name]: true } });
+}
+
 /** Record a change here at once and save it to the account shortly after. */
 export function updateSaved(patch: SavedPatch) {
   if (!owner) return;
@@ -132,7 +142,9 @@ export function updateSaved(patch: SavedPatch) {
 }
 
 function queue(patch: SavedPatch) {
-  pending = pending ? { ...pending, ...patch, quizzes: { ...pending.quizzes, ...patch.quizzes }, drafts: { ...pending.drafts, ...patch.drafts } } : patch;
+  pending = pending
+    ? { ...pending, ...patch, quizzes: { ...pending.quizzes, ...patch.quizzes }, drafts: { ...pending.drafts, ...patch.drafts }, flags: { ...pending.flags, ...patch.flags } }
+    : patch;
   window.clearTimeout(timer);
   timer = window.setTimeout(() => void flush(), 800);
 }
@@ -155,7 +167,9 @@ async function flush(keepalive = false) {
     })
     .catch(() => {
       // Put it back so the next change, or leaving the page, tries again.
-      pending = pending ? { ...patch, ...pending, quizzes: { ...patch.quizzes, ...pending.quizzes }, drafts: { ...patch.drafts, ...pending.drafts } } : patch;
+      pending = pending
+        ? { ...patch, ...pending, quizzes: { ...patch.quizzes, ...pending.quizzes }, drafts: { ...patch.drafts, ...pending.drafts }, flags: { ...patch.flags, ...pending.flags } }
+        : patch;
     })
     .finally(() => {
       sending = null;

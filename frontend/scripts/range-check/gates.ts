@@ -17,6 +17,9 @@ import { GET as coachGet, POST as coachPost } from "@/app/academy/api/coach/rout
 import { GET as labGet, POST as labPost } from "@/app/academy/api/hosted-lab/route";
 import { GET as proofGet, PUT as proofPut } from "@/app/academy/api/proof/route";
 import { GET as planGet } from "@/app/academy/api/plan/route";
+import { POST as accessPost } from "@/app/academy/api/access/route";
+import { GET as shiftGet, POST as shiftPost } from "@/app/academy/api/shift/route";
+import { POST as drillPost } from "@/app/academy/api/drill/route";
 
 let failures = 0;
 
@@ -137,28 +140,20 @@ async function main() {
   check("it does not push the upgrade page", proLabPost.body?.upgrade === undefined, JSON.stringify(proLabPost.body));
   process.env.HOSTED_LAB_EMAILS = "*";
 
-  console.log("\nThe browser labs stay out of the paywall");
-  // The five in-browser labs are sold to Explore, and they are scripted:
-  // Alex's lines and the student's chip replies are hardcoded per lab, with
-  // no network call at all. That is the only reason the Coach paywall does
-  // not reach them. Wiring a Pro-gated endpoint into any of these would
-  // break a free promise quietly, on a screen nobody thinks of as billing,
-  // so this guards the source rather than the behaviour.
-  const { readFileSync, readdirSync } = await import("fs");
-  const { join } = await import("path");
+  console.log("\nThe labs stay out of the paywall");
+  // Labs are sold to Explore, rendered from markdown with no scripted widget
+  // left (the browser-widget labs are retired). Wiring a Pro-gated endpoint
+  // into any of these would break a free promise quietly, on a screen nobody
+  // thinks of as billing, so this guards the source rather than the behaviour.
+  const { readFileSync } = await import("fs");
   const GATED = ["api/coach", "api/hosted-lab", "api/proof", "useCoach"];
-  const surface = [
-    ...readdirSync("src/components/academy/labs").map((f) => join("src/components/academy/labs", f)),
-    "src/components/academy/single-lab.tsx",
-    "src/components/academy/lab-gallery.tsx",
-    "src/components/academy/lab-carousel.tsx",
-  ].filter((f) => /\.tsx?$/.test(f));
+  const surface = ["src/components/academy/single-lab.tsx", "src/components/academy/lab-gallery.tsx", "src/components/academy/lab-carousel.tsx"];
 
   const offenders = surface.filter((file) => {
     const src = readFileSync(file, "utf8");
     return GATED.some((needle) => src.includes(needle));
   });
-  check(`${surface.length} browser-lab files call nothing Pro-gated`, offenders.length === 0, offenders.join(", "));
+  check(`${surface.length} lab files call nothing Pro-gated`, offenders.length === 0, offenders.join(", "));
 
   console.log("\nGet Pro reaches Stripe without a second offer screen");
   // The chain is: Get Pro -> signup -> back here -> Stripe. It runs entirely
@@ -175,13 +170,42 @@ async function main() {
   );
   check(
     "the signup redirect keeps the intent",
-    upgradeSrc.includes('"/range/upgrade?checkout=1"'),
+    upgradeSrc.includes("/range/upgrade?checkout=1"),
     "the redirect to signup drops ?checkout=1, so they come back to the offer screen"
   );
   check(
+    "the signup redirect keeps the skip-the-trial choice too",
+    upgradeSrc.includes('skipTrial ? "&trial=0" : ""'),
+    "trial=0 is dropped on the way to signup, so the direct-pay click comes back offering the trial instead"
+  );
+  check(
     "arriving back signed in goes straight to Stripe",
-    /autoCheckout\s*&&\s*goToStripe\(\)|goToStripe\(\)/.test(upgradeSrc) && upgradeSrc.includes("autoCheckout"),
+    /goToStripe\(/.test(upgradeSrc) && upgradeSrc.includes("autoCheckout"),
     "nothing forwards a returning buyer to Stripe automatically"
+  );
+  check(
+    "the auto-checkout respects which link they chose",
+    upgradeSrc.includes("const autoLinkUrl = skipTrial ? directLinkUrl : trialLinkUrl;"),
+    "a returning buyer who asked to skip the trial could be sent to the trial link instead"
+  );
+
+  console.log("\nSigning in with nowhere to land still gets you to Range");
+  // The login page hides its whole form until a browser-only check decides
+  // whether to bounce straight to signup, so nothing server-rendered ever
+  // shows the "Create an account" link -- the HTTP suite used to assert it
+  // was there and failed on every run, not because `next` was ever dropped.
+  // Read the source instead, the same way as the pair above.
+  const loginSrc = readFileSync("src/app/account/login/page.tsx", "utf8");
+  const NEXT_LINK = "`/account/signup?next=${encodeURIComponent(next)}`";
+  check(
+    "a first-time visitor is bounced to signup with the destination intact",
+    loginSrc.includes(`router.replace(${NEXT_LINK})`),
+    "the auto-redirect to signup drops `next`, so a new visitor lands on /pricing"
+  );
+  check(
+    "a returning visitor's Create an account link carries the destination",
+    loginSrc.includes(`href={${NEXT_LINK}}`),
+    "the Create an account link dropped `next`, so signup would land on /pricing"
   );
   // The one case that must never auto-charge: someone who already pays. The
   // match is pinned to the goToStripe call rather than the plan comparison
@@ -189,9 +213,74 @@ async function main() {
   // guard deleted.
   check(
     "an existing subscriber is never auto-sent to buy again",
-    /plan\?\.plan === "free" && autoCheckout\)\s*goToStripe\(\)/.test(upgradeSrc),
+    /plan\?\.plan === "free" && autoCheckout\)\s*goToStripe\(/.test(upgradeSrc),
     "the auto-redirect does not check the plan first, so a Pro account could be sent to a second checkout"
   );
+
+  console.log("\nA free account signs in and is let in on Explore");
+  // Signing in is the way in. Before, only Pro, class and instructor accounts
+  // got past this, so a free account was asked for a class code it never had.
+  asStudent(FREE);
+  const freeAccess = await read(await accessPost(req("/academy/api/access", { method: "POST" })));
+  check("a free account is let in", freeAccess.status === 200 && freeAccess.body?.unlocked === true, JSON.stringify(freeAccess));
+  asStudent(PRO);
+  const proAccess = await read(await accessPost(req("/academy/api/access", { method: "POST" })));
+  check("a Pro account is let in", proAccess.body?.unlocked === true, JSON.stringify(proAccess.body));
+
+  console.log("\nThe Shift stays Pro now that free accounts are inside");
+  // The Shift used to check only the cloud-lab allowlist, which "*" opens to
+  // everyone. The passcode was what kept free accounts out of it.
+  asStudent(FREE);
+  const freeShiftGet = await read(await shiftGet(req("/academy/api/shift")));
+  check("no Shift is offered to a free account", freeShiftGet.body?.available === false, JSON.stringify(freeShiftGet.body));
+  const freeShiftPost = await read(await shiftPost(json("/academy/api/shift", { action: "start" })));
+  check("starting a Shift is refused", freeShiftPost.status === 403, `status ${freeShiftPost.status}`);
+  check("the Shift refusal links the upgrade page", freeShiftPost.body?.upgrade === "/range/upgrade", JSON.stringify(freeShiftPost.body));
+  asStudent(PRO);
+  process.env.HOSTED_LAB_EMAILS = "someone-else@example.com";
+  const unlistedShift = await read(await shiftPost(json("/academy/api/shift", { action: "start" })));
+  check("a Pro account off the lab list is not told to buy Pro", unlistedShift.status === 403 && unlistedShift.body?.upgrade === undefined, JSON.stringify(unlistedShift.body));
+  process.env.HOSTED_LAB_EMAILS = "*";
+  const proShiftGet = await read(await shiftGet(req("/academy/api/shift")));
+  check("a Shift is offered to Pro", proShiftGet.body?.available === true, JSON.stringify(proShiftGet.body));
+
+  console.log("\nA free account's drills make no AI calls");
+  // Each AI-written drill is a model call per student per day. Explore gets
+  // the built-in questions. The model is never reached here: fetch is
+  // counted and refused, and the route falls back the same way either way.
+  const realFetch = globalThis.fetch;
+  let modelCalls = 0;
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    if (String(input instanceof Request ? input.url : input).includes("api.anthropic.com")) {
+      modelCalls++;
+      return new Response("{}", { status: 500 });
+    }
+    return realFetch(input, init);
+  }) as typeof fetch;
+  const hadKey = process.env.ANTHROPIC_API_KEY;
+  process.env.ANTHROPIC_API_KEY = "sk-ant-fake";
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    asStudent(FREE);
+    const freeDrill = await read(await drillPost(json("/academy/api/drill", { action: "start", mode: "daily", day: today })));
+    check("a free account still gets a daily drill", freeDrill.status === 200 && Boolean(freeDrill.body?.token), `status ${freeDrill.status} ${JSON.stringify(freeDrill.body).slice(0, 160)}`);
+    check("writing it made no AI call", modelCalls === 0, `${modelCalls} call(s)`);
+    asStudent(PRO);
+    await drillPost(json("/academy/api/drill", { action: "start", mode: "daily", day: today }));
+    check("a Pro account's daily drill is written by the AI", modelCalls > 0, `${modelCalls} call(s)`);
+  } finally {
+    globalThis.fetch = realFetch;
+    if (hadKey === undefined) delete process.env.ANTHROPIC_API_KEY;
+    else process.env.ANTHROPIC_API_KEY = hadKey;
+  }
+
+  console.log("\nA class code still has somewhere to go");
+  // No one is asked for a code at the door now, so a student handed a code
+  // rather than a join link types it from the account menu instead.
+  const menuSrc = readFileSync("src/components/academy/academy-account.tsx", "utf8");
+  const codeSrc = readFileSync("src/app/range/class-code/class-code-form.tsx", "utf8");
+  check("the account menu links to the class code page", menuSrc.includes('href="/range/class-code"'), "no Join a class link");
+  check("the class code page joins through the same action as before", codeSrc.includes("unlockAcademy"), "the form does not submit to unlockAcademy");
 
   console.log("\nSigned out, nothing is reachable");
   asStudent(null);
@@ -201,6 +290,8 @@ async function main() {
   check("the Proof Profile needs an account", outProof.status === 401, `status ${outProof.status}`);
   const outPlan = await read(await planGet(req("/academy/api/plan")));
   check("the plan endpoint says signed out", outPlan.body?.signedIn === false, JSON.stringify(outPlan.body));
+  const outAccess = await read(await accessPost(req("/academy/api/access", { method: "POST" })));
+  check("getting in needs an account", outAccess.status === 401 && outAccess.body?.unlocked === false, JSON.stringify(outAccess));
 
   console.log(failures === 0 ? "\nAll gate checks passed.\n" : `\n${failures} gate check(s) failed.\n`);
   process.exit(failures === 0 ? 0 : 1);

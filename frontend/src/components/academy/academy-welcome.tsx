@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { accountFirstName, type AcademyStudent } from "./academy-account";
+import { preferredFirstName, type AcademyStudent } from "./academy-account";
+import { useMounted } from "@/lib/use-mounted";
 
 const WELCOME_PENDING = "academy-welcome-pending";
 
@@ -26,13 +27,22 @@ function clockNow() {
   return new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
 }
 
-export function AcademyWelcome({ student, onDone }: { student: AcademyStudent; onDone: () => void }) {
-  const [mounted, setMounted] = useState(false);
+export function AcademyWelcome({
+  student,
+  callMe,
+  onDone,
+}: {
+  student: AcademyStudent;
+  /** What they asked to be called, so the splash agrees with the rest of
+   *  the product rather than greeting them by the name they changed. */
+  callMe?: string | null;
+  onDone: () => void;
+}) {
+  const mounted = useMounted();
   const [clock, setClock] = useState(clockNow);
-  const name = accountFirstName(student);
+  const name = preferredFirstName(student, callMe ? { callMe } : null);
   const desk = (student.id || "desk").slice(0, 4).toUpperCase();
 
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const tick = window.setInterval(() => setClock(clockNow()), 1000);

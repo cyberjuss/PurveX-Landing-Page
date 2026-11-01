@@ -14,3 +14,10 @@ PurveX Financial splits administrative access into three levels instead of givin
 | Level 3 (Helpdesk) | Handles workstations only, password resets, and local support. | Servers or the Domain Controller |
 
 A Helpdesk login should never touch a server or the Domain Controller. If you see one doing that, the activity does not match this table. Start your questions there.
+
+```sort
+prompt: Which access level controls each one?
+Level 1 · Domain Admin: The Domain Controller | Active Directory itself
+Level 2 · Server Admin: Application servers | File servers
+Level 3 · Helpdesk: Workstations | Password resets | Local support
+```

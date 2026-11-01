@@ -3,10 +3,11 @@ import type { RoleId } from "@/lib/academy-certs";
 import { evalCheck, seeded, shuffle, type Check } from "@/lib/academy-drills";
 import type { LabEvents, LabSnapshot } from "@/lib/academy-lab";
 
-// Shift: a 15-minute tour on the PurveX Financial desk. Real incidents fire
+// Shift: a 30-minute tour on the PurveX Financial desk. Real incidents fire
 // inside the student's own hosted lab on a timer (see academy-hosted.ts, which
 // runs the matching Incident-*.ps1 scripts through SSM). The student
-// investigates in the lab, acts, and writes up each one before its deadline.
+// investigates in the lab, acts, and writes up each one, highest priority
+// first, inside one window: the shift. Incidents carry a priority, not a clock.
 // Grading reads the lab the same way missions do: real end state, real events.
 // Nothing here is faked. Difficulty rises with the student's phase and level.
 
@@ -14,8 +15,6 @@ export const SHIFT_MINUTES = 30;
 export const SHIFT_SECONDS = SHIFT_MINUTES * 60;
 
 export type Severity = "P1" | "P2" | "P3";
-/** Response deadline from the moment an incident arrives. */
-const DEADLINE_SEC: Record<Severity, number> = { P1: 300, P2: 480, P3: 720 };
 /** What each hint rung costs, as a fraction of the incident's points. */
 export const HINT_COST = [0.1, 0.2, 0.4];
 
@@ -129,8 +128,20 @@ const evAcct = (rows: { account: string }[] | undefined, sam: string) => (rows ?
 const evLocked = (e: LabEvents | undefined, sam: string) => evAcct(e?.lockouts, sam) || evAcct(e?.failures, sam);
 const evDisabled = (e: LabEvents | undefined, sam: string) => evAcct(e?.disabled, sam);
 const evFailed = (e: LabEvents | undefined, sam: string) => evAcct(e?.failures, sam);
+// A group addition names its member the way the event does, and event 4728
+// carries a distinguished name: the digest keeps the leading CN, so a member
+// reads "Priya Nair" while the incident knows her as priya.nair. Comparing
+// those directly never matched, and an incident gated on it could not be
+// closed however correctly the student fixed it. Letters and digits only on
+// both sides, so "Priya Nair" and "priya.nair" are the same person. The other
+// evidence helpers read TargetUserName, which is already a sAMAccountName.
+const sameAccount = (a: string, b: string) => {
+  const key = (v: string) => v.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const [x, y] = [key(a), key(b)];
+  return Boolean(x) && Boolean(y) && (x.includes(y) || y.includes(x));
+};
 const evGroupAdd = (e: LabEvents | undefined, member: string, group: string) =>
-  (e?.groupAdds ?? []).some((g) => (g.member ?? "").toLowerCase().includes(member.toLowerCase()) && (g.group ?? "").toLowerCase().includes(group.toLowerCase()));
+  (e?.groupAdds ?? []).some((g) => sameAccount(g.member ?? "", member) && (g.group ?? "").toLowerCase().includes(group.toLowerCase()));
 // 4738/4739 evidence only exists in a v2+ digest. On older labs, don't gate on it
 // (fall back to the resolve check) so those incidents stay winnable until the lab updates.
 const digestHas4738 = (e: LabEvents | undefined) => (e?.v ?? 1) >= 2;
@@ -240,7 +251,12 @@ export const INCIDENTS: IncidentDef[] = [
     brief: "A member was added to IT Admins at an odd hour with no change ticket. Contain it without destroying the evidence, and find out how it got there.",
     resolve: [{ c: { t: "member", sam: "svc.helpdesk", group: "IT Admins", want: false }, label: "svc.helpdesk is out of IT Admins" }],
     evidence: (e) => evGroupAdd(e, "svc.helpdesk", "IT Admins"),
-    noHarm: [{ c: { t: "member", sam: "alex.rivera", group: "IT Admins", want: true }, label: "The real admin alex.rivera is untouched" }],
+    noHarm: [
+      { c: { t: "member", sam: "alex.rivera", group: "IT Admins", want: true }, label: "The real admin alex.rivera is untouched" },
+      // Deleting svc.helpdesk also takes it out of IT Admins, so the resolve
+      // check alone passed it. The account is the evidence.
+      { c: { t: "present", sam: "svc.helpdesk" }, label: "svc.helpdesk still exists as evidence (removed from the group, not deleted)" },
+    ],
     diagnosis: { prompt: "Which event ID records the group addition?", accept: ["4728", "event 4728", "id 4728"] },
     rubric: ["Named the account added and when", "Named the event id for the group add", "Removed it without deleting the account (kept evidence)", "Escalated as a possible compromise"],
     hints: [
@@ -544,7 +560,7 @@ export const INCIDENTS: IncidentDef[] = [
     points: 100,
     from: "Jordan Ellis, Finance and Accounting",
     title: "My password expired and I can't get in",
-    brief: "A member of staff cannot sign in because their password has expired. Reset it so they can get back to work. This is a routine ticket, not an attack.",
+    brief: "A member of staff cannot sign in because their password has expired. Reset it with them on the phone so they can get back to work, and leave 'User must change password at next logon' cleared, or the account stays flagged as expired. This is a routine ticket, not an attack.",
     resolve: [{ c: { t: "flag", sam: "jordan.ellis", flag: "passwordExpired", want: false }, label: "the account's password is no longer expired" }],
     diagnosis: { prompt: "Why could the user not sign in?", accept: ["expired", "password expired", "expiry", "pwdlastset"] },
     rubric: ["Confirmed the password was expired, not locked or disabled", "Reset the password", "Confirmed the user can sign in", "Why no escalation was needed"],
@@ -559,7 +575,7 @@ export const INCIDENTS: IncidentDef[] = [
         args: { Sam: v.sam },
         resolve: [{ c: { t: "flag", sam: v.sam, flag: "passwordExpired", want: false } as Check, label: `${v.sam}'s password is no longer expired` }],
         diagnosis: { prompt: "Why could the user not sign in?", accept: ["expired", "password expired", "expiry", "pwdlastset"] },
-        brief: `${v.name} in ${v.dept} cannot sign in because their password has expired. Reset it so they can get back to work. This is a routine ticket, not an attack.`,
+        brief: `${v.name} in ${v.dept} cannot sign in because their password has expired. Reset it with them on the phone so they can get back to work, and leave 'User must change password at next logon' cleared, or the account stays flagged as expired. This is a routine ticket, not an attack.`,
         evidence: (e) => evChanged(e, v.sam),
       };
     },
@@ -752,6 +768,7 @@ export const INCIDENTS: IncidentDef[] = [
     title: "Standard user added to Domain Admins",
     brief: "A regular staff account was added to Domain Admins — full control of the domain — with no change ticket. Contain it fast without destroying the evidence, and find out how it got there.",
     resolve: [{ c: { t: "member", sam: "taylor.osei", group: "Domain Admins", want: false }, label: "the account is out of Domain Admins" }],
+    noHarm: [{ c: { t: "present", sam: "taylor.osei" }, label: "taylor.osei still exists (removed from the group, not deleted)" }],
     diagnosis: { prompt: "Which event ID records the group addition?", accept: ["4728", "event 4728", "id 4728"] },
     rubric: ["Named the account added and when", "Named the group and why it is the crown jewels", "Removed it without deleting the account (kept evidence)", "Escalated as a possible compromise"],
     hints: [
@@ -764,6 +781,8 @@ export const INCIDENTS: IncidentDef[] = [
       return {
         args: { Sam: v.sam },
         resolve: [{ c: { t: "member", sam: v.sam, group: "Domain Admins", want: false } as Check, label: `${v.sam} is out of Domain Admins` }],
+        // A real staff member's account: deleting it would also empty the group.
+        noHarm: [{ c: { t: "present", sam: v.sam } as Check, label: `${v.sam} still exists (removed from the group, not deleted)` }],
         diagnosis: { prompt: "Which event ID records the group addition?", accept: ["4728", "event 4728", "id 4728"] },
         brief: `${v.name} in ${v.dept} was added to Domain Admins — full control of the domain — with no change ticket. Contain it fast without destroying the evidence, and find out how it got there.`,
         evidence: (e) => evGroupAdd(e, v.sam, "Domain Admins"),
@@ -966,6 +985,168 @@ const WHY: Record<string, string> = {
 };
 for (const def of INCIDENTS) def.why = WHY[def.id];
 
+// ---- question pools ---------------------------------------------------------
+// Each incident has several questions, and a shift asks one of them, picked
+// with the shift's seed. The template's own question is always in the pool.
+// Every answer below comes from what the incident's script really plants in
+// the lab (see public/lab-scripts/incidents), so it can be found there, and
+// none is given away by the incident's brief. Windows event IDs per Microsoft
+// Learn's Security auditing reference: 4625 failed logon, 4624 logon, 4740
+// lockout, 4720 user created, 4722/4725 enabled/disabled, 4724 password reset,
+// 4728/4729 member added/removed (global group; every lab group is global),
+// 4738 user changed, 4739 domain policy changed, 4719 audit policy changed,
+// 4741 computer created, 4672 special privileges at logon (Special Logon).
+
+export type Question = { prompt: string; accept: string[] };
+
+type AskCtx = { v: Staff | null; args: Record<string, string> };
+
+/** Each person's job title as Build-Environment.ps1 sets it, read on the
+ *  account's Organization tab. Asking for it makes a ticket confirm who it is
+ *  about in the directory rather than trusting the name in the request. */
+const TITLE: Record<string, string> = {
+  "alex.rivera": "IT Systems Administrator",
+  "priya.nair": "Help Desk Technician",
+  "devon.brooks": "Compliance Officer",
+  "morgan.lee": "Regulatory Analyst",
+  "sam.whitfield": "Senior Financial Advisor",
+  "jamie.torres": "Client Relationship Manager",
+  "taylor.osei": "Operations Analyst",
+  "riley.kwan": "Settlements Coordinator",
+  "jordan.ellis": "Staff Accountant",
+};
+const titleQ = (v: Staff | null, fallback: string): Question => {
+  const p = v ?? ROSTER.find((s) => s.sam === fallback)!;
+  return { prompt: `What is ${p.name}'s job title in Active Directory?`, accept: [TITLE[p.sam].toLowerCase()] };
+};
+
+/** Template questions answerable without opening the lab: dropped from the pool. */
+const FROM_MEMORY = new Set(["offboarding", "dept-transfer", "access-request"]);
+
+const ASK: Record<string, (x: AskCtx) => Question[]> = {
+  "lockout-ticket": ({ v }) => [
+    { prompt: "Which event ID did the domain controller write when the account locked?", accept: ["4740"] },
+    { prompt: "Which event ID records each wrong password?", accept: ["4625"] },
+    titleQ(v, "riley.kwan"),
+  ],
+  spray: () => [
+    { prompt: "Which event ID marks the lockouts?", accept: ["4740"] },
+    { prompt: "What logon type do the failed sign-ins show?", accept: ["3", "network"] },
+    { prompt: "From the log: password spray or targeted brute force?", accept: ["spray"] },
+  ],
+  "rogue-admin": () => [
+    { prompt: "Which account was added to IT Admins?", accept: ["svc.helpdesk", "svc helpdesk", "helpdesk"] },
+    { prompt: "Which event ID will record you taking it out of the group?", accept: ["4729"] },
+  ],
+  "false-alarm": () => [
+    { prompt: "Which account's group membership changed?", accept: ["morgan.lee", "morgan lee"] },
+    { prompt: "Which group was the account added to?", accept: ["compliance users"] },
+    { prompt: "Which event ID records the addition?", accept: ["4728"] },
+  ],
+  "compromised-account": () => [
+    { prompt: "Which event ID records the failed attempts before the success?", accept: ["4625"] },
+    { prompt: "What logon type did the sign-ins use?", accept: ["3", "network"] },
+    { prompt: "How many failed sign-ins came before the success?", accept: ["4", "four"] },
+  ],
+  "weak-policy": () => [
+    { prompt: "What minimum password length was the policy set to?", accept: ["4", "four"] },
+    { prompt: "What lockout threshold was the policy set to?", accept: ["0", "zero", "none", "no lockout", "never"] },
+    { prompt: "Was password complexity left on or turned off?", accept: ["off", "disabled"] },
+  ],
+  "wrong-disable": ({ v }) => [
+    { prompt: "Which event ID records the account being disabled?", accept: ["4725"] },
+    { prompt: "Which event ID will record you turning the account back on?", accept: ["4722"] },
+    titleQ(v, "taylor.osei"),
+  ],
+  "preauth-exposure": () => [
+    { prompt: "Which account option is checked? Give its name.", accept: ["not require kerberos", "preauth", "pre-auth", "preauthentication"] },
+    { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
+  ],
+  "access-request": ({ v }) => [
+    { prompt: "Which event ID will record the user being added?", accept: ["4728"] },
+    { prompt: "What is the Compliance Users group's scope?", accept: ["global"] },
+    titleQ(v, "priya.nair"),
+  ],
+  offboarding: ({ v }) => [
+    { prompt: "Which event ID will record the account being disabled?", accept: ["4725"] },
+    { prompt: "Which OU is the leaver's account in? Name the department OU.", accept: [DEPT_OU[(v ?? ROSTER.find((s) => s.sam === "jordan.ellis")!).dept].toLowerCase(), (v ?? ROSTER.find((s) => s.sam === "jordan.ellis")!).dept.toLowerCase()] },
+    titleQ(v, "jordan.ellis"),
+  ],
+  "pwd-notreqd": ({ v }) => [
+    { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
+    titleQ(v, "priya.nair"),
+  ],
+  delegation: () => [
+    { prompt: "On the Delegation tab: unconstrained or constrained delegation?", accept: ["unconstrained"] },
+    { prompt: "Which userAccountControl flag is set?", accept: ["trusted_for_delegation", "trusted for delegation"] },
+    { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
+  ],
+  "pwd-expired": ({ v }) => [
+    { prompt: "Which attribute was set to 0 to force the expiry?", accept: ["pwdlastset", "pwd last set", "password last set"] },
+    { prompt: "Which event ID will record you resetting the password?", accept: ["4724"] },
+    titleQ(v, "jordan.ellis"),
+  ],
+  "wrong-ou": ({ v, args }) => [
+    { prompt: "Which OU is the account sitting in now?", accept: ["departments"] },
+    { prompt: "Which department's Users OU should it be in?", accept: [args.OU ?? "Compliance", v?.dept ?? "Compliance"].map((s) => s.toLowerCase()) },
+    { prompt: "What note was left in the account's Notes field?", accept: ["ou review pending", "review pending"] },
+  ],
+  "never-expires": ({ v }) => [
+    { prompt: "Which event ID records the change to the account?", accept: ["4738"] },
+    titleQ(v, "sam.whitfield"),
+  ],
+  "rogue-computer": () => [
+    { prompt: "Which OU did the machine appear in?", accept: ["workstations"] },
+    { prompt: "What does the machine's description say?", accept: ["asset record", "unregistered"] },
+    { prompt: "Which event ID records a computer account being created?", accept: ["4741"] },
+  ],
+  "audit-disabled": () => [
+    { prompt: "What is Special Logon auditing set to now?", accept: ["no auditing", "none", "off", "disabled"] },
+    { prompt: "Which event ID does Special Logon write when an admin signs in?", accept: ["4672"] },
+  ],
+  "reversible-enc": () => [
+    { prompt: "Which policy holds this setting for the whole domain?", accept: ["default domain policy", "default domain password policy", "addefaultdomainpasswordpolicy"] },
+  ],
+  kerberoast: () => [
+    { prompt: "What is the SPN value on the account?", accept: ["http/purvex-reports"] },
+    { prompt: "Which service class does the SPN use?", accept: ["http"] },
+  ],
+  "domain-admins": ({ v }) => [
+    { prompt: "Which event ID will record you taking it out of Domain Admins?", accept: ["4729"] },
+    titleQ(v, "taylor.osei"),
+  ],
+  "backdoor-account": () => [
+    { prompt: "Which event ID records a new user account?", accept: ["4720"] },
+    { prompt: "What does the account's description say?", accept: ["no hr record", "unmanaged"] },
+  ],
+  "targeted-bruteforce": () => [
+    { prompt: "Which event ID marks the lockout?", accept: ["4740"] },
+    { prompt: "From the log: how many accounts were targeted?", accept: ["1", "one", "single"] },
+    { prompt: "Which event ID records each failed guess?", accept: ["4625"] },
+  ],
+  "admin-pso": () => [
+    { prompt: "Which group did you apply the PSO to?", accept: ["it admins"] },
+  ],
+  "dept-transfer": ({ v }) => [
+    { prompt: "Which event ID will record the old group coming off?", accept: ["4729"] },
+    { prompt: "Which event ID will record the new group going on?", accept: ["4728"] },
+    titleQ(v, "devon.brooks"),
+  ],
+  "threat-hunt-spn": () => [
+    { prompt: "What is the SPN value on the account you found?", accept: ["http/purvex-reports"] },
+    { prompt: "Which service class does the SPN use?", accept: ["http"] },
+  ],
+};
+
+/** Every question an incident can ask this shift: its own (unless it can be
+ *  answered from memory), then its pool. All of them are read off the lab. */
+export function questionsFor(def: IncidentDef, bind?: Bind): Question[] {
+  const args = bind?.args ?? {};
+  const v = ROSTER.find((s) => s.sam === args.Sam) ?? null;
+  const own = FROM_MEMORY.has(def.id) ? [] : [bind?.diagnosis ?? def.diagnosis];
+  return [...own, ...(ASK[def.id]?.({ v, args }) ?? [])];
+}
+
 const byId = new Map(INCIDENTS.map((i) => [i.id, i]));
 export const incidentDef = (id: string) => byId.get(id) ?? null;
 
@@ -981,13 +1162,18 @@ export type ShiftIncident = {
   deadlineSec: number;
   /** The victim-specific specifics for this shift, if the incident rotates them. */
   bind?: Bind;
+  /** The question this shift asks, picked from the incident's pool. */
+  question?: Question;
 };
 
 /** When each incident arrives. The first few land fast so the queue has a real
  *  backlog from the start, then the rest keep coming across the shift. The last
- *  lands with a buffer so even a P1 that arrives late still has its full SLA. */
+ *  lands five minutes before the end, so there is still time to work it. */
 function arrivalsFor(n: number): number[] {
   if (n <= 1) return [0];
+  // A short queue is spread across the shift rather than landing at once: one
+  // to start, the next while the first is being worked, the last mid-shift.
+  if (n <= 3) return [0, 240, 540].slice(0, n);
   const head = [0, 40, 90].slice(0, Math.min(n, 3));
   if (n <= head.length) return head;
   const rest = n - head.length;
@@ -997,10 +1183,13 @@ function arrivalsFor(n: number): number[] {
   return [...head, ...tail];
 }
 
-/** How many incidents a shift has, from phase and level. A 30-minute shift runs
- *  a busy queue — more than a beginner clears — so work keeps arriving. */
+/** How many incidents a shift has: three, each worked properly, spread over
+ *  the shift so they overlap and the order still matters. */
+export const MAX_INCIDENTS = 3;
 export function shiftSize(phase: number, level: number): number {
-  return Math.min(10, 6 + level + (phase >= 2 ? 1 : 0));
+  void phase;
+  void level;
+  return MAX_INCIDENTS;
 }
 
 /**
@@ -1010,7 +1199,21 @@ export function shiftSize(phase: number, level: number): number {
  * filling, victim-rotating incidents repeat (each hitting a different person).
  * Deterministic per seed.
  */
-export function pickShift(seed: string, phase: number, level: number, roles: RoleId[] = []): ShiftIncident[] {
+/** Which kind a shift leans on. Shifts alternate, so one night is mostly
+ *  tickets from staff and the next mostly alerts from the SIEM. */
+export type ShiftMix = "tickets" | "alerts";
+/** Share of the queue the leaning kind gets. The rest is the other kind. */
+const MIX_SHARE = 0.7;
+
+/** Shifts only alternate once the student's phase and level unlock at least
+ *  three different incidents of each kind. Below that a lean would mean the
+ *  same incident over and over, so the shift is simply mixed. */
+export function canAlternate(phase: number, level: number): boolean {
+  const open = INCIDENTS.filter((i) => i.minPhase <= phase && i.minLevel <= level);
+  return open.filter((i) => i.kind === "ticket").length >= 3 && open.filter((i) => i.kind === "alert").length >= 3;
+}
+
+export function pickShift(seed: string, phase: number, level: number, roles: RoleId[] = [], mix?: ShiftMix): ShiftIncident[] {
   const r = seeded(seed);
   const eligible = INCIDENTS.filter((i) => i.minPhase <= phase && i.minLevel <= level);
   const real = eligible.filter((i) => !i.falseAlarm);
@@ -1036,10 +1239,18 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
     if (i.exclusiveGroup) usedGroups.add(i.exclusiveGroup);
   };
   for (const i of chosen) mark(i);
-  // First the distinct incidents, most relevant first.
+  // The shift's lean: most of the queue is one kind, the rest the other. With
+  // no lean, each kind may take the whole queue.
+  const lead = mix === "tickets" ? "ticket" : mix === "alerts" ? "alert" : null;
+  // At least one of the other kind, so a three-incident night is two and one.
+  const leadCap = lead ? Math.min(size - 1, Math.ceil(size * MIX_SHARE)) : size;
+  const quota = (k: IncidentDef["kind"]) => (!lead ? size : k === lead ? leadCap : size - leadCap);
+  const count = (k: IncidentDef["kind"]) => chosen.filter((c) => c.kind === k).length;
+  const room = (i: IncidentDef) => count(i.kind) < quota(i.kind);
+  // First the distinct incidents, most relevant first, inside each kind's share.
   for (const i of weighted) {
     if (chosen.length >= size) break;
-    if (!chosen.includes(i) && takes(i)) {
+    if (!chosen.includes(i) && takes(i) && room(i)) {
       chosen.push(i);
       mark(i);
     }
@@ -1052,6 +1263,29 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
     if (!i.bind) continue;
     if (i.exclusiveGroup && (usedGroups.has(i.exclusiveGroup) || repeatable.some((x) => x.exclusiveGroup === i.exclusiveGroup))) continue;
     repeatable.push(i);
+  }
+  // Repeats keep to the shift's lean too, and only overflow when one kind has
+  // nothing left to repeat.
+  // No incident shows up more than twice while there is anything else to
+  // give: a beginner's alert night would otherwise be five sprays in a row.
+  const times = (i: IncidentDef) => chosen.filter((c) => c === i).length;
+  const fits = repeatable.filter((i) => room(i));
+  for (let k = 0; chosen.length < size && fits.length && k < size * 4; k++) {
+    const i = fits[k % fits.length];
+    if (room(i) && times(i) < 2) chosen.push(i);
+  }
+  // If one kind has nothing left at all, the other fills the gap: first new
+  // incidents, then repeats.
+  for (const i of weighted) {
+    if (chosen.length >= size) break;
+    if (!chosen.includes(i) && takes(i)) {
+      chosen.push(i);
+      mark(i);
+    }
+  }
+  for (let k = 0; chosen.length < size && repeatable.length && k < size * 4; k++) {
+    const i = repeatable[k % repeatable.length];
+    if (times(i) < 2) chosen.push(i);
   }
   for (let k = 0; chosen.length < size && repeatable.length; k++) {
     chosen.push(repeatable[k % repeatable.length]);
@@ -1081,40 +1315,134 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
     if (key !== null) usedTargets.add(key);
     return picked;
   };
-  return chosen.map((def, n) => ({
-    uid: `${def.id}-${n}`,
-    defId: def.id,
-    severity: def.severity,
-    arriveSec: arrivals[n],
-    deadlineSec: DEADLINE_SEC[def.severity],
-    bind: def.bind?.(pickOne),
-  }));
+  // One question per incident from its pool. A prompt already asked this shift
+  // is passed over while another is left, so two incidents rarely ask alike.
+  const asked = new Set<string>();
+  return chosen.map((def, n) => {
+    const bind = def.bind?.(pickOne);
+    const pool = shuffle(r, questionsFor(def, bind));
+    const question = pool.find((q) => !asked.has(q.prompt)) ?? pool[0];
+    asked.add(question.prompt);
+    return {
+      uid: `${def.id}-${n}`,
+      defId: def.id,
+      severity: def.severity,
+      arriveSec: arrivals[n],
+      // One window for the whole shift: an incident is on time when it is
+      // closed before the shift ends. Severity sets the order, not a clock.
+      deadlineSec: Math.max(0, SHIFT_SECONDS - arrivals[n]),
+      bind,
+      question,
+    };
+  });
 }
 
 /** The specifics grading and injection should use for a run incident: the shift's
  *  bound victim when the incident rotates, otherwise the template. */
 export function effectiveIncident(
   def: IncidentDef,
-  inc: { bind?: Bind }
+  inc: { bind?: Bind; question?: Question }
 ): { resolve: IncidentDef["resolve"]; noHarm: IncidentDef["noHarm"]; diagnosis: IncidentDef["diagnosis"]; brief: string; args?: Record<string, string>; evidence?: (events?: LabEvents) => boolean } {
   const b = inc.bind;
   return {
     resolve: b?.resolve ?? def.resolve,
     noHarm: b?.noHarm ?? def.noHarm,
-    diagnosis: b?.diagnosis ?? def.diagnosis,
+    diagnosis: inc.question ?? b?.diagnosis ?? def.diagnosis,
     brief: b?.brief ?? def.brief,
     args: b?.args,
-    evidence: b?.evidence ?? def.evidence,
+    // A stored run comes back from the database as JSON, and the bound
+    // evidence check is a function, which JSON drops. Rebuild it from the
+    // victims the run recorded, so it works after the first save too.
+    evidence: b ? (b.evidence ?? (b.args ? rebind(def, b.args)?.evidence : undefined) ?? def.evidence) : def.evidence,
   };
 }
 
+/** Run an incident's bind again, picking the victims a stored run recorded. */
+function rebind(def: IncidentDef, args: Record<string, string>): Bind | null {
+  if (!def.bind) return null;
+  const wanted = Object.entries(args)
+    .filter(([k]) => k !== "Sprayed")
+    .flatMap(([, v]) => String(v).split(","))
+    .map((v) => v.trim());
+  const used = new Set<string>();
+  const pick = <T,>(arr: T[]): T => {
+    const hit = arr.find((x) => {
+      if (x && typeof x === "object" && "sam" in x) {
+        const sam = (x as unknown as Staff).sam;
+        return wanted.includes(sam) && !used.has(sam);
+      }
+      return typeof x === "string" && (wanted.includes(x) || wanted.includes(DEPT_OU[x] ?? ""));
+    });
+    const out = hit ?? arr[0];
+    if (out && typeof out === "object" && "sam" in out) used.add((out as unknown as Staff).sam);
+    return out;
+  };
+  try {
+    return def.bind(pick);
+  } catch {
+    return null;
+  }
+}
+
 // ---- grading one incident -------------------------------------------------
+
+/**
+ * The Security-log digest cut to what happened at or after a moment. The
+ * digest covers days, so without this an event from an earlier shift (the same
+ * account disabled last week) passed as proof this shift's attack had landed.
+ * A two-minute allowance covers the domain controller's clock against ours.
+ */
+export function eventsSince(e: LabEvents | undefined, sinceIso: string): LabEvents | undefined {
+  if (!e) return e;
+  const since = Date.parse(sinceIso) - 120_000;
+  const after = (t: string | null | undefined) => Boolean(t) && Date.parse(t as string) >= since;
+  return {
+    ...e,
+    failures: e.failures.filter((r) => after(r.last)),
+    lockouts: e.lockouts.filter((r) => after(r.last)),
+    created: e.created.filter((r) => after(r.at)),
+    disabled: e.disabled.filter((r) => after(r.at)),
+    groupAdds: e.groupAdds.filter((r) => after(r.at)),
+    accountChanges: (e.accountChanges ?? []).filter((r) => after(r.at)),
+    policyChanges: (e.policyChanges ?? []).filter((r) => after(r.at)),
+    auditChanges: (e.auditChanges ?? []).filter((r) => after(r.at)),
+  };
+}
+
+/** The incident's damage is in this snapshot: at least one resolve check fails.
+ *  A false alarm has none to show (leaving it alone is the fix). */
+export function damageVisible(def: Pick<IncidentDef, "falseAlarm">, resolve: IncidentDef["resolve"], snapshot: LabSnapshot | null): boolean {
+  if (def.falseAlarm || !snapshot) return false;
+  return resolve.some(({ c }) => !evalCheck(snapshot, c));
+}
+
+/**
+ * Does the answer contain an accepted term? Short terms and numbers must stand
+ * as their own word, so "4" does not pass inside "4625", "no" inside "not", or
+ * "ou" inside "you". Longer terms match anywhere, so "disabled" passes "disable".
+ */
+export function answerMatches(answer: string, accept: string[]): boolean {
+  const g = answer.trim().toLowerCase();
+  if (!g) return false;
+  return accept.some((raw) => {
+    const a = raw.toLowerCase();
+    if (!a) return false;
+    if (/^\d+$/.test(a) || a.length <= 3) {
+      const esc = a.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp(`(^|[^a-z0-9])${esc}($|[^a-z0-9])`).test(g);
+    }
+    return g.includes(a);
+  });
+}
 
 /** The lab-and-diagnosis parts. Write-up and on-time are added by the caller. */
 export function gradeIncidentLab(
   def: Pick<IncidentDef, "resolve" | "noHarm" | "diagnosis" | "evidence">,
   snapshot: LabSnapshot | null,
-  diagnosis: string
+  diagnosis: string,
+  /** Whether this shift has seen the incident land. Given, it replaces the
+   *  evidence check; left out (older runs, tests), evidence decides. */
+  landed?: boolean
 ): { resolved: boolean; noHarm: boolean; diagnosisRight: boolean; results: { label: string; ok: boolean }[] } {
   const results: { label: string; ok: boolean }[] = [];
   let resolved = true;
@@ -1125,7 +1453,7 @@ export function gradeIncidentLab(
   }
   // The fix only counts once the attack is proven in the lab's Security log, so a
   // clean baseline (attack never fired) can never trivially pass the resolve check.
-  if (def.evidence && !def.evidence(snapshot?.events)) {
+  if (landed === false || (landed === undefined && def.evidence && !def.evidence(snapshot?.events))) {
     results.push({ label: "The incident has not landed in your lab yet — give it a moment, then check again", ok: false });
     resolved = false;
   }
@@ -1137,8 +1465,7 @@ export function gradeIncidentLab(
       if (!ok) noHarm = false;
     }
   }
-  const g = diagnosis.trim().toLowerCase();
-  const diagnosisRight = def.diagnosis.accept.some((a) => g.includes(a.toLowerCase()));
+  const diagnosisRight = answerMatches(diagnosis, def.diagnosis.accept);
   return { resolved, noHarm, diagnosisRight, results };
 }
 
@@ -1197,10 +1524,25 @@ export type IncidentRun = {
   escalatedAtSec?: number | null;
   /** The incident's script has been fired into the lab. */
   injected: boolean;
+  /** When the script was sent to the lab (server clock). */
+  injectedAt?: string;
+  /** When a lab snapshot taken after injectedAt first showed the damage, or
+   *  the Security log showed the attack after it. Until then the incident
+   *  cannot close: the lab cannot "show the fix" for something that has not
+   *  happened in it yet. */
+  landedAt?: string;
   /** The victim-specific specifics bound when the shift was built. */
   bind?: Bind;
   /** Fresh wording Claude wrote for this shift, so no two read alike. Falls back to the template. */
   text?: { from: string; title: string; brief: string };
+  /** The question this shift asks. Absent on a run saved before pools existed. */
+  question?: Question;
+  /** Range confirmed the fix by asking the lab directly when it closed. */
+  verified?: boolean;
+  /** How many times they pressed Submit and check. Escalating needs at least one. */
+  submits?: number;
+  /** Tier 2's review of the handoff, written when the shift is graded. */
+  review?: import("@/lib/academy-scenario").HandoffReview;
   hintsUsed: number;
   diagnosis: string;
   response: string;
@@ -1222,6 +1564,11 @@ export type ShiftRun = {
   phase: number;
   level: number;
   incidents: IncidentRun[];
+  /** The desk around the incidents: a caller, a status request, an urgent ask.
+   *  Optional so a run saved before the desk existed still loads. */
+  desk?: import("@/lib/academy-shift-desk").DeskRun[];
+  /** What this shift leaned on. Absent on runs saved before shifts alternated. */
+  mix?: ShiftMix;
   status: "active" | "done";
   finishedAt?: string;
   totalScore?: number;
@@ -1229,14 +1576,15 @@ export type ShiftRun = {
 };
 
 /** Build a fresh shift for this student. The caller persists it and injects the incidents. */
-export function newShiftRun(seed: string, phase: number, level: number, roles: RoleId[] = [], now = Date.now()): ShiftRun {
-  const picked = pickShift(seed, phase, level, roles);
+export function newShiftRun(seed: string, phase: number, level: number, roles: RoleId[] = [], now = Date.now(), mix?: ShiftMix): ShiftRun {
+  const picked = pickShift(seed, phase, level, roles, mix);
   return {
     id: `shift-${now.toString(36)}`,
     startedAt: new Date(now).toISOString(),
     endsAt: new Date(now + SHIFT_SECONDS * 1000).toISOString(),
     phase,
     level,
+    mix,
     status: "active",
     incidents: picked.map((p) => ({
       ...p,
@@ -1253,7 +1601,7 @@ export function newShiftRun(seed: string, phase: number, level: number, roles: R
 /** Seconds elapsed since the shift started. */
 export const shiftElapsed = (run: ShiftRun, now = Date.now()) => Math.max(0, Math.floor((now - Date.parse(run.startedAt)) / 1000));
 
-/** True once the 15 minutes are up. */
+/** True once the shift's window is up. */
 export const shiftOver = (run: ShiftRun, now = Date.now()) => now >= Date.parse(run.endsAt);
 
 /** An incident is on the queue once its arrival time has passed. */

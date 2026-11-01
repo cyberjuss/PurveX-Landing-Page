@@ -2,7 +2,7 @@
 
 **The ticket:** Sam Whitfield's laptop restarted for an update overnight. Now a blue screen says **BitLocker recovery** and asks for a 48-digit key. "Is my laptop broken?"
 
-The laptop is fine, and saying so early will do a great deal for the person on the other end of the call. BitLocker encrypts the whole of the drive, and the screen Sam is looking at means only that BitLocker will not hand over the contents until it is given the right key. Nothing has been damaged and nothing has been lost. To work the call properly, though, you need to understand what encryption is doing here and why the key is the part that matters rather than the algorithm.
+The laptop is fine, and saying so early will reassure the person on the other end of the call. BitLocker encrypts the whole of the drive, and the screen Sam is looking at means only that BitLocker will not hand over the contents until it is given the right key. Nothing has been damaged and nothing has been lost. To work the call properly, though, you need to understand what encryption is doing here and why the key is the part that matters rather than the algorithm.
 
 ### What encryption does
 
@@ -34,9 +34,15 @@ That table is the whole distinction between encryption and the other two methods
 
 HTTPS shows how the two work together rather than in competition. The browser and the website use their key pairs to agree on a fresh shared key for that one session, usually AES, and everything sent afterwards is protected by that shared key. The slow method solves the problem of agreeing on a secret in public, and the fast method does the actual work.
 
+```match
+prompt: Match each kind of encryption to how it works.
+Symmetric = One shared key both locks and unlocks, so it is fast
+Asymmetric = A pair of keys, where anything locked with one opens only with the other
+```
+
 ### Back to Sam: the recovery key call
 
-With that in place, Sam's situation becomes straightforward to explain. BitLocker keeps the drive key inside the laptop's TPM, a dedicated security chip on the motherboard, and the TPM is deliberately fussy about when it hands that key over. It releases the key only when the machine's startup process looks the same as it did the last time, on the reasoning that a changed startup could mean somebody is trying to boot the drive in a way its owner never intended.
+With that in place, Sam's situation is straightforward to explain. BitLocker keeps the drive key inside the laptop's TPM, a dedicated security chip on the motherboard. The TPM is deliberately fussy about when it hands that key over. It releases the key only when the machine's startup process looks the same as it did last time. A changed startup could mean somebody is trying to boot the drive in a way its owner never intended.
 
 Sam's overnight firmware update changed exactly that, so the TPM did its job and held the key back. BitLocker therefore falls back to asking for the 48-digit recovery key, which was saved into the directory when IT first encrypted the drive. Your task on this call is to get that key to the right person and only to the right person.
 
@@ -45,12 +51,9 @@ Sam's overnight firmware update changed exactly that, so the TPM did its job and
 3. **Read out the 48 digits** once both checks pass.
 4. **Document** who called, how you verified them and the Key ID.
 
-**Escalate** if the caller cannot be verified, or if they are asking for the key to a laptop that is not theirs. Escalate as well if a number of laptops hit the recovery screen at the same time, because one machine in recovery is a firmware update and a fleet of them is either a change that went out badly or something worth investigating properly.
+**Escalate** if the caller cannot be verified, or if they are asking for the key to a laptop that is not theirs. Escalate as well if several laptops hit the recovery screen at once. One machine in recovery is a firmware update, but a fleet of them is either a change that went out badly or something worth investigating properly.
 
-<details class="academy-deeper">
-<summary>Go deeper</summary>
-
-#### Where encryption fails
+### Where encryption fails
 
 Attackers rarely break AES itself. They go after the key, or after mistakes in how the encryption was set up. When encrypted data leaks, check for three mistakes:
 
@@ -60,7 +63,7 @@ Attackers rarely break AES itself. They go after the key, or after mistakes in h
 
 Adobe's 2013 breach exposed about 150 million encrypted passwords with the last two mistakes. Equal passwords had equal encrypted values, and the hints were readable. Attackers guessed common passwords without the key.
 
-#### Try it with OpenSSL
+### Try it with OpenSSL
 
 ```
 $ openssl enc -aes-256-cbc -pbkdf2 -a -in memo.txt -out memo.enc -pass pass:Tide-Lamp-42
@@ -72,7 +75,7 @@ Fee schedule v3 is approved.
 
 The first command encrypts the memo. The second uses a key one character off and fails. The third uses the right key and returns the memo exactly.
 
-#### What encryption does not cover
+### What encryption does not cover
 
 | Data is | Example | Protected by |
 |---|---|---|
@@ -80,9 +83,9 @@ The first command encrypts the memo. The second uses a key one character off and
 | In transit | Signing in to a web portal | HTTPS, VPN |
 | In use | A file open in an app | Access control and endpoint security |
 
-Once Sam signs in the drive is unlocked, and malware running as Sam reads files the same way Sam does. BitLocker protects a lost or stolen laptop. It does nothing against malware on a laptop that is already unlocked.
+Once Sam signs in, the drive is unlocked, and malware running as Sam reads files the same way Sam does. BitLocker protects a lost or stolen laptop. It does nothing against malware on a laptop that is already unlocked.
 
-#### Admin commands
+### Admin commands
 
 ```
 manage-bde -status C:
@@ -91,13 +94,18 @@ manage-bde -protectors -get C:
 
 The first shows whether the drive is encrypted. The second lists its key protectors, including the recovery password ID.
 
-#### Two patterns the SOC watches
+### Two patterns the SOC watches
 
 - Ransomware uses the same encryption against its victims and sells the key back.
 - Phishing emails often carry an encrypted ZIP with the password in the email body. Mail scanners cannot look inside the ZIP, and attackers rely on that.
 
-</details>
+```match
+prompt: Where is the data, and what protects it?
+At rest = A laptop's drive, protected by BitLocker
+In transit = Signing in to a web portal, protected by HTTPS or a VPN
+In use = A file open in an app, protected by access control and endpoint security
+```
 
 ### Check yourself
 
-A caller says they are Morgan Lee, travelling and locked out by BitLocker. They want the key sent to a personal email. What do you do?
+A caller says they are Morgan Lee, traveling and locked out by BitLocker. They want the key sent to a personal email. What do you do?

@@ -127,6 +127,7 @@ export const JOB_DOMAINS: Record<string, string[]> = {
   "role-based-access": ["sp-concepts", "sp-ops"],
   "contain-account": ["cy-ir", "sp-ops"],
   "admin-password-policy": ["sp-ops", "cy-vuln"],
+  "lockout-threshold": ["sp-ops", "cy-vuln"],
   "lockout-policy": ["sp-ops", "sp-threats"],
   "password-policy": ["sp-ops", "sp-threats"],
   "enable-auditing": ["cy-ops", "sp-ops"],
@@ -139,8 +140,11 @@ export const JOB_DOMAINS: Record<string, string[]> = {
   "trace-logon": ["cy-ops", "cy-ir"],
   "dns-fix": ["sp-arch", "sp-ops"],
   "firewall-rule": ["sp-arch", "cy-vuln"],
+  "access-audit": ["cy-vuln", "sp-arch"],
   "gpo-scope": ["sp-ops", "sp-arch"],
   "quarantine-file": ["cy-ir", "sp-threats"],
+  "contain-wire-credential": ["cy-ir", "sp-threats"],
+  "verify-build-integrity": ["cy-vuln", "sp-threats"],
 };
 
 /** Missions to the exam areas they practice. */
@@ -169,12 +173,106 @@ export const MISSION_DOMAINS: Record<string, string[]> = {
   "tq-17": ["sp-arch", "cy-vuln"],
   "tq-18": ["sp-ops", "sp-arch"],
   "tq-19": ["cy-ir", "sp-threats"],
+  "zt-01": ["sp-arch", "cy-vuln"],
+  "zt-02": ["sp-arch", "cy-vuln"],
+  "cp-03": ["cy-ir", "sp-threats"],
+  "cp-04": ["cy-ir", "sp-arch"],
   "tq-20": ["sp-arch", "sp-ops"],
+  "tq-21": ["sp-ops", "sp-threats"],
+  "tq-22": ["cy-ops", "sp-ops"],
+  "tq-23": ["cy-ops", "cy-ir"],
+  "tq-24": ["sp-ops", "sp-arch"],
+  "tq-25": ["cy-vuln", "sp-program"],
   "tq-06": ["cy-ops", "sp-arch"],
   "tq-07": ["cy-ops", "sp-threats"],
   "tq-08": ["cy-ops", "sp-concepts"],
+  "cap-01": ["sp-ops", "sp-arch"],
+  "cap-02": ["cy-ops", "sp-ops"],
+  "cap-03": ["sp-concepts", "cy-ops"],
+  "cap-04": ["cy-ops", "sp-ops"],
+  "cap-05": ["cy-ops", "cy-report"],
+  "cap-06": ["cy-ir", "sp-concepts"],
+  "cry-01": ["sp-concepts", "cy-ops"],
+  "cry-02": ["sp-concepts", "cy-report"],
+  "cry-03": ["sp-concepts"],
+  "cry-04": ["sp-threats", "sp-concepts"],
+  "cry-05": ["sp-concepts", "sp-threats"],
+  "cry-06": ["sp-concepts", "cy-ir"],
+  "cd-01": ["sp-arch", "cy-ops"],
+  "cd-02": ["sp-concepts", "cy-ops"],
+  "cd-03": ["sp-program", "sp-concepts"],
+  "cd-04": ["sp-program", "cy-report"],
+  "cd-05": ["cy-ops", "sp-arch"],
+  "cd-06": ["sp-concepts", "cy-ops"],
+  "cd-07": ["sp-ops", "sp-concepts"],
   "tq-09": ["cy-ir", "sp-threats"],
   "tq-10": ["cy-ir", "cy-report"],
+  "ea-01": ["cy-vuln", "sp-arch"],
+  "ea-02": ["cy-vuln", "sp-arch"],
+  "ea-03": ["cy-vuln", "sp-ops"],
+  "sl-01": ["cy-ops", "sp-threats"],
+  "sl-02": ["cy-ops", "sp-threats"],
+  "sl-03": ["cy-ops", "sp-ops"],
+  "cc-11": ["cy-ops", "sp-ops"],
+  "cc-12": ["cy-ops", "sp-concepts"],
+  "rc-01": ["cy-ops", "sp-threats"],
+  "dl-01": ["cy-ir", "sp-threats"],
+  "pc-03": ["cy-ir", "sp-threats"],
+  "pi-01": ["cy-ir", "sp-threats"],
+  "pc-05": ["cy-ops", "sp-threats"],
+  "pi-02": ["cy-ir", "sp-ops"],
+  "ao-01": ["cy-ir", "sp-threats"],
+  "ao-02": ["cy-ir", "sp-ops"],
+  "pc-10": ["cy-ops", "sp-concepts"],
+  "od-02": ["cy-ops", "sp-arch"],
+  "od-04": ["cy-ir", "sp-threats"],
+  "od-05": ["cy-ir", "sp-arch"],
+  "od-06": ["cy-ir", "sp-threats"],
+  "od-07": ["cy-ir", "sp-ops"],
+  "od-08": ["cy-ops", "sp-concepts"],
+  "od-09": ["cy-ops", "sp-concepts"],
+  "rk-01": ["cy-ops", "sp-threats"],
+  "rk-02": ["cy-ops", "sp-arch"],
+  "rk-04": ["cy-vuln", "sp-arch"],
+  "rk-03": ["cy-vuln", "sp-ops"],
+  "rk-05": ["cy-ops", "sp-ops"],
+  "rk-06": ["cy-ops", "sp-threats"],
+  "rk-07": ["cy-ops", "sp-threats"],
+  "rk-08": ["cy-ops", "sp-threats"],
+  "rk-09": ["cy-ops", "sp-concepts"],
+  // The Nmap addition to the scan lab, the Suricata detection-writing lab,
+  // and the eight labs filling soc-mindset, Malware and Log Analysis
+  // Fundamentals. Same domain-mapping reasoning as everything above: cy-ops
+  // for hands-on tool use, sp-threats/cy-vuln for reasoning about an
+  // attacker's behavior, cy-ir for response decisions, cy-report/sp-concepts
+  // for write-ups and definitions.
+  "w3m-c5": ["cy-ops", "sp-arch"],
+  "w3m-c6": ["sp-threats", "cy-ops"],
+  "wd1-01": ["cy-ops", "sp-arch"],
+  "wd1-02": ["sp-threats", "cy-vuln"],
+  "wd1-03": ["cy-vuln", "sp-concepts"],
+  "nm-01": ["sp-arch", "cy-ops"],
+  "nm-03": ["sp-arch", "cy-ops"],
+  "nm-02": ["sp-concepts", "cy-vuln"],
+  "sm2-01": ["cy-ops", "sp-threats"],
+  "sm2-05": ["cy-ops", "sp-threats"],
+  "sm2-02": ["sp-concepts", "cy-report"],
+  "sm2-03": ["sp-arch", "cy-ops"],
+  "sm2-06": ["cy-vuln", "sp-arch"],
+  "sm2-04": ["sp-concepts", "cy-vuln"],
+  "mw2-03": ["cy-ops", "sp-concepts"],
+  "mw2-05": ["cy-ops", "sp-threats"],
+  "mw2-04": ["sp-threats", "cy-vuln"],
+  "mw2-01": ["cy-ops", "sp-threats"],
+  "mw2-06": ["cy-ops", "sp-threats"],
+  "mw2-07": ["cy-ops", "sp-threats"],
+  "mw2-02": ["cy-ir", "sp-threats"],
+  "la2-01": ["cy-ops", "sp-arch"],
+  "la2-05": ["cy-ops", "sp-threats"],
+  "la2-02": ["cy-ir", "cy-ops"],
+  "la2-03": ["cy-ops", "sp-ops"],
+  "la2-06": ["cy-ops", "sp-threats"],
+  "la2-04": ["cy-ops", "cy-ir"],
 };
 
 /** Fallback when a question has no job tag. */
@@ -231,6 +329,11 @@ export type StudentProfile = {
   roles: RoleId[];
   start: StartLevel;
   background: string;
+  /** What to call them. Range greets people by a name taken from the
+   *  account they signed up with, and that is whatever the sign-up form or
+   *  the email address happened to say -- nothing in the product could
+   *  change it. Empty means keep using the account's. */
+  callMe: string;
   updatedAt: string;
 };
 
@@ -261,6 +364,7 @@ export function sanitizeProfile(raw: unknown): StudentProfile | null {
     roles,
     start,
     background: clip(r.background, 280),
+    callMe: clip(r.callMe, 40),
     updatedAt: typeof r.updatedAt === "string" ? r.updatedAt.slice(0, 40) : new Date().toISOString(),
   };
 }

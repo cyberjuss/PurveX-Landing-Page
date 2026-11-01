@@ -5,7 +5,7 @@
 
 ### Overview
 
-Opening a network capture for the first time is a disorienting experience. Thousands of rows scroll past, every one of them full of numbers, and none of it offers any obvious clue about which rows matter. The instinct is to start reading at the top and hope something stands out. It will not, because there is nothing in a packet that announces itself as suspicious, and an environment working perfectly produces just as many rows as one that is compromised.
+Opening a network capture for the first time is a disorienting experience. Thousands of rows scroll past, every one of them full of numbers. None of it offers any obvious clue about which rows matter. The instinct is to start reading at the top and hope something stands out. It will not, because there is nothing in a packet that announces itself as suspicious. An environment working perfectly produces just as many rows as one that is compromised.
 
 What makes a capture readable is knowing that every conversation in it is built from the same small set of pieces:
 
@@ -15,7 +15,7 @@ What makes a capture readable is knowing that every conversation in it is built 
 - A **protocol**, governing what the two sides actually say
 - Often **encryption** layered on top of all of it
 
-Those pieces are always present and always in that order, which means a capture is not an undifferentiated wall of data. It is the same structure repeating.
+Nearly every conversation is built from those pieces, in that order. A capture is therefore not an undifferentiated wall of data but the same structure repeating.
 
 This week takes them one at a time:
 
@@ -24,7 +24,7 @@ This week takes them one at a time:
 - the ports and protocols you will meet most often
 - how TLS wraps a connection once TCP has already brought it up
 
-Each is straightforward on its own. The difficulty of network analysis comes almost entirely from trying to absorb them all at once, which is why they are separated here.
+Each is straightforward on its own. The difficulty of network analysis comes almost entirely from trying to absorb them all at once.
 
 The labs then put you in Wireshark with real traffic and ask you to separate what is ordinary from what does not belong. It is worth setting expectations about that part, because you are not looking for a packet marked malicious. No such packet exists. What you are looking for is something that does not fit a pattern you have already learned, which means the learning has to come first. An analyst who knows what normal looks like at each layer notices the exception quickly, while one who does not will stare at a perfectly healthy capture for an hour.
 
