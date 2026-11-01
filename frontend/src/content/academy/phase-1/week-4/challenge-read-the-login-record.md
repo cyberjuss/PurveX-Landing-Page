@@ -37,7 +37,7 @@ Commit to an answer before you type anything. Nothing is marked yet. The log set
 
 ### Produce a Failure
 
-Authentication is the moment a system decides you are who you claim to be, and it almost always leaves a trace: a run of failures followed by one success is what a break-in looks like from the log. Open a terminal on the Ubuntu desktop. First clear any remembered sudo session, then run a command as root and type the wrong password on purpose.
+A run of failures followed by one success is what a break-in looks like from the log. Open a terminal on the Ubuntu desktop. First clear any remembered sudo session, then run a command as root and type the wrong password on purpose.
 
 ```bash
 sudo -k

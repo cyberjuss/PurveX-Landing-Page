@@ -12,7 +12,7 @@
 
 ### Make a Real Event
 
-The 5 W's turn a vague alert into a documented account: who, what, when, where, and why. Theo Walsh on Tier 2 only ever acts on what the handoff actually records, not a vague "a sign-in failed." Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
+Theo Walsh on Tier 2 only ever acts on what the handoff actually records, not a vague "a sign-in failed." Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
 
 ```powershell
 Add-Type -AssemblyName System.DirectoryServices.AccountManagement

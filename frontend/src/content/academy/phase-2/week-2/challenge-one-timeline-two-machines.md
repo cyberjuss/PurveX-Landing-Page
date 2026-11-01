@@ -12,7 +12,7 @@
 
 ### Make Two Real Events
 
-Every machine keeps its own log, in its own format, on its own clock. An analyst who only ever reads one machine's log at a time misses what happened on one machine right before or right after something happened on another. Sign in to your domain controller the normal way. Then, separately, open a terminal session to the Ubuntu server.
+An analyst who only ever reads one machine's log misses what happened on another right before or after. Sign in to your domain controller the normal way. Then, separately, open a terminal session to the Ubuntu server.
 
 You have just produced two real authentication events, on two different machines, within the same few minutes of each other. That is the shape of an investigation that actually spans an environment, not just one box.
 

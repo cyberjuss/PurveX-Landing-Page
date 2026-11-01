@@ -12,9 +12,7 @@
 
 ### Step 1. Sign in with the account you are given
 
-Devon Brooks, PurveX Financial's Compliance Officer, needs this vendor's client portal cleared before the contract is signed, and the vendor's own demo environment runs the same account-role logic this lab teaches: a web application that stores each user's role on the server but also accepts a role value from the browser. If the server believes whatever the browser sends, any regular user can promote themselves to admin.
-
-Open the lab and sign in as `wiener` with the password `peter`. This is a regular account on purpose, so it cannot see any admin features yet.
+Devon Brooks, PurveX Financial's Compliance Officer, needs this vendor's client portal cleared before the contract is signed, and its demo environment runs the exact account-role logic this lab teaches. Open the lab and sign in as `wiener` with the password `peter`. This is a regular account on purpose, so it cannot see any admin features yet.
 
 ### Step 2. Watch your traffic in Burp
 

@@ -12,7 +12,7 @@
 
 ### Turn It On
 
-After the scheduled-task finding you reported, Alex Rivera wants this logging on domain-wide, starting with your own machine. PowerShell is the single most common tool in a real intrusion after an attacker already has a foothold, precisely because it is already on every Windows machine and does almost anything, and a process-creation event never shows what script or command it actually ran. This setting is off by default, the same way Process Creation auditing was off until you turned it on in an earlier ticket. Open PowerShell as an administrator and enable it.
+After the scheduled-task finding you reported, Alex Rivera wants this logging on domain-wide, starting with your own machine. This setting is off by default, the same way Process Creation auditing was until you turned it on in an earlier ticket. Open PowerShell as an administrator and enable it.
 
 ```powershell
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Force | Out-Null

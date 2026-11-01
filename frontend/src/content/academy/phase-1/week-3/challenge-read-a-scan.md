@@ -39,7 +39,7 @@ Commit to an answer first. Nothing is marked yet. The capture settles each one.
 
 ### Start the Capture
 
-Almost every intrusion starts with reconnaissance: the attacker scans a machine to learn which ports are open before choosing where to push. Alex Rivera runs this exact inventory scan against the domain controller every quarter; today you run it yourself. Open Wireshark on the Ubuntu desktop and start capturing on `ens5`, the same way you did in the last lab. In the filter bar, narrow it to the domain controller now so the scan is easy to read.
+Alex Rivera runs this exact inventory scan against the domain controller every quarter; today you run it yourself. Open Wireshark on the Ubuntu desktop and start capturing on `ens5`, the same way you did in the last lab. In the filter bar, narrow it to the domain controller now so the scan is easy to read.
 
 ```
 ip.addr == 10.60.1.x

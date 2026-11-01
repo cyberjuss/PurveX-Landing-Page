@@ -39,9 +39,7 @@ Commit to an answer before you capture anything. Nothing is marked yet. The capt
 
 ### Find the Domain Controller
 
-Alex Rivera, PurveX Financial's IT Systems Administrator, wants the domain controller's core services confirmed reachable before this week's maintenance window, read back from a real capture rather than taken on faith. Analysts rarely sit on the server they are investigating; they watch from a separate machine and read the traffic as it crosses the wire.
-
-Open a terminal on the Ubuntu desktop. The domain controller is already known to this machine by name, so look up its address.
+Alex Rivera wants the domain controller's core services confirmed reachable, read back from a real capture rather than taken on faith. Open a terminal on the Ubuntu desktop. The domain controller is already known to this machine by name, so look up its address.
 
 ```bash
 getent hosts dc01

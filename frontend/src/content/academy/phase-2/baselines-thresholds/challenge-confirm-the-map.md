@@ -12,7 +12,7 @@
 
 ### Ask the Machine, Not the Lesson
 
-You just learned the five ports that explain what the domain controller is for: DNS, Kerberos, LDAP, SMB, RDP. That is the map a lesson can fit in one page. Priya Nair keeps asking what else is actually running on it, and "five ports" has never been a real answer. Open PowerShell on the domain controller.
+Priya Nair keeps asking what else is actually running on the domain controller, and "five ports" has never been a real answer. Open PowerShell on the domain controller.
 
 ```powershell
 Get-NetTCPConnection -State Listen | Sort-Object LocalPort | Select-Object LocalPort, OwningProcess | Format-Table -AutoSize

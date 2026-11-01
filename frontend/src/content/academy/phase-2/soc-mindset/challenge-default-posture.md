@@ -12,7 +12,7 @@
 
 ### Ask the Firewall What It Actually Does by Default
 
-Allowlisting and blocklisting are not about which list you keep. They are about what the system does with the traffic that is not on either list. Alex Rivera wants this written down for the audit file, not assumed. Open PowerShell on the domain controller.
+Alex Rivera wants the domain controller's own default written down for the audit file, not assumed. Open PowerShell on the domain controller.
 
 ```powershell
 Get-NetFirewallProfile -Profile Domain | Select-Object Name, DefaultInboundAction, DefaultOutboundAction

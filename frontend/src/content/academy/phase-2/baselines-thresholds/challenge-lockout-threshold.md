@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Set a Defensible Lockout Threshold</h3>
 <p class="ad-brief__ask">Can you set a real threshold that balances catching an attacker against locking out your own users, on your own lab?</p>
-<p>Active Directory has its own version of this week's detection-threshold trade-off: set a lockout threshold too low and ordinary typos lock people out all day; too high and a guessing script gets dozens of free tries before anything stops it.</p>
 <p>This step checks your Phase 1 lab, so keep it running. You get three tries, and the hint unlocks after two misses.</p>
 </div>
 

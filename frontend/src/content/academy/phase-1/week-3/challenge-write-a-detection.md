@@ -12,7 +12,7 @@
 
 ### Write the Rule
 
-The last lab taught you what a scan looks like in a capture: one source touching many ports in a short burst, the same shape Alex Rivera's own quarterly scan produced. An IDS is built to spot that pattern live, the instant it happens, and raise an alert without anyone sitting in Wireshark watching for it. Open the rules file on the Ubuntu server and add one line.
+The last lab taught you what a scan looks like in a capture; an IDS is built to spot that same pattern live, with nobody sitting in Wireshark watching for it. Open the rules file on the Ubuntu server and add one line.
 
 ```bash
 nano /etc/suricata/rules/local.rules

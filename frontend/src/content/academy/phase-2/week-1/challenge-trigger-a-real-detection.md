@@ -12,7 +12,7 @@
 
 ### Create the File
 
-You cannot ethically create real malware to test a defense, and Noor Ahmadi wants Windows Defender's coverage confirmed live, not assumed from a vendor datasheet. The antivirus industry solved that problem decades ago with the EICAR test file: a short, completely harmless text string every antivirus engine is built to recognize and flag on purpose. Open PowerShell on the domain controller and write the standard EICAR string to a file.
+Noor Ahmadi wants Windows Defender's coverage confirmed live, and the EICAR test file is the industry's safe, standard way to prove it without touching real malware. Open PowerShell on the domain controller and write the standard EICAR string to a file.
 
 ```powershell
 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' | Out-File -Encoding ascii C:\Users\Public\eicar-test.com

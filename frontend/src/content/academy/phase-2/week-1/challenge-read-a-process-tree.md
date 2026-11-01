@@ -12,7 +12,7 @@
 
 ### Build the Hunt Query
 
-Theo Walsh escalated this one from Tier 2. <code>powershell.exe</code> runs thousands of times a day on a normal domain controller for ordinary reasons; what makes one launch worth a second look is its parent, its exact command line, and whatever keeps relaunching it. Event Viewer works, but an analyst who hunts the same thing twice writes the query instead of clicking through it by hand. Sysmon's Process Create events (Event ID 1) sit in their own log, and PowerShell can filter and parse them directly.
+Theo Walsh escalated this one from Tier 2: a process name alone rarely tells you anything, its parent and command line do. Sysmon's Process Create events (Event ID 1) sit in their own log, and PowerShell can filter and parse them directly.
 
 ```powershell
 $hits = Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -FilterHashtable @{ Id = 1 } |
