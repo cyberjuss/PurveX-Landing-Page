@@ -8,7 +8,7 @@
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
 </div>
 
 ### Before You Start
@@ -75,9 +75,42 @@ Write down the three Base Scores. Rank the findings by those numbers alone.
 
 ### Describe Your Actual Machine
 
-Now answer two questions about the Ubuntu server in your pod, using what you already know about it.
+Scoring the environment means knowing what the machine actually holds, not assuming it. Check, instead of taking it on faith.
 
-First, what does it hold? It has a default web page and a practice account. It stores no client records and no money moves through it. In CVSS terms the Confidentiality Requirement, Integrity Requirement and Availability Requirement are all Low.
+```bash
+ls -la /var/www/html
+```
+
+<div class="ad-mission" data-id="w1m-c0" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1154 · Low</span>
+<p><strong>Task:</strong> Run the command above. What is the only file it lists in <code>/var/www/html</code>?</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the one file in var www html" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{index.html}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Nginx ships with exactly one default page. This is the same file you stopped and restarted nginx around in an earlier lab.</p>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="checksums.txt|ledger.txt">Those sit in other folders from other labs. Read what is actually in <code>/var/www/html</code> on this machine.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>index.html</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Scoring "holds nothing sensitive" as Low is not a guess, and it is not supposed to be: you just confirmed it, the same way an analyst would before writing Low into a report a manager will act on. No client file, no database, no credentials file. One default page.</p>
+</div>
+</div>
+</div>
+</div>
+
+Now answer two questions about the Ubuntu server in your pod, using what you just confirmed.
+
+First, what does it hold? A default web page and a practice account, which you just checked yourself. It stores no client records and no money moves through it. In CVSS terms the Confidentiality Requirement, Integrity Requirement and Availability Requirement are all Low.
 
 Those three requirements are the CIA triad, written as calculator inputs. The standard is asking how much each property is worth on this machine.
 

@@ -1,14 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Encoded, Encrypted, or Hashed?</h3>
-<p class="ad-brief__ask">Three strings look like scrambled nonsense. One reverses instantly, one needs a key and one never comes back. Can you tell which is which before you try?</p>
-<p>Encoding, encryption and hashing all turn readable text into something unreadable, so beginners treat them as the same thing. A PurveX Financial responder who calls an encoded value "encrypted" sends the ticket to the wrong place and wastes the morning. Take one word through all three transformations in CyberChef, then confirm each result from the command line.</p>
+<p class="ad-brief__ask">Three strings look like scrambled nonsense. One reverses instantly, one needs a key and one never comes back. Can you tell which is which before you try, then actually protect a file with the one that needs a key?</p>
 <p>Your hosted lab needs to be running, with Firefox open on the Ubuntu desktop. CyberChef is a free tool from GCHQ that SOC analysts use to recognize and decode data; it runs entirely in the browser. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
 </div>
 
 ### Before You Start
@@ -254,6 +253,53 @@ Answer from what you saw in the tool.
 <div>
 <span>Why it matters</span>
 <p>The teammate was wrong, and you just proved it in seconds with the same CyberChef recipe from the start of this lab. Calling a Base64 string "encrypted" is not a small mistake. It tells a manager the data is safe when anyone who looks at the log can already read it.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Protect a Real File
+
+CyberChef proved encryption needs a key where encoding does not. Now use that for real, on your own machine, with a file instead of a toy word.
+
+```bash
+printf 'Q3 advisory fees: 412500' > ~/ledger-copy.txt
+openssl enc -aes-256-cbc -pbkdf2 -salt -in ~/ledger-copy.txt -out ~/ledger-copy.enc -pass pass:PurveX-Backup-Key1
+rm ~/ledger-copy.txt
+```
+
+The plain file is gone. Only `ledger-copy.enc` is left in your home directory, and it is unreadable without the passphrase you just chose. Decrypt it back.
+
+```bash
+openssl enc -d -aes-256-cbc -pbkdf2 -in ~/ledger-copy.enc -pass pass:PurveX-Backup-Key1
+```
+
+<div class="ad-mission ad-mission--capstone" data-id="w2e-c6" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1153 · Low</span>
+<p><strong>Task:</strong> Run the decrypt command above. What line does it print?</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the decrypted file content" placeholder="the decrypted line" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{q3 advisory fees: 412500}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>It is exactly what you wrote into the file before encrypting it, nothing more and nothing less. The round trip only works because you supplied the same passphrase both times.</p>
+<ol>
+<li>Try the decrypt command with a wrong passphrase first, and watch it refuse rather than return garbage.</li>
+<li>Then run it again with the real one, <code>PurveX-Backup-Key1</code>.</li>
+</ol>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="q3advisoryfees412500">Keep the spaces and the colon exactly as you typed them into the original file.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>Q3 advisory fees: 412500</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>This is the same line from the CIA triad lab's own ledger file, now actually protected rather than just sitting in the clear. The plain copy is gone; only the encrypted one and the passphrase in your head can bring it back. That is what "needs a key to undo" means when it is a real file instead of one word in a browser tool.</p>
 </div>
 </div>
 </div>

@@ -1,14 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>What a Leaked Password File Actually Gives Away</h3>
-<p class="ad-brief__ask">Two Operations staff pick the same password. Why can a stolen password file give one company away and tell an attacker almost nothing at another?</p>
-<p>When a password database leaks, how the passwords were stored decides how bad PurveX Financial's day is. Two small steps, a salt and a slow hash, make the difference between a disaster and a shrug, and most people who have heard of salting cannot say what it actually does. Store the same password the weak way and the strong way on your Ubuntu server, and prove from the output why one leaks information and the other does not.</p>
+<p class="ad-brief__ask">Two Operations staff pick the same password. Why can a stolen password file give one company away and tell an attacker almost nothing at another? And what does the system do right that your own sha256sum command didn't?</p>
 <p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Every command ships with the system; nothing is cracked and no attack tool is used. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
 </div>
 
 ### Before You Start
@@ -246,6 +245,48 @@ Answer from the output you saw.
 <div>
 <span>Why it matters</span>
 <p>The manager is only half right. SHA-256 really cannot be reversed, but "cannot be reversed" is not the same as "safe." Matching values across a leaked file hand an attacker a ready-made list of accounts to try one cracked or reused password against, which is exactly the finding this lab let you make without cracking anything at all.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Create One the Right Way
+
+You hashed a password by hand twice, unsalted and salted, as a demonstration. Nobody should ever store a real account's password that way; the system has its own tool for this, and it is worth checking that the tool actually does what you just proved matters.
+
+```bash
+sudo useradd -m priya.sample
+echo 'priya.sample:Summer2024!' | sudo chpasswd
+sudo grep priya.sample /etc/shadow
+```
+
+`chpasswd` is the real, standard way to set a Linux account's password, the same mechanism behind `passwd` and behind account creation itself. Read the second field in the line it printed, between the first two `$` signs.
+
+<div class="ad-mission ad-mission--capstone" data-id="w2m-c6" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1152 · Low</span>
+<p><strong>Task:</strong> Read <code>priya.sample</code>'s line in <code>/etc/shadow</code>. What number sits between the first two <code>$</code> signs, marking the hashing method the system used on its own?</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the hashing method number in /etc/shadow" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{6}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The line reads <code>priya.sample:$N$salt$hash:...</code>. <code>N</code> is the number you want, and you have already seen this exact digit once before in this lab.</p>
+<ol>
+<li>Clean up when you are done: <code>sudo userdel -r priya.sample</code>.</li>
+</ol>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="1|5">Those mark MD5 and SHA-256 respectively, both weaker and neither one what a current Ubuntu system actually uses by default.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>6</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p><code>$6$</code> is SHA-512, salted, the exact same method behind the <code>openssl passwd -6</code> command earlier in this lab. You never had to choose it: creating the account the normal way did the right thing automatically. The weak storage in this whole lab only ever happens when someone builds their own password handling by hand instead of trusting the tool built for the job.</p>
 </div>
 </div>
 </div>
