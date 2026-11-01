@@ -302,6 +302,11 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   <Sparkles className="h-3.5 w-3.5" /> Upgrade to Pro
                 </Link>
               )}
+              {isFree && (
+                <Link href="/range/class-code" className="ax-account__out" onClick={() => setOpen(false)}>
+                  <Users className="h-3.5 w-3.5" /> Join a class
+                </Link>
+              )}
               {isSubscriber && (
                 <Link href="/range/upgrade" className="ax-account__out" onClick={() => setOpen(false)}>
                   <CreditCard className="h-3.5 w-3.5" /> Manage billing
