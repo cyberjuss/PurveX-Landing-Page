@@ -31,7 +31,8 @@ export type MissionCatalogEntry = {
     | "read-a-process-tree"
     | "one-timeline-two-machines"
     | "turn-on-script-logging"
-    | "confirm-the-map";
+    | "confirm-the-map"
+    | "trace-persistence";
   title: string;
   prompt: string;
   skill: Skill;
@@ -421,6 +422,12 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "nm-01": { id: "nm-01", challenge: "confirm-the-map", title: "Confirm a Known Port (INC-1147)", prompt: "Confirm the port Kerberos is listening on right now.", skill: "security" },
   "nm-03": { id: "nm-03", challenge: "confirm-the-map", title: "Name a Port You Depend On (INC-1148)", prompt: "Name the service listening on port 9389 and why it matters.", skill: "security" },
   "nm-02": { id: "nm-02", challenge: "confirm-the-map", title: "Draw the Conclusion (INC-1149)", prompt: "Say what ports beyond a lesson's five-port summary tell you about working from memory.", skill: "security" },
+  "tr-01": { id: "tr-01", challenge: "trace-persistence", title: "Name the Technique (INC-1150)", prompt: "Name the ATT&CK technique ID for a relaunching scheduled task with no owner.", skill: "logs" },
+  "tr-02": { id: "tr-02", challenge: "trace-persistence", title: "Scope the Query (INC-1150)", prompt: "Write the where clause that scopes a persistence detection to the last 7 days.", skill: "logs" },
+  "tr-03": { id: "tr-03", challenge: "trace-persistence", title: "Aggregate the Launches (INC-1150)", prompt: "Write the summarize line counting hidden-window launches per device per day.", skill: "logs" },
+  "tr-04": { id: "tr-04", challenge: "trace-persistence", title: "Name the Threshold (INC-1150)", prompt: "Write the let line naming a threshold of 20 launches a day.", skill: "logs" },
+  "tr-05": { id: "tr-05", challenge: "trace-persistence", title: "Set the Escalation (INC-1150)", prompt: "Name the priority and severity this detection should fire as.", skill: "logs" },
+  "tr-06": { id: "tr-06", challenge: "trace-persistence", title: "Prove the Threshold Tells Them Apart (INC-1150)", prompt: "Say which of two device summaries the finished detection actually fires on.", skill: "logs" },
   "ea-01": {
     id: "ea-01",
     challenge: "access-alert",
@@ -672,6 +679,7 @@ export const CHALLENGE_PATHS: Record<
   "one-timeline-two-machines": { href: "/range/phase-2/week-2", tab: "one-timeline-two-machines" },
   "turn-on-script-logging": { href: "/range/phase-2/week-2", tab: "keep-what-a-process-launch-alone-throws-away" },
   "confirm-the-map": { href: "/range/phase-2/baselines-thresholds", tab: "ask-the-machine-not-the-lesson" },
+  "trace-persistence": { href: "/range/phase-2/detection-writing", tab: "build-the-detection-that-would-have-caught-it" },
 };
 
 export function missionHref(id: string): string {
@@ -743,6 +751,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "one-timeline-two-machines": "One Timeline, Two Machines",
   "turn-on-script-logging": "Keep What a Process Launch Alone Throws Away",
   "confirm-the-map": "Ask the Machine, Not the Lesson",
+  "trace-persistence": "Build the Detection That Would Have Caught It",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {

@@ -252,6 +252,7 @@ const phase2Weeks: WeekDef[] = [
       { label: "TRACE: Aggregate", file: "phase-2/detection-writing/lesson-trace-aggregate.md" },
       { label: "TRACE: Condition", file: "phase-2/detection-writing/lesson-trace-condition.md" },
       { label: "TRACE: Escalation", file: "phase-2/detection-writing/lesson-trace-escalation.md" },
+      { label: "Challenge: Build the Detection That Would Have Caught It", file: "phase-2/detection-writing/challenge-trace-persistence.md" },
       { label: "Resources", file: "phase-2/detection-writing/resources.md" },
     ],
   },

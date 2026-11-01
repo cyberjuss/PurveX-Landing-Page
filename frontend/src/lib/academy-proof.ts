@@ -454,6 +454,7 @@ const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "resp
   { id: "sm2-02", bucket: "monitoring", label: "5 W's Incident Documentation" },
   { id: "la2-04", bucket: "monitoring", label: "PowerShell Script Block Logging" },
   { id: "nm-02", bucket: "network", label: "Network Baselining" },
+  { id: "tr-06", bucket: "monitoring", label: "KQL Detection Writing (TRACE)" },
 ];
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {
