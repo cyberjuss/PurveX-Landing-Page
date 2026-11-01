@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Grant Exactly One Power, Not the Whole Machine</h3>
 <p class="ad-brief__ask">Priya Nair, IT's Help Desk Technician, needs to restart one service as an administrator and nothing more. Can you grant exactly that, and prove you did not quietly hand over the whole machine?</p>
-<p>Authorization is deciding what an account may do once it has proved who it is. The safe rule at PurveX Financial is least privilege, giving each account only what its job needs. The careless version, a rule that grants more than intended, is how one ordinary account turns into control of the whole server. On the Ubuntu server, write a sudo rule that lets a user restart one service and nothing else, then look at a broader rule and say exactly how much more it would give away.</p>
 <p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -37,6 +36,8 @@ Commit to an answer first. Nothing is marked yet. The rules settle each one.
 </div>
 
 ### Make a User to Grant To
+
+The safe rule is least privilege: give each account only what its job needs. A rule that grants more than intended is how one ordinary account turns into control of the whole server.
 
 Open a terminal. Create an account that stands in for priya.nair, who needs to restart the web server.
 

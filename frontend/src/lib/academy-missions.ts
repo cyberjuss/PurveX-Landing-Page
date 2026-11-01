@@ -32,7 +32,10 @@ export type MissionCatalogEntry = {
     | "one-timeline-two-machines"
     | "turn-on-script-logging"
     | "confirm-the-map"
-    | "trace-persistence";
+    | "trace-persistence"
+    | "access-outlier"
+    | "overnight-alert"
+    | "lockout-threshold";
   title: string;
   prompt: string;
   skill: Skill;
@@ -411,6 +414,8 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "sm2-03": { id: "sm2-03", challenge: "default-posture", title: "Read the Default Outbound Action (INC-1131)", prompt: "Report a domain controller's actual default outbound firewall action.", skill: "security" },
   "sm2-06": { id: "sm2-06", challenge: "default-posture", title: "Trace a Consequence (INC-1132)", prompt: "Say whether a Block-by-default outbound posture would have stopped an unapproved beacon.", skill: "security" },
   "sm2-04": { id: "sm2-04", challenge: "default-posture", title: "Name the Trade-Off (INC-1133)", prompt: "Explain what the inbound-Block, outbound-Allow default split actually trades off.", skill: "security" },
+  "sm-01": { id: "sm-01", challenge: "overnight-alert", title: "Check the Record Before You React (INC-1065)", prompt: "Read an account's own Description field to find its one authorized workstation.", skill: "security" },
+  "sm-02": { id: "sm-02", challenge: "overnight-alert", title: "Classify What You Actually Found (INC-1065)", prompt: "Classify a sign-in that matches its approved time window but not its approved workstation.", skill: "security" },
   "mw2-03": { id: "mw2-03", challenge: "trigger-a-real-detection", title: "Read the Threat Name (INC-1134)", prompt: "Report the threat name Windows Defender reports for an EICAR test file.", skill: "security" },
   "mw2-05": { id: "mw2-05", challenge: "trigger-a-real-detection", title: "Weigh Two Verdicts (INC-1135)", prompt: "Say which verdict an analyst should trust more between one engine and a multi-engine lookup.", skill: "security" },
   "mw2-04": { id: "mw2-04", challenge: "trigger-a-real-detection", title: "Know the Limit of Signature Matching (INC-1136)", prompt: "Say what a never-before-seen file means for signature-based antivirus alone.", skill: "security" },
@@ -427,6 +432,10 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "nm-01": { id: "nm-01", challenge: "confirm-the-map", title: "Confirm a Known Port (INC-1147)", prompt: "Confirm the port Kerberos is listening on right now.", skill: "security" },
   "nm-03": { id: "nm-03", challenge: "confirm-the-map", title: "Name a Port You Depend On (INC-1148)", prompt: "Name the service listening on port 9389 and why it matters.", skill: "security" },
   "nm-02": { id: "nm-02", challenge: "confirm-the-map", title: "Draw the Conclusion (INC-1149)", prompt: "Say what ports beyond a lesson's five-port summary tell you about working from memory.", skill: "security" },
+  "bt-01": { id: "bt-01", challenge: "access-outlier", title: "Build the Baseline (INC-1066)", prompt: "Compare four peer accounts' real group membership and find the one that does not match.", skill: "security" },
+  "bt-02": { id: "bt-02", challenge: "access-outlier", title: "Name the Extra Access (INC-1066)", prompt: "Name the group the outlier account has that its peers do not.", skill: "security" },
+  "bt-03": { id: "bt-03", challenge: "access-outlier", title: "Fix the Baseline (INC-1066)", prompt: "Remove the outlier account from the extra group and confirm it.", skill: "security" },
+  "th-01": { id: "th-01", challenge: "lockout-threshold", title: "Wealth Management Needs Its Own Threshold (INC-1068)", prompt: "Apply a Fine-Grained Password Policy to Wealth Management Users and report the lockout threshold set.", skill: "security" },
   "tr-01": { id: "tr-01", challenge: "trace-persistence", title: "Name the Technique (INC-1150)", prompt: "Name the ATT&CK technique ID for a relaunching scheduled task with no owner.", skill: "logs" },
   "tr-02": { id: "tr-02", challenge: "trace-persistence", title: "Scope the Query (INC-1150)", prompt: "Write the where clause that scopes a persistence detection to the last 7 days.", skill: "logs" },
   "tr-03": { id: "tr-03", challenge: "trace-persistence", title: "Aggregate the Launches (INC-1150)", prompt: "Write the summarize line counting hidden-window launches per device per day.", skill: "logs" },
@@ -687,6 +696,9 @@ export const CHALLENGE_PATHS: Record<
   "turn-on-script-logging": { href: "/range/phase-2/week-2", tab: "keep-what-a-process-launch-alone-throws-away" },
   "confirm-the-map": { href: "/range/phase-2/baselines-thresholds", tab: "ask-the-machine-not-the-lesson" },
   "trace-persistence": { href: "/range/phase-2/detection-writing", tab: "build-the-detection-that-would-have-caught-it" },
+  "access-outlier": { href: "/range/phase-2/baselines-thresholds", tab: "baseline-a-team-then-find-who-breaks-it" },
+  "overnight-alert": { href: "/range/phase-2/soc-mindset", tab: "approved-overnight-or-not" },
+  "lockout-threshold": { href: "/range/phase-2/baselines-thresholds", tab: "set-a-defensible-lockout-threshold" },
 };
 
 export function missionHref(id: string): string {
@@ -759,6 +771,9 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "turn-on-script-logging": "Keep What a Process Launch Alone Throws Away",
   "confirm-the-map": "Ask the Machine, Not the Lesson",
   "trace-persistence": "Build the Detection That Would Have Caught It",
+  "access-outlier": "Baseline a Team, Then Find Who Breaks It",
+  "overnight-alert": "Approved Overnight, or Not?",
+  "lockout-threshold": "Set a Defensible Lockout Threshold",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {

@@ -443,6 +443,8 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {};
 const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "response"; label: string }[] = [
   { id: "rt-05", bucket: "response", label: "Risk Assessment and Triage" },
   { id: "w1e-c6", bucket: "response", label: "File Permission Remediation" },
+  { id: "bt-03", bucket: "response", label: "Access Baseline Remediation" },
+  { id: "th-01", bucket: "response", label: "Fine-Grained Password Policy" },
   { id: "mw2-02", bucket: "monitoring", label: "Sysmon" },
   { id: "mw2-04", bucket: "response", label: "Windows Defender / EDR" },
   { id: "la2-02", bucket: "monitoring", label: "Cross-Host Log Correlation" },
