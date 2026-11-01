@@ -1,20 +1,19 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Monday Morning Risk Triage</h3>
-<p class="ad-brief__ask">Four reports came in over the weekend. Which one gets fixed first, and why?</p>
-<p>It's 8:10 AM at PurveX Financial. Alex Rivera from IT has forwarded four reports that came in over the weekend, and the team can start only one fix this morning:</p>
+<p class="ad-brief__ask">Four reports came in over the weekend and the team can start only one fix. Can you rank them right, then go fix the one that actually wins, yourself?</p>
 <ul>
 <li><strong>A.</strong> The lobby printer in the Operations wing has been offline since Friday.</li>
 <li><strong>B.</strong> The nightly backup job for the Finance and Accounting ledger has failed silently for three weeks. No backup exists if today's server fails.</li>
-<li><strong>C.</strong> A misconfigured share permission leaves the Wealth Management client balances folder open to every account in the domain, instead of Wealth Management Users only.</li>
+<li><strong>C.</strong> A share permission leaves the Wealth Management client balances folder open to every account in the domain, instead of Wealth Management Users only.</li>
 <li><strong>D.</strong> Someone in Operations was accidentally added to the group that can edit the fee schedule template Wealth Management sends to clients.</li>
 </ul>
-<p>Name what failed in each one, then rank all four the way an analyst would: by what's actually at stake for the firm, not by how loudly anyone is complaining.</p>
+<p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 4 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
 </div>
 
 <div class="ad-mission" data-id="rt-01" data-attempts="0">
@@ -148,6 +147,42 @@
 <div>
 <span>Why it matters</span>
 <p>Operations is marked not critical on the org chart, the same as IT. A printer outage there costs convenience, not regulated data or client trust. Ranking by complaint volume instead of department risk is how a team spends its week on the wrong fire.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission ad-mission--capstone" data-id="rt-05" data-attempts="0">
+<span class="ad-mission__num">Ticket 05 · INC-1081 · Medium</span>
+<p><strong>IT · Monday triage · 8:20 AM</strong><br>Ranking ticket C first was the easy part. Nobody's balance is any safer until the permission itself is fixed.</p>
+<p><strong>Task:</strong> On the domain controller, lock <code>C:\PurveX\Shares\WealthManagement</code> down to Wealth Management Users only, then report the group name that now shows Modify access on it.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the group now granted access on the Wealth Management share" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{wealth management users}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The folder inherits the whole <code>Shares</code> drive's broad permission right now. Breaking that inheritance and granting the one group that should actually have it is the fix, not just naming the problem.</p>
+<ol>
+<li>Open PowerShell on the domain controller.</li>
+<li><code>icacls "C:\PurveX\Shares\WealthManagement"</code> shows what the folder currently inherits.</li>
+<li><code>icacls "C:\PurveX\Shares\WealthManagement" /inheritance:r</code> stops it inheriting the wider <code>Shares</code> permission.</li>
+<li><code>icacls "C:\PurveX\Shares\WealthManagement" /grant "PURVEXFINANCIAL\Wealth Management Users:(OI)(CI)M"</code> grants the one department that should see it.</li>
+<li><code>icacls "C:\PurveX\Shares\WealthManagement" /grant "PURVEXFINANCIAL\Domain Admins:(OI)(CI)F"</code> keeps IT able to manage the folder.</li>
+<li>Confirm with <code>icacls "C:\PurveX\Shares\WealthManagement"</code> again and read the group names it now lists.</li>
+</ol>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="domain users|domain admins|everyone">That is either the broad access you just removed or a group you granted for IT management, not the department this folder actually belongs to.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{Wealth Management Users}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Naming a ticket's priority and closing it are two different jobs. <code>/inheritance:r</code> is what actually breaks the folder away from the wider share's permission, which is the one step a report alone never does. An audit finding that only gets written down, never fixed, protects nobody's balance by Tuesday.</p>
 </div>
 </div>
 </div>

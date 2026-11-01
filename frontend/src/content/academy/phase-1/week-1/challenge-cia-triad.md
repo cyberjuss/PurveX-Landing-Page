@@ -1,14 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Which Property Actually Failed?</h3>
-<p class="ad-brief__ask">Confidentiality, integrity and availability are three separate properties. Can you break each one on purpose, on a real machine, and prove which one you broke?</p>
-<p>Most people meet the CIA triad as three words on a slide and never see any of them fail. A property you have never watched break is a property you cannot recognize in a PurveX Financial ticket. Work on one file on your Ubuntu server. Break confidentiality, then integrity, then availability, and prove each failure with a command rather than an opinion.</p>
+<p class="ad-brief__ask">Confidentiality, integrity and availability are three separate properties. Can you break each one on purpose, fix the one you can still fix, and prove it with a command rather than an opinion?</p>
 <p>Your hosted lab needs to be running, with the Ubuntu desktop open. Nothing is installed for this lab; every command ships with the system. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
 </div>
 
 ### Before You Start
@@ -289,6 +288,43 @@ Answer from what you saw, not from what you remember reading.
 <div>
 <span>Why it matters</span>
 <p>Encryption is an availability failure you can usually recover from with a clean backup. A stolen copy already in an attacker's hands is a confidentiality failure a backup cannot undo, which is why modern ransomware steals data before it encrypts anything at all.</p>
+</div>
+</div>
+</div>
+</div>
+
+### Fix What You Broke
+
+Naming a failure and closing it are two different jobs. You still have one confidentiality failure sitting open on your own machine: <code>ledger.txt</code> at <code>chmod 600</code>, unreadable by jamie.torres.
+
+<div class="ad-mission ad-mission--capstone" data-id="w1e-c6" data-attempts="0">
+<span class="ad-mission__num">Ticket 05 · INC-1151 · Low</span>
+<p><strong>IT · Follow-up · 9:20 AM</strong><br>jamie.torres is back from Wealth Management asking why the ledger they could read this morning is now denying them.</p>
+<p><strong>Task:</strong> Restore jamie.torres's read access on <code>/srv/cia/ledger.txt</code>, confirm it with the same command you used to break it, then report the permission string <code>ls -l</code> now shows for the file.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the restored permission string" placeholder="a permission string" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{-rw-r--r--}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>You set this file to <code>644</code> yourself right after creating it, before breaking confidentiality on purpose.</p>
+<ol>
+<li><code>chmod 644 /srv/cia/ledger.txt</code> restores group and other read access.</li>
+<li><code>sudo -u jamie.torres cat /srv/cia/ledger.txt</code> confirms the read works again, the same command that failed before.</li>
+<li><code>ls -l /srv/cia/ledger.txt</code> prints the permission string to report.</li>
+</ol>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="-rw-------">That is the broken state from <code>chmod 600</code>, the one you are fixing, not the one you are restoring to.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>-rw-r--r--</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Confidentiality is the one property in this whole lab you can actually put back the way it was. A hash can prove integrity broke but never un-happen the change itself, and the minutes nginx was down are gone either way. A wrong permission is just a wrong permission, fixed with the same tool that broke it, which is why access reviews exist: the fix is this cheap, every time, if anyone ever checks.</p>
 </div>
 </div>
 </div>

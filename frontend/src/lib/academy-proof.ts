@@ -441,7 +441,8 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {};
  * out of this list to avoid tagging the same skill twice.
  */
 const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "response"; label: string }[] = [
-  { id: "rt-04", bucket: "response", label: "Risk Assessment and Triage" },
+  { id: "rt-05", bucket: "response", label: "Risk Assessment and Triage" },
+  { id: "w1e-c6", bucket: "response", label: "File Permission Remediation" },
   { id: "mw2-02", bucket: "monitoring", label: "Sysmon" },
   { id: "mw2-04", bucket: "response", label: "Windows Defender / EDR" },
   { id: "la2-02", bucket: "monitoring", label: "Cross-Host Log Correlation" },
@@ -454,7 +455,7 @@ const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "resp
   { id: "sm2-02", bucket: "monitoring", label: "5 W's Incident Documentation" },
   { id: "la2-04", bucket: "monitoring", label: "PowerShell Script Block Logging" },
   { id: "nm-02", bucket: "network", label: "Network Baselining" },
-  { id: "tr-06", bucket: "monitoring", label: "KQL Detection Writing (TRACE)" },
+  { id: "tr-08", bucket: "monitoring", label: "KQL Detection Writing (TRACE)" },
 ];
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {

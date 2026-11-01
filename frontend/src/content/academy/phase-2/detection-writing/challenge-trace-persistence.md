@@ -1,14 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Build the Detection That Would Have Caught It</h3>
-<p class="ad-brief__ask">You already read TRACE built end to end for Password Spraying. Can you build a second one yourself, for a technique your own lab already showed you, then prove it actually fires?</p>
-<p>In Phase 2 Week 1 you found <code>WindowsDiagnosticsSync</code> by hand: a scheduled task on the domain controller relaunching a hidden PowerShell command every 15 minutes, reaching <code>203.0.113.77:4444</code>, with no file and no owner behind it. That is T1053.005, Scheduled Task. Microsoft Defender for Endpoint is the EDR this environment uses, and its process telemetry lives in <code>DeviceProcessEvents</code>. Build the five TRACE letters for this exact technique, one at a time, then test the finished query against two real-looking scenarios to prove it tells them apart.</p>
-<p>Each step takes a short answer, and the hint unlocks after two misses. Nothing here runs against a live tenant; type the KQL exactly as asked.</p>
+<p class="ad-brief__ask">You disabled <code>WindowsDiagnosticsSync</code> by hand in Week 1. The rule that let it call out is still open. Build the standing detection, then close what you left behind.</p>
+<p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 8 solved</span>
 </div>
 
 <div class="ad-mission" data-id="tr-01" data-attempts="0">
@@ -148,7 +147,39 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="tr-06" data-attempts="0">
+<div class="ad-mission" data-id="tr-06" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1150 · Medium</span>
+<p><strong>Task:</strong> You picked a 7-day window and a threshold of 20 from reasoning alone. Now check the real task. On your own domain controller, run <code>(Get-ScheduledTask -TaskName "WindowsDiagnosticsSync").Triggers.Repetition.Interval</code>. It returns an ISO 8601 duration like <code>PT15M</code>. Type the number of minutes it represents.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the real repetition interval in minutes" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{15}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The task object itself still exists; disabling it in Week 1 did not delete its definition, only its ability to fire. <code>PT15M</code> reads as a Period of Time, 15 Minutes.</p>
+<ol>
+<li>Open PowerShell on the domain controller.</li>
+<li><code>Get-ScheduledTask -TaskName "WindowsDiagnosticsSync"</code> confirms it is still there and now Disabled.</li>
+<li><code>.Triggers.Repetition.Interval</code> reads the schedule straight off that trigger.</li>
+</ol>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="pt15m">Strip the ISO 8601 wrapper and report the plain number of minutes it names.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>15</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Every number in this detection so far came from reasoning about what seemed defensible. This one came off the task's own definition on your own machine. A 7-day window and a threshold of 20 are not guesses now; they are sized against a real 15-minute interval that produces roughly 96 launches a day, the same way an analyst would size them against a vendor's documented schedule rather than a hunch.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission ad-mission--capstone" data-id="tr-07" data-attempts="0">
 <span class="ad-mission__num">Prove It · INC-1150 · High</span>
 <p><strong>Detection Review · Theo Walsh · 11:00 AM</strong><br>Theo Walsh hands you two device summaries from the finished query's output and asks which one this detection actually fires on.<br><strong>WM-WKS07:</strong> 94 hidden-window <code>powershell.exe</code> launches today.<br><strong>IT-WKS02:</strong> 6 hidden-window <code>powershell.exe</code> launches today, all during a scripted patch run Alex Rivera kicked off by hand.</p>
 <p><strong>Task:</strong> Which device does the finished query, threshold 20, actually fire on? Type its letter.<br><strong>A</strong> WM-WKS07 only.<br><strong>B</strong> IT-WKS02 only.<br><strong>C</strong> Both.<br><strong>D</strong> Neither.</p>
@@ -178,6 +209,38 @@
 </div>
 </div>
 
+<div class="ad-mission ad-mission--capstone" data-id="tr-08" data-attempts="0">
+<span class="ad-mission__num">Close What's Still Open · INC-1150 · High</span>
+<p><strong>Detection Review · Theo Walsh · 11:10 AM</strong><br>Disabling <code>WindowsDiagnosticsSync</code> in Week 1 stopped the task. It never touched the outbound rule that let it reach <code>203.0.113.77:4444</code> in the first place, and that rule is still enabled right now on your own domain controller.</p>
+<p><strong>Task:</strong> Find the outbound rule named <code>Windows Update Assistant Network</code> and disable it, then run <code>Get-NetFirewallRule -DisplayName "Windows Update Assistant Network" | Select-Object Enabled</code> and type what it now reports.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for the firewall rule's Enabled state after disabling it" placeholder="True or False" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{false}" data-accept="disabled">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>A detection tells you something is happening. It does not stop it. Those are two different jobs, and this ticket is still open until you do the second one yourself.</p>
+<ol>
+<li><code>Get-NetFirewallRule -DisplayName "Windows Update Assistant Network" | Disable-NetFirewallRule</code></li>
+<li>Confirm it with <code>Get-NetFirewallRule -DisplayName "Windows Update Assistant Network" | Select-Object DisplayName, Enabled</code>.</li>
+</ol>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="true|enabled">That is the state before you disabled it. Run <code>Disable-NetFirewallRule</code> against it first, then check Enabled again.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>False</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A standing KQL detection and a disabled task both leave the door itself unlocked. The rule that let <code>WindowsDiagnosticsSync</code> reach out in the first place was never part of the Week 1 fix, and it sat open through every mission in this one until you closed it just now. Writing the detection was the engineering half of this ticket. Closing the rule is the part that actually ends it.</p>
+</div>
+</div>
+</div>
+</div>
+
 ### Why It Matters
 
-The lesson built one detection for you, start to finish, for Password Spraying. Building a second one yourself, for a technique your own lab already handed you real evidence for, is what turns TRACE from something you read into something you can actually do the next time a vague alert needs a standing answer instead of another hour of manual hunting.
+The lesson built one detection for you, start to finish, for Password Spraying. Building a second one yourself, for a technique your own lab already handed you real evidence for, is what turns TRACE from something you read into something you can actually do the next time a vague alert needs a standing answer instead of another hour of manual hunting. Finding the real 15-minute interval on your own task and closing the rule it depended on is what keeps this from being a KQL-writing exercise with a story wrapped around it.
