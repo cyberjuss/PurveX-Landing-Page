@@ -6,6 +6,7 @@ import { sanitizeProfile, type RoleBrief, type RoleId, type StudentProfile } fro
 import type { DrillEntry, EntryMode } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
 import { sanitizeResults, type Results } from "@/lib/academy-score";
+import { applyPatch, sanitizeSaved, type Saved, type SavedPatch } from "@/lib/academy-saved";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 // Supabase when the service role is configured; per-process memory
@@ -20,6 +21,7 @@ const memoryLab = new Map<string, { snapshot: LabSnapshot; uploadedAt: string }>
 const memoryProfiles = new Map<string, StudentProfile>();
 const memoryRoleBriefs = new Map<string, RoleBrief>();
 const memoryActivity = new Map<string, StudentActivity>();
+const memorySaved = new Map<string, Saved>();
 
 function todayStamp() {
   return new Date().toISOString().slice(0, 10);
@@ -49,70 +51,34 @@ export async function saveProgress(userId: string, email: string | null, results
   if (error) console.error("academy_progress upsert failed", error.message);
 }
 
-// ── Portal state ────────────────────────────────────────────────────────────
-// Week completions, quiz passes, labs done, last stop, and one-time onboarding
-// flags. Kept in the academy_progress row alongside results, in its own column,
-// so a new browser or device restores a student's place after they sign in.
-export type PortalState = {
-  completed: string[];
-  quizPasses: string[];
-  labsDone: string[];
-  lastStop: string | null;
-  flags: Record<string, boolean>;
-};
-
-const memoryPortal = new Map<string, PortalState>();
-const EMPTY_PORTAL: PortalState = { completed: [], quizPasses: [], labsDone: [], lastStop: null, flags: {} };
-
-function cappedStrings(v: unknown, cap = 4000): string[] {
-  if (!Array.isArray(v)) return [];
-  const seen = new Set<string>();
-  for (const x of v) {
-    if (typeof x === "string") seen.add(x.slice(0, 200));
-    if (seen.size >= cap) break;
-  }
-  return [...seen];
-}
-
-export function sanitizePortal(raw: unknown): PortalState {
-  const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-  const flags: Record<string, boolean> = {};
-  if (o.flags && typeof o.flags === "object") {
-    let n = 0;
-    for (const [k, val] of Object.entries(o.flags as Record<string, unknown>)) {
-      if (typeof k === "string" && val) flags[k.slice(0, 80)] = true;
-      if (++n >= 100) break;
-    }
-  }
-  return {
-    completed: cappedStrings(o.completed),
-    quizPasses: cappedStrings(o.quizPasses),
-    labsDone: cappedStrings(o.labsDone),
-    lastStop: typeof o.lastStop === "string" ? o.lastStop.slice(0, 200) : null,
-    flags,
-  };
-}
-
-export async function loadPortal(userId: string): Promise<PortalState> {
+/** Null when the stored copy could not be read, so a caller never mistakes an outage for an empty account. */
+export async function loadSaved(userId: string): Promise<Saved | null> {
   if (supabaseAdmin) {
-    const { data } = await supabaseAdmin.from("academy_progress").select("portal").eq("user_id", userId).maybeSingle();
-    return sanitizePortal(data?.portal);
+    const { data, error } = await supabaseAdmin.from("academy_saved").select("data").eq("user_id", userId).maybeSingle();
+    if (error) {
+      console.error("academy_saved read failed", error.message);
+      return null;
+    }
+    return sanitizeSaved(data?.data);
   }
-  return memoryPortal.get(userId) || EMPTY_PORTAL;
+  return memorySaved.get(userId) ?? sanitizeSaved(null);
 }
 
-export async function savePortal(userId: string, email: string | null, portal: PortalState) {
-  memoryPortal.set(userId, portal);
-  if (!supabaseAdmin) return;
-  // Only this row's portal column is written, so a concurrent results save is
-  // left untouched, and a fresh insert keeps the column default for results.
-  const { error } = await supabaseAdmin.from("academy_progress").upsert({
-    user_id: userId,
-    email,
-    portal,
-    updated_at: new Date().toISOString(),
-  });
-  if (error) console.error("academy_progress portal upsert failed", error.message);
+/** Applies a change on top of what is stored. Null when it could not be read or written. */
+export async function patchSaved(userId: string, patch: SavedPatch): Promise<Saved | null> {
+  const current = await loadSaved(userId);
+  if (!current) return null;
+  const next = applyPatch(current, patch);
+  if (!supabaseAdmin) {
+    memorySaved.set(userId, next);
+    return next;
+  }
+  const { error } = await supabaseAdmin.from("academy_saved").upsert({ user_id: userId, data: next, updated_at: new Date().toISOString() });
+  if (error) {
+    console.error("academy_saved upsert failed", error.message);
+    return null;
+  }
+  return next;
 }
 
 export async function readUsage(userId: string, day = todayStamp()): Promise<number> {

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Clock, Gauge, KeyRound, MonitorPlay, Server, Timer, X, type LucideIcon } from "lucide-react";
 import "./lab-briefing.css";
-import { persistPortalFlag } from "@/lib/academy-client";
+import { hasSeenFlag, markFlagSeen } from "@/lib/academy-saved-client";
 
 // What a student needs to know before their first hosted lab. It stands
 // between the first "Start my lab" and the start itself, so reading it is on
@@ -17,6 +17,9 @@ import { persistPortalFlag } from "@/lib/academy-client";
 const KEY = "purvex.lab.brief.v1";
 
 export const labBriefed = (): boolean => {
+  // The account's copy covers another browser or device; this browser's own
+  // flag covers the moment before that copy has loaded.
+  if (hasSeenFlag("labBrief")) return true;
   try {
     return window.localStorage.getItem(KEY) === "1";
   } catch {
@@ -31,7 +34,7 @@ export const markLabBriefed = (): void => {
     window.localStorage.setItem(KEY, "1");
   } catch {}
   // Also remember it on the account, so a new browser skips the briefing.
-  persistPortalFlag("labBrief");
+  markFlagSeen("labBrief");
 };
 
 type Point = { Icon: LucideIcon; title: string; body: string };
