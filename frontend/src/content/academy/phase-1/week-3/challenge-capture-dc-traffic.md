@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>From one machine, can you capture and read a conversation it is having with another? And what can that machine's capture never show you?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>Capture the Conversation, Not Just the Machine</h3>
+<p class="ad-brief__ask">From one machine, can you capture and read a conversation it is having with another? And what can that machine's capture never show you?</p>
+<p>PurveX Financial's analysts rarely sit on the server they are investigating. They watch from a separate machine and read the traffic as it crosses the wire. On the Ubuntu server, open Wireshark, make the machine talk to the domain controller, and capture the exchange. Find the handshake, the ports and the protocols from the domain controller's own replies.</p>
+<p>Your hosted lab needs to be running, with both machines started. Wireshark is already installed on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** Analysts rarely sit on the server they are investigating. They watch from a separate machine and read the traffic as it crosses the wire. Learning to capture from one box the conversation it holds with another is the everyday shape of the work.
-
-**Task:** On the Ubuntu server, open Wireshark, make the machine talk to the domain controller, and capture the exchange. Find the handshake, the ports and the protocols from the domain controller's own replies. Predict what you will see, and what the capture cannot contain, before you start.
-
-**What you need:** Your hosted lab running, with both machines started. Wireshark is already installed on the Ubuntu desktop. The two machines must be able to reach each other, so if a later step cannot connect, see Troubleshooting at the end.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+</div>
 
 ### Before You Start
 
@@ -122,12 +124,18 @@ This is the move an analyst reaches for first when one conversation matters. Clo
 Answer from what you captured, not from what you remember reading.
 
 <div class="ad-mission" data-id="w3e-c1" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1102 · Low</span>
 <p><strong>Task:</strong> Could this Ubuntu capture show you a conversation between the domain controller and a third machine it never involved? Type yes or no.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether the capture could show a third machine's traffic" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>You started the capture on the Ubuntu box's own network card, `ens5`. Think about whose traffic a network card actually sees on a switched network.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="yes">A network card on a switched network sees only what it sends or receives, not traffic between two other machines entirely.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -145,12 +153,19 @@ Answer from what you captured, not from what you remember reading.
 ### Read the LDAP Handshake
 
 <div class="ad-mission" data-id="w3e-c2" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1103 · Low</span>
 <p><strong>Task:</strong> For the LDAP connection in your capture, which packet came back from the domain controller to open the handshake? Type it exactly as Wireshark's Info column shows it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the handshake packet from the domain controller" placeholder="packet type" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{syn-ack}" data-accept="syn ack|syn,ack">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The three-way handshake is SYN, then a reply, then ACK. Your Ubuntu box sent the first and third; the domain controller sent the one in between.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="syn">That packet opened the handshake, but it came from your Ubuntu box, not back from the domain controller.</div>
+<div class="ad-miss" data-guess="ack">The final ACK in the handshake came from your Ubuntu box too, closing the three-way exchange. The domain controller's own packet sits between the two.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -168,12 +183,18 @@ Answer from what you captured, not from what you remember reading.
 ### Count the DNS Exchange
 
 <div class="ad-mission" data-id="w3e-c3" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1104 · Low</span>
 <p><strong>Task:</strong> In your capture, how many packets did the DNS request and reply need? Type the number.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the number of DNS packets" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>DNS runs over UDP, which has no handshake to set up first. Count just the question and the answer.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="3">That is the LDAP handshake's packet count, not DNS. DNS over UDP needs no handshake at all.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -193,12 +214,19 @@ Answer from what you captured, not from what you remember reading.
 Look at the LDAP conversation's TCP handshake again. The source port, the one on the Ubuntu box, is a high, random-looking number. The destination port, the one on the domain controller, is 389 every single time.
 
 <div class="ad-mission" data-id="w3e-c5" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1105 · Low</span>
 <p><strong>Task:</strong> If you captured this same LDAP query again a minute later, which port would you expect to change, and which would stay fixed? Type its letter.<br><strong>A</strong> Both ports stay exactly the same on every connection.<br><strong>B</strong> The source port changes each time, a fresh one picked for the new connection. The destination port stays 389, the LDAP service's own fixed address.<br><strong>C</strong> The destination port changes each time, and the source port stays fixed.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which port changes and which stays fixed" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Think about how a reply finds its way back to the right connection, versus how a client finds the LDAP service on the domain controller in the first place.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">Every new connection gets a fresh source port, picked by the client, so it cannot stay the same on every run.</div>
+<div class="ad-miss" data-guess="c">The domain controller's LDAP service listens on the same fixed port every time, 389. The source port is the one that changes.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -216,12 +244,20 @@ Look at the LDAP conversation's TCP handshake again. The source port, the one on
 ### Isolate One Conversation
 
 <div class="ad-mission ad-mission--capstone" data-id="w3e-c4" data-attempts="0">
-<p><strong>Task:</strong> You want to read one connection's whole exchange without the surrounding noise. Which Wireshark move does that? Type its letter.<br><strong>A</strong> Opening the Bytes pane.<br><strong>B</strong> Right-click a packet, Follow, TCP Stream.<br><strong>C</strong> Scrolling the Packet List faster.</p>
+<span class="ad-mission__num">Ticket 05 · INC-1106 · Medium</span>
+<p><strong>SOC Lead · Investigation Technique · 1:00 PM</strong><br>A PurveX Financial investigation needs one connection's whole exchange read start to finish, without the surrounding noise of everything else on the wire.</p>
+<p><strong>Task:</strong> Which Wireshark move does that? Type its letter.<br><strong>A</strong> Opening the Bytes pane.<br><strong>B</strong> Right-click a packet, Follow, TCP Stream.<br><strong>C</strong> Scrolling the Packet List faster.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the Wireshark move that reads a full conversation" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>You used this exact move on the LDAP connection earlier in this lab to pull one conversation out of the noise.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">The Bytes pane shows raw data for one packet at a time. It does not reassemble a whole conversation.</div>
+<div class="ad-miss" data-guess="c">Scrolling faster still shows every unrelated packet mixed in. It does not isolate one connection.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

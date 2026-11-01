@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>Before an attacker breaks in, they knock on every door to see which ones open. Captured from the defender's side, can you tell an open door from a closed one from a door a firewall is holding shut?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>Open, Closed, or Just Guarded?</h3>
+<p class="ad-brief__ask">Before an attacker breaks in, they knock on every door to see which ones open. Captured from the defender's side, can you tell an open door from a closed one from a door a firewall is holding shut?</p>
+<p>Almost every intrusion against PurveX Financial starts with reconnaissance. The attacker scans a machine to learn which ports are open before choosing where to push. From the Ubuntu server, scan the domain controller's ports with a plain built-in tool, the way an administrator inventories a machine, and capture it in Wireshark to learn the three answers a port can give.</p>
+<p>Your hosted lab needs to be running, with both machines started and able to reach each other. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** Almost every intrusion starts with reconnaissance. The attacker scans a machine to learn which ports are open before choosing where to push. The scan breaks nothing, which is why it slips past, and reading one in a capture is often the only early warning a team gets.
-
-**Task:** From the Ubuntu server, scan the domain controller's ports with a plain built-in tool, the way an administrator inventories a machine. Capture it in Wireshark and learn the three answers a port can give. Predict each before you run it.
-
-**What you need:** Your hosted lab running, with both machines started and able to reach each other. If the capture lab before this one worked, this one will. You use only tools already on the Ubuntu box, so this is reconnaissance read from the defender's side.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
+</div>
 
 ### Before You Start
 
@@ -99,12 +101,18 @@ nmap -sT -p 53,88,389,445,3389,23,8080,9999 dc01
 Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the exact three answers you already read from raw packets, just labeled for you instead of worked out by hand.
 
 <div class="ad-mission" data-id="w3m-c5" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1107 · Low</span>
 <p><strong>Task:</strong> Run the Nmap scan above. What does it report for port 445?</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what Nmap reports on port 445" placeholder="open, closed, or filtered" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{open}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>You already read this port's handshake by hand in your Wireshark capture a few steps ago. Nmap should land on the same answer.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="closed|filtered">Check your capture again: port 445 completed the full three-way handshake, SYN, SYN-ACK, ACK.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -122,12 +130,19 @@ Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the ex
 ### Weigh a Stealthier Scan
 
 <div class="ad-mission" data-id="w3m-c6" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1108 · Low</span>
 <p><strong>Task:</strong> The scan you just ran (<code>-sT</code>) completes the full three-way handshake on every open port, same as your bash loop. A SYN scan (<code>-sS</code>) instead sends SYN, reads SYN-ACK, then sends RST instead of finishing with ACK. Why might an attacker prefer that? Type its letter.<br><strong>A</strong> It is faster, and it never fully opens a connection the target's own application might log.<br><strong>B</strong> It is slower but gives a more accurate result.<br><strong>C</strong> There is no real difference between the two on the wire.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for why an attacker might prefer a SYN scan" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Think about which layer of logging only ever sees a connection that fully completed, versus the packet capture, which sees every packet regardless.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="b">A SYN scan sends fewer packets per port, not more, so it is the faster option, not the slower one.</div>
+<div class="ad-miss" data-guess="c">Finishing with ACK versus RST is a real, visible difference in the capture: one completes the connection, the other tears it down early.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -147,12 +162,18 @@ Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the ex
 Answer from what you captured, not from what you remember reading.
 
 <div class="ad-mission" data-id="w3m-c1" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1109 · Low</span>
 <p><strong>Task:</strong> For an open port like 445 in your capture, how did the handshake end? Name all three packets in order, comma-separated.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for how the handshake ended on an open port" placeholder="first, second, third" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{syn, syn-ack, ack}" data-accept="syn,syn-ack,ack|syn, syn ack, ack">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>This is the exact same three-way handshake you read in the Wireshark lab before this one, just completing this time instead of failing.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="syn-ack|rst">A single packet is not the whole handshake. Name all three packets, in the order they crossed the wire.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -170,12 +191,19 @@ Answer from what you captured, not from what you remember reading.
 ### Read a Filtered Port
 
 <div class="ad-mission" data-id="w3m-c2" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1110 · Low</span>
 <p><strong>Task:</strong> A port where the firewall drops the traffic looks like what in your capture? Type its letter.<br><strong>A</strong> A completed handshake.<br><strong>B</strong> A single RST.<br><strong>C</strong> A SYN sent again and again with no reply.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what a filtered port looks like in the capture" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>A firewall that drops traffic in silence leaves the sender with nothing to go on, so it keeps trying the same thing.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">A completed handshake is what an open port looks like, not one being blocked by a firewall.</div>
+<div class="ad-miss" data-guess="b">A single RST is what a closed port sends, a machine actively refusing the connection. A filtered port gives no reply at all.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -193,12 +221,19 @@ Answer from what you captured, not from what you remember reading.
 ### Tell Closed From Filtered
 
 <div class="ad-mission" data-id="w3m-c3" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1111 · Low</span>
 <p><strong>Task:</strong> What is the difference between a closed port and a filtered port? Type its letter.<br><strong>A</strong> There is none, both are shut.<br><strong>B</strong> Closed answers with a RST, filtered answers with silence.<br><strong>C</strong> Closed is slower than filtered.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the difference between closed and filtered" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Both keep a scanner out, but one of them tells the scanner so, and the other says nothing at all.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">They look different in a capture: one gets a clear refusal, the other gets no reply at all. That difference is what tells a defender a firewall is in the picture.</div>
+<div class="ad-miss" data-guess="c">Speed is not what tells these apart. Whether the machine answers at all is the difference.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -216,12 +251,20 @@ Answer from what you captured, not from what you remember reading.
 ### Name What Detection Rests On
 
 <div class="ad-mission ad-mission--capstone" data-id="w3m-c4" data-attempts="0">
-<p><strong>Task:</strong> The scan used a plain bash loop, not a hacking tool. What does that mean for detection? Type its letter.<br><strong>A</strong> Scans cannot be detected.<br><strong>B</strong> You detect the pattern in the traffic, not a banned tool.<br><strong>C</strong> Only special attacker tools leave a trace.</p>
+<span class="ad-mission__num">Ticket 07 · INC-1112 · Medium</span>
+<p><strong>Detection Engineering · Design Question · 2:30 PM</strong><br>PurveX Financial's detection team wants to write a rule for scans like the one you just ran, but the scan used a plain bash loop, not a hacking tool.</p>
+<p><strong>Task:</strong> What does that mean for detection? Type its letter.<br><strong>A</strong> Scans cannot be detected.<br><strong>B</strong> You detect the pattern in the traffic, not a banned tool.<br><strong>C</strong> Only special attacker tools leave a trace.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what detection actually relies on" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The bash loop and Nmap produced the exact same shape on the wire: one source, many ports, in a burst. That shape is what a detection would have to key on.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">You already saw the scan's shape clearly in Statistics → Conversations: one source hitting many ports. That is detectable.</div>
+<div class="ad-miss" data-guess="c">The plain bash loop you ran was not a special attacker tool at all, and it produced the same detectable pattern as Nmap did.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

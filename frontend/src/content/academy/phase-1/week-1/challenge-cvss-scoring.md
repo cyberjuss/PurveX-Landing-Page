@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>Two machines have the same vulnerability. Why is it an emergency on one of them and almost nothing on the other?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>Score It the Way PurveX Actually Runs</h3>
+<p class="ad-brief__ask">Two machines share the same vulnerability. Why is it an emergency on one of them and almost nothing on the other?</p>
+<p>A scanner reports a vulnerability as Critical and every team in the building wants it fixed first. The score it printed was calculated by someone who has never seen PurveX Financial's network. Score three findings with the official CVSS calculator, first the way a vendor publishes them and then the way they apply to your own lab machine.</p>
+<p>Your hosted lab needs to be running, with Firefox open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** A scanner reports a vulnerability as Critical and every team in the building wants it fixed first. The score it printed was calculated by someone who has never seen your network.
-
-**Task:** Score three findings with the official CVSS calculator, first the way a vendor publishes them and then the way they apply to your own lab machine. Rank the three by what you would fix first, and be ready to say why your order differs from the scores.
-
-**What you need:** Your hosted lab running, and Firefox on the Ubuntu desktop. CVSS stands for Common Vulnerability Scoring System, the standard most scanners and advisories use to rate a weakness.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+</div>
 
 ### Before You Start
 
@@ -113,12 +115,18 @@ Record this third number. You now have one flaw with three honest scores, and no
 ### Check Yourself
 
 <div class="ad-mission" data-id="w1m-c1" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1087 · Low</span>
 <p><strong>Task:</strong> Did the Base Score change at any point during this lab? Type its letter.<br><strong>A</strong> Yes.<br><strong>B</strong> No.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether the base score changed" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>You entered the same vector string for Finding A every time. Only the Environmental group's inputs changed between runs.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">The vector string for each finding never changed between runs. Only the Environmental Score group's inputs did.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -136,12 +144,18 @@ Record this third number. You now have one flaw with three honest scores, and no
 ### Compare the Two Machines
 
 <div class="ad-mission" data-id="w1m-c2" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1088 · Low</span>
 <p><strong>Task:</strong> For finding A, which Environmental Score was higher? Type its letter.<br><strong>A</strong> The practice server that holds nothing.<br><strong>B</strong> The domain controller that holds every account.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which machine scored higher" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Compare the Security Requirements you set for each run: Low, Low, Low versus High, High, High.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">That machine's Security Requirements were set to Low across the board, which pulls the Environmental Score down, not up.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -159,12 +173,19 @@ Record this third number. You now have one flaw with three honest scores, and no
 ### Name the Model Behind the Inputs
 
 <div class="ad-mission" data-id="w1m-c3" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1089 · Low</span>
 <p><strong>Task:</strong> The three Security Requirements are named after which model from this week? Type its letter.<br><strong>A</strong> The CIA triad.<br><strong>B</strong> The AAA model.<br><strong>C</strong> The TCP handshake.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which model the security requirements are named after" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Confidentiality Requirement, Integrity Requirement, Availability Requirement. The first word of each name is the giveaway.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="b">AAA is Authentication, Authorization and Accounting, a different model from a later week. These three requirements spell out something else.</div>
+<div class="ad-miss" data-guess="c">The TCP handshake has nothing to do with scoring a vulnerability's impact. Read the three requirement names again.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -182,12 +203,19 @@ Record this third number. You now have one flaw with three honest scores, and no
 ### Name What Captures the Machine's Value
 
 <div class="ad-mission" data-id="w1m-c4" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1090 · Low</span>
 <p><strong>Task:</strong> Which CVSS input captures that a machine holds nothing sensitive? Type its letter.<br><strong>A</strong> The Security Requirements (CR, IR, AR).<br><strong>B</strong> The Base Score.<br><strong>C</strong> The Attack Complexity.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which input captures the machine's value" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The Base Score was identical across every machine you tested. Whatever made the practice server and the domain controller score differently lives somewhere else.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="b">The Base Score never changed between the two machines you scored. It cannot be the input that told them apart.</div>
+<div class="ad-miss" data-guess="c">Attack Complexity is part of the Base Score and stayed fixed too. It describes the flaw, not what the machine holds.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -205,12 +233,20 @@ Record this third number. You now have one flaw with three honest scores, and no
 ### Justify a Real Patching Decision
 
 <div class="ad-mission ad-mission--capstone" data-id="w1m-c5" data-attempts="0">
-<p><strong>Task:</strong> A scanner reports the same Critical finding on two machines. One is a test box rebuilt every night. The other is the server that issues client statements. The team can fix one today. Which CVSS input justifies fixing the client-statement server first, to a manager who only saw the word Critical? Type its letter.<br><strong>A</strong> The Base Score, since it is higher on the more important machine.<br><strong>B</strong> The Security Requirements, since they are what actually differ between the two machines and what raises the client-statement server's Environmental Score above the test box's.<br><strong>C</strong> Attack Complexity, since the client-statement server is harder to reach.</p>
+<span class="ad-mission__num">Ticket 05 · INC-1091 · High</span>
+<p><strong>IT Manager · Patch Prioritization · 4:00 PM</strong><br>A scanner reports the same Critical finding on two PurveX Financial machines. One is a test box rebuilt every night. The other is the server that issues client statements. The team can fix one today.</p>
+<p><strong>Task:</strong> Which CVSS input justifies fixing the client-statement server first, to a manager who only saw the word Critical? Type its letter.<br><strong>A</strong> The Base Score, since it is higher on the more important machine.<br><strong>B</strong> The Security Requirements, since they are what actually differ between the two machines and what raises the client-statement server's Environmental Score above the test box's.<br><strong>C</strong> Attack Complexity, since the client-statement server is harder to reach.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which CVSS input justifies the patching decision" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The same finding carries the same Base Score on both machines. Name the input built specifically to say what each machine is actually worth.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">The Base Score is identical on both machines by definition, since it describes the flaw itself, not either server.</div>
+<div class="ad-miss" data-guess="c">Attack Complexity is also part of the Base Score and does not vary by machine. It cannot be what separates these two tickets.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

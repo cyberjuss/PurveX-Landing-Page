@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>A coworker needs to restart one service as an administrator and nothing more. Can you grant exactly that, and prove you did not quietly hand over the whole machine?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>Grant Exactly One Power, Not the Whole Machine</h3>
+<p class="ad-brief__ask">A coworker needs to restart one service as an administrator and nothing more. Can you grant exactly that, and prove you did not quietly hand over the whole machine?</p>
+<p>Authorization is deciding what an account may do once it has proved who it is. The safe rule at PurveX Financial is least privilege, giving each account only what its job needs. The careless version, a rule that grants more than intended, is how one ordinary account turns into control of the whole server. On the Ubuntu server, write a sudo rule that lets a user restart one service and nothing else, then look at a broader rule and say exactly how much more it would give away.</p>
+<p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** Authorization is deciding what an account may do once it has proved who it is. The safe rule is least privilege, giving each account only what its job needs. The careless version, a rule that grants more than intended, is how one ordinary account turns into control of the whole server.
-
-**Task:** On the Ubuntu server, write a sudo rule that lets a user restart one service and nothing else. Prove the allowed command works, prove a second command is refused, then look at a broader rule and say exactly how much more it would give away. Predict each result before you check it.
-
-**What you need:** Your hosted lab running, and a terminal on the Ubuntu desktop. You use only built-in tools. Nothing here attacks anything. You are writing and auditing permissions the way an administrator does.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+</div>
 
 ### Before You Start
 
@@ -117,12 +119,18 @@ sudo userdel -r webops
 Answer from what you saw, not from what you remember reading.
 
 <div class="ad-mission" data-id="w4m-c1" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1123 · Low</span>
 <p><strong>Task:</strong> With webops granted only the nginx restart, what happened when you tried to restart ssh? Type its letter.<br><strong>A</strong> It worked, since one sudo rule unlocks all of sudo.<br><strong>B</strong> It was refused.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what happened restarting ssh" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Look at the actual terminal output from the "Prove It Works and Prove It Stops" step. The second command printed a message about webops specifically.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">The command printed a refusal naming webops. A sudo rule grants only the exact command it names.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -140,12 +148,19 @@ Answer from what you saw, not from what you remember reading.
 ### Read What a Broad Rule Actually Grants
 
 <div class="ad-mission" data-id="w4m-c2" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1124 · Low</span>
 <p><strong>Task:</strong> The broad rule named "systemctl" with no service. What did it actually grant? Type its letter.<br><strong>A</strong> Only restarting nginx.<br><strong>B</strong> Nothing, it is invalid.<br><strong>C</strong> Control of any service, including stopping security tools.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what the broad rule actually granted" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Compare the two rules character by character. The narrow one ends in <code>restart nginx</code>. The broad one stops right after <code>systemctl</code>.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">That is what the narrow rule granted, the one with <code>restart nginx</code> written into it. This rule stops at <code>systemctl</code> with no service named.</div>
+<div class="ad-miss" data-guess="b">The rule is perfectly valid syntax. That is exactly the danger: nothing stops you from writing it, and nothing in sudo objects when you do.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -163,12 +178,19 @@ Answer from what you saw, not from what you remember reading.
 ### Explain Why Trust Is Not the Argument
 
 <div class="ad-mission" data-id="w4m-c3" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1125 · Low</span>
 <p><strong>Task:</strong> Why write the rule as narrowly as possible even for someone you trust? Type its letter.<br><strong>A</strong> A stolen account can only do what the rule allows, so a narrow rule limits the damage.<br><strong>B</strong> Narrow rules run faster.<br><strong>C</strong> It is only about trust, so it does not matter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for why to write the rule narrowly even for a trusted person" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The rule does not know or care who is typing the password. It only knows the account name on the request.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="b">Both rules run instantly either way. Speed was never the reason least privilege matters.</div>
+<div class="ad-miss" data-guess="c">Trust describes the person, but sudo enforces rules against the account, which anyone holding its credentials can use.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -186,12 +208,19 @@ Answer from what you saw, not from what you remember reading.
 ### Name the Audit Command
 
 <div class="ad-mission" data-id="w4m-c4" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1126 · Low</span>
 <p><strong>Task:</strong> Which command let you audit webops's privileges without logging in as them? Type its letter.<br><strong>A</strong> cat /etc/passwd.<br><strong>B</strong> sudo -l -U webops.<br><strong>C</strong> whoami.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which command audits a user's sudo privileges" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>You ran this one in "Grant Exactly One Command," right after writing the sudoers file, to confirm it did what you meant.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">That lists account names on the system, not what any one of them is allowed to run with sudo.</div>
+<div class="ad-miss" data-guess="c">That only prints the name of whoever is currently logged in. It says nothing about webops's permissions.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -209,12 +238,20 @@ Answer from what you saw, not from what you remember reading.
 ### Audit a Real Over-Broad Rule
 
 <div class="ad-mission ad-mission--capstone" data-id="w4m-c5" data-attempts="0">
-<p><strong>Task:</strong> You review a server and find this rule for a backup account: it may run sudo for any command in <code>/usr/bin</code> with no password. Does that follow least privilege, and what could the account do beyond backups? Type its letter.<br><strong>A</strong> Yes, it follows least privilege, since it is scoped to a specific folder.<br><strong>B</strong> No. Almost every common tool on Linux lives in <code>/usr/bin</code>, so this account can run essentially anything as root, far beyond whatever backup command it actually needs.<br><strong>C</strong> It cannot be judged without knowing who uses the account.</p>
+<span class="ad-mission__num">Ticket 05 · INC-1127 · High</span>
+<p><strong>IT Audit · Privilege Review · 2:15 PM</strong><br>A PurveX Financial access review turns up a sudo rule for a backup account: it may run sudo for any command in <code>/usr/bin</code> with no password.</p>
+<p><strong>Task:</strong> Does that follow least privilege, and what could the account do beyond backups? Type its letter.<br><strong>A</strong> Yes, it follows least privilege, since it is scoped to a specific folder.<br><strong>B</strong> No. Almost every common tool on Linux lives in <code>/usr/bin</code>, so this account can run essentially anything as root, far beyond whatever backup command it actually needs.<br><strong>C</strong> It cannot be judged without knowing who uses the account.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether the backup account's rule follows least privilege" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Think about the gap between the two systemctl rules earlier in this lab. A folder of hundreds of commands is the same kind of gap, written differently.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">A folder is not a command. <code>/usr/bin</code> holds hundreds of real, unrelated tools, exactly the same mistake as granting bare <code>systemctl</code> with no service named.</div>
+<div class="ad-miss" data-guess="c">The rule itself already grants far more than a backup job needs, regardless of who ends up using the account.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

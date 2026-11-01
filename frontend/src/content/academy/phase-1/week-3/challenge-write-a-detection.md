@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>You already learned to recognize a scan by eye, reading packets after the fact. Can you write the rule that catches the same scan the moment it happens, with nobody watching?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>Catch the Scan With Nobody Watching</h3>
+<p class="ad-brief__ask">You already learned to recognize a scan by eye, reading packets after the fact. Can you write the rule that catches the same scan the moment it happens, with nobody watching?</p>
+<p>The last lab taught you what a scan looks like in a capture: one source touching many ports in a short burst. An IDS (Intrusion Detection System) is built to spot the same pattern live, the instant it happens, and raise an alert without anyone at PurveX Financial sitting in Wireshark watching for it. Write one Suricata rule that detects a burst of connection attempts from a single source, load it, then re-run the same Nmap scan from the last lab and read the alert it triggers.</p>
+<p>Your hosted lab needs to be running, with the Ubuntu server reachable. Suricata is already installed. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** The last lab taught you what a scan looks like in a capture: one source touching many ports in a short burst. That is a pattern a human can spot after the fact. An IDS (Intrusion Detection System) is built to spot the same pattern live, the instant it happens, and raise an alert without anyone sitting in Wireshark watching for it.
-
-**Task:** Write one Suricata rule that detects a burst of connection attempts from a single source, load it, then re-run the same Nmap scan from the last lab and read the alert it triggers.
-
-**What you need:** Your hosted lab running, with the Ubuntu server reachable. Suricata is already installed.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 3 solved</span>
+</div>
 
 ### Write the Rule
 
@@ -44,12 +46,18 @@ sudo cat /var/log/suricata/fast.log
 ```
 
 <div class="ad-mission" data-id="wd1-01" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1113 · Low</span>
 <p><strong>Task:</strong> Read the alert line in fast.log. What SID does Suricata report for the rule that fired?</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the SID the alert reports" placeholder="SID number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{1000001}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The SID is the number you wrote into the rule file itself, right after <code>sid:</code>.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="5|10">That is a count or a time window from the rule's threshold clause, not its SID. Look for the number right after <code>sid:</code>.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -67,12 +75,18 @@ sudo cat /var/log/suricata/fast.log
 ### Test the Window
 
 <div class="ad-mission" data-id="wd1-02" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1114 · Medium</span>
 <p><strong>Task:</strong> Your rule reads <code>count 5, seconds 10</code>. Suppose an attacker sent exactly one SYN every 3 seconds instead, spacing 5 attempts across 20 seconds total. Would this exact rule still fire? Type its letter.<br><strong>A</strong> Yes, count 5 is all that matters, however long it takes to reach it.<br><strong>B</strong> No. All 5 have to land inside the same rolling 10-second window, and spacing them 3 seconds apart means at most 3 or 4 ever fall inside any single 10-second slice.<br><strong>C</strong> Yes, because threshold only counts total packets ever sent, with no time limit.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether the spaced-out scan would still trigger the rule" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>"seconds 10" is a rolling window, not a running total since the scan began. Slide a 10-second window across 20 seconds of SYNs spaced 3 seconds apart and count how many fit at once.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a|c">The <code>seconds 10</code> part of the rule is not decoration. It bounds count 5 to a rolling window, and this pacing never puts all 5 inside one.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -90,12 +104,20 @@ sudo cat /var/log/suricata/fast.log
 ### Name the Trade-Off
 
 <div class="ad-mission ad-mission--capstone" data-id="wd1-03" data-attempts="0">
-<p><strong>Task:</strong> A tighter threshold catches a slower scan but risks firing on bursty normal traffic. A looser one stays quiet but lets a slow scan straight through. What does that actually tell you about tuning a detection? Type its letter.<br><strong>A</strong> A threshold is always a trade-off between catching more and firing on things that are not attacks.<br><strong>B</strong> A threshold should always be set as low as it will technically allow.<br><strong>C</strong> Thresholds are foolproof once written correctly, so tuning does not matter.</p>
+<span class="ad-mission__num">Ticket 03 · INC-1115 · High</span>
+<p><strong>Detection Engineering Lead · Tuning Review · 4:00 PM</strong><br>PurveX Financial's detection lead is deciding how to tune the scan rule you just wrote. A tighter threshold catches a slower scan but risks firing on bursty normal traffic. A looser one stays quiet but lets a slow scan straight through.</p>
+<p><strong>Task:</strong> What does that actually tell you about tuning a detection? Type its letter.<br><strong>A</strong> A threshold is always a trade-off between catching more and firing on things that are not attacks.<br><strong>B</strong> A threshold should always be set as low as it will technically allow.<br><strong>C</strong> Thresholds are foolproof once written correctly, so tuning does not matter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what tuning a threshold actually trades off" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>You just proved a slow-paced scan can slip under this exact rule's threshold. A looser setting would catch that scan, but at some cost.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="b">Setting it as low as technically possible is exactly what risks firing on ordinary bursty traffic, the cost side of the same trade-off.</div>
+<div class="ad-miss" data-guess="c">You just proved the opposite: the slow-paced scan in the last step slipped straight under this rule's threshold. Tuning matters.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

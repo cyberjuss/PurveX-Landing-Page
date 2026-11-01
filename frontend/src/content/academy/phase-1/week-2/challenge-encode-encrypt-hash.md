@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>Three strings look like scrambled nonsense. One reverses instantly, one needs a key and one never comes back. Can you tell which is which before you try?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>Encoded, Encrypted, or Hashed?</h3>
+<p class="ad-brief__ask">Three strings look like scrambled nonsense. One reverses instantly, one needs a key and one never comes back. Can you tell which is which before you try?</p>
+<p>Encoding, encryption and hashing all turn readable text into something unreadable, so beginners treat them as the same thing. A PurveX Financial responder who calls an encoded value "encrypted" sends the ticket to the wrong place and wastes the morning. Take one word through all three transformations in CyberChef, then confirm each result from the command line.</p>
+<p>Your hosted lab needs to be running, with Firefox open on the Ubuntu desktop. CyberChef is a free tool from GCHQ that SOC analysts use to recognize and decode data; it runs entirely in the browser. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** Encoding, encryption and hashing all turn readable text into something unreadable, so beginners treat them as the same thing. A responder who calls an encoded value "encrypted" sends a ticket to the wrong place and wastes the morning.
-
-**Task:** Take one word through all three transformations in CyberChef, then confirm each result from the command line. Decide which outputs you can reverse and which you cannot, and prove your decision rather than assuming it.
-
-**What you need:** Your hosted lab running, and Firefox on the Ubuntu desktop. CyberChef is a free tool from GCHQ that SOC analysts use to recognize and decode data. It runs entirely in the browser.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+</div>
 
 ### Before You Start
 
@@ -110,12 +112,19 @@ The Output is the encrypted value. This is encryption. Drag in "AES Decrypt" bel
 Answer from what you saw in the tool.
 
 <div class="ad-mission" data-id="w2e-c1" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1092 · Low</span>
 <p><strong>Task:</strong> Which of the three had no reverse operation anywhere in the list? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Hashing.<br><strong>C</strong> Encryption.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which transformation has no reverse operation" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>You added a reverse operation right under both of the other two. Only one of the three never got one.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">You reversed this one with "From Base64" right below "To Base64." It has a reverse operation.</div>
+<div class="ad-miss" data-guess="c">You reversed this one with "AES Decrypt" using the matching key. It has a reverse operation too.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -133,12 +142,18 @@ Answer from what you saw in the tool.
 ### Name What Encryption Needs That Encoding Does Not
 
 <div class="ad-mission" data-id="w2e-c2" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1093 · Low</span>
 <p><strong>Task:</strong> To undo the AES output, what did you have to supply that Base64 never asked for? Type its letter.<br><strong>A</strong> A key.<br><strong>B</strong> Nothing extra.<br><strong>C</strong> The original text.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what AES needed that Base64 did not" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>"From Base64" needed nothing typed into it. "AES Decrypt" had a field you had to fill in to match "AES Encrypt."</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="b">You did have to supply something for AES Decrypt to work: the same value you typed into AES Encrypt's Key field.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -156,12 +171,20 @@ Answer from what you saw in the tool.
 ### Match the Job to the Tool
 
 <div class="ad-mission" data-id="w2e-c3" data-attempts="0">
-<p><strong>Task:</strong> A password is stored so a server can check it later but never needs to read it back. Which of the three fits that job? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Encryption.<br><strong>C</strong> Hashing.</p>
+<span class="ad-mission__num">Ticket 03 · INC-1094 · Medium</span>
+<p><strong>Engineering · Design Review · 11:00 AM</strong><br>PurveX Financial's engineering team is designing how the client portal stores login passwords. The server only ever needs to check a password against what it has on file; it never needs to read the original back.</p>
+<p><strong>Task:</strong> Which of the three transformations fits that job? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Encryption.<br><strong>C</strong> Hashing.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which transformation fits password storage" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The job never needs the original value back, only a way to confirm a guess matches it. One of the three has no reverse operation at all, by design.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">Encoding is reversible by anyone, since its rule is public. Storing a password that way lets anyone who reads it recover the real password.</div>
+<div class="ad-miss" data-guess="b">Encryption needs a key kept somewhere, and whoever holds that key could read every password back. The job never needs the original at all.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -179,12 +202,19 @@ Answer from what you saw in the tool.
 ### Read a Real Value Cold
 
 <div class="ad-mission" data-id="w2e-c4" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1095 · Low</span>
 <p><strong>Task:</strong> You intercept the value <code>YWR2aXNvcnk=</code> in a log. Encoding, encryption or hashing? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Encryption.<br><strong>C</strong> Hashing.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what the intercepted value is" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>This is the exact value you produced earlier in this lab. Drop it back into CyberChef with "From Base64" and see what comes out.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="b">An AES-encrypted value does not end in a trailing <code>=</code> the way this one does, and this string reverses with a single public operation.</div>
+<div class="ad-miss" data-guess="c">A SHA2-256 hash is a fixed 64-character string. This value is shorter and reverses cleanly, which a hash never does.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -202,12 +232,19 @@ Answer from what you saw in the tool.
 ### Prove a Teammate Wrong
 
 <div class="ad-mission ad-mission--capstone" data-id="w2e-c5" data-attempts="0">
-<p><strong>Task:</strong> An alert flags data leaving a workstation that reads <code>cGF5bG9hZA==</code>. A teammate says it is encrypted and the firm cannot know what it is. Decode it yourself and report the actual word.</p>
+<span class="ad-mission__num">Ticket 05 · INC-1096 · High</span>
+<p><strong>SOC Queue · Data-Loss Alert · 3:30 PM</strong><br>An alert flags data leaving a PurveX Financial workstation that reads <code>cGF5bG9hZA==</code>. A teammate says it is encrypted and the firm cannot know what it is.</p>
+<p><strong>Task:</strong> Decode it yourself and report the actual word.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the decoded word" placeholder="one word" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{payload}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The trailing <code>=</code> and the character set are the same tell as the value you decoded earlier in this lab. Use the same recipe.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="advisory">That is the word from earlier in this lab, encoded differently. Decode this value on its own.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

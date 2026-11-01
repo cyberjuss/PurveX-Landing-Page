@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>An alert says a process ran. Can you build the same hunt an analyst runs from the command line, follow it from one suspicious line to the mechanism keeping it alive, and shut that mechanism down without destroying the evidence?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>Follow the Process Tree to What Keeps It Alive</h3>
+<p class="ad-brief__ask">An alert says a process ran. Can you build the same hunt an analyst runs from the command line, follow it from one suspicious line to the mechanism keeping it alive, and shut that mechanism down without destroying the evidence?</p>
+<p>A process name alone rarely tells you anything. <code>powershell.exe</code> runs thousands of times a day on a normal PurveX Financial domain controller for completely ordinary reasons. What makes one launch worth a second look is its parent, its exact command line, and whatever keeps relaunching it, all of which Sysmon records for every process on this machine. Work this entirely from PowerShell: query Sysmon for the suspicious process, find what keeps bringing it back, and contain it without deleting the evidence that shows what it was.</p>
+<p>Your hosted lab needs to be running, with the domain controller reachable. Sysmon is already installed. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** A process name alone rarely tells you anything. `powershell.exe` runs thousands of times a day on a normal domain controller for completely ordinary reasons. What makes one launch worth a second look is its parent, its exact command line, and whatever keeps relaunching it, all of which Sysmon records for every process on this machine.
-
-**Task:** Work this entirely from PowerShell on your domain controller. Query Sysmon for the suspicious process, find what keeps bringing it back, and contain it without deleting the evidence that shows what it was.
-
-**What you need:** Your hosted lab running, with the domain controller reachable the way every other exercise reaches it. Sysmon is already installed.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 4 solved</span>
+</div>
 
 ### Build the Hunt Query
 
@@ -23,12 +25,18 @@ $xml.Event.EventData.Data | Where-Object Name -in "Image","ParentImage","Command
 That pulls every process-creation event, keeps the one whose command line tried to run with a hidden window, then parses its raw Sysmon XML for the three fields that matter: what ran, what launched it, and what it was told to do.
 
 <div class="ad-mission" data-id="mw2-01" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1137 · Medium</span>
 <p><strong>Task:</strong> Run the query above and read the CommandLine field it returns. What remote address and port is the command trying to reach? Report it as address:port.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the remote address and port" placeholder="address:port" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{203.0.113.77:4444}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The CommandLine field your query printed contains a network connection attempt written out in full, address and port together.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="4444">That is only the port. Report the full address and port together, as address:port.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -48,12 +56,20 @@ That pulls every process-creation event, keeps the one whose command line tried 
 The ParentImage field your query returned is a system service hosting the task scheduler, not a person's own interactive session.
 
 <div class="ad-mission" data-id="mw2-06" data-attempts="0">
-<p><strong>Task:</strong> Suppose the exact same command line had a different ParentImage instead: <code>winword.exe</code>. What would that change about how you read this event? Type its letter.<br><strong>A</strong> Nothing. The command line is identical either way, so the story is the same.<br><strong>B</strong> It would suggest the process was spawned by a document someone opened, a very different initial-access story than a pre-existing scheduled task quietly persisting.<br><strong>C</strong> Word cannot launch PowerShell under any circumstance, so this would be impossible.</p>
+<span class="ad-mission__num">Ticket 02 · INC-1138 · Medium</span>
+<p><strong>SOC Analyst · Alert Triage · 10:20 AM</strong><br>A second alert comes in with the exact same PowerShell command line as before, but a different ParentImage: <code>winword.exe</code>.</p>
+<p><strong>Task:</strong> What would that change about how you read this event? Type its letter.<br><strong>A</strong> Nothing. The command line is identical either way, so the story is the same.<br><strong>B</strong> It would suggest the process was spawned by a document someone opened, a very different initial-access story than a pre-existing scheduled task quietly persisting.<br><strong>C</strong> Word cannot launch PowerShell under any circumstance, so this would be impossible.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what a different parent process would change" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The command line tells you what ran. The parent tells you how it got there, and those are two different questions.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">The ParentImage is a different field from CommandLine, and it answers a different question: how the process got launched, not what it was told to do.</div>
+<div class="ad-miss" data-guess="c">Office applications spawning PowerShell is a real, common pattern, not an impossibility. It is one of the clearest signs of a malicious document.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -96,10 +112,16 @@ Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True |
 ```
 
 <div class="ad-mission" data-id="mw2-07" data-attempts="0">
+<span class="ad-mission__num">Ticket 03 · INC-1139 · High</span>
+<p><strong>SOC Analyst · Persistence Hunt · 10:35 AM</strong><br>The same command relaunches every 15 minutes with nobody typing it. Something on this box is scheduling it.</p>
 <p><strong>Task:</strong> Run the scheduled-task query above and tell the two hidden-PowerShell tasks apart by their Arguments. Report the name of the one with no file and no owner, the one actually relaunching the command from the first step.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the suspicious scheduled task's name" placeholder="Task name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{WindowsDiagnosticsSync}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>One task's Arguments point to a real <code>-File</code> on disk with a name and a purpose. The other hardcodes <code>-Command</code> with an address and port, nothing else.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="purvex coach lab sync">That is this lab's own legitimate sync task. It runs a real file with a real purpose. Read the other task's Arguments instead.</div>
@@ -126,10 +148,16 @@ Disable-ScheduledTask -TaskName "WindowsDiagnosticsSync"
 ```
 
 <div class="ad-mission ad-mission--capstone" data-id="mw2-02" data-attempts="0">
+<span class="ad-mission__num">Ticket 04 · INC-1140 · High</span>
+<p><strong>SOC Analyst · Containment · 10:45 AM</strong><br>You have the address, the task name, and the firewall rule letting it talk. Now contain it without destroying the evidence.</p>
 <p><strong>Task:</strong> Run the command above against the task you found, then check its new state from the command line with <code>(Get-ScheduledTask -TaskName "WindowsDiagnosticsSync").State</code>. Report what it says.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the task's state after disabling it" placeholder="State" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Run <code>Disable-ScheduledTask</code> against the task first. Then, and only then, check its State property again.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="ready|running">That is the state before you disabled it, or the task is still set to fire. Run Disable-ScheduledTask against it first, then check its state again.</div>

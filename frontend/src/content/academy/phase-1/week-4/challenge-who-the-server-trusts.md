@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>What happens when an application trusts the client to say who it is, instead of verifying that on the server?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>Who the Server Actually Trusts</h3>
+<p class="ad-brief__ask">What happens when an application trusts the client to say who it is, instead of verifying that on the server?</p>
+<p>PurveX Financial is reviewing a vendor's client portal before signing a contract, and the vendor's own demo environment runs the same account-role logic PortSwigger built this lab to teach. A web application stores each user's role on the server but also accepts a role value from the browser. If the server believes whatever the browser sends, any regular user can promote themselves to admin. In PortSwigger's "User role can be modified in user profile" lab, sign in as a regular user and gain admin access without admin credentials, then use the admin panel to delete the user <code>carlos</code>.</p>
+<p>You need a free PortSwigger Web Security Academy account and Burp Suite Community Edition. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** A web application stores each user's role on the server but also accepts a role value from the browser. If the server believes whatever the browser sends, any regular user can promote themselves to admin.
-
-**Task:** In PortSwigger's "User role can be modified in user profile" lab, sign in as a regular user and gain admin access without admin credentials. Then use the admin panel to delete the user `carlos`. Then explain the fix the server needs.
-
-**What you need:** A free PortSwigger Web Security Academy account and Burp Suite Community Edition.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 2 solved</span>
+</div>
 
 ### Step 1. Sign in with the account you are given
 
@@ -48,12 +50,19 @@ Hiding the `roleid` field from the response would not fix this, because anyone c
 Answer from what you just did, not from what sounds plausible.
 
 <div class="ad-mission" data-id="w4t-c1" data-attempts="0">
-<p><strong>Task:</strong> The server's next release removes the <code>roleid</code> field from every API response, so the browser never sees it again. Does that close this vulnerability? Type its letter.<br><strong>A</strong> Yes. If the browser cannot read the field, it cannot send it back either.<br><strong>B</strong> No. The field was never removed from what the browser can send, only from what it happens to see, and you can still add <code>roleid</code> to a request by hand with Burp.</p>
+<span class="ad-mission__num">Ticket 01 · INC-1116 · Medium</span>
+<p><strong>Vendor Review · Remediation Proposal · 10:30 AM</strong><br>The vendor's engineering team proposes a fix: remove the <code>roleid</code> field from every API response, so the browser never sees it again.</p>
+<p><strong>Task:</strong> Does that close this vulnerability? Type its letter.<br><strong>A</strong> Yes. If the browser cannot read the field, it cannot send it back either.<br><strong>B</strong> No. The field was never removed from what the browser can send, only from what it happens to see, and you can still add <code>roleid</code> to a request by hand with Burp.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether hiding the roleid field in the response fixes the vulnerability" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Think back to Step 5. The request body never had <code>roleid</code> in it at all before you added it yourself.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">You proved otherwise in Step 5: the request never had <code>roleid</code> in it to begin with, and adding it by hand worked anyway.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -69,12 +78,20 @@ Answer from what you just did, not from what sounds plausible.
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="w4t-c2" data-attempts="0">
+<span class="ad-mission__num">Ticket 02 · INC-1117 · High</span>
+<p><strong>PurveX Security Review · Vendor Recommendation · 11:15 AM</strong><br>The review has to go back to PurveX Financial's procurement team with a concrete fix the vendor must make before the contract is signed.</p>
 <p><strong>Task:</strong> Where does a server have to check a user's role to actually close this vulnerability? Type its letter.<br><strong>A</strong> In the browser, before the request is ever sent.<br><strong>B</strong> Against its own stored record of that user's role, on the server, every time a privileged action runs.<br><strong>C</strong> Nowhere. As long as the admin panel's URL is hard to guess, it is safe.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for where the role check actually has to happen" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>You controlled the browser's request completely with Burp, and Step 3 already showed that a hard-to-guess URL alone did not keep anyone out.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">Anything checked only in the browser is something you just proved you can bypass entirely with Burp.</div>
+<div class="ad-miss" data-guess="c">Step 3 already showed <code>/admin</code> was reachable, just not useful yet. A hard-to-guess URL is a delay, not a control.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

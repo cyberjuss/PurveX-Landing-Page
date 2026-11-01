@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>Every time someone proves who they are, a record is written. Can you make one, find it, and tell a success from a failure?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>The First Evidence in Almost Every Investigation</h3>
+<p class="ad-brief__ask">Every time someone proves who they are, a record is written. Can you make one, find it, and tell a success from a failure?</p>
+<p>Authentication is the moment a system decides you are who you claim to be, and it almost always leaves a trace. The first thing a PurveX Financial investigation reads is that trace, because a run of failures followed by one success is what a break-in looks like from the log. On the Ubuntu server, produce a failed authentication and a successful one, then find both in the system log and tell them apart.</p>
+<p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. You know your own password, which is in the lab panel. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** Authentication is the moment a system decides you are who you claim to be, and it almost always leaves a trace. The first thing an investigation reads is that trace, because a run of failures followed by one success is what a break-in looks like from the log.
-
-**Task:** On the Ubuntu server, produce a failed authentication and a successful one, then find both in the system log and tell them apart. Predict what the log will hold before you look.
-
-**What you need:** Your hosted lab running, and a terminal on the Ubuntu desktop. Nothing is installed for this lab. You know your own password, which is in the lab panel.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+</div>
 
 ### Before You Start
 
@@ -93,12 +95,18 @@ A burst of 4625 events followed by a 4624 for the same account is the Windows ve
 Answer from what you saw, not from what you remember reading.
 
 <div class="ad-mission" data-id="w4e-c1" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1118 · Low</span>
 <p><strong>Task:</strong> Was your failed sudo attempt recorded in the log? Type its letter.<br><strong>A</strong> No, only the success was.<br><strong>B</strong> Yes, the failures were logged with the success.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether the failed sudo attempt was recorded" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Scroll back a few lines further up from the "session opened" line in your journalctl output. Your three wrong passwords are right there.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">Scroll further up in your journalctl output. The three "authentication failure" lines are right above the success.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -116,12 +124,19 @@ Answer from what you saw, not from what you remember reading.
 ### Name the Windows Event ID
 
 <div class="ad-mission" data-id="w4e-c2" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1119 · Low</span>
 <p><strong>Task:</strong> On a Windows domain controller, which Event ID is a failed logon? Type its letter.<br><strong>A</strong> 4625.<br><strong>B</strong> 4624.<br><strong>C</strong> 3389.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which event ID is a failed logon" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The pair of numbers in "The Same Thing on Windows" above names the success and the failure right next to each other.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="b">4624 is the successful logon, the Windows twin of what your sudo success wrote to the Linux log.</div>
+<div class="ad-miss" data-guess="c">3389 is a port number, RDP's, not an Event ID. Look at the two numbers listed in "The Same Thing on Windows."</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -139,12 +154,19 @@ Answer from what you saw, not from what you remember reading.
 ### Read a Burst of Failures
 
 <div class="ad-mission" data-id="w4e-c3" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1120 · Low</span>
 <p><strong>Task:</strong> You find forty failed logons for one account, then one success. What does that pattern suggest? Type its letter.<br><strong>A</strong> Nothing, people mistype passwords.<br><strong>B</strong> Someone may have guessed the password after many tries.<br><strong>C</strong> The account was deleted.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what forty failures then a success suggests" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Compare this to the three failures you just made on purpose. Scale matters: forty is well past what a person fumbling their own password looks like.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">Nobody mistypes a password forty times in a row. That volume is the shape of something automated trying one guess after another.</div>
+<div class="ad-miss" data-guess="c">A deleted account cannot log in at all, successfully or not. This pattern needs the account to still exist.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -162,12 +184,19 @@ Answer from what you saw, not from what you remember reading.
 ### Know What a Single Failure Does Not Prove
 
 <div class="ad-mission" data-id="w4e-c4" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1121 · Low</span>
 <p><strong>Task:</strong> A failed login for the name "jsmith" tells you what about that account? Type its letter.<br><strong>A</strong> The account definitely exists.<br><strong>B</strong> Only that something tried that name and failed.<br><strong>C</strong> The account was locked.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what a failed login for a name tells you" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Attackers guess account names as often as they guess passwords. A failure alone cannot tell you which part of the guess was wrong.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">A failure does not confirm the name is real; an attacker guessing names gets the exact same failure against one that does not exist.</div>
+<div class="ad-miss" data-guess="c">A lockout is its own separate event, not something a single failed login by itself tells you.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -185,12 +214,20 @@ Answer from what you saw, not from what you remember reading.
 ### Decide Whether a Quiet Attack Is Worth Reporting
 
 <div class="ad-mission ad-mission--capstone" data-id="w4e-c5" data-attempts="0">
-<p><strong>Task:</strong> You are handed a day of logs from one server. For one account you count sixty failed logins between 2am and 3am, all from the same address, and no success at all. Does the absence of any success make this event more or less worth reporting? Type its letter.<br><strong>A</strong> Less. No success means nobody actually got in, so there is nothing to escalate.<br><strong>B</strong> Just as much, or more. Sixty attempts in one hour with zero successes is still an active attempt against a real account, and the only reason nothing is "wrong" yet is that the attacker has not won.<br><strong>C</strong> It cannot be judged without knowing the account's password.</p>
+<span class="ad-mission__num">Ticket 05 · INC-1122 · High</span>
+<p><strong>SOC Queue · Overnight Review · 3:05 AM</strong><br>You are handed a day of logs from one PurveX Financial server. For one account you count sixty failed logins between 2am and 3am, all from the same address, and no success at all.</p>
+<p><strong>Task:</strong> Does the absence of any success make this event more or less worth reporting? Type its letter.<br><strong>A</strong> Less. No success means nobody actually got in, so there is nothing to escalate.<br><strong>B</strong> Just as much, or more. Sixty attempts in one hour with zero successes is still an active attempt against a real account, and the only reason nothing is "wrong" yet is that the attacker has not won.<br><strong>C</strong> It cannot be judged without knowing the account's password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether an all-failure burst is worth reporting" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Waiting for the success before escalating means you only ever catch an attack after it already worked. This is the same forty-failure shape from earlier, just bigger and still running.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">Waiting for a success before you escalate means the attack is only ever reported after it has already worked.</div>
+<div class="ad-miss" data-guess="c">The password itself is not needed to judge this. The volume, the single address and the single account already tell the story.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

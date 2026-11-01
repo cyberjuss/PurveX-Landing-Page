@@ -1,13 +1,15 @@
-<div class="academy-question">
-<span class="academy-question__tag">Essential Question</span>
-<p>Two people pick the same password. Why can a stolen password file give one company away and tell an attacker almost nothing at another?</p>
+<div class="ad-brief">
+<p class="rd-kicker">Briefing</p>
+<h3>What a Leaked Password File Actually Gives Away</h3>
+<p class="ad-brief__ask">Two people pick the same password. Why can a stolen password file give one company away and tell an attacker almost nothing at another?</p>
+<p>When a password database leaks, how the passwords were stored decides how bad PurveX Financial's day is. Two small steps, a salt and a slow hash, make the difference between a disaster and a shrug, and most people who have heard of salting cannot say what it actually does. Store the same password the weak way and the strong way on your Ubuntu server, and prove from the output why one leaks information and the other does not.</p>
+<p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Every command ships with the system; nothing is cracked and no attack tool is used. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
-**Situation:** When a password database leaks, how the passwords were stored decides how bad the day is. Two small steps, a salt and a slow hash, make the difference between a disaster and a shrug, and most people who have heard of salting cannot say what it actually does.
-
-**Task:** Store the same password the weak way and the strong way on your Ubuntu server, and prove from the output why one leaks information and the other does not. Predict each result before you run the command.
-
-**What you need:** Your hosted lab running, and a terminal on the Ubuntu desktop. Every command ships with the system. Nothing is cracked and no attack tool is used. You are looking at password storage the way the team that protects it does.
+<div class="ad-progress">
+<div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+</div>
 
 ### Before You Start
 
@@ -104,12 +106,18 @@ These two match, because you forced the same salt both times. The system uses a 
 Answer from the output you saw.
 
 <div class="ad-mission" data-id="w2m-c1" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1097 · Low</span>
 <p><strong>Task:</strong> Did two unsalted SHA-256 hashes of the same password match or differ? Type its letter.<br><strong>A</strong> They matched exactly.<br><strong>B</strong> They differed.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether the two unsalted hashes matched" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Look at the two <code>sha256sum</code> lines from "Store It the Weak Way." Same input, same algorithm, no randomness involved.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="b">Plain SHA-256 has no randomness in it at all. The same input always produces the same output.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -127,12 +135,19 @@ Answer from the output you saw.
 ### Count the Reused Password
 
 <div class="ad-mission" data-id="w2m-c2" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1098 · Low</span>
 <p><strong>Task:</strong> In the three-account loop, how many of the three stored values were identical? Type its letter.<br><strong>A</strong> Zero.<br><strong>B</strong> Two.<br><strong>C</strong> All three.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for how many stored values were identical" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The loop hashed <code>Summer2024!</code>, <code>T7rq!vMx2</code>, <code>Summer2024!</code> in that order. Two of those three passwords are the same password.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">The first and third accounts in the loop used the identical password. Their hashes could not help but match.</div>
+<div class="ad-miss" data-guess="c">The middle account's password was different from the other two, so its hash stands apart.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -150,12 +165,18 @@ Answer from the output you saw.
 ### Confirm the Salt Changed the Output
 
 <div class="ad-mission" data-id="w2m-c3" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1099 · Low</span>
 <p><strong>Task:</strong> With <code>openssl passwd -6</code> and no fixed salt, did the same password give the same value twice? Type its letter.<br><strong>A</strong> The same value both times.<br><strong>B</strong> Two different values.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether the salted command gave the same value twice" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Compare the two blocks after the <code>$6$</code> prefix in your two <code>openssl passwd -6</code> outputs. The tool picked that part fresh each run.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">You did not pin a salt with <code>-salt</code> this time, so the tool generated a fresh random one on each run.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -173,12 +194,18 @@ Answer from the output you saw.
 ### Name What Salting Actually Stops
 
 <div class="ad-mission" data-id="w2m-c4" data-attempts="0">
+<span class="ad-mission__num">Hands-on · INC-1100 · Low</span>
 <p><strong>Task:</strong> Salting mainly stops an attacker from doing which one? Type its letter.<br><strong>A</strong> Guessing a single password faster.<br><strong>B</strong> Spotting that many accounts share one password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what salting mainly stops" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Think about what changed between the unsalted three-account loop and the salted runs: not how hard any one password is to guess, but whether matching stored values mean anything.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">A weak password is still weak with or without a salt. Salting changes whether identical passwords look identical in storage, not how guessable any one of them is.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -196,12 +223,20 @@ Answer from the output you saw.
 ### Correct a Manager's Wrong Assumption
 
 <div class="ad-mission ad-mission--capstone" data-id="w2m-c5" data-attempts="0">
-<p><strong>Task:</strong> A firm is breached and the stored passwords were plain SHA-256 with no salt. A manager says the passwords are safe because SHA-256 cannot be reversed. What does the attacker actually learn from that file, even without reversing a single hash? Type its letter.<br><strong>A</strong> Nothing. The manager is right, since the hashes cannot be reversed.<br><strong>B</strong> Exactly which accounts in the company share a password with each other, read straight off which stored values match, with no cracking at all.<br><strong>C</strong> The attacker learns every employee's actual password immediately.</p>
+<span class="ad-mission__num">Ticket 05 · INC-1101 · Critical</span>
+<p><strong>CISO Briefing · Breach Review · 5:00 PM</strong><br>PurveX Financial is breached and the stored passwords turn out to be plain SHA-256 with no salt. A manager in the briefing says the passwords are safe because SHA-256 cannot be reversed.</p>
+<p><strong>Task:</strong> What does the attacker actually learn from that file, even without reversing a single hash? Type its letter.<br><strong>A</strong> Nothing. The manager is right, since the hashes cannot be reversed.<br><strong>B</strong> Exactly which accounts in the company share a password with each other, read straight off which stored values match, with no cracking at all.<br><strong>C</strong> The attacker learns every employee's actual password immediately.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what the attacker actually learns from the unsalted file" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Think back to the three-account loop. You identified two accounts sharing a password without ever knowing what the password was.</p>
 </div>
 <p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">The manager is half right that the hashes cannot be reversed, but that is not the same as the file being safe. Matching values still say something.</div>
+<div class="ad-miss" data-guess="c">SHA-256 being one-way is exactly why the attacker cannot read a password straight out of the file. That part of the manager's claim is true.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

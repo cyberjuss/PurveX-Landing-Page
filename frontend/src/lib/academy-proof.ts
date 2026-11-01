@@ -448,6 +448,12 @@ const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "resp
   { id: "wd1-03", bucket: "network", label: "Suricata (IDS)" },
   { id: "w3m-c6", bucket: "network", label: "Nmap" },
   { id: "sm2-04", bucket: "network", label: "Windows Firewall" },
+  { id: "w3e-c4", bucket: "network", label: "Wireshark" },
+  { id: "w4t-c2", bucket: "network", label: "Burp Suite / Web App Testing" },
+  { id: "w4e-c5", bucket: "monitoring", label: "Authentication Log Analysis" },
+  { id: "sm2-02", bucket: "monitoring", label: "5 W's Incident Documentation" },
+  { id: "la2-04", bucket: "monitoring", label: "PowerShell Script Block Logging" },
+  { id: "nm-02", bucket: "network", label: "Network Baselining" },
 ];
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {

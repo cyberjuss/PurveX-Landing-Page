@@ -14,7 +14,24 @@ export type MissionCatalogEntry = {
     | "phishing-chain"
     | "open-door"
     | "keys-to-the-domain"
-    | "risk-triage";
+    | "risk-triage"
+    | "cia-triad"
+    | "cvss-scoring"
+    | "encode-encrypt-hash"
+    | "store-a-password"
+    | "capture-dc-traffic"
+    | "read-a-scan"
+    | "write-a-detection"
+    | "who-the-server-trusts"
+    | "read-the-login-record"
+    | "one-power"
+    | "document-the-five-ws"
+    | "default-posture"
+    | "trigger-a-real-detection"
+    | "read-a-process-tree"
+    | "one-timeline-two-machines"
+    | "turn-on-script-logging"
+    | "confirm-the-map";
   title: string;
   prompt: string;
   skill: Skill;
@@ -336,6 +353,74 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "rt-02": { id: "rt-02", challenge: "risk-triage", title: "The Quiet Backup Failure (INC-1081)", prompt: "Name the CIA property at risk in the silent backup failure.", skill: "risk" },
   "rt-03": { id: "rt-03", challenge: "risk-triage", title: "Rank Them by Department (INC-1081)", prompt: "Rank the four tickets using department criticality.", skill: "risk" },
   "rt-04": { id: "rt-04", challenge: "risk-triage", title: "Why the Printer Waits (INC-1081)", prompt: "Justify ranking the loudest ticket last.", skill: "risk" },
+  "w1e-c1": { id: "w1e-c1", challenge: "cia-triad", title: "Did the File's Contents Change? (INC-1082)", prompt: "After chmod 600, say whether ledger.txt's contents changed.", skill: "risk" },
+  "w1e-c2": { id: "w1e-c2", challenge: "cia-triad", title: "How Much of the Hash Changed (INC-1083)", prompt: "Say how much of the SHA-256 hash changed after editing one digit.", skill: "risk" },
+  "w1e-c3": { id: "w1e-c3", challenge: "cia-triad", title: "Did the Page Survive the Outage (INC-1084)", prompt: "Say whether index.html was still on disk while nginx was stopped.", skill: "risk" },
+  "w1e-c4": { id: "w1e-c4", challenge: "cia-triad", title: "Which Property Failed, Client Portal Mixup (INC-1085)", prompt: "Name the CIA property that failed when a client saw another client's statement.", skill: "risk" },
+  "w1e-c5": { id: "w1e-c5", challenge: "cia-triad", title: "Ransomware Plus Data Theft (INC-1086)", prompt: "Name which CIA properties failed in a ransomware attack that also stole data.", skill: "risk" },
+  "w1m-c1": { id: "w1m-c1", challenge: "cvss-scoring", title: "Did the Base Score Move? (INC-1087)", prompt: "Say whether the CVSS Base Score changed during this lab.", skill: "risk" },
+  "w1m-c2": { id: "w1m-c2", challenge: "cvss-scoring", title: "Which Machine Scored Higher (INC-1088)", prompt: "Say which of two machines scored higher on the Environmental Score.", skill: "risk" },
+  "w1m-c3": { id: "w1m-c3", challenge: "cvss-scoring", title: "Name the Model Behind the Inputs (INC-1089)", prompt: "Name the model the CVSS Security Requirements are built from.", skill: "risk" },
+  "w1m-c4": { id: "w1m-c4", challenge: "cvss-scoring", title: "What Captures the Machine's Value (INC-1090)", prompt: "Name the CVSS input that captures what a machine holds.", skill: "risk" },
+  "w1m-c5": { id: "w1m-c5", challenge: "cvss-scoring", title: "Justify the Patch Order (INC-1091)", prompt: "Name the CVSS input that justifies patching one machine before another with the same finding.", skill: "risk" },
+  "w2e-c1": { id: "w2e-c1", challenge: "encode-encrypt-hash", title: "No Reverse Operation (INC-1092)", prompt: "Name which of encoding, encryption or hashing has no reverse operation.", skill: "security" },
+  "w2e-c2": { id: "w2e-c2", challenge: "encode-encrypt-hash", title: "What AES Needed That Base64 Did Not (INC-1093)", prompt: "Name what AES decryption required that Base64 decoding did not.", skill: "security" },
+  "w2e-c3": { id: "w2e-c3", challenge: "encode-encrypt-hash", title: "Match the Job to the Tool (INC-1094)", prompt: "Name which transformation fits storing a password that is only ever checked, never read back.", skill: "security" },
+  "w2e-c4": { id: "w2e-c4", challenge: "encode-encrypt-hash", title: "Read a Value Cold (INC-1095)", prompt: "Identify whether an intercepted Base64-looking value is encoded, encrypted or hashed.", skill: "security" },
+  "w2e-c5": { id: "w2e-c5", challenge: "encode-encrypt-hash", title: "Prove a Teammate Wrong (INC-1096)", prompt: "Decode a Base64 value a teammate wrongly called encrypted.", skill: "security" },
+  "w2m-c1": { id: "w2m-c1", challenge: "store-a-password", title: "Did Unsalted Hashes Match? (INC-1097)", prompt: "Say whether two unsalted SHA-256 hashes of the same password matched.", skill: "security" },
+  "w2m-c2": { id: "w2m-c2", challenge: "store-a-password", title: "Count the Reused Password (INC-1098)", prompt: "Count how many of three stored values were identical.", skill: "security" },
+  "w2m-c3": { id: "w2m-c3", challenge: "store-a-password", title: "Did Salting Change the Output? (INC-1099)", prompt: "Say whether a salted hash of the same password matched on two runs.", skill: "security" },
+  "w2m-c4": { id: "w2m-c4", challenge: "store-a-password", title: "What Salting Actually Stops (INC-1100)", prompt: "Name what salting mainly stops an attacker from doing.", skill: "security" },
+  "w2m-c5": { id: "w2m-c5", challenge: "store-a-password", title: "Correct a Manager's Assumption (INC-1101)", prompt: "Say what an attacker learns from an unsalted, leaked password file.", skill: "security" },
+  "w3e-c1": { id: "w3e-c1", challenge: "capture-dc-traffic", title: "Could the Capture See a Third Machine? (INC-1102)", prompt: "Say whether a capture on one machine could show a third machine's traffic.", skill: "logs" },
+  "w3e-c2": { id: "w3e-c2", challenge: "capture-dc-traffic", title: "Read the LDAP Handshake (INC-1103)", prompt: "Name the packet the domain controller sent to open the TCP handshake.", skill: "logs" },
+  "w3e-c3": { id: "w3e-c3", challenge: "capture-dc-traffic", title: "Count the DNS Exchange (INC-1104)", prompt: "Count the packets a DNS request and reply needed.", skill: "logs" },
+  "w3e-c5": { id: "w3e-c5", challenge: "capture-dc-traffic", title: "Which Port Changes, Which Stays Fixed (INC-1105)", prompt: "Say which port changes between LDAP connections and which stays fixed.", skill: "logs" },
+  "w3e-c4": { id: "w3e-c4", challenge: "capture-dc-traffic", title: "Isolate One Conversation (INC-1106)", prompt: "Name the Wireshark move that reads one connection's whole exchange.", skill: "logs" },
+  "w3m-c5": { id: "w3m-c5", challenge: "read-a-scan", title: "Confirm With Nmap (INC-1107)", prompt: "Report what Nmap reports for port 445.", skill: "logs" },
+  "w3m-c6": { id: "w3m-c6", challenge: "read-a-scan", title: "Weigh a Stealthier Scan (INC-1108)", prompt: "Explain why an attacker might prefer a SYN scan over a connect scan.", skill: "logs" },
+  "w3m-c1": { id: "w3m-c1", challenge: "read-a-scan", title: "Read an Open Port's Handshake (INC-1109)", prompt: "Name all three packets of a completed handshake on an open port.", skill: "logs" },
+  "w3m-c2": { id: "w3m-c2", challenge: "read-a-scan", title: "Read a Filtered Port (INC-1110)", prompt: "Say what a firewall-dropped port looks like in a capture.", skill: "logs" },
+  "w3m-c3": { id: "w3m-c3", challenge: "read-a-scan", title: "Tell Closed From Filtered (INC-1111)", prompt: "Name the difference between a closed port and a filtered port.", skill: "logs" },
+  "w3m-c4": { id: "w3m-c4", challenge: "read-a-scan", title: "Name What Detection Rests On (INC-1112)", prompt: "Say what a port scan's detectability actually rests on.", skill: "logs" },
+  "wd1-01": { id: "wd1-01", challenge: "write-a-detection", title: "Read the Alert's SID (INC-1113)", prompt: "Report the SID Suricata logs for the rule that fired.", skill: "logs" },
+  "wd1-02": { id: "wd1-02", challenge: "write-a-detection", title: "Test the Rolling Window (INC-1114)", prompt: "Say whether a slower-paced scan would still trigger a count-and-seconds threshold.", skill: "security" },
+  "wd1-03": { id: "wd1-03", challenge: "write-a-detection", title: "Name the Tuning Trade-Off (INC-1115)", prompt: "Explain what tuning a detection threshold actually trades off.", skill: "security" },
+  "w4t-c1": { id: "w4t-c1", challenge: "who-the-server-trusts", title: "Does Hiding the Field Fix It? (INC-1116)", prompt: "Say whether removing a field from API responses closes a broken access control bug.", skill: "access" },
+  "w4t-c2": { id: "w4t-c2", challenge: "who-the-server-trusts", title: "Where the Role Check Has to Happen (INC-1117)", prompt: "Name where a server actually has to check a user's role.", skill: "access" },
+  "w4e-c1": { id: "w4e-c1", challenge: "read-the-login-record", title: "Was the Failure Logged? (INC-1118)", prompt: "Say whether a failed sudo attempt was recorded in the log.", skill: "logs" },
+  "w4e-c2": { id: "w4e-c2", challenge: "read-the-login-record", title: "Name the Windows Event ID (INC-1119)", prompt: "Name the Windows Event ID for a failed logon.", skill: "logs" },
+  "w4e-c3": { id: "w4e-c3", challenge: "read-the-login-record", title: "Read a Burst of Failures (INC-1120)", prompt: "Say what forty failed logons followed by one success suggests.", skill: "logs" },
+  "w4e-c4": { id: "w4e-c4", challenge: "read-the-login-record", title: "What a Single Failure Does Not Prove (INC-1121)", prompt: "Say what a failed login for one account name actually proves.", skill: "logs" },
+  "w4e-c5": { id: "w4e-c5", challenge: "read-the-login-record", title: "Decide Whether a Quiet Attack Is Worth Reporting (INC-1122)", prompt: "Say whether an all-failure burst against one account is still worth reporting.", skill: "logs" },
+  "w4m-c1": { id: "w4m-c1", challenge: "one-power", title: "Was the Second Command Refused? (INC-1123)", prompt: "Say what happened when a narrowly-scoped sudo account tried a different command.", skill: "access" },
+  "w4m-c2": { id: "w4m-c2", challenge: "one-power", title: "What a Broad Rule Grants (INC-1124)", prompt: "Say what an unscoped systemctl sudo rule actually grants.", skill: "access" },
+  "w4m-c3": { id: "w4m-c3", challenge: "one-power", title: "Why Narrow Even for a Trusted Account (INC-1125)", prompt: "Explain why a sudo rule should be written narrowly even for a trusted coworker.", skill: "access" },
+  "w4m-c4": { id: "w4m-c4", challenge: "one-power", title: "Name the Audit Command (INC-1126)", prompt: "Name the command that audits a user's sudo privileges without logging in as them.", skill: "access" },
+  "w4m-c5": { id: "w4m-c5", challenge: "one-power", title: "Audit an Over-Broad Rule (INC-1127)", prompt: "Judge whether a backup account's folder-scoped sudo rule follows least privilege.", skill: "access" },
+  "sm2-01": { id: "sm2-01", challenge: "document-the-five-ws", title: "Read the Sub Status (INC-1128)", prompt: "Report the Sub Status code a real 4625 records for a wrong password.", skill: "logs" },
+  "sm2-05": { id: "sm2-05", challenge: "document-the-five-ws", title: "Read Several Events Together (INC-1129)", prompt: "Say what five 0xC0000064 failures against five account names most likely means.", skill: "security" },
+  "sm2-02": { id: "sm2-02", challenge: "document-the-five-ws", title: "Name the Field (INC-1130)", prompt: "Name which of the 5 W's the Sub Status field answers.", skill: "security" },
+  "sm2-03": { id: "sm2-03", challenge: "default-posture", title: "Read the Default Outbound Action (INC-1131)", prompt: "Report a domain controller's actual default outbound firewall action.", skill: "security" },
+  "sm2-06": { id: "sm2-06", challenge: "default-posture", title: "Trace a Consequence (INC-1132)", prompt: "Say whether a Block-by-default outbound posture would have stopped an unapproved beacon.", skill: "security" },
+  "sm2-04": { id: "sm2-04", challenge: "default-posture", title: "Name the Trade-Off (INC-1133)", prompt: "Explain what the inbound-Block, outbound-Allow default split actually trades off.", skill: "security" },
+  "mw2-03": { id: "mw2-03", challenge: "trigger-a-real-detection", title: "Read the Threat Name (INC-1134)", prompt: "Report the threat name Windows Defender reports for an EICAR test file.", skill: "security" },
+  "mw2-05": { id: "mw2-05", challenge: "trigger-a-real-detection", title: "Weigh Two Verdicts (INC-1135)", prompt: "Say which verdict an analyst should trust more between one engine and a multi-engine lookup.", skill: "security" },
+  "mw2-04": { id: "mw2-04", challenge: "trigger-a-real-detection", title: "Know the Limit of Signature Matching (INC-1136)", prompt: "Say what a never-before-seen file means for signature-based antivirus alone.", skill: "security" },
+  "mw2-01": { id: "mw2-01", challenge: "read-a-process-tree", title: "Read the Command Line (INC-1137)", prompt: "Report the remote address and port a hidden PowerShell command is reaching.", skill: "logs" },
+  "mw2-06": { id: "mw2-06", challenge: "read-a-process-tree", title: "Weigh the Parent Process (INC-1138)", prompt: "Say what a different parent process would change about reading a suspicious command.", skill: "security" },
+  "mw2-07": { id: "mw2-07", challenge: "read-a-process-tree", title: "Find the Persistence Mechanism (INC-1139)", prompt: "Name the scheduled task relaunching a suspicious hidden PowerShell command.", skill: "logs" },
+  "mw2-02": { id: "mw2-02", challenge: "read-a-process-tree", title: "Contain Without Destroying Evidence (INC-1140)", prompt: "Disable the malicious scheduled task and report its new state.", skill: "security" },
+  "la2-01": { id: "la2-01", challenge: "one-timeline-two-machines", title: "Name the Process (INC-1141)", prompt: "Name the process journalctl credits with accepting an SSH sign-in.", skill: "logs" },
+  "la2-05": { id: "la2-05", challenge: "one-timeline-two-machines", title: "Read a Pattern, Not Just an Event (INC-1142)", prompt: "Say what an unfamiliar DC-then-SSH sign-in pattern suggests for one account.", skill: "logs" },
+  "la2-02": { id: "la2-02", challenge: "one-timeline-two-machines", title: "Name What a Single Log Would Miss (INC-1143)", prompt: "Say what reading only the domain controller's log would miss.", skill: "logs" },
+  "la2-03": { id: "la2-03", challenge: "turn-on-script-logging", title: "Find the Script-Block Event (INC-1144)", prompt: "Name the Event ID that logs the full text of a PowerShell script block.", skill: "logs" },
+  "la2-06": { id: "la2-06", challenge: "turn-on-script-logging", title: "Find What Process Creation Would Miss (INC-1145)", prompt: "Name the log that shows a decoded, readable command instead of a raw encoded argument.", skill: "logs" },
+  "la2-04": { id: "la2-04", challenge: "turn-on-script-logging", title: "Know What Survives Obfuscation (INC-1146)", prompt: "Say what script-block logging captures once PowerShell decodes and runs an encoded command.", skill: "logs" },
+  "nm-01": { id: "nm-01", challenge: "confirm-the-map", title: "Confirm a Known Port (INC-1147)", prompt: "Confirm the port Kerberos is listening on right now.", skill: "security" },
+  "nm-03": { id: "nm-03", challenge: "confirm-the-map", title: "Name a Port You Depend On (INC-1148)", prompt: "Name the service listening on port 9389 and why it matters.", skill: "security" },
+  "nm-02": { id: "nm-02", challenge: "confirm-the-map", title: "Draw the Conclusion (INC-1149)", prompt: "Say what ports beyond a lesson's five-port summary tell you about working from memory.", skill: "security" },
   "ea-01": {
     id: "ea-01",
     challenge: "access-alert",
@@ -570,6 +655,23 @@ export const CHALLENGE_PATHS: Record<
   "open-door": { href: "/range/phase-2/capstone", tab: "the-open-door" },
   "keys-to-the-domain": { href: "/range/phase-2/capstone", tab: "the-keys-to-the-domain" },
   "risk-triage": { href: "/range/phase-1/week-1", tab: "monday-morning-risk-triage" },
+  "cia-triad": { href: "/range/phase-1/week-1", tab: "which-property-actually-failed" },
+  "cvss-scoring": { href: "/range/phase-1/week-1", tab: "score-it-the-way-purvex-actually-runs" },
+  "encode-encrypt-hash": { href: "/range/phase-1/week-2", tab: "encoded-encrypted-or-hashed" },
+  "store-a-password": { href: "/range/phase-1/week-2", tab: "what-a-leaked-password-file-actually-gives-away" },
+  "capture-dc-traffic": { href: "/range/phase-1/week-3", tab: "capture-the-conversation-not-just-the-machine" },
+  "read-a-scan": { href: "/range/phase-1/week-3", tab: "open-closed-or-just-guarded" },
+  "write-a-detection": { href: "/range/phase-1/week-3", tab: "catch-the-scan-with-nobody-watching" },
+  "who-the-server-trusts": { href: "/range/phase-1/week-4", tab: "who-the-server-actually-trusts" },
+  "read-the-login-record": { href: "/range/phase-1/week-4", tab: "the-first-evidence-in-almost-every-investigation" },
+  "one-power": { href: "/range/phase-1/week-4", tab: "grant-exactly-one-power-not-the-whole-machine" },
+  "document-the-five-ws": { href: "/range/phase-2/soc-mindset", tab: "turn-a-vague-alert-into-a-documented-account" },
+  "default-posture": { href: "/range/phase-2/soc-mindset", tab: "what-the-firewall-does-with-what-you-never-mentioned" },
+  "trigger-a-real-detection": { href: "/range/phase-2/week-1", tab: "prove-the-signature-match-then-find-its-limit" },
+  "read-a-process-tree": { href: "/range/phase-2/week-1", tab: "follow-the-process-tree-to-what-keeps-it-alive" },
+  "one-timeline-two-machines": { href: "/range/phase-2/week-2", tab: "one-timeline-two-machines" },
+  "turn-on-script-logging": { href: "/range/phase-2/week-2", tab: "keep-what-a-process-launch-alone-throws-away" },
+  "confirm-the-map": { href: "/range/phase-2/baselines-thresholds", tab: "ask-the-machine-not-the-lesson" },
 };
 
 export function missionHref(id: string): string {
@@ -624,6 +726,23 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "open-door": "The Open Door",
   "keys-to-the-domain": "The Keys to the Domain",
   "risk-triage": "Monday Morning Risk Triage",
+  "cia-triad": "Which Property Actually Failed?",
+  "cvss-scoring": "Score It the Way PurveX Actually Runs",
+  "encode-encrypt-hash": "Encoded, Encrypted, or Hashed?",
+  "store-a-password": "What a Leaked Password File Actually Gives Away",
+  "capture-dc-traffic": "Capture the Conversation, Not Just the Machine",
+  "read-a-scan": "Open, Closed, or Just Guarded?",
+  "write-a-detection": "Catch the Scan With Nobody Watching",
+  "who-the-server-trusts": "Who the Server Actually Trusts",
+  "read-the-login-record": "The First Evidence in Almost Every Investigation",
+  "one-power": "Grant Exactly One Power, Not the Whole Machine",
+  "document-the-five-ws": "Turn a Vague Alert Into a Documented Account",
+  "default-posture": "What the Firewall Does With What You Never Mentioned",
+  "trigger-a-real-detection": "Prove the Signature Match, Then Find Its Limit",
+  "read-a-process-tree": "Follow the Process Tree to What Keeps It Alive",
+  "one-timeline-two-machines": "One Timeline, Two Machines",
+  "turn-on-script-logging": "Keep What a Process Launch Alone Throws Away",
+  "confirm-the-map": "Ask the Machine, Not the Lesson",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
