@@ -10,7 +10,7 @@ import { hasHostedLab, HostedLabButton, startHostedLabNow } from "@/components/a
 import { HelpDialog } from "@/components/academy/get-help";
 import { AcademyIntake } from "@/components/academy/academy-intake";
 import { AcademyProgressProvider } from "@/components/academy/academy-progress";
-import { clearSavedLocal, forgetLocalUnless, getSaved, SAVED_LOADED_EVENT, updateSaved } from "@/lib/academy-saved-client";
+import { clearSavedLocal, forgetLocalUnless, getSaved, openSaved, SAVED_LOADED_EVENT, updateSaved } from "@/lib/academy-saved-client";
 import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
@@ -139,6 +139,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       forgetLocalUnless(studentId);
       window.localStorage.setItem(RESULTS_OWNER_KEY, studentId);
     } catch {}
+    // Typed challenge answers and quiz picks saved to the account (academy-saved-client.ts).
+    void openSaved(studentId);
     let cancelled = false;
     academyFetch("/academy/api/progress")
       .then((r) => (r.ok ? r.json() : null))
@@ -1379,7 +1381,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
   const asking = profile === null;
 
   return (
-    <AcademyProgressProvider phases={phases} studentId={student.id}>
+    <AcademyProgressProvider phases={phases}>
       <AcademyAccountProvider student={student}>
       <AcademyGoalsProvider value={{ profile: profile ?? null, editGoals: () => setEditingGoals(true) }}>
       <CoachProvider profile={profile ?? null}>
