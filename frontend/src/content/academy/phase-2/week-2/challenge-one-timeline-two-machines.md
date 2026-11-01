@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>One Timeline, Two Machines</h3>
 <p class="ad-brief__ask">An incident rarely stays on one machine. Can you read two different logs, on two different operating systems, and line them up into one account of what happened?</p>
-<p>Every machine keeps its own log, in its own format, on its own clock. A PurveX Financial analyst who only ever reads one machine's log at a time misses the thing that actually matters about most real incidents: what happened on one machine right before or right after something happened on another. Sign in to both machines in your pod within the same few minutes, then find each sign-in in that machine's own log and read what each one actually recorded.</p>
 <p>Your hosted lab needs to be running, with both machines reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -13,7 +12,7 @@
 
 ### Make Two Real Events
 
-Sign in to your domain controller the normal way. Then, separately, open a terminal session to the Ubuntu server.
+Every machine keeps its own log, in its own format, on its own clock. An analyst who only ever reads one machine's log at a time misses what happened on one machine right before or right after something happened on another. Sign in to your domain controller the normal way. Then, separately, open a terminal session to the Ubuntu server.
 
 You have just produced two real authentication events, on two different machines, within the same few minutes of each other. That is the shape of an investigation that actually spans an environment, not just one box.
 

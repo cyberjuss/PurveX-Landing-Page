@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Catch the Scan With Nobody Watching</h3>
 <p class="ad-brief__ask">You already learned to recognize a scan by eye, reading packets after the fact. Can you write the rule that catches the same scan the moment it happens, with nobody watching?</p>
-<p>The last lab taught you what a scan looks like in a capture: one source touching many ports in a short burst, the same shape Alex Rivera's own quarterly scan produced. An IDS (Intrusion Detection System) is built to spot that pattern live, the instant it happens, and raise an alert without anyone at PurveX Financial sitting in Wireshark watching for it. Write one Suricata rule that detects a burst of connection attempts from a single source, load it, then re-run the same Nmap scan from the last lab and read the alert it triggers.</p>
 <p>Your hosted lab needs to be running, with the Ubuntu server reachable. Suricata is already installed. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -13,7 +12,7 @@
 
 ### Write the Rule
 
-Open the rules file on the Ubuntu server and add one line.
+The last lab taught you what a scan looks like in a capture: one source touching many ports in a short burst, the same shape Alex Rivera's own quarterly scan produced. An IDS is built to spot that pattern live, the instant it happens, and raise an alert without anyone sitting in Wireshark watching for it. Open the rules file on the Ubuntu server and add one line.
 
 ```bash
 nano /etc/suricata/rules/local.rules

@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>What the Firewall Does With What You Never Mentioned</h3>
 <p class="ad-brief__ask">Before you add a single rule, a firewall has already decided what to do with everything you never mentioned. Can you read that default straight from your own domain controller?</p>
-<p>Allowlisting and blocklisting are not about which list you keep. They are about what the system does with the traffic that is not on either list. Alex Rivera wants this written down for the audit file, not assumed. A firewall's default action answers that question before any rule you write ever runs. Read your domain controller's own default outbound action, the setting that decides what happens to a connection nobody wrote a rule for.</p>
 <p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -13,7 +12,7 @@
 
 ### Ask the Firewall What It Actually Does by Default
 
-Open PowerShell on the domain controller.
+Allowlisting and blocklisting are not about which list you keep. They are about what the system does with the traffic that is not on either list. Alex Rivera wants this written down for the audit file, not assumed. Open PowerShell on the domain controller.
 
 ```powershell
 Get-NetFirewallProfile -Profile Domain | Select-Object Name, DefaultInboundAction, DefaultOutboundAction

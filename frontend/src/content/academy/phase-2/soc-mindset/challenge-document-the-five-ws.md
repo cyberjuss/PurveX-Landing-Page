@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Turn a Vague Alert Into a Documented Account</h3>
 <p class="ad-brief__ask">A vague alert says a sign-in failed. Can you turn that into the kind of documented account a Tier 2 analyst can actually act on, using only what the event itself records?</p>
-<p>The 5 W's turn a vague alert into a documented account: who, what, when, where, and why. Theo Walsh on Tier 2 only ever acts on what the handoff actually records, not a vague "a sign-in failed." The fastest way to learn what each one actually answers at PurveX Financial is to generate a real failed sign-in yourself and read the event it leaves behind. On your domain controller, fail a sign-in against your own account on purpose, with a real authentication call instead of a guess, and read what the event recorded.</p>
 <p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -13,7 +12,7 @@
 
 ### Make a Real Event
 
-Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
+The 5 W's turn a vague alert into a documented account: who, what, when, where, and why. Theo Walsh on Tier 2 only ever acts on what the handoff actually records, not a vague "a sign-in failed." Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
 
 ```powershell
 Add-Type -AssemblyName System.DirectoryServices.AccountManagement

@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Ask the Machine, Not the Lesson</h3>
 <p class="ad-brief__ask">Five services explain why a domain controller exists. Dozens more are actually running on it right now. Can you read the real list straight from the machine instead of settling for the five a lesson has room to teach?</p>
-<p>You just learned the five ports that explain what PurveX Financial's domain controller is for: DNS, Kerberos, LDAP, SMB, RDP. That is the map a lesson can fit in one page. Priya Nair keeps asking what else is actually running on it, and "five ports" has never been a real answer. List every port Windows reports as listening right now, confirm the five you just learned are really there, and read what else is running that the lesson never had room to mention.</p>
 <p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -13,7 +12,7 @@
 
 ### Ask the Machine, Not the Lesson
 
-Open PowerShell on the domain controller.
+You just learned the five ports that explain what the domain controller is for: DNS, Kerberos, LDAP, SMB, RDP. That is the map a lesson can fit in one page. Priya Nair keeps asking what else is actually running on it, and "five ports" has never been a real answer. Open PowerShell on the domain controller.
 
 ```powershell
 Get-NetTCPConnection -State Listen | Sort-Object LocalPort | Select-Object LocalPort, OwningProcess | Format-Table -AutoSize

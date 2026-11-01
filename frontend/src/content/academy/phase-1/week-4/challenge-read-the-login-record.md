@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The First Evidence in Almost Every Investigation</h3>
 <p class="ad-brief__ask">Every time someone proves who they are, a record is written. Can you make one, find it, and tell a success from a failure?</p>
-<p>Authentication is the moment a system decides you are who you claim to be, and it almost always leaves a trace. The first thing a PurveX Financial investigation reads is that trace, because a run of failures followed by one success is what a break-in looks like from the log. On the Ubuntu server, produce a failed authentication and a successful one, then find both in the system log and tell them apart.</p>
 <p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. You know your own password, which is in the lab panel. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -38,7 +37,7 @@ Commit to an answer before you type anything. Nothing is marked yet. The log set
 
 ### Produce a Failure
 
-Open a terminal on the Ubuntu desktop. First clear any remembered sudo session, then run a command as root and type the wrong password on purpose.
+Authentication is the moment a system decides you are who you claim to be, and it almost always leaves a trace: a run of failures followed by one success is what a break-in looks like from the log. Open a terminal on the Ubuntu desktop. First clear any remembered sudo session, then run a command as root and type the wrong password on purpose.
 
 ```bash
 sudo -k

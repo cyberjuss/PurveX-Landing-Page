@@ -2,7 +2,6 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Capture the Conversation, Not Just the Machine</h3>
 <p class="ad-brief__ask">From one machine, can you capture and read a conversation it is having with another? And what can that machine's capture never show you?</p>
-<p>Alex Rivera, PurveX Financial's IT Systems Administrator, wants the domain controller's core services confirmed reachable before this week's maintenance window, and read back from a real capture rather than taken on faith. Analysts rarely sit on the server they are investigating; they watch from a separate machine and read the traffic as it crosses the wire. On the Ubuntu server, open Wireshark, make the machine talk to the domain controller, and capture the exchange. Find the handshake, the ports and the protocols from the domain controller's own replies.</p>
 <p>Your hosted lab needs to be running, with both machines started. Wireshark is already installed on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
 
@@ -39,6 +38,8 @@ Commit to an answer before you capture anything. Nothing is marked yet. The capt
 </div>
 
 ### Find the Domain Controller
+
+Alex Rivera, PurveX Financial's IT Systems Administrator, wants the domain controller's core services confirmed reachable before this week's maintenance window, read back from a real capture rather than taken on faith. Analysts rarely sit on the server they are investigating; they watch from a separate machine and read the traffic as it crosses the wire.
 
 Open a terminal on the Ubuntu desktop. The domain controller is already known to this machine by name, so look up its address.
 
