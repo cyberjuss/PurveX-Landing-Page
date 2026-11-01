@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Grant Exactly One Power, Not the Whole Machine</h3>
-<p class="ad-brief__ask">A coworker needs to restart one service as an administrator and nothing more. Can you grant exactly that, and prove you did not quietly hand over the whole machine?</p>
+<p class="ad-brief__ask">Priya Nair, IT's Help Desk Technician, needs to restart one service as an administrator and nothing more. Can you grant exactly that, and prove you did not quietly hand over the whole machine?</p>
 <p>Authorization is deciding what an account may do once it has proved who it is. The safe rule at PurveX Financial is least privilege, giving each account only what its job needs. The careless version, a rule that grants more than intended, is how one ordinary account turns into control of the whole server. On the Ubuntu server, write a sudo rule that lets a user restart one service and nothing else, then look at a broader rule and say exactly how much more it would give away.</p>
 <p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
@@ -38,57 +38,57 @@ Commit to an answer first. Nothing is marked yet. The rules settle each one.
 
 ### Make a User to Grant To
 
-Open a terminal. Create an account that stands in for the coworker who needs to restart the web server.
+Open a terminal. Create an account that stands in for priya.nair, who needs to restart the web server.
 
 ```bash
-sudo useradd -m webops
+sudo useradd -m priya.nair
 ```
 
-Right now webops can do nothing as root. You are about to grant one thing.
+Right now priya.nair can do nothing as root. You are about to grant one thing.
 
 ### Grant Exactly One Command
 
-Sudo rules live in files under `/etc/sudoers.d`. Write one that lets webops restart nginx, and only that. The syntax names the user, the machine, who they may act as, and the exact command.
+Sudo rules live in files under `/etc/sudoers.d`. Write one that lets priya.nair restart nginx, and only that. The syntax names the user, the machine, who they may act as, and the exact command.
 
 ```bash
-echo 'webops ALL=(root) NOPASSWD: /usr/bin/systemctl restart nginx' | sudo tee /etc/sudoers.d/webops
-sudo chmod 440 /etc/sudoers.d/webops
+echo 'priya.nair ALL=(root) NOPASSWD: /usr/bin/systemctl restart nginx' | sudo tee /etc/sudoers.d/priya.nair
+sudo chmod 440 /etc/sudoers.d/priya.nair
 ```
 
-Now read back what webops is allowed to do, without becoming them.
+Now read back what priya.nair is allowed to do, without becoming them.
 
 ```bash
-sudo -l -U webops
+sudo -l -U priya.nair
 ```
 
-It lists the single command you granted. That is the whole of webops's power.
+It lists the single command you granted. That is the whole of priya.nair's power.
 
 <div class="ad-shots">
 <figure class="ad-shot">
-<img src="/academy/week-4/PLACEHOLDER-sudo-list.png" alt="Terminal showing sudo -l for the webops user listing only the one permitted systemctl restart nginx command" />
+<img src="/academy/week-4/PLACEHOLDER-sudo-list.png" alt="Terminal showing sudo -l for the priya.nair user listing only the one permitted systemctl restart nginx command" />
 <figcaption>Screenshot 1. [ADD IMAGE] One command, and nothing else.</figcaption>
 </figure>
 </div>
 
 ### Prove It Works and Prove It Stops
 
-Test the allowed command as webops. It should run.
+Test the allowed command as priya.nair. It should run.
 
 ```bash
-sudo -u webops sudo -n systemctl restart nginx
+sudo -u priya.nair sudo -n systemctl restart nginx
 ```
 
 No error means it worked. Now try a different command, one you never granted.
 
 ```bash
-sudo -u webops sudo -n systemctl restart ssh
+sudo -u priya.nair sudo -n systemctl restart ssh
 ```
 
-It is refused with a message that webops may not run that command. The rule did exactly one thing and refused the rest.
+It is refused with a message that priya.nair may not run that command. The rule did exactly one thing and refused the rest.
 
 <div class="ad-shots">
 <figure class="ad-shot">
-<img src="/academy/week-4/PLACEHOLDER-sudo-refused.png" alt="Terminal showing the allowed nginx restart succeeding and the ssh restart refused for webops" />
+<img src="/academy/week-4/PLACEHOLDER-sudo-refused.png" alt="Terminal showing the allowed nginx restart succeeding and the ssh restart refused for priya.nair" />
 <figcaption>Screenshot 2. [ADD IMAGE] The granted command runs, a different one is refused.</figcaption>
 </figure>
 </div>
@@ -98,10 +98,10 @@ It is refused with a message that webops may not run that command. The rule did 
 Now look at the rule a hurried administrator often writes instead. Read it, do not apply it.
 
 ```
-webops ALL=(root) NOPASSWD: /usr/bin/systemctl
+priya.nair ALL=(root) NOPASSWD: /usr/bin/systemctl
 ```
 
-It looks almost the same, but it names no service. That one difference lets webops run `systemctl` with any service and any action. They could stop the firewall, restart sshd, or interfere with the logging that recorded the last lab, so their next actions leave less of a trace.
+It looks almost the same, but it names no service. That one difference lets priya.nair run `systemctl` with any service and any action. They could stop the firewall, restart sshd, or interfere with the logging that recorded the last lab, so their next actions leave less of a trace.
 
 The narrow rule gave away one service. The broad rule gave away every service on the machine, and in practice root itself, because anyone who can run any `systemctl` command as root can also start a service they wrote. All of that came from the same one line. That gap is what least privilege is about.
 
@@ -110,8 +110,8 @@ The narrow rule gave away one service. The broad rule gave away every service on
 Remove the rule and the user so the next lab starts clean.
 
 ```bash
-sudo rm /etc/sudoers.d/webops
-sudo userdel -r webops
+sudo rm /etc/sudoers.d/priya.nair
+sudo userdel -r priya.nair
 ```
 
 ### Check Yourself
@@ -120,17 +120,17 @@ Answer from what you saw, not from what you remember reading.
 
 <div class="ad-mission" data-id="w4m-c1" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1123 · Low</span>
-<p><strong>Task:</strong> With webops granted only the nginx restart, what happened when you tried to restart ssh? Type its letter.<br><strong>A</strong> It worked, since one sudo rule unlocks all of sudo.<br><strong>B</strong> It was refused.</p>
+<p><strong>Task:</strong> With priya.nair granted only the nginx restart, what happened when you tried to restart ssh? Type its letter.<br><strong>A</strong> It worked, since one sudo rule unlocks all of sudo.<br><strong>B</strong> It was refused.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what happened restarting ssh" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Look at the actual terminal output from the "Prove It Works and Prove It Stops" step. The second command printed a message about webops specifically.</p>
+<p>Look at the actual terminal output from the "Prove It Works and Prove It Stops" step. The second command printed a message about priya.nair specifically.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">The command printed a refusal naming webops. A sudo rule grants only the exact command it names.</div>
+<div class="ad-miss" data-guess="a">The command printed a refusal naming priya.nair. A sudo rule grants only the exact command it names.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -209,7 +209,7 @@ Answer from what you saw, not from what you remember reading.
 
 <div class="ad-mission" data-id="w4m-c4" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1126 · Low</span>
-<p><strong>Task:</strong> Which command let you audit webops's privileges without logging in as them? Type its letter.<br><strong>A</strong> cat /etc/passwd.<br><strong>B</strong> sudo -l -U webops.<br><strong>C</strong> whoami.</p>
+<p><strong>Task:</strong> Which command let you audit priya.nair's privileges without logging in as them? Type its letter.<br><strong>A</strong> cat /etc/passwd.<br><strong>B</strong> sudo -l -U priya.nair.<br><strong>C</strong> whoami.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which command audits a user's sudo privileges" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -220,12 +220,12 @@ Answer from what you saw, not from what you remember reading.
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">That lists account names on the system, not what any one of them is allowed to run with sudo.</div>
-<div class="ad-miss" data-guess="c">That only prints the name of whoever is currently logged in. It says nothing about webops's permissions.</div>
+<div class="ad-miss" data-guess="c">That only prints the name of whoever is currently logged in. It says nothing about priya.nair's permissions.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>B. sudo -l -U webops</code></p>
+<p class="ad-flag__code"><code>B. sudo -l -U priya.nair</code></p>
 </div>
 <div>
 <span>Why it matters</span>

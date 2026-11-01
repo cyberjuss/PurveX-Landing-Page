@@ -58,7 +58,7 @@ sudo journalctl -u ssh -n 20
 
 <div class="ad-mission" data-id="la2-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1142 · Medium</span>
-<p><strong>SOC Queue · Baseline Review · 2:00 PM</strong><br>Your own DC sign-in and SSH session are both really you, minutes apart. Suppose the SOC instead saw the same pattern on an account that has never once shown a DC sign-in followed by an SSH session to the Ubuntu server before, not in weeks of history. Neither event alone looks unusual.</p>
+<p><strong>SOC Queue · Baseline Review · 2:00 PM</strong><br>Your own DC sign-in and SSH session are both really you, minutes apart. Suppose the SOC instead saw the same pattern on jordan.ellis's account, which has never once shown a DC sign-in followed by an SSH session to the Ubuntu server before, not in weeks of history. Neither event alone looks unusual.</p>
 <p><strong>Task:</strong> What does the pair together suggest? Type its letter.<br><strong>A</strong> Nothing. If each event is fine on its own, the pair is fine too.<br><strong>B</strong> The pair is more worth a second look than either event alone, since it is a pattern of movement across the pod that this account has never shown before.<br><strong>C</strong> Two separate machines' logs can never be analyzed together, only one at a time.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what an unfamiliar pattern across two machines suggests" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">

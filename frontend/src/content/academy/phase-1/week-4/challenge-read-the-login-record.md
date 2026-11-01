@@ -215,7 +215,7 @@ Answer from what you saw, not from what you remember reading.
 
 <div class="ad-mission ad-mission--capstone" data-id="w4e-c5" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · INC-1122 · High</span>
-<p><strong>SOC Queue · Overnight Review · 3:05 AM</strong><br>You are handed a day of logs from one PurveX Financial server. For one account you count sixty failed logins between 2am and 3am, all from the same address, and no success at all.</p>
+<p><strong>SOC Queue · Overnight Review · 3:05 AM</strong><br>You are handed a day of logs from one PurveX Financial server. For jordan.ellis's account in Finance and Accounting, you count sixty failed logins between 2am and 3am, all from the same address, and no success at all.</p>
 <p><strong>Task:</strong> Does the absence of any success make this event more or less worth reporting? Type its letter.<br><strong>A</strong> Less. No success means nobody actually got in, so there is nothing to escalate.<br><strong>B</strong> Just as much, or more. Sixty attempts in one hour with zero successes is still an active attempt against a real account, and the only reason nothing is "wrong" yet is that the attacker has not won.<br><strong>C</strong> It cannot be judged without knowing the account's password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether an all-failure burst is worth reporting" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">

@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>What a Leaked Password File Actually Gives Away</h3>
-<p class="ad-brief__ask">Two people pick the same password. Why can a stolen password file give one company away and tell an attacker almost nothing at another?</p>
+<p class="ad-brief__ask">Two Operations staff pick the same password. Why can a stolen password file give one company away and tell an attacker almost nothing at another?</p>
 <p>When a password database leaks, how the passwords were stored decides how bad PurveX Financial's day is. Two small steps, a salt and a slow hash, make the difference between a disaster and a shrug, and most people who have heard of salting cannot say what it actually does. Store the same password the weak way and the strong way on your Ubuntu server, and prove from the output why one leaks information and the other does not.</p>
 <p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Every command ships with the system; nothing is cracked and no attack tool is used. Each step takes a short answer, and the hint unlocks after two misses.</p>
 </div>
@@ -16,7 +16,7 @@
 Commit to an answer first. Nothing is marked yet. The output settles each one.
 
 <div class="ad-check ad-check--predict" data-check="w2m-p1">
-<p class="ad-check__q">Two users choose <code>Summer2024!</code>. Hashed with plain SHA-256, do their stored values look the same or different?</p>
+<p class="ad-check__q">ruth.okonkwo and ines.pelletier, two of Operations' seasonal hires, both choose <code>Summer2024!</code>. Hashed with plain SHA-256, do their stored values look the same or different?</p>
 <button type="button" class="ad-check__opt" data-i="0">The same</button>
 <button type="button" class="ad-check__opt" data-i="1">Different</button>
 <p class="ad-check__note">Locked in. You will hash it twice in the next step and see.</p>
@@ -39,7 +39,7 @@ Commit to an answer first. Nothing is marked yet. The output settles each one.
 
 ### Store It the Weak Way
 
-A plain hash with no salt is the storage that goes wrong. Hash the same password as though it belonged to two different users.
+A plain hash with no salt is the storage that goes wrong. Hash the same password as though it belonged to ruth.okonkwo, then again as though it belonged to ines.pelletier.
 
 ```bash
 printf 'Summer2024!' | sha256sum
@@ -57,13 +57,13 @@ The two values are identical. In a real leaked database, every account that chos
 
 ### See Why That Leaks
 
-Make a small table of what an unsalted file would hold, using three accounts where two share a password.
+Make a small table of what an unsalted file would hold, using three of Operations' seasonal accounts where two share a password: ruth.okonkwo, dmitri.volkov, then ines.pelletier.
 
 ```bash
 for p in 'Summer2024!' 'T7rq!vMx2' 'Summer2024!'; do printf '%s' "$p" | sha256sum; done
 ```
 
-Read the three lines. Two match and one does not, and you did not need to know any of the passwords to see which two people reused one. That alone is a finding on a real incident.
+Read the three lines. Two match and one does not, and you did not need to know any of the passwords to see that ruth.okonkwo and ines.pelletier reused one while dmitri.volkov's stands apart. That alone is a finding on a real incident.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -74,7 +74,7 @@ Read the three lines. Two match and one does not, and you did not need to know a
 
 ### Store It the Strong Way
 
-Now store the same password the way a modern Linux system does, with a random salt per user. The tool builds the salt for you.
+Now store ruth.okonkwo's password the way a modern Linux system does, with a random salt per user. The tool builds the salt for you.
 
 ```bash
 openssl passwd -6 'Summer2024!'
@@ -136,7 +136,7 @@ Answer from the output you saw.
 
 <div class="ad-mission" data-id="w2m-c2" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1098 · Low</span>
-<p><strong>Task:</strong> In the three-account loop, how many of the three stored values were identical? Type its letter.<br><strong>A</strong> Zero.<br><strong>B</strong> Two.<br><strong>C</strong> All three.</p>
+<p><strong>Task:</strong> In the ruth.okonkwo / dmitri.volkov / ines.pelletier loop, how many of the three stored values were identical? Type its letter.<br><strong>A</strong> Zero.<br><strong>B</strong> Two.<br><strong>C</strong> All three.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for how many stored values were identical" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -146,8 +146,8 @@ Answer from the output you saw.
 <p>The loop hashed <code>Summer2024!</code>, <code>T7rq!vMx2</code>, <code>Summer2024!</code> in that order. Two of those three passwords are the same password.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">The first and third accounts in the loop used the identical password. Their hashes could not help but match.</div>
-<div class="ad-miss" data-guess="c">The middle account's password was different from the other two, so its hash stands apart.</div>
+<div class="ad-miss" data-guess="a">ruth.okonkwo and ines.pelletier, first and third in the loop, used the identical password. Their hashes could not help but match.</div>
+<div class="ad-miss" data-guess="c">dmitri.volkov's password, the middle one in the loop, was different from the other two, so its hash stands apart.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

@@ -50,30 +50,30 @@ printf 'Q3 advisory fees: 412500\n' > ledger.txt
 chmod 644 ledger.txt
 ```
 
-Now make a second account, so there is somebody to keep the file from.
+Now make a second account, standing in for a coworker on the Wealth Management team this ledger belongs to.
 
 ```bash
-sudo useradd -m dana
-sudo -u dana cat /srv/cia/ledger.txt
+sudo useradd -m jamie.torres
+sudo -u jamie.torres cat /srv/cia/ledger.txt
 ```
 
-The second command prints the line. Dana can read the file, which is the state you are about to change.
+The second command prints the line. jamie.torres can read the file, which is the state you are about to change.
 
 <div class="ad-shots">
 <figure class="ad-shot">
 <img src="/academy/week-1/PLACEHOLDER-cia-setup.png" alt="Terminal showing the ledger file created and read successfully by a second user" />
-<figcaption>Screenshot 1. [ADD IMAGE] Dana reads the file before any permission changes.</figcaption>
+<figcaption>Screenshot 1. [ADD IMAGE] jamie.torres reads the file before any permission changes.</figcaption>
 </figure>
 </div>
 
 ### Break Confidentiality
 
-Confidentiality means only the people who should see something can see it. Take Dana's access away and prove it is gone.
+Confidentiality means only the people who should see something can see it. Take jamie.torres's access away and prove it is gone.
 
 ```bash
 chmod 600 ledger.txt
 ls -l ledger.txt
-sudo -u dana cat /srv/cia/ledger.txt
+sudo -u jamie.torres cat /srv/cia/ledger.txt
 ```
 
 The last command fails with "Permission denied". Record the exact message. Then read the file yourself to confirm it is still there and still correct.
@@ -156,7 +156,7 @@ Answer from what you saw, not from what you remember reading.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Look at the two commands you ran right after <code>chmod 600</code>: one as Dana, one as yourself. Only one of them could even open the file.</p>
+<p>Look at the two commands you ran right after <code>chmod 600</code>: one as jamie.torres, one as yourself. Only one of them could even open the file.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Run <code>cat ledger.txt</code> again as yourself. The line is exactly what you wrote with <code>printf</code>.</div>
@@ -236,7 +236,7 @@ Answer from what you saw, not from what you remember reading.
 
 <div class="ad-mission" data-id="w1e-c4" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1085 · Medium</span>
-<p><strong>Client Support · Escalation · 9:15 AM</strong><br>A PurveX Financial client calls in: the statement on their portal dashboard shows a different client's account balance. The numbers on it are correct for someone, just not for this client.</p>
+<p><strong>Client Support · Escalation · 9:15 AM</strong><br>Advisor sam.whitfield's client Avery calls in: the statement on their portal dashboard shows client Blake's account balance instead of their own. The numbers on it are correct for someone, just not for Avery.</p>
 <p><strong>Task:</strong> Which property failed? Type its letter.<br><strong>A</strong> Confidentiality.<br><strong>B</strong> Integrity.<br><strong>C</strong> Availability.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which property failed" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">

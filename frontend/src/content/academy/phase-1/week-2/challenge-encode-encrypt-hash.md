@@ -233,7 +233,7 @@ Answer from what you saw in the tool.
 
 <div class="ad-mission ad-mission--capstone" data-id="w2e-c5" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · INC-1096 · High</span>
-<p><strong>SOC Queue · Data-Loss Alert · 3:30 PM</strong><br>An alert flags data leaving a PurveX Financial workstation that reads <code>cGF5bG9hZA==</code>. A teammate says it is encrypted and the firm cannot know what it is.</p>
+<p><strong>SOC Queue · Data-Loss Alert · 3:30 PM</strong><br>An alert flags data leaving IT-WKS04, Priya Nair's workstation, that reads <code>cGF5bG9hZA==</code>. Teammate noor.ahmadi says it is encrypted and the firm cannot know what it is.</p>
 <p><strong>Task:</strong> Decode it yourself and report the actual word.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the decoded word" placeholder="one word" autocomplete="off" autocapitalize="off" spellcheck="false">
