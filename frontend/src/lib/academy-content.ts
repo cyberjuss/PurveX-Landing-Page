@@ -13,13 +13,11 @@ export function loadLesson(relativePath: string): string | null {
   }
 }
 
-/** Interactive labs rendered by a React component below the section's markdown. */
-export type LabWidget = "risk-triage" | "hash-verify" | "password-table" | "signin-log" | "effective-access";
-
 export interface ContentSection {
   label: string;
   file: string;
-  widget?: LabWidget;
+  /** Sub-heading a Challenges entry's sections are grouped under in the rail (academy-sidebar.tsx). Unused outside that one entry. */
+  group?: string;
 }
 
 export interface WeekDef {
@@ -60,9 +58,9 @@ const phase1Weeks: WeekDef[] = [
       { label: "Risk", file: "phase-1/week-1/lesson-risk.md" },
       { label: "How It All Connects", file: "phase-1/week-1/lesson-connects.md" },
       { label: "Resources", file: "phase-1/week-1/resources.md" },
-      { label: "Lab: Monday Morning Risk Triage", file: "phase-1/week-1/lab-risk-triage.md", widget: "risk-triage" },
       { label: "Lab: CIA Triad in Practice", file: "phase-1/week-1/lab-three-failures.md" },
       { label: "Lab: CVSS Vulnerability Scoring", file: "phase-1/week-1/lab-severity-risk.md" },
+      { label: "Challenge: Monday Morning Risk Triage", file: "phase-1/week-1/challenge-risk-triage.md" },
     ],
   },
   {
@@ -71,15 +69,14 @@ const phase1Weeks: WeekDef[] = [
     summary: "Prove a file was not changed, and tell encoding, encryption and hashing apart in a real password breach.",
     sections: [
       { label: "Overview", file: "phase-1/week-2/lesson-overview.md" },
-      { label: "Encoding, Encryption or Hashing?", file: "phase-1/week-2/lesson-three-ways.md" },
+      { label: "Encoding vs Encryption vs Hashing", file: "phase-1/week-2/lesson-three-ways.md" },
       { label: "Hashing and Integrity", file: "phase-1/week-2/lesson-hashing.md" },
       { label: "Encryption and Keys", file: "phase-1/week-2/lesson-encryption.md" },
       { label: "Storing Passwords", file: "phase-1/week-2/lesson-passwords.md" },
       { label: "Resources", file: "phase-1/week-2/resources.md" },
-      { label: "Lab: The Update Nobody Can Vouch For", file: "phase-1/week-2/lab-hash-verify.md", widget: "hash-verify" },
-      { label: "Lab: The Leaked Password Table", file: "phase-1/week-2/lab-password-table.md", widget: "password-table" },
       { label: "Lab: Hashing and Encryption with CyberChef", file: "phase-1/week-2/lab-tell-them-apart.md" },
       { label: "Lab: Password Hashing and Salting", file: "phase-1/week-2/lab-store-a-password.md" },
+      { label: "Challenge: The Mirror That Does Not Match", file: "phase-1/week-2/challenge-installer-check.md" },
     ],
   },
   {
@@ -95,19 +92,21 @@ const phase1Weeks: WeekDef[] = [
       { label: "SSL/TLS", file: "phase-1/week-3/lesson-tls.md" },
       { label: "Lab: Network Traffic Analysis with Wireshark", file: "phase-1/week-3/lab-capture-dc-traffic.md" },
       { label: "Lab: Port Scan Detection with Wireshark", file: "phase-1/week-3/lab-read-a-scan.md" },
+      { label: "Lab: Intrusion Detection with Suricata", file: "phase-1/week-3/lab-write-a-detection.md" },
+      { label: "Challenge: The Nightly Settlement Push", file: "phase-1/week-3/challenge-settlement-push.md" },
       { label: "Resources", file: "phase-1/week-3/resources.md" },
     ],
   },
   {
     slug: "week-4",
-    title: "Week 4 — Authentication, Authorization, Access Control",
+    title: "Week 4 — Authentication & Authorization & Access Control",
     summary: "Prove who someone is, give them only what their job needs, and check it on every request. Then break an app that forgot to.",
     sections: [
       { label: "Overview", file: "phase-1/week-4/lesson-overview.md" },
       { label: "Authentication", file: "phase-1/week-4/lesson-authentication.md" },
       { label: "Authorization", file: "phase-1/week-4/lesson-authorization.md" },
       { label: "Broken Access Control", file: "phase-1/week-4/lesson-access-control.md" },
-      { label: "Lab: Who Can Open This?", file: "phase-1/week-4/lab-effective-access.md", widget: "effective-access" },
+      { label: "Challenge: Who Can Open the Compliance Case Files?", file: "phase-1/week-4/challenge-compliance-case-files.md" },
       { label: "Lab: Broken Access Control (PortSwigger)", file: "phase-1/week-4/lab-triple-a.md" },
       { label: "Lab: Authentication Log Analysis", file: "phase-1/week-4/lab-read-the-login-record.md" },
       { label: "Lab: Linux Privilege Management with sudo", file: "phase-1/week-4/lab-one-power.md" },
@@ -165,10 +164,11 @@ const phase1HomeLabs: HomeLabDef[] = [
   {
     slug: "home-lab-challenges",
     title: "Home Lab — Challenges",
-    summary: "A first day on the desk and a full ticket queue, graded against your own lab.",
+    summary: "A first day on the desk, a full ticket queue and a client data review, graded against your own lab.",
     sections: [
       { label: "Challenge: Operation Day One", file: "phase-1/home-lab-ad/ctf-challenge.md" },
       { label: "Challenge: Ticket Queue", file: "phase-1/home-lab-ad/ticket-queue-challenge.md" },
+      { label: "Challenge: The Client Data Review", file: "phase-1/home-lab-ad/client-data-challenge.md" },
     ],
   },
 ];
@@ -177,37 +177,126 @@ const phase1HomeLabs: HomeLabDef[] = [
 // source Drive are still empty placeholders, same as Phase 1's Week 2.
 const phase2Weeks: WeekDef[] = [
   {
+    slug: "soc-mindset",
+    title: "Week 1 — Think Like a SOC Analyst",
+    summary: "The tier structure, the investigation mindset, and how an incident gets named and classified before it ever reaches a tool.",
+    sections: [
+      { label: "Overview", file: "phase-2/soc-mindset/overview.md" },
+      { label: "What a SOC Analyst Does", file: "phase-2/soc-mindset/lesson-role.md" },
+      { label: "How AI Is Changing the Role", file: "phase-2/soc-mindset/lesson-ai-impact.md" },
+      { label: "The Investigation Mindset", file: "phase-2/soc-mindset/lesson-investigation-mindset.md" },
+      { label: "The 5 W's of an Investigation", file: "phase-2/soc-mindset/lesson-5ws.md" },
+      { label: "Lab: Windows Security Event Log Analysis", file: "phase-2/soc-mindset/lab-document-the-five-ws.md" },
+      { label: "Classifying an Incident", file: "phase-2/soc-mindset/lesson-classification.md" },
+      { label: "Allowlisting and Blocklisting", file: "phase-2/soc-mindset/lesson-allow-deny.md" },
+      { label: "Lab: Windows Firewall Policy Audit", file: "phase-2/soc-mindset/lab-default-posture.md" },
+      { label: "Resources", file: "phase-2/soc-mindset/resources.md" },
+    ],
+  },
+  // Slugs below stay as "week-1".."week-4" (not renumbered) so existing
+  // student progress, which is keyed by slug, doesn't silently reset.
+  // Only the display title changed to match the new lead-in week above.
+  {
     slug: "week-1",
-    title: "Week 1 — Malware",
+    title: "Week 2 — Malware",
     summary: "How malware works, how it spreads, and what arrives along with it.",
     sections: [
       { label: "Overview", file: "phase-2/week-1/overview.md" },
       { label: "Types of Malware", file: "phase-2/week-1/lesson-types.md" },
       { label: "How Malware Gets In", file: "phase-2/week-1/lesson-delivery.md" },
       { label: "Working a Malware Alert", file: "phase-2/week-1/lesson-response.md" },
+      { label: "Tools Analysts Use", file: "phase-2/week-1/lesson-tools.md" },
+      { label: "Lab: Malware Detection with Windows Defender", file: "phase-2/week-1/lab-trigger-a-real-detection.md" },
+      { label: "Lab: Process Tree Analysis with Sysmon", file: "phase-2/week-1/lab-read-a-process-tree.md" },
     ],
   },
   {
     slug: "week-2",
-    title: "Week 2 — Log Analysis Fundamentals",
+    title: "Week 3 — Log Analysis Fundamentals",
     summary: "Read the host, the account, and the log before deciding what happened.",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
-      { label: "Lab: Read the Sign-In Log", file: "phase-2/week-2/lab-signin-log.md", widget: "signin-log" },
-      { label: "Challenge: The 2 AM Login", file: "phase-2/week-2/alert-inc-1046.md" },
+      { label: "Lab: Cross-Platform Log Correlation", file: "phase-2/week-2/lab-one-timeline-two-machines.md" },
+      { label: "Lab: PowerShell Script Block Logging", file: "phase-2/week-2/lab-turn-on-script-logging.md" },
+    ],
+  },
+  // These two replace the old empty "week-3" (SIEM Basics) and "week-4"
+  // (Detection Engineering) placeholders, which had no sections and so no
+  // student progress to preserve -- safe to retire rather than renumber.
+  {
+    slug: "baselines-thresholds",
+    title: "Week 4 — Baselines & Thresholds & Zero Trust",
+    summary: "Map your own lab's network, tell an outlier from a baseline, place MITRE ATT&CK on attacker behavior you've already seen, and learn what a detection threshold actually costs in either direction.",
+    sections: [
+      { label: "Overview", file: "phase-2/baselines-thresholds/overview.md" },
+      { label: "Mapping Your Environment", file: "phase-2/baselines-thresholds/lesson-map-environment.md" },
+      { label: "Lab: Network Port Enumeration with PowerShell", file: "phase-2/baselines-thresholds/lab-confirm-the-map.md" },
+      { label: "Baselines and Outliers", file: "phase-2/baselines-thresholds/lesson-baselines-outliers.md" },
+      { label: "The MITRE ATT&CK Framework", file: "phase-2/baselines-thresholds/lesson-attack.md" },
+      { label: "Zero Trust", file: "phase-2/baselines-thresholds/lesson-zero-trust.md" },
+      { label: "Setting Thresholds for Detections", file: "phase-2/baselines-thresholds/lesson-thresholds.md" },
+      { label: "Why Detections Matter", file: "phase-2/baselines-thresholds/lesson-why-detections.md" },
+      { label: "Resources", file: "phase-2/baselines-thresholds/resources.md" },
     ],
   },
   {
-    slug: "week-3",
-    title: "Week 3 — SIEM Basics",
-    summary: "Centralized logging and how to build a first set of detections.",
-    sections: [],
+    slug: "detection-writing",
+    title: "Week 5 — Writing Detections with KQL",
+    summary: "Learn KQL and TRACE, a five-part method for turning an ATT&CK technique and a threshold into a real detection query.",
+    sections: [
+      { label: "Overview", file: "phase-2/detection-writing/overview.md" },
+      { label: "KQL Basics", file: "phase-2/detection-writing/lesson-kql-basics.md" },
+      { label: "The TRACE Method", file: "phase-2/detection-writing/lesson-trace.md" },
+      { label: "TRACE: Technique", file: "phase-2/detection-writing/lesson-trace-technique.md" },
+      { label: "TRACE: Reference", file: "phase-2/detection-writing/lesson-trace-reference.md" },
+      { label: "TRACE: Aggregate", file: "phase-2/detection-writing/lesson-trace-aggregate.md" },
+      { label: "TRACE: Condition", file: "phase-2/detection-writing/lesson-trace-condition.md" },
+      { label: "TRACE: Escalation", file: "phase-2/detection-writing/lesson-trace-escalation.md" },
+      { label: "Resources", file: "phase-2/detection-writing/resources.md" },
+    ],
   },
   {
-    slug: "week-4",
-    title: "Week 4 — Detection Engineering",
-    summary: "How MITRE ATT&CK maps detections to real attacker techniques.",
-    sections: [],
+    slug: "kill-chain",
+    title: "Week 6 — The Cyber Kill Chain",
+    summary: "See how individual ATT&CK techniques you already know chain into one intrusion, then work a real five-stage chain in your own Shift queue.",
+    sections: [
+      { label: "Overview", file: "phase-2/kill-chain/overview.md" },
+      { label: "The Cyber Kill Chain", file: "phase-2/kill-chain/lesson-kill-chain.md" },
+      { label: "Reconnaissance", file: "phase-2/kill-chain/lesson-recon.md" },
+      { label: "Weaponization", file: "phase-2/kill-chain/lesson-weaponization.md" },
+      { label: "Delivery", file: "phase-2/kill-chain/lesson-delivery.md" },
+      { label: "Exploitation", file: "phase-2/kill-chain/lesson-exploitation.md" },
+      { label: "Installation", file: "phase-2/kill-chain/lesson-installation.md" },
+      { label: "Command and Control", file: "phase-2/kill-chain/lesson-c2.md" },
+      { label: "Actions on Objectives", file: "phase-2/kill-chain/lesson-actions.md" },
+      { label: "Resources", file: "phase-2/kill-chain/resources.md" },
+    ],
+  },
+];
+
+// Phase 2's challenges, same role and same shape as Phase 1's Home Lab
+// Challenges: every challenge in the phase, gathered into one entry so they
+// read as tabs on a single page instead of being buried inside their week's
+// lesson list.
+const phase2Capstone: HomeLabDef[] = [
+  {
+    slug: "capstone",
+    title: "Phase 2 — Challenges",
+    summary: "Four real attack campaigns, worked start to finish on your own lab, each mapped to the Cyber Kill Chain and MITRE ATT&CK.",
+    // Four separate attackers, four separate chains, each its own real
+    // story: credential guessing, a phishing attachment, a forgotten
+    // firewall rule, and abuse of Kerberos and AD replication exactly as
+    // designed (the real techniques CISA's September 2024 AD-compromise
+    // guide names). Approved Overnight, Baseline a Team, the lockout
+    // threshold and the cross-campaign review stay off this page by
+    // request. They're real content, just not listed here, so the page is
+    // only the campaigns.
+    sections: [
+      { label: "Challenge: The Credential Campaign", file: "phase-2/campaigns/challenge-credential-campaign.md", group: "Campaigns" },
+      { label: "Challenge: The Phishing Chain", file: "phase-2/campaigns/challenge-phishing-chain.md", group: "Campaigns" },
+      { label: "Challenge: The Open Door", file: "phase-2/campaigns/challenge-open-door.md", group: "Campaigns" },
+      { label: "Challenge: The Keys to the Domain", file: "phase-2/campaigns/challenge-keys-to-the-domain.md", group: "Campaigns" },
+    ],
   },
 ];
 
@@ -217,7 +306,7 @@ const phase2Weeks: WeekDef[] = [
 // straight to the phase-3 page's "still being written" placeholder.
 export const phases: PhaseDef[] = [
   { slug: "phase-1", label: "Phase 1", title: "Fundamentals", weeks: phase1Weeks, homeLabs: phase1HomeLabs },
-  { slug: "phase-2", label: "Phase 2", title: "Threat Detection & Log Analysis", weeks: phase2Weeks },
+  { slug: "phase-2", label: "Phase 2", title: "Threat Detection & Log Analysis", weeks: phase2Weeks, homeLabs: phase2Capstone },
   { slug: "phase-3", label: "Phase 3", title: "Incident Response", weeks: [] },
 ];
 

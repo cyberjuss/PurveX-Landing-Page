@@ -2,8 +2,11 @@ import "server-only";
 
 // Which Claude models the Academy uses. In their own module so the Coach, the
 // drill writer and the role research can share them without importing each other.
-export const COACH_SONNET_MODEL = process.env.ACADEMY_COACH_MODEL || "claude-sonnet-5";
-export const COACH_HAIKU_MODEL = process.env.ACADEMY_COACH_FAST_MODEL || "claude-haiku-4-5";
+export const COACH_SONNET_MODEL = process.env.ACADEMY_COACH_MODEL || "claude-sonnet-5-5";
+// The fast model is what every cheap, narrow job runs on. Haiku 5.5 costs a
+// tenth of Haiku 4.5 per token and holds a far larger context, so a lookup or a
+// graded answer is close to free beside a Sonnet turn.
+export const COACH_HAIKU_MODEL = process.env.ACADEMY_COACH_FAST_MODEL || "claude-haiku-5-5";
 
 export const ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages";
 

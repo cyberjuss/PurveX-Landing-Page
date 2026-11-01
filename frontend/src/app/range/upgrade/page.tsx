@@ -16,9 +16,13 @@ import type { User } from "@supabase/supabase-js";
 // not have to find an instructor first -- a real route wins over the
 // rewrite (same trick as /range/join) and skips that gate entirely.
 
-// Only the build-time copy. /academy/api/plan serves the same link read at
-// request time, and that one wins -- see the route for why.
+// Only the build-time copy. /academy/api/plan serves the same links read at
+// request time, and those win -- see the route for why. Two links, same
+// price: one carries a 3-day trial, the other charges right away for anyone
+// who already decided and would rather not wait three days to know the card
+// works.
 const BUILT_IN_LINK_URL = process.env.NEXT_PUBLIC_STRIPE_RANGE_PRO_LINK_URL || "";
+const BUILT_IN_DIRECT_LINK_URL = process.env.NEXT_PUBLIC_STRIPE_RANGE_PRO_LINK_URL_DIRECT || "";
 
 const PERKS = [
   "A cloud lab of your own in a browser tab",
@@ -34,6 +38,7 @@ type Plan = {
   until: string | null;
   canceled: boolean;
   checkoutUrl?: string;
+  directCheckoutUrl?: string;
 };
 
 function UpgradeContent() {
@@ -49,13 +54,39 @@ function UpgradeContent() {
   // other content, and throwing someone at a payment page from one with no
   // price on screen first would be a nasty surprise.
   const straightToCheckout = searchParams?.get("checkout") === "1";
+  // Carried the same way as checkout=1: a click from the pricing page's
+  // smaller "skip the trial" link, saying which Payment Link to send a
+  // decisive buyer straight to. Both buttons below offer the same choice to
+  // anyone who lands here without it.
+  const skipTrial = searchParams?.get("trial") === "0";
   const [user, setUser] = useState<User | null | undefined>(undefined);
   const [plan, setPlan] = useState<Plan | null>(null);
-  const [busy, setBusy] = useState(false);
+  // Which button is mid-click, so only the one actually pressed shows the
+  // spinner -- a shared busy flag would freeze both at once from one click.
+  const [pending, setPending] = useState<"trial" | "direct" | null>(null);
   const [error, setError] = useState("");
+  const [billingBusy, setBillingBusy] = useState(false);
+  const [billingError, setBillingError] = useState("");
   // The disabled prop only lands on the next render, so a fast double-click
   // can fire this twice and open two checkout tabs.
   const busyRef = useRef(false);
+
+  // Stripe hosts the whole thing: change the card, read a receipt, cancel. The
+  // session is single use and short lived, so it is minted per click rather
+  // than held in state.
+  const openBilling = useCallback(async () => {
+    setBillingBusy(true);
+    setBillingError("");
+    try {
+      const res = await academyFetch("/academy/api/billing-portal", { method: "POST" });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) throw new Error(data.error || "Could not open billing.");
+      window.location.href = data.url;
+    } catch (err) {
+      setBillingError(err instanceof Error ? err.message : "Could not open billing.");
+      setBillingBusy(false);
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -66,7 +97,7 @@ function UpgradeContent() {
         // people arriving here have never had an account, and greeting them
         // with "Welcome back" asks for a password they never set. The signup
         // screen carries its own "Sign in" link for everyone else.
-        const back = straightToCheckout ? "/range/upgrade?checkout=1" : "/range/upgrade";
+        const back = straightToCheckout ? `/range/upgrade?checkout=1${skipTrial ? "&trial=0" : ""}` : "/range/upgrade";
         router.replace(`/account/signup?next=${encodeURIComponent(back)}`);
         return;
       }
@@ -78,43 +109,53 @@ function UpgradeContent() {
     return () => {
       cancelled = true;
     };
-  }, [router, straightToCheckout]);
+  }, [router, straightToCheckout, skipTrial]);
 
-  const linkUrl = plan?.checkoutUrl || BUILT_IN_LINK_URL;
+  const trialLinkUrl = plan?.checkoutUrl || BUILT_IN_LINK_URL;
+  const directLinkUrl = plan?.directCheckoutUrl || BUILT_IN_DIRECT_LINK_URL;
 
   // Leaves the page, so it sets no state of its own -- which is also what
   // lets the auto-redirect effect below call it without setting state in an
   // effect. Only the button needs a pending look, and it does that itself.
-  const goToStripe = useCallback(() => {
-    if (!user || busyRef.current || !linkUrl) return;
-    busyRef.current = true;
-    // client_reference_id is how the Stripe webhook knows which account to
-    // grant Pro to -- without it the payment lands with nobody attached.
-    const url = new URL(linkUrl);
-    url.searchParams.set("client_reference_id", user.id);
-    if (user.email) url.searchParams.set("prefilled_email", user.email);
-    window.location.href = url.toString();
-  }, [user, linkUrl]);
+  const goToStripe = useCallback(
+    (linkUrl: string) => {
+      if (!user || busyRef.current || !linkUrl) return;
+      busyRef.current = true;
+      // client_reference_id is how the Stripe webhook knows which account to
+      // grant Pro to -- without it the payment lands with nobody attached.
+      const url = new URL(linkUrl);
+      url.searchParams.set("client_reference_id", user.id);
+      if (user.email) url.searchParams.set("prefilled_email", user.email);
+      window.location.href = url.toString();
+    },
+    [user]
+  );
 
-  const checkout = useCallback(() => {
-    if (!user || busyRef.current) return;
-    if (!linkUrl) {
-      setError("Checkout is not configured yet. Email support@purvex.io and we will set you up.");
-      return;
-    }
-    setBusy(true);
-    goToStripe();
-  }, [user, linkUrl, goToStripe]);
+  const checkout = useCallback(
+    (which: "trial" | "direct") => {
+      if (!user || busyRef.current) return;
+      const linkUrl = which === "trial" ? trialLinkUrl : directLinkUrl;
+      if (!linkUrl) {
+        setError("Checkout is not configured yet. Email support@purvex.io and we will set you up.");
+        return;
+      }
+      setPending(which);
+      goToStripe(linkUrl);
+    },
+    [user, trialLinkUrl, directLinkUrl, goToStripe]
+  );
 
-  // Pressed Get Pro, then made an account: carry on to Stripe rather than
-  // landing them back on an offer they already accepted. Waits for `plan`
-  // so an existing subscriber is never sent to buy a second one, and falls
-  // through to the offer screen when checkout is not configured, instead of
-  // leaving someone on a spinner that never resolves.
-  const autoCheckout = straightToCheckout && Boolean(linkUrl);
+  // Pressed Get Pro (or its skip-the-trial twin), then made an account:
+  // carry on to Stripe rather than landing them back on an offer they
+  // already accepted. Waits for `plan` so an existing subscriber is never
+  // sent to buy a second one, and falls through to the offer screen when
+  // checkout is not configured, instead of leaving someone on a spinner that
+  // never resolves.
+  const autoLinkUrl = skipTrial ? directLinkUrl : trialLinkUrl;
+  const autoCheckout = straightToCheckout && Boolean(autoLinkUrl);
   useEffect(() => {
-    if (user && plan?.plan === "free" && autoCheckout) goToStripe();
-  }, [user, plan, autoCheckout, goToStripe]);
+    if (user && plan?.plan === "free" && autoCheckout) goToStripe(autoLinkUrl);
+  }, [user, plan, autoCheckout, autoLinkUrl, goToStripe]);
 
   if (user === undefined || !plan || (plan.plan === "free" && autoCheckout)) {
     return (
@@ -147,6 +188,17 @@ function UpgradeContent() {
         <Link href="/range" className="am-primary mt-7">
           Open Range
         </Link>
+        {/* Only for a subscription they pay for themselves. A class seat and a
+            comped account have no bill of their own to manage, and offering a
+            portal that cannot open is worse than not offering one. */}
+        {plan.source === "subscription" && (
+          <>
+            <button type="button" className="am-legal mt-4 underline underline-offset-4" onClick={openBilling} disabled={billingBusy}>
+              {billingBusy ? "Opening billing…" : "Manage billing or cancel"}
+            </button>
+            {billingError && <p className="am-legal !text-left mt-2 text-red-600">{billingError}</p>}
+          </>
+        )}
       </AuthMinimal>
     );
   }
@@ -165,6 +217,9 @@ function UpgradeContent() {
           <span className="text-sm font-medium text-slate-500">per month</span>
           <span className="ml-auto text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Range Pro</span>
         </div>
+        <p className="border-b border-[#eceef4] px-5 py-2 text-[0.8rem] font-semibold text-[#6a5cff]">
+          Free for your first 3 days
+        </p>
         <ul className="flex flex-col gap-2.5 px-5 py-4">
           {PERKS.map((perk) => (
             <li key={perk} className="flex items-start gap-2.5 text-[0.93rem] leading-snug text-[#39415a]">
@@ -181,15 +236,30 @@ function UpgradeContent() {
         Signed in as <span className="font-medium text-[#39415a]">{user?.email}</span>
       </p>
 
-      <button type="button" onClick={checkout} disabled={busy} className="am-primary mt-2">
-        {busy ? (
+      <button type="button" onClick={() => checkout("trial")} disabled={pending !== null} className="am-primary mt-2">
+        {pending === "trial" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" /> Opening checkout...
           </>
         ) : (
-          "Continue to checkout"
+          "Start your free trial"
         )}
       </button>
+
+      {/* The same purchase, for someone who already decided and would rather
+          not wait three days to know the card works. Only shown when the
+          second link actually exists, so a misconfigured env never offers a
+          button that 503s. */}
+      {directLinkUrl && (
+        <button
+          type="button"
+          onClick={() => checkout("direct")}
+          disabled={pending !== null}
+          className="am-legal mt-3 underline underline-offset-4"
+        >
+          {pending === "direct" ? "Opening checkout…" : "Skip the trial, pay $49 now"}
+        </button>
+      )}
 
       {error ? (
         <p className="mt-2 text-sm font-medium text-[#d92d20]" role="alert">
@@ -199,7 +269,9 @@ function UpgradeContent() {
 
       {/* Left aligned like everything above it. .am-legal centres itself, which
           suits the sign-in screens and left this page looking half-justified. */}
-      <p className="am-legal !text-left">Billed monthly through Stripe and you can cancel any time.</p>
+      <p className="am-legal !text-left">
+        Free for 3 days, then $49 billed monthly through Stripe. Cancel any time, including before the trial ends.
+      </p>
       <p className="mt-5 border-t border-[#eceef4] pt-4 text-sm text-slate-500">
         Not now?{" "}
         <Link href="/range" className="am-link">

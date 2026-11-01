@@ -70,12 +70,6 @@ const HOME: Tour = {
   title: "Range",
   tiles: [
     {
-      sel: '[data-tour="next"]',
-      icon: PlayCircle,
-      title: "Next",
-      body: "Always names the next thing to do, and moves on its own as you finish.",
-    },
-    {
       sel: '[data-tour="readiness"]',
       icon: Gauge,
       title: "Readiness",
@@ -160,22 +154,16 @@ const DRILLS: Tour = {
       body: "One scenario written against your own directory. A decision, a write-up, or a real change.",
     },
     {
-      sel: '[data-tour="shift"]',
-      icon: Clock,
-      title: "Shift",
-      body: "Thirty minutes on the desk. Real incidents fire into your lab, each with an SLA.",
-    },
-    {
       sel: '[data-tour="ctf"]',
       icon: Flag,
-      title: "Weekly CTF",
+      title: "This week’s investigation",
       body: "One hard investigation a week against your own Security log. A new one every Monday.",
     },
     {
-      sel: '[data-tour="findings"]',
-      icon: ShieldAlert,
-      title: "What your lab needs",
-      body: "A real audit of your directory, checked inside the lab rather than marked on paper.",
+      sel: '[data-tour="shift"]',
+      icon: Clock,
+      title: "Shift",
+      body: "Thirty minutes on the desk. Real incidents fire into your lab, each with a priority. Work the highest first.",
     },
   ],
 };
@@ -344,7 +332,7 @@ const TOURS: Tour[] = [HOME, DRILLS, LABS, REFERENCE, READINESS, PORTFOLIO, SHIF
 
 // One welcome, not one per page. Once the portal has shown the tour the first
 // time, this flag stops any other tour from firing on a first visit to drills,
-// labs, SIEM and the rest. Cleared by a replay.
+// labs and the rest. Cleared by a replay.
 const PORTAL_TOURED = "academy-toured-v1";
 
 /** Storage can throw in a private window, so a failed read means "show it". */

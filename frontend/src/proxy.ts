@@ -65,8 +65,14 @@ export default function proxy(request: NextRequest) {
       ].join("; ")
     : [
         "default-src 'self'",
+        // Every script the app ships carries the nonce, and 'strict-dynamic'
+        // lets those load what they need. The https: and http: after it are
+        // only a fallback for browsers too old to know 'strict-dynamic';
+        // modern ones ignore them. There used to be a script-src-elem here
+        // that repeated https: and http: without 'strict-dynamic', and for
+        // <script> tags that rule wins, so a script element from any site on
+        // the internet was allowed. Without it, script-src governs elements.
         `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: http:`,
-        `script-src-elem 'self' 'nonce-${nonce}' https: http:`,
         "script-src-attr 'none'",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: blob:",
@@ -83,7 +89,6 @@ export default function proxy(request: NextRequest) {
   // self-hosted Pyodide files and compile WebAssembly, and nothing else.
   const workerCsp = "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'";
   res.headers.set("Content-Security-Policy", request.nextUrl.pathname === "/lab-python-worker.js" ? workerCsp : csp);
-  res.headers.set("X-CSP-Nonce", nonce);
   res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   res.headers.set("X-Content-Type-Options", "nosniff");
   res.headers.set("X-Frame-Options", "DENY");

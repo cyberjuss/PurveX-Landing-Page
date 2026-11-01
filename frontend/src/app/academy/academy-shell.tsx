@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, ViewTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, GraduationCap, Home, Loader2, Menu, Moon, Sun, X } from "lucide-react";
 import type { PhaseDef } from "@/lib/academy-content";
-import { AcademyAccountProvider, AcademyGoalsProvider, AcademyProfileMenu, type AcademyStudent } from "@/components/academy/academy-account";
+import { AcademyAccountProvider, AcademyGoalsProvider, AcademyProfileMenu, accountFirstName, type AcademyStudent } from "@/components/academy/academy-account";
 import { hasHostedLab, HostedLabButton, startHostedLabNow } from "@/components/academy/hosted-lab-button";
 import { HelpDialog } from "@/components/academy/get-help";
 import { AcademyIntake } from "@/components/academy/academy-intake";
@@ -14,7 +14,7 @@ import { AcademySidebar } from "@/components/academy/academy-sidebar";
 import { AcademySignIn } from "@/components/academy/academy-sign-in";
 import { AcademyWelcome, takeAcademyWelcome } from "@/components/academy/academy-welcome";
 import { UnlockForm } from "./unlock-form";
-import { CoachProvider } from "@/components/academy/coach-context";
+import { AskCoachBridge, CoachProvider } from "@/components/academy/coach-context";
 import { GoalsPanel } from "@/components/academy/goals-panel";
 import { ProofPrompt } from "@/components/academy/proof-prompt";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
@@ -24,6 +24,7 @@ import { askForProofShot, PROOF_TICKETS } from "@/lib/academy-proof";
 import { examLinks, roleLabel, sanitizeProfile, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import {
   academyFetch,
+  DEV_PREVIEW,
   downloadLinkedBuildScript,
   loadCachedProfile,
   LINKED_SCRIPT_PATH,
@@ -40,6 +41,8 @@ import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
 
 type Student = AcademyStudent;
+
+const PREVIEW_STUDENT: Student = { id: "dev-preview", email: "preview@localhost", name: "Preview" };
 /** What the server says about a submitted answer. blocked: the lab does not show the change yet. */
 type AnswerReply = { correct?: boolean; blocked?: boolean; result?: MissionResult; reveal?: string | null; feedback?: string | null };
 
@@ -64,7 +67,9 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
   const [scrolled, setScrolled] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   // undefined while the stored Supabase session is still being read.
-  const [student, setStudent] = useState<Student | null | undefined>(supabase ? undefined : null);
+  const [student, setStudent] = useState<Student | null | undefined>(
+    DEV_PREVIEW ? PREVIEW_STUDENT : supabase ? undefined : null
+  );
   const [hello, setHello] = useState(false);
   // The intake answers. undefined while loading, null until the student has answered.
   const [profile, setProfileState] = useState<StudentProfile | null | undefined>(undefined);
@@ -338,7 +343,16 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     let revealTimer = 0;
     const fillReveal = (wrap: Element, html: string | null | undefined) => {
       const box = wrap.querySelector<HTMLElement>(".ad-flag");
-      if (box && html && !box.innerHTML.trim()) box.innerHTML = html;
+      if (!box || !html || box.innerHTML.trim()) return;
+      box.innerHTML = html;
+      // The reveal explains the answer once. A student who is still unclear
+      // why, not just what, can ask the coach to go deeper on this exact
+      // ticket rather than describing it from memory in the general chat.
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "ad-flag__coach";
+      btn.textContent = "Ask AI to explain";
+      box.appendChild(btn);
     };
     const showReveal = (wrap: Element, id: string) => {
       const cached = revealCache.get(id);
@@ -419,7 +433,13 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       const input = guess.querySelector<HTMLInputElement>(".ad-guess__input");
       const face = document.createElement("div");
       face.className = "ad-guess__win";
-      face.innerHTML = '<span class="ad-guess__mark" aria-hidden="true">\u2713</span> Answered right.';
+      // A drawn check rather than a glyph, so a live solve can draw it in.
+      face.innerHTML =
+        '<span class="ad-guess__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.25 4.25L18.5 8"/></svg></span> Answered right.';
+      const motion = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // Only a solve that just happened plays the moment. A solve restored on
+      // page load lands already drawn.
+      if (motion) face.classList.add("ad-guess__win--live");
       let landed = false;
       const land = () => {
         if (landed) return;
@@ -428,7 +448,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         else if (!guess.querySelector(".ad-guess__win")) guess.prepend(face);
         guess.classList.add("ad-guess--win");
       };
-      const motion = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (input && motion) {
         input.classList.add("ad-guess__input--out");
         input.addEventListener("animationend", land, { once: true });
@@ -522,6 +541,24 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     };
 
     // A hosted student's lab is off: say so, with a button that starts it.
+    /**
+     * A miss that cost nothing: one sentence, and the reassurance on its own.
+     *
+     * Every one of these carried "This does not use an attempt" inside the
+     * sentence, so a line read in a glance ran to three. It is the same
+     * sentence every time, which is exactly the kind of thing that belongs
+     * beside the message rather than inside it.
+     */
+    const missNote = (feedback: HTMLElement, text: string) => {
+      feedback.textContent = "";
+      feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+      feedback.append(text + " ");
+      const note = document.createElement("span");
+      note.className = "ad-guess__free";
+      note.textContent = "No attempt used.";
+      feedback.appendChild(note);
+    };
+
     const labOffNote = (feedback: HTMLElement, text: string) => {
       feedback.textContent = `${text} `;
       feedback.className = "ad-guess__feedback ad-guess__feedback--err";
@@ -571,7 +608,14 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       }
 
       const missionId = wrap.getAttribute("data-id") || "";
+      // Busy, not broken. Checking a lab asks the pod for a fresh snapshot
+      // and waits for the change to appear in it, which can run to the best
+      // part of a minute. A greyed-out button is what a dead one looks like
+      // too, so it says what it is doing and spins while it does it.
+      const label = btn.textContent;
       btn.disabled = true;
+      btn.classList.add("ad-guess__submit--busy");
+      btn.textContent = "Checking";
       feedback.textContent = "Checking your lab…";
       feedback.className = "ad-guess__feedback";
       let gate: Awaited<ReturnType<typeof labGate>> = null;
@@ -588,8 +632,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           gate = await labGate(missionId);
         }
         if (!gate) {
-          feedback.textContent = "Could not check your lab. Try submit again. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(feedback, "Could not check your lab, so try submit again.");
           placeMiss(wrap);
           return;
         }
@@ -599,29 +642,34 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           return;
         }
         if (gate.noLab) {
-          feedback.textContent = "No lab has reported yet. Download the script from Build the Environment, run it once as Administrator, and look for Lab snapshot sent. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(feedback, "No lab has reported yet, so run Build-Environment.ps1 once as Administrator and look for Lab snapshot sent.");
           placeMiss(wrap);
           return;
         }
         if (gate.stale) {
-          feedback.textContent = `The lab is not live${gate.syncedAgo ? ` (it last reported ${gate.syncedAgo})` : ""}. Turn the domain controller on and wait for the lab light to go green. If it stays grey, run Build-Environment.ps1 -SyncOnly as Administrator. This does not use an attempt.`;
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(
+            feedback,
+            `Your lab is not live${gate.syncedAgo ? ` (it last reported ${gate.syncedAgo})` : ""}, so turn the domain controller on and wait for the lab light to go green.`
+          );
           placeMiss(wrap);
           return;
         }
         if (gate.noTicketObjects) {
-          feedback.textContent = "The ticket objects are not in your lab yet. Run the script from Build the Environment again and wait a minute. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(
+            feedback,
+            hasHostedLab()
+              ? "This ticket's objects are not in your lab yet, and we are adding them now, so give it half a minute."
+              : "This ticket's objects are not in your lab yet, so run Build-Environment.ps1 again and give it a minute."
+          );
           placeMiss(wrap);
           return;
         }
         if (!gate.passed) {
           const missing = (gate.results ?? []).filter((r) => !r.ok).map((r) => r.label).join("; ");
-          feedback.textContent = missing
-            ? `The lab does not show this change yet: ${missing}. Make the change and submit again. This does not use an attempt.`
-            : "The lab does not show this change yet. Make it and submit again. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          // The checks already name what is missing, so the sentence does not
+          // also have to say "make the change and submit again" -- that is the
+          // only thing left to do.
+          missNote(feedback, missing ? `Not in your lab yet: ${missing}.` : "Your lab does not show this change yet.");
           placeMiss(wrap);
           return;
         }
@@ -629,15 +677,17 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         feedback.textContent = "Checking your answer…";
         reply = await sendAnswer(missionId, guess);
         if (!reply || reply.blocked) {
-          feedback.textContent = reply?.blocked
-            ? "The lab does not show this change yet. Make it and submit again. This does not use an attempt."
-            : "Could not check your answer. Try submit again. This does not use an attempt.";
-          feedback.className = "ad-guess__feedback ad-guess__feedback--err";
+          missNote(
+            feedback,
+            reply?.blocked ? "Your lab does not show this change yet." : "Could not check your answer, so try submit again."
+          );
           placeMiss(wrap);
           return;
         }
       } finally {
         btn.disabled = false;
+        btn.classList.remove("ad-guess__submit--busy");
+        if (label !== null) btn.textContent = label;
       }
 
       if (reply.result) storeResult(missionId, reply.result);
@@ -679,7 +729,11 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       placeMiss(wrap);
     };
 
-    const hintUnlocked = (wrap: Element) => parseInt(wrap.getAttribute("data-attempts") || "0", 10) >= 2;
+    // Hints are always available. A student who is stuck should be able to read
+    // the hint whenever rather than having to spend two wrong tries first.
+    // Opening one still records hint-used, so it carries its scoring cost.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const hintUnlocked = (_wrap: Element) => true;
 
     let openHintId: string | null = null;
 
@@ -712,6 +766,12 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         '<div class="ad-hint-card__head"><span>Hint</span><button type="button" class="ad-hint-card__close">Close</button></div>' +
         '<p class="ad-hint-card__kicker"></p>' +
         '<div class="ad-hint-card__body"></div>' +
+        // A hint says the same thing to everybody. Somebody still stuck after
+        // reading it needs to ask about their own lab, and the way out was to
+        // close this, find the coach and describe where they were from memory.
+        '<div class="ad-hint-card__foot">' +
+        '<button type="button" class="ad-hint-card__coach">Learn how with the coach</button>' +
+        "</div>" +
         "</aside>";
       document.body.appendChild(root);
       return root;
@@ -748,14 +808,20 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       if (body) {
         body.innerHTML = src?.innerHTML ?? "";
         wireCommandCopy(body);
+        wireBlockCopy(body);
       }
       root.dataset.open = "true";
+      // The coach button needs the ticket's name, and the card outlives the
+      // element it was opened from.
+      root.dataset.mission = wrap.querySelector("h4")?.textContent?.trim() || "";
+      const task = [...wrap.querySelectorAll(":scope > p")].find((p) => /^Task:/.test(p.textContent?.trim() || ""));
+      root.dataset.task = task?.textContent?.replace(/^Task:\s*/, "").replace(/\s+/g, " ").trim() || "";
       openHintId = id;
       labelHintButton(wrap, true);
     };
 
-    // Hint unlocks after two wrong tries, then slides in as a card from the
-    // right. Toggle closes it. Opening once still records hint-used.
+    // The hint slides in as a card from the right. Toggle closes it. Opening
+    // once still records hint-used.
     const toggleHint = (btn: HTMLButtonElement) => {
       const wrap = btn.closest(".ad-mission");
       const id = wrap?.getAttribute("data-id");
@@ -775,6 +841,13 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       return /^(Get|Set|New|Remove|Add|Enable|Disable|Search|Unlock|Move)-/i.test(t);
     };
 
+    const COPY_ICON =
+      `<svg class="ad-cmd__i" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">` +
+      `<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+    const TICK_ICON =
+      `<svg class="ad-cmd__i ad-cmd__i--done" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">` +
+      `<path d="M20 6 9 17l-5-5"/></svg>`;
+
     const wireCommandCopy = (root: Element) => {
       root.querySelectorAll("p, li").forEach((el) => {
         const code = el.querySelector(":scope > code");
@@ -789,17 +862,52 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "ad-cmd__copy";
-        btn.textContent = "Copy";
+        // An icon, not the word. The word needed four and a half rems held
+        // clear of a command that is already long enough to wrap, and it was
+        // the biggest thing in the box.
+        btn.setAttribute("aria-label", "Copy command");
+        btn.innerHTML = COPY_ICON + TICK_ICON;
         el.appendChild(btn);
+      });
+    };
+
+    // Fenced blocks are the other half of this. A URL to open, a script to
+    // paste, a filter to type: half of what a lab hands a student arrives in
+    // one of these, and only the single-line form could be copied.
+    const wireBlockCopy = (root: Element) => {
+      root.querySelectorAll("pre").forEach((pre) => {
+        if (!pre.querySelector("code") || pre.querySelector(".ad-cmd__copy")) return;
+        pre.classList.add("ad-pre");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ad-cmd__copy";
+        // The same icon as a command: the word did not fit the square and
+        // spilled out of it.
+        btn.setAttribute("aria-label", "Copy code");
+        btn.innerHTML = COPY_ICON + TICK_ICON;
+        pre.appendChild(btn);
       });
     };
 
     const copyCode = (btn: HTMLButtonElement) => {
       const code =
         btn.closest(".ad-code")?.querySelector("code")?.innerText ||
+        btn.closest(".ad-pre")?.querySelector("code")?.innerText ||
         btn.closest(".ad-cmd")?.querySelector("code")?.innerText;
       if (!code) return;
       navigator.clipboard.writeText(code);
+      // The command button says it with a tick; the block buttons still have
+      // room for the word.
+      if (btn.classList.contains("ad-cmd__copy")) {
+        btn.classList.add("is-copied");
+        const label = btn.getAttribute("aria-label") || "Copy command";
+        btn.setAttribute("aria-label", "Copied");
+        setTimeout(() => {
+          btn.classList.remove("is-copied");
+          btn.setAttribute("aria-label", label);
+        }, 1500);
+        return;
+      }
       const original = btn.textContent;
       btn.textContent = "Copied";
       setTimeout(() => {
@@ -1059,13 +1167,64 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           .finally(() => window.location.reload());
         return;
       }
+      if (target.closest(".ad-hint-card__coach")) {
+        // The shell renders CoachProvider rather than living inside it, so it
+        // cannot call the coach directly. AskCoachBridge is listening.
+        const card = document.querySelector<HTMLElement>(".ad-hint-card");
+        const title = card?.dataset.mission || "this ticket";
+        const task = card?.dataset.task ? ` The task: "${card.dataset.task}"` : "";
+        closeHintCard();
+        window.dispatchEvent(
+          new CustomEvent("academy:ask-coach", {
+            detail: {
+              question: `Teach me how to do "${title}".${task} Explain which tool to use and the general steps for this kind of job, and why each one matters, without telling me the answer.`,
+            },
+          })
+        );
+        return;
+      }
       if (target.closest(".ad-hint-card__close") || target.closest(".ad-hint-card__scrim")) {
         return closeHintCard();
+      }
+      const coachBtn = target.closest<HTMLButtonElement>(".ad-flag__coach");
+      if (coachBtn) {
+        const wrap = coachBtn.closest(".ad-mission");
+        const title = wrap?.querySelector("h4")?.textContent?.trim() || "this ticket";
+        const task = wrap ? [...wrap.querySelectorAll(":scope > p")].find((p) => /^Task:/.test(p.textContent?.trim() || "")) : null;
+        const taskText = task?.textContent?.replace(/^Task:\s*/, "").replace(/\s+/g, " ").trim() || "";
+        const reveal = wrap?.querySelector<HTMLElement>(".ad-flag")?.textContent?.replace(/\s+/g, " ").trim().slice(0, 600) || "";
+        window.dispatchEvent(
+          new CustomEvent("academy:ask-coach", {
+            detail: {
+              question:
+                `Explain "${title}" in more depth, the reasoning, not just the answer.` +
+                (taskText ? ` The task: "${taskText}"` : "") +
+                (reveal ? ` What was revealed: "${reveal}"` : "") +
+                " Walk me through why, with a concrete example if that helps.",
+            },
+          })
+        );
+        return;
       }
       const hintBtn = target.closest<HTMLButtonElement>(".ad-hint__btn");
       if (hintBtn) return toggleHint(hintBtn);
       const copyBtn = target.closest<HTMLButtonElement>(".ad-code__copy, .ad-cmd__copy");
       if (copyBtn) return copyCode(copyBtn);
+    };
+
+    // Reaching for the answer box is the earliest honest sign that a submit is
+    // coming. One check now gives a lab that has stopped reporting a head start
+    // on waking up, so the student does not spend that wait watching a spinner.
+    // Once per mission: a gate that is already live needs nothing, and a dead
+    // one is nudged by the check itself.
+    const warmed = new Set<string>();
+    const onFocusIn = (e: FocusEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target?.matches?.(".ad-guess__input")) return;
+      const id = target.closest(".ad-mission")?.getAttribute("data-id") || "";
+      if (!id || warmed.has(id)) return;
+      warmed.add(id);
+      void labGate(id);
     };
 
     // Enter in the answer field submits, same as clicking the button next
@@ -1124,6 +1283,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       document.querySelectorAll<HTMLElement>(".ad-mission[data-id]:not([data-restored])").forEach(restoreMission);
       document.querySelectorAll(".academy-prose").forEach((root) => {
         wireCommandCopy(root);
+        wireBlockCopy(root);
         wireZoom(root);
         wireGallery(root);
         wireReveal(root);
@@ -1143,6 +1303,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
 
     document.addEventListener("click", onClick);
     document.addEventListener("keydown", onKeydown);
+    document.addEventListener("focusin", onFocusIn);
     sync();
 
     // Results were replaced from the server: re-apply them to missions that
@@ -1160,6 +1321,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       window.clearTimeout(revealTimer);
       document.removeEventListener("click", onClick);
       document.removeEventListener("keydown", onKeydown);
+      document.removeEventListener("focusin", onFocusIn);
       window.removeEventListener(RESULTS_CHANGED_EVENT, onResultsChanged);
       document.querySelector(".ad-hint-card")?.remove();
       document.querySelector(".ad-zoom")?.remove();
@@ -1181,7 +1343,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
 
   // Signed in but no class passcode yet: now ask for it. A student who arrived
   // from a join link is already unlocked and skips this.
-  if (!unlocked) {
+  if (!unlocked && !DEV_PREVIEW) {
     return <UnlockForm />;
   }
 
@@ -1193,6 +1355,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       <AcademyAccountProvider student={student}>
       <AcademyGoalsProvider value={{ profile: profile ?? null, editGoals: () => setEditingGoals(true) }}>
       <CoachProvider profile={profile ?? null}>
+        <AskCoachBridge />
       <div className="academy-bg min-h-dvh" data-academy-theme={theme}>
         <header
           ref={headerRef}
@@ -1237,8 +1400,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
                 {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
               </button>
               <Link
-                href="/"
-                aria-label="PurveX home"
+                href="/range"
+                aria-label="Range home"
                 className="flex h-9 w-9 items-center justify-center rounded-md border border-[var(--pvrx-border-light)] bg-white text-slate-500 transition hover:border-[rgba(106,92,255,0.35)] hover:text-[#5546e0]"
               >
                 <Home className="h-[18px] w-[18px]" />
@@ -1288,9 +1451,14 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           <main className={`min-w-0 flex-1 px-4 sm:px-6 lg:px-10 ${isHome ? "py-5" : "py-6"}`}>
             {/* A lesson is wider than the rest: it carries an "On this page"
                 rail beside the reading column, and 4xl left no room for it. */}
-            <div key={pathname} className={`ax-page mx-auto ${isReadiness || isDrill || isLesson ? "max-w-6xl" : "max-w-4xl"}`}>
-              {children}
-            </div>
+            {/* Route changes run as a view transition: the page leaving lifts
+                away fast and the next one rises in, while the header and the
+                course menu stay put (see .ax-page-in / .ax-page-out). */}
+            <ViewTransition key={pathname} enter="ax-page-in" exit="ax-page-out" default="none">
+              <div className={`ax-page mx-auto ${isReadiness || isDrill || isLesson ? "max-w-6xl" : "max-w-4xl"}`}>
+                {children}
+              </div>
+            </ViewTransition>
           </main>
         </div>
         )}
@@ -1323,6 +1491,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         {editingGoals && profile && (
           <GoalsPanel
             profile={profile}
+            accountName={accountFirstName(student)}
             onClose={() => setEditingGoals(false)}
             onSaved={(next) => {
               if (studentId) saveCachedProfile(studentId, next);
@@ -1331,7 +1500,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
             }}
           />
         )}
-        {hello && <AcademyWelcome student={student} onDone={() => setHello(false)} />}
+        {hello && <AcademyWelcome student={student} callMe={profile?.callMe ?? null} onDone={() => setHello(false)} />}
         <LabSetupScreen />
       </div>
       </CoachProvider>

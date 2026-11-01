@@ -1,3 +1,4 @@
+import { hasCronSecret } from "@/lib/cron-auth";
 import { NextResponse } from "next/server";
 import { allClassMembers, COHORT_ACCESS_WEEKS } from "@/lib/academy-classes";
 import { cohortEndingEmail } from "@/lib/academy-emails";
@@ -16,8 +17,7 @@ const WINDOW_MS = COHORT_ACCESS_WEEKS * 7 * DAY;
 // lapses, one once it has, each sent at most once per student. A student who
 // already pays is never prompted.
 export async function GET(request: Request) {
-  const secret = process.env.CRON_SECRET?.trim();
-  if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!hasCronSecret(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

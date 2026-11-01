@@ -40,3 +40,28 @@ function Confirm-User {
     param([string]$Sam)
     return [bool](Get-ADUser -Filter "SamAccountName -eq '$Sam'" -ErrorAction SilentlyContinue)
 }
+
+# A failed sign-in only locks an account if the domain locks accounts at all,
+# and the lab ships with no lockout policy because setting one is a ticket the
+# student is meant to do. Two incidents need one to exist, so they set it --
+# and used to leave it set. That quietly completed INC-1059 and handed the
+# student a portfolio item they had not earned. Setting it is recorded, and
+# undo puts it back.
+function Set-IncidentLockoutPolicy {
+    $marker = Join-Path $env:ProgramData "PurveX\incident-lockout-policy.txt"
+    try {
+        if ((Get-ADDefaultDomainPasswordPolicy).LockoutThreshold -ne 0) { return }
+        Set-ADDefaultDomainPasswordPolicy -Identity (Get-ADDomain).DistinguishedName -LockoutThreshold 5 -LockoutDuration "00:30:00" -LockoutObservationWindow "00:30:00"
+        $dir = Split-Path -Parent $marker
+        if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+        Set-Content -LiteralPath $marker -Value "0" -ErrorAction SilentlyContinue
+    }
+    catch { }
+}
+
+function Restore-IncidentLockoutPolicy {
+    $marker = Join-Path $env:ProgramData "PurveX\incident-lockout-policy.txt"
+    if (-not (Test-Path $marker)) { return }
+    try { Set-ADDefaultDomainPasswordPolicy -Identity (Get-ADDomain).DistinguishedName -LockoutThreshold 0 } catch { }
+    Remove-Item -LiteralPath $marker -Force -ErrorAction SilentlyContinue
+}

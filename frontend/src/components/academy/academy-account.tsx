@@ -3,13 +3,15 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Sparkles, Headset, LifeBuoy, LogOut, Target, Users } from "lucide-react";
+import { ArrowRight, BadgeCheck, CreditCard, Sparkles, Headset, LifeBuoy, LogOut, Target, Users } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { openHelp } from "@/components/academy/get-help";
 import type { StudentProfile } from "@/lib/academy-certs";
 import { academyFetch, READINESS_PATH, useResults } from "@/lib/academy-client";
 import { passedExamDates } from "@/lib/academy-goals";
 import { LEVELS, summarize } from "@/lib/academy-score";
+import { useMounted } from "@/lib/use-mounted";
+import { useAcademyTheme } from "@/lib/use-academy-theme";
 
 export type AcademyStudent = { id: string; email: string | null; name: string | null };
 
@@ -49,6 +51,20 @@ function titleCase(value: string) {
 
 const GENERIC = /^(test|user|demo|tmp|admin|dev|coach)$/i;
 
+/**
+ * What to call this student, preferring what they asked to be called.
+ *
+ * The account name is whatever the sign-up form or the email address
+ * happened to say, and nothing in the product could change it, so somebody
+ * greeted by the wrong name was stuck with it. Goals asks, and that answer
+ * wins here.
+ */
+export function preferredFirstName(student: AcademyStudent | null, profile: { callMe?: string } | null): string | null {
+  const asked = profile?.callMe?.trim();
+  if (asked) return titleCase(firstToken(asked));
+  return accountFirstName(student);
+}
+
 export function accountFirstName(student: AcademyStudent | null): string | null {
   if (!student) return null;
   const fromName = student.name ? firstToken(student.name) : "";
@@ -82,14 +98,13 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const { profile, editGoals } = useAcademyGoals();
   const needsUpdate = passedExamDates(profile).length > 0;
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [pos, setPos] = useState({ top: 72, right: 16 });
   const root = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
-  const firstName = accountFirstName(student);
+  const firstName = preferredFirstName(student, profile);
   const initials = accountInitials(student);
 
-  useEffect(() => setMounted(true), []);
 
   // Instructors and admins get a link to their classes. Asked once, the first time the menu opens.
   const [teaches, setTeaches] = useState(false);
@@ -109,15 +124,21 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
 
   // Every other route to the upgrade page is a dead end you only meet after
   // bumping into something you cannot use. A free account browsing lessons had
-  // no way to buy until it hit a wall.
+  // no way to buy until it hit a wall, and a paying one had no way to find the
+  // button that cancels. Same page both ways -- a class seat or a comped
+  // account has nothing to manage there, so neither link shows for them.
   const [isFree, setIsFree] = useState(false);
+  const [isSubscriber, setIsSubscriber] = useState(false);
   const askedPlan = useRef(false);
   useEffect(() => {
     if (!open || askedPlan.current) return;
     askedPlan.current = true;
     academyFetch("/academy/api/plan", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
-      .then((d: { plan?: string } | null) => setIsFree(d?.plan === "free"))
+      .then((d: { plan?: string; source?: string } | null) => {
+        setIsFree(d?.plan === "free");
+        setIsSubscriber(d?.source === "subscription");
+      })
       .catch(() => {});
   }, [open]);
 
@@ -154,7 +175,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
     };
   }, [open]);
 
-  const dark = mounted && document.querySelector(".academy-bg")?.getAttribute("data-academy-theme") === "dark";
+  const dark = useAcademyTheme() === "dark";
   const menu =
     open && mounted
       ? createPortal(
@@ -284,6 +305,11 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               {isFree && (
                 <Link href="/range/class-code" className="ax-account__out" onClick={() => setOpen(false)}>
                   <Users className="h-3.5 w-3.5" /> Join a class
+                </Link>
+              )}
+              {isSubscriber && (
+                <Link href="/range/upgrade" className="ax-account__out" onClick={() => setOpen(false)}>
+                  <CreditCard className="h-3.5 w-3.5" /> Manage billing
                 </Link>
               )}
               {teaches && (

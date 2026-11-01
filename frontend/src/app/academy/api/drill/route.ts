@@ -92,7 +92,7 @@ async function status(userId: string, day: string) {
   const chats = coachBonus(entries, day);
   // Real findings from the student's own lab. Hands-on work only ever comes from these.
   const findings = labState ? auditLab(labState.snapshot) : [];
-  const labJobs = labState ? new Set(findings.filter((f) => f.task).map((f) => f.job)) : null;
+  const labJobs = labState ? new Set(findings.filter((f) => f.task && !f.ticket).map((f) => f.job)) : null;
   return {
     stats: drillStats(entries, day),
     lab,
@@ -105,7 +105,7 @@ async function status(userId: string, day: string) {
     incidentUntil: incidentHold(entries)?.until ?? null,
     jobs: jobProgress(entries, results, labState?.snapshot),
     nextJob: pickTargetJob(entries, `${userId}:${day}`, labJobs, results, labState?.snapshot, examAim(profile, results, entries).prefer)?.id ?? null,
-    findings: findings.slice(0, 12).map((f) => ({ id: f.id, severity: f.severity, title: f.title, facts: f.facts, fixable: Boolean(f.task), job: f.job })),
+    findings: findings.slice(0, 12).map((f) => ({ id: f.id, severity: f.severity, title: f.title, facts: f.facts, fixable: Boolean(f.task), job: f.job, ticket: f.ticket ?? null })),
   };
 }
 
@@ -172,7 +172,7 @@ export async function POST(request: Request) {
   if (a.error) return a.error;
   const userId = a.student.id;
 
-  let body: { action?: unknown; mode?: unknown; day?: unknown; token?: unknown; answers?: unknown; format?: unknown; final?: unknown };
+  let body: { action?: unknown; mode?: unknown; day?: unknown; token?: unknown; answers?: unknown; format?: unknown; final?: unknown; job?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -252,10 +252,20 @@ export async function POST(request: Request) {
     let item = null;
     if (writerKey && mode === "daily") {
       // Aim at the on-the-job task they have shown the least, so the daily drill covers what the job needs.
-      const fixable = snapshot ? auditLab(snapshot).filter((f) => f.task) : [];
+      const fixable = snapshot ? auditLab(snapshot).filter((f) => f.task && !f.ticket) : [];
       const labJobs = snapshot ? new Set(fixable.map((f) => f.job)) : null;
-      const target = pickTargetJob(entries, `${userId}:${day}`, labJobs, results, snapshot, aim.prefer);
-      const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, fixable.length > 0, Boolean(target?.lab));
+      // A student can aim the day's case at one job, which is how the
+      // portfolio's open tasks become doable rather than a wait for the
+      // generator to pick them. Choosing the topic is not choosing how many:
+      // the one-a-day check above still stands.
+      const wanted = typeof body.job === "string" ? body.job : "";
+      const chosen = wanted ? (jobProgress(entries, results, snapshot).find((j) => j.id === wanted) ?? null) : null;
+      const target = chosen ?? pickTargetJob(entries, `${userId}:${day}`, labJobs, results, snapshot, aim.prefer);
+      // A hands-on job only takes a change format when this lab actually has
+      // something to fix for it. A chosen one that does not gets written work
+      // rather than a change nothing can confirm.
+      const hands = Boolean(target?.lab) && (!chosen || Boolean(labJobs?.has(chosen.id)));
+      const format = swap ? "respond" : pickFormat(`${userId}:${day}`, level, fixable.length > 0, hands);
       const targetJob = target ? { id: target.id, label: target.label } : null;
       item = await generateDaily({ apiKey: writerKey, userId, day, snapshot, results, level, recent, format, targetJob, examFocus: aim.focus }).catch(() => null);
     } else if (writerKey && mode === "ctf") {

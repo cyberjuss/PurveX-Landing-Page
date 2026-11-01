@@ -166,7 +166,8 @@ export function ProofPublicView({
         <section className="pp-sec">
           <h2>Hands-on experience</h2>
           <p className="pp-note">
-            {first} completed this work in a live Active Directory environment modeled on a wealth-management firm. Each task was verified automatically in their own lab.
+            {first} completed this work in a live Active Directory environment modeled on a wealth-management firm. Each task was checked automatically in their own lab.
+            {data.items.some((it) => it.verified) && " Tasks marked Verified by Range were confirmed by Range reading the lab directly, not from the lab's own report."}
             {data.lastLabCheck && ` Last verified ${day(data.lastLabCheck)}.`}
           </p>
           <ul className="pp-jobs">
@@ -175,7 +176,18 @@ export function ProofPublicView({
               return (
                 <li key={it.job} className={shots.length ? "has-shots" : ""}>
                   <div className="pp-job">
-                    <h3>{it.title}</h3>
+                    <h3>
+                      {it.title}
+                      {it.verified && (
+                        <span className="pp-verified" title="Range confirmed this by reading the lab directly">
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" />
+                            <path d="M8.5 12l2.5 2.5 4.5-5" />
+                          </svg>
+                          Verified by Range
+                        </span>
+                      )}
+                    </h3>
                     <ul className="pp-act">
                       {it.actions.map((a) => (
                         <li key={a}>{a}</li>

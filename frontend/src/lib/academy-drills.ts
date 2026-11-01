@@ -53,6 +53,10 @@ export type Item = {
 export type Check =
   | { t: "member"; sam: string; group: string; want: boolean }
   | { t: "exists"; sam: string; ou: string }
+  /** The account is no longer anywhere the snapshot covers: the lab OUs. */
+  | { t: "gone"; sam: string }
+  /** The account still exists somewhere the snapshot covers, in any OU. */
+  | { t: "present"; sam: string }
   | { t: "container"; sam: string; ou: string }
   | { t: "enabled"; sam: string; want: boolean }
   | { t: "noexpire"; sam: string; want: boolean }
@@ -69,7 +73,8 @@ export type Check =
   | { t: "spn"; sam: string; want: boolean }
   | { t: "policy"; key: "minLength" | "complexity" | "history" | "lockoutThreshold" | "lockoutDurationMin" | "lockoutWindowMin" | "reversible"; min?: number; max?: number; bool?: boolean }
   | { t: "audit"; sub: string; need: "Success" | "Failure" | "Both" }
-  | { t: "logsize"; minMB: number };
+  | { t: "logsize"; minMB: number }
+  | { t: "sbl"; want: boolean };
 
 export type Task = {
   checks: { c: Check; label: string }[];
@@ -89,7 +94,7 @@ export type PublicItem = Omit<Item, "answer" | "explain" | "accept" | "hint" | "
 };
 
 /** One question. `x`, `a` and `e` are kept only for misses: what they picked, the best answer, and why. */
-export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string; x?: string; a?: string; e?: string; j?: string; k?: string };
+export type DrillDetail = { t: string; s: Skill; c: 0 | 1; p?: string; th?: string; x?: string; a?: string; e?: string; j?: string; k?: string; /** 1 when Range confirmed it on the lab directly. */ v?: 1 };
 
 export type DrillEntry = {
   id: string;
@@ -112,6 +117,10 @@ export type DrillReview = {
   answer: string;
   correct: boolean;
   explain: string;
+  /** The fix, one step per entry. Kept as a list rather than folded into
+   *  `explain`: joined into a paragraph it reads as a wall, and the reader is
+   *  about to follow it a step at a time. */
+  steps?: string[];
   runbook?: string[];
   /** The job task this question practiced, for the exam link on the result. */
   job?: string;
@@ -524,7 +533,12 @@ function pickItems(seed: string, snapshot: LabSnapshot, results: Results, mode: 
     }
     const made = queues.get(skill)!.shift()!(snapshot, r);
     const item = made ? { ...made, theme: made.theme ?? made.title } : null;
-    if (!item || seen.has(item.prompt) || avoid.has(item.prompt)) continue;
+    // A daily case is a situation to work through, never a pick-from-a-list
+    // question -- stock items fall back to this pool only when the AI writer
+    // is unavailable, and that fallback should keep the same promise.
+    const isDaily = mode === "daily";
+    const multipleChoice = item ? item.kind !== "change" && !item.free && item.choices.length > 0 : false;
+    if (!item || seen.has(item.prompt) || avoid.has(item.prompt) || (isDaily && multipleChoice)) continue;
     seen.add(item.prompt);
     used.set(skill, (used.get(skill) ?? 0) + 1);
     items.push(item);
@@ -665,10 +679,11 @@ export async function gradeDrill(
     let right: boolean;
     let explain = item.explain;
     let answer = item.answer;
+    let steps: string[] | undefined;
     if (item.kind === "change") {
       right = opts.changePassed === true;
       picked = right ? "Change made and checked in your lab" : "Gave up";
-      if (!right) explain = `${item.explain} Steps: ${(item.task?.guide ?? []).join(" ")}`;
+      if (!right) steps = item.task?.guide;
     } else if (item.kind === "respond") {
       picked = raw && raw.trim() ? raw.trim() : null;
       right = false;
@@ -686,7 +701,7 @@ export async function gradeDrill(
       const said = picked !== null && [item.answer, ...(item.accept ?? [])].some((a) => flat(a) === flat(picked!));
       // A gated CTF also needs the containment change seen in the lab.
       right = item.gate ? said && opts.changePassed === true : said;
-      if (item.gate && !right) explain = `${item.explain} To finish: ${(item.task?.guide ?? []).join(" ")}`;
+      if (item.gate && !right) steps = item.task?.guide;
     } else {
       picked = raw !== null && item.choices.includes(raw) ? raw : null;
       right = picked === item.answer;
@@ -698,6 +713,7 @@ export async function gradeDrill(
       answer,
       correct: !late && right,
       explain,
+      steps: steps?.length ? steps : undefined,
       runbook: item.kind === "change" || item.gate ? item.task?.runbook : undefined,
       job: isJob(item.job) ? item.job : undefined,
     });
@@ -779,6 +795,12 @@ export const JOBS: JobDef[] = [
   { id: "stale-objects", label: "Retire accounts and computers nobody uses", skill: "directory", lab: true },
   { id: "password-hygiene", label: "Fix a password that never expires", skill: "security", lab: true },
   { id: "group-type", label: "Fix a group that cannot grant access", skill: "accounts", lab: true },
+  { id: "dns-fix", label: "Fix a broken DNS record", skill: "troubleshooting", lab: true },
+  { id: "firewall-rule", label: "Close an exposed firewall rule", skill: "security", lab: true },
+  { id: "gpo-scope", label: "Fix a misapplied Group Policy", skill: "directory", lab: true },
+  { id: "quarantine-file", label: "Quarantine a disguised file", skill: "security", lab: true },
+  { id: "contain-wire-credential", label: "Catch a credential sent in the clear", skill: "security", lab: true },
+  { id: "verify-build-integrity", label: "Verify a build against its checksum", skill: "security", lab: true },
   { id: "role-based-access", label: "Build role-based access with groups", skill: "accounts", lab: false },
   { id: "contain-account", label: "Contain a compromised account, keep the evidence", skill: "security", lab: false },
   { id: "admin-password-policy", label: "Give admins a stricter password policy", skill: "security", lab: true, security: true },
@@ -994,8 +1016,13 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
     return c.need === "Both" ? hasS && hasF : c.need === "Success" ? hasS : hasF;
   }
   if (c.t === "logsize") return (s.security?.securityLogMaxMB ?? 0) >= c.minMB;
+  if (c.t === "sbl") return (s.security?.scriptBlockLogging ?? false) === c.want;
   const user = s.users.find((u) => u.sam.toLowerCase() === c.sam.toLowerCase());
   if (c.t === "exists") return Boolean(user) && user!.container.toLowerCase() === c.ou.toLowerCase();
+  // Before the missing-user line below, which would read a deleted account as a
+  // failed check rather than the point of the ticket.
+  if (c.t === "gone") return !user;
+  if (c.t === "present") return Boolean(user);
   if (!user) return c.t === "member" ? !c.want : false;
   if (c.t === "container") return user.container.toLowerCase() === c.ou.toLowerCase();
   if (c.t === "enabled") return user.enabled === c.want;
@@ -1040,16 +1067,17 @@ export function checkChange(
   return { fresh, results, passed: fresh && !needsSetup && answerOk && results.every((x) => x.ok), needsSetup, answerOk };
 }
 
-/** How the day's scenario is asked. Lab changes need a lab to check. */
-export function pickFormat(seed: string, level: number, hasLab: boolean, targetsLab = false): "decide" | "respond" | "change" {
+/**
+ * How the day's scenario is asked. Lab changes need a lab to check. Never
+ * multiple-choice: a case is a situation to work through and write up, not a
+ * quiz question to guess from a list of options.
+ */
+export function pickFormat(seed: string, level: number, hasLab: boolean, targetsLab = false): "respond" | "change" {
   const r = seeded(`format:${seed}`)();
   const lv = Math.min(4, Math.max(1, level));
   // When the job to practice can be done in the lab, usually make them do it there.
   const change = hasLab ? (targetsLab ? 0.8 : [0.4, 0.35, 0.35, 0.4][lv - 1]) : 0;
-  const respond = [0.15, 0.3, 0.4, 0.45][lv - 1];
-  if (r < change) return "change";
-  if (r < change + respond) return "respond";
-  return "decide";
+  return r < change ? "change" : "respond";
 }
 
 

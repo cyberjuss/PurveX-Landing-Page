@@ -61,6 +61,16 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Configured"], ["s", "advanced audit policy on a domain controller,"], ["r", "giving investigators a usable log."]],
     },
   },
+  "enable-script-block-logging": {
+    title: "Enabled PowerShell script-block logging for command-level visibility",
+    actions: ["Identified that process-creation auditing alone only shows that powershell.exe launched, not what it was told to do", "Enabled script-block logging through the PowerShell policy registry key, the same change Group Policy makes through its GUI", "Confirmed the setting by finding a real 4104 event holding the full text of a command it ran"],
+    keywords: ["PowerShell Logging", "Windows Event Logs", "Endpoint Visibility"],
+    bullets: {
+      soc: [["a", "Enabled"], ["s", "PowerShell script-block logging on a domain controller"], ["t", "to capture command text, not just that a process ran,"], ["r", "confirmed by a real 4104 event."]],
+      help: [["a", "Turned on"], ["s", "PowerShell's own command logging"], ["r", "so what a script actually ran is recorded, not just that it did."]],
+      sys: [["a", "Configured"], ["s", "script-block logging through the PowerShell policy registry key,"], ["r", "the same setting Group Policy's GUI writes."]],
+    },
+  },
   "log-retention": {
     title: "Extended Security log retention for forensic readiness",
     actions: ["Assessed Security log capacity against how long investigations need evidence", "Increased the maximum log size so sign-in evidence lasts long enough to investigate an intrusion found weeks later"],
@@ -79,6 +89,16 @@ const CATALOG: Record<string, Entry> = {
       soc: [["a", "Hardened"], ["s", "privileged accounts"], ["a", "with a fine-grained password policy and strict lockout."]],
       help: [["a", "Applied"], ["s", "a stricter password policy to admin accounts."]],
       sys: [["a", "Implemented"], ["s", "a fine-grained password policy for admin accounts,"], ["r", "requiring longer passwords than standard users."]],
+    },
+  },
+  "lockout-threshold": {
+    title: "Tuned a detection-style threshold for a high-value department",
+    actions: ["Weighed the trade-off between a lockout threshold strict enough to resist password guessing and loose enough not to lock out typo-prone users", "Created a fine-grained password policy for a department handling client funds", "Set the lockout threshold within a defensible band, applying the same reasoning used to tune a SIEM detection threshold"],
+    keywords: ["Fine-Grained Password Policies (FGPP)", "Detection Tuning", "False Positive / False Negative Trade-off"],
+    bullets: {
+      soc: [["a", "Tuned"], ["s", "a department's lockout threshold"], ["r", "to balance guessing resistance against false lockouts, the same trade-off behind a detection threshold."]],
+      help: [["a", "Set"], ["s", "a stricter password policy for a high-value department"], ["r", "without increasing routine lockout tickets."]],
+      sys: [["a", "Implemented"], ["s", "a fine-grained password policy"], ["t", "scoped to one department"], ["a", "with a lockout threshold chosen for a defensible balance."]],
     },
   },
   "harden-account": {
@@ -201,6 +221,16 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Removed"], ["s", "an over-broad inbound firewall rule"], ["r", "from a domain controller."]],
     },
   },
+  "access-audit": {
+    title: "Baselined peer group access and removed a privilege-creep finding",
+    actions: ["Compared group membership across four peer accounts in the same role to establish what the role's access actually looks like", "Identified the one account holding an access-level group none of its peers had", "Removed the excess membership, confirming the account still kept the access its role needs"],
+    keywords: ["Access Review", "Least Privilege", "Privilege Creep"],
+    bullets: {
+      soc: [["a", "Baselined"], ["s", "peer account access"], ["a", "across a team,"], ["r", "surfacing and removing one unexplained privileged-group membership."]],
+      help: [["a", "Audited"], ["s", "four peer accounts' group membership"], ["r", "and removed one account's leftover admin-level access."]],
+      sys: [["a", "Reviewed"], ["s", "role-based group membership"], ["t", "for privilege creep"], ["r", "removing access a role no longer needed."]],
+    },
+  },
   "gpo-scope": {
     title: "Applied a security policy to the right department with Group Policy",
     actions: ["Found a screen lock GPO linked to the wrong department OU", "Linked it to Finance and removed the wrong link, so the policy reached the users it was written for"],
@@ -211,6 +241,26 @@ const CATALOG: Record<string, Entry> = {
       sys: [["a", "Re-scoped"], ["s", "a Group Policy Object"], ["r", "from the wrong OU to the department it was built for."]],
     },
   },
+  "contain-wire-credential": {
+    title: "Recovered a credential from a network capture and contained the account",
+    actions: ["Captured a nightly job and read the service account and password it sent over the network in the clear", "Disabled the exposed account as evidence and identified the encrypted protocol the job should have used"],
+    keywords: ["Network Traffic Analysis", "Wireshark", "Credential Exposure", "Incident Response"],
+    bullets: {
+      soc: [["a", "Captured and analysed"], ["s", "a service account signing in over cleartext LDAP"], ["r", "and contained the exposed credential."]],
+      help: [["a", "Identified"], ["s", "a job sending a password in the clear"], ["a", "and disabled the account while it was fixed."]],
+      sys: [["a", "Traced"], ["s", "a nightly job to an unencrypted directory bind"], ["r", "and recommended LDAPS to protect the credential."]],
+    },
+  },
+  "verify-build-integrity": {
+    title: "Verified a software build against its published checksum",
+    actions: ["Hashed three mirrors of an installer manifest and found the one that failed the published SHA-256 checksum", "Quarantined the unsigned build as evidence and reported that it carried no valid signature"],
+    keywords: ["Cryptographic Hashing (SHA-256)", "File Integrity", "Software Supply Chain", "Incident Response"],
+    bullets: {
+      soc: [["a", "Verified"], ["s", "installer mirrors against a published checksum"], ["r", "and quarantined the altered, unsigned build."]],
+      help: [["a", "Checked"], ["s", "three copies of an update"], ["a", "with SHA-256 and flagged the one that failed."]],
+      sys: [["a", "Validated"], ["s", "a software build's integrity"], ["t", "against its published hash,"], ["r", "catching an unsigned copy before rollout."]],
+    },
+  },
   "quarantine-file": {
     title: "Quarantined a disguised executable on a file share",
     actions: ["Spotted a program named to look like a PDF invoice by showing full file extensions", "Moved it to quarantine without opening it, keeping it as evidence"],
@@ -219,6 +269,16 @@ const CATALOG: Record<string, Entry> = {
       soc: [["a", "Quarantined"], ["s", "a double-extension executable"], ["r", "on a shared drive while preserving it as evidence."]],
       help: [["a", "Removed"], ["s", "a suspicious file from a shared drive"], ["a", "without opening it."]],
       sys: [["a", "Isolated"], ["s", "a disguised executable on a file server"], ["r", "for investigation."]],
+    },
+  },
+  "reduce-kerberoast-exposure": {
+    title: "Removed an unused SPN to close a Kerberoasting path",
+    actions: ["Read a real Kerberos service ticket request and identified the weak RC4 encryption behind it", "Traced the request to a service account whose registered SPN no longer pointed at a running service", "Removed the SPN, closing the account's exposure to offline ticket cracking"],
+    keywords: ["Kerberoasting", "Service Principal Names (SPN)", "Credential Access"],
+    bullets: {
+      soc: [["a", "Found and closed"], ["s", "a Kerberoastable service account"], ["r", "by reading a real RC4-encrypted ticket request and removing the account's unused SPN."]],
+      help: [["a", "Removed"], ["s", "an unused service account registration"], ["a", "that no longer pointed at a running service."]],
+      sys: [["a", "Reduced"], ["s", "a domain's Kerberoasting attack surface"], ["a", "by auditing service ticket requests and removing an unneeded SPN."]],
     },
   },
   "group-type": {
@@ -247,7 +307,25 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-17": { job: "firewall-rule", label: "Service ticket INC-1053" },
   "tq-18": { job: "gpo-scope", label: "Service ticket INC-1054" },
   "tq-19": { job: "quarantine-file", label: "Service ticket INC-1055" },
+  "zt-02": { job: "firewall-rule", label: "Service ticket INC-1067" },
+  "cp-04": { job: "firewall-rule", label: "Service ticket INC-1069" },
   "tq-20": { job: "dns-fix", label: "Service ticket INC-1056" },
+  "tq-21": { job: "lockout-policy", label: "Service ticket INC-1059" },
+  "tq-22": { job: "enable-auditing", label: "Service ticket INC-1060" },
+  "tq-23": { job: "log-retention", label: "Service ticket INC-1061" },
+  "tq-24": { job: "admin-password-policy", label: "Service ticket INC-1062" },
+  "tq-25": { job: "stale-objects", label: "Service ticket INC-1063" },
+  "cap-06": { job: "contain-wire-credential", label: "Service ticket INC-1057" },
+  "cry-06": { job: "verify-build-integrity", label: "Service ticket INC-1058" },
+  "ea-03": { job: "access-audit", label: "Service ticket INC-1071" },
+  "sl-03": { job: "enable-account", label: "Service ticket INC-1072" },
+  "pi-02": { job: "firewall-rule", label: "Service ticket INC-1075" },
+  "ao-02": { job: "quarantine-file", label: "Service ticket INC-1076" },
+  "od-05": { job: "firewall-rule", label: "Service ticket INC-1077" },
+  "od-07": { job: "quarantine-file", label: "Service ticket INC-1078" },
+  "rk-03": { job: "reduce-kerberoast-exposure", label: "Service ticket INC-1079" },
+  "rk-05": { job: "enable-auditing", label: "Service ticket INC-1080" },
+  "la2-04": { job: "enable-script-block-logging", label: "Lab: Turn On Script Logging" },
 };
 
 /** Portfolio jobs a live Shift can prove, mapped from the incident that proves each.
@@ -266,25 +344,42 @@ export const SHIFT_JOB: Record<string, string> = {
 };
 const SHIFT_JOBS = new Set(Object.values(SHIFT_JOB));
 
-export type OpenTask = { job: string; title: string; where: string; href: string; locked: boolean };
+export type OpenTask = { job: string; bullets: Record<Track, StarPart[]>; where: string; href: string; locked: boolean };
 
-/** Tasks the portfolio can show that the student has not done yet, and where to do each one.
- *  A task a Shift can prove is locked: it only joins the portfolio once resolved in a Shift. */
+/**
+ * Tasks the portfolio can show that the student has not done yet, and where to
+ * do each one. A task a Shift can prove is locked: it only joins the portfolio
+ * once resolved in a Shift.
+ *
+ * A ticket or a shift only. Every other job used to be offered as a daily
+ * drill, which filled this list with seven rows telling a student to go and
+ * answer a quiz question. A drill is not portfolio work: there is no ticket to
+ * point an employer at and nothing to photograph, because nothing has been
+ * done yet. Those jobs still join the portfolio the moment the lab confirms
+ * the change, so nothing is lost but the suggestion.
+ */
 export function openTasks(done: string[]): OpenTask[] {
   const have = new Set(done);
   const ticketFor = new Map(Object.entries(PROOF_TICKETS).map(([id, t]) => [t.job, { id, label: t.label }]));
   return Object.entries(CATALOG)
     .filter(([job]) => !have.has(job))
-    .map(([job, e]) => {
+    .flatMap(([job, e]) => {
       if (SHIFT_JOBS.has(job)) {
-        return { job, title: e.title, where: "Live shift", href: "/range/shift", locked: true };
+        return [{ job, bullets: e.bullets, where: "Live shift", href: "/range/shift", locked: true }];
       }
       const t = ticketFor.get(job);
-      return t
-        ? { job, title: e.title, where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`, href: `/range/phase-1/home-lab-challenges#${t.id}`, locked: false }
-        : { job, title: e.title, where: "Daily drill", href: "/range/drill", locked: false };
+      if (!t) return [];
+      return [
+        {
+          job,
+          bullets: e.bullets,
+          where: `Ticket Queue · ${t.label.replace("Service ticket ", "")}`,
+          href: `/range/phase-1/home-lab-challenges#${t.id}`,
+          locked: false,
+        },
+      ];
     })
-    .sort((a, b) => Number(a.locked) - Number(b.locked) || Number(b.where !== "Daily drill") - Number(a.where !== "Daily drill"));
+    .sort((a, b) => Number(a.locked) - Number(b.locked));
 }
 
 export type WorkItem = {
@@ -295,44 +390,65 @@ export type WorkItem = {
   date: string;
   /** Where it was done: a ticket, a daily drill, or the weekly CTF. */
   from: string;
+  /** Range confirmed it by asking the lab directly, not only from the lab's own report. */
+  verified: boolean;
   keywords: string[];
   bullets: Record<Track, StarPart[]>;
 };
 
 /** Every confirmed lab task, one per job, newest first. */
 export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem[] {
-  const found = new Map<string, { date: string; from: string }>();
-  const note = (job: string, date: string, from: string) => {
+  const found = new Map<string, { date: string; from: string; verified: boolean }>();
+  const note = (job: string, date: string, from: string, verified = false) => {
     if (!CATALOG[job]) return;
     const had = found.get(job);
-    if (!had || date > had.date) found.set(job, { date, from });
+    // Verified once is verified: a later, unverified repeat does not undo it.
+    if (!had || date > had.date) found.set(job, { date, from, verified: verified || Boolean(had?.verified) });
+    else if (verified && !had.verified) had.verified = true;
   };
   for (const [id, t] of Object.entries(PROOF_TICKETS)) {
     const r = results[id];
-    if (r?.labOk) note(t.job, (r.at ?? "").slice(0, 10), t.label);
+    if (r?.labOk) note(t.job, (r.at ?? "").slice(0, 10), t.label, r.labVerified === true);
   }
   for (const entry of drills) {
     for (const d of entry.detail ?? []) {
       // A confirmed lab change (daily/ctf) or a shift incident the student resolved.
       if ((d.k === "change" || entry.mode === "shift") && d.c === 1 && d.j) {
-        note(d.j, entry.day, entry.mode === "shift" ? "Live shift" : entry.mode === "ctf" ? "Weekly CTF" : "Daily drill");
+        note(d.j, entry.day, entry.mode === "shift" ? "Live shift" : entry.mode === "ctf" ? "Weekly CTF" : "Daily drill", d.v === 1);
       }
     }
   }
   return [...found.entries()]
-    .map(([job, f]) => ({ job, ...CATALOG[job], date: f.date, from: f.from }))
+    .map(([job, f]) => ({ job, ...CATALOG[job], date: f.date, from: f.from, verified: f.verified }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
 
 /** Skills as the keywords job postings use, grouped like a resume Skills section. */
 /** Skills a passed browser lab shows. Each lab confirms the work: the hash must match, the decode must be right. */
-const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
-  "lab-risk-triage": ["Risk Assessment", "CIA Triad"],
-  "lab-hash-verify": ["Cryptographic Hashing (SHA-256)", "Indicators of Compromise (IOCs)"],
-  "lab-password-table": ["Password Hashing and Salting", "Encryption (AES)", "Base64 Encoding"],
-  "lab-signin-log": ["Log Analysis", "Windows Event Logs", "Incident Triage"],
-  "lab-effective-access": ["NTFS Permissions", "Share Permissions", "Access Control"],
-};
+const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {};
+
+/**
+ * Phase 2's hands-on labs (soc-mindset, Malware, Log Analysis Fundamentals,
+ * Write a Detection) each name one real tool, not a generic "did a CTF"
+ * signal the way `didCtf` below does. Most are read-only or a transient
+ * event, so there is nothing a server-side pull could confirm after the
+ * fact, and they can't earn a Verified Work bullet the way a Ticket Queue
+ * change does. They can still earn their place in the Skills list the
+ * moment the student actually solves the mission, the same low bar `didCtf`
+ * already uses below. Turn On Script Logging is a real exception: it is a
+ * registry change the lab can and does verify, so it earns a full
+ * Verified Work entry through PROOF_TICKETS/CATALOG instead and is left
+ * out of this list to avoid tagging the same skill twice.
+ */
+const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "response"; label: string }[] = [
+  { id: "rt-04", bucket: "response", label: "Risk Assessment and Triage" },
+  { id: "mw2-02", bucket: "monitoring", label: "Sysmon" },
+  { id: "mw2-04", bucket: "response", label: "Windows Defender / EDR" },
+  { id: "la2-02", bucket: "monitoring", label: "Cross-Host Log Correlation" },
+  { id: "wd1-03", bucket: "network", label: "Suricata (IDS)" },
+  { id: "w3m-c6", bucket: "network", label: "Nmap" },
+  { id: "sm2-04", bucket: "network", label: "Windows Firewall" },
+];
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {
   const identity = new Set<string>();
@@ -352,6 +468,12 @@ export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean,
     monitoring.add("Windows Event Logs");
     monitoring.add("Event Viewer");
     monitoring.add("Log Analysis");
+  }
+  for (const tag of MISSION_SKILL_TAGS) {
+    if (!results[tag.id]?.solved) continue;
+    if (tag.bucket === "monitoring") monitoring.add(tag.label);
+    else if (tag.bucket === "network") network.add(tag.label);
+    else response.add(tag.label);
   }
   const groups = [
     { group: "Identity and Access Management (IAM)", items: [...identity] },

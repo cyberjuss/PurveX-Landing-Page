@@ -32,7 +32,7 @@ If a forgotten password also locked the account, check **Unlock the user's accou
 </div>
 </div>
 
-Say Riley Kwan in Operations calls in locked out after three failed logon attempts. The question that decides the fix is whether she still remembers her password.
+Say Riley Kwan in Operations calls in locked out after too many failed logon attempts. The question that decides the fix is whether she still remembers her password.
 
 If she remembers it, unlock the account. If she has forgotten it, reset it and force a change at next logon. A temporary password is never a long-term credential.
 
@@ -68,3 +68,10 @@ Check the Account tab before you change anything. If **Account is disabled** is 
   .ad-decision__q, .ad-decision__branch { animation: none; opacity: 1; }
 }
 </style>
+
+```sort
+prompt: Riley Kwan calls in. Which fix fits?
+Unlock the account: She remembers her password but mistyped it three times
+Reset and force a change: She has forgotten her password
+Neither, it is disabled: The Account tab shows Account is disabled ticked
+```

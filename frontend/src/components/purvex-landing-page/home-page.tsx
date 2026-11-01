@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Linkedin, Star } from "lucide-react";
 import {
   IconAlert, IconBook, IconChain, IconCoverage, IconGraduate, IconHeadset, IconIdentity, IconKey,
-  IconLifebuoy, IconLog, IconMic, IconRecord, IconSchedule, IconShield, IconSignal, IconTune, IconValidate,
+  IconRecord, IconSchedule, IconShield, IconSignal, IconTune, IconValidate,
 } from "./brand-icons";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { HoldCard } from "./hold-card";
@@ -67,15 +67,6 @@ const CASES = [
   },
 ];
 
-function pickPair(avoid: string[] = []) {
-  const pool = ALERTS.filter((a) => !avoid.includes(a.title));
-  const src = pool.length >= 2 ? pool : ALERTS;
-  const first = src[Math.floor(Math.random() * src.length)];
-  const rest = src.filter((a) => a.title !== first.title);
-  const second = rest[Math.floor(Math.random() * rest.length)];
-  return [first, second];
-}
-
 function CaseCard() {
   const [i, setI] = useState(0);
 
@@ -115,40 +106,6 @@ function CaseCard() {
   );
 }
 
-function AlertDock() {
-  const [rows, setRows] = useState(() => [ALERTS[0], ALERTS[1]]);
-  const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    const next = () => {
-      setRows((cur) => pickPair(cur.map((r) => r.title)));
-      setTick((n) => n + 1);
-    };
-    next();
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setInterval(next, 2800);
-    return () => window.clearInterval(id);
-  }, []);
-
-  return (
-    <div className="hp-dock">
-      <p>
-        <span className="hp-dock__live" /> Queue
-      </p>
-      {rows.map((row, idx) => (
-        <div key={`${tick}-${row.title}-${idx}`} className="hp-dock__row">
-          <strong>{row.title}</strong>
-          <em data-sev={row.sev}>{row.sev}</em>
-          <span>{row.time}</span>
-          <span>{row.id}</span>
-          <span>{row.acct}</span>
-          <span>{row.host}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 const charges = [
   {
     href: "/platform",
@@ -169,46 +126,6 @@ const charges = [
     Icon: IconCoverage,
   },
 ];
-
-const perks = [
-  {
-    n: "01",
-    title: "Readiness",
-    body: "Four skills, scored from work the directory already shows.",
-    Icon: IconCoverage,
-  },
-  {
-    n: "02",
-    title: "Daily drill",
-    body: "A new ticket from their own lab, every day.",
-    Icon: IconSchedule,
-  },
-  {
-    n: "03",
-    title: "Four modes",
-    body: "Need help, Double-check, Mentor, and Job prep. None of them hands over the answer.",
-    Icon: IconHeadset,
-  },
-  {
-    n: "04",
-    title: "Hire",
-    body: "Closed tickets become lines they can defend.",
-    Icon: IconMic,
-  },
-];
-
-const programPoints = [
-  { text: "Live tickets on a real directory", Icon: IconChain },
-  { text: "Daily drills and a weekly CTF", Icon: IconLog },
-  { text: "A readiness score they can defend", Icon: IconCoverage },
-];
-
-const coachPoints = [
-  { text: "On every ticket, never the unsolved answer", Icon: IconLifebuoy },
-  { text: "Mock interviews and resume help in Job prep", Icon: IconHeadset },
-  { text: "The rest waits inside the portal", Icon: IconMic },
-];
-
 
 const REVIEWS = [
   {

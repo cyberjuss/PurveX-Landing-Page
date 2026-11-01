@@ -50,6 +50,14 @@ type Data = {
 
 const TRACKS: Track[] = ["soc", "help", "sys"];
 const plain = (parts: StarPart[]) => parts.map((p) => p[1]).join(" ");
+// The todo prompt for a job not done yet: the action taken, not the result of
+// having done it, since "verified by an automated lab check" reads oddly for
+// something the student has not done.
+const taskLabel = (parts: StarPart[]) => {
+  const kept = parts.filter((p) => p[0] !== "r");
+  const text = plain(kept.length ? kept : parts).trim().replace(/[.,]+$/, "");
+  return `${text}.`;
+};
 
 async function copyText(text: string): Promise<boolean> {
   try {
@@ -282,7 +290,14 @@ export function ProofEditor() {
           <path d="M6 9l6 6 6-6" />
         </svg>
       </summary>
-      <p>Each one joins your portfolio once your lab confirms it. Locked tasks unlock when you resolve them in a live shift.</p>
+      <p>Each one joins your portfolio once your lab confirms it. Locked tasks unlock when you resolve them in a live shift. Pick the role you are applying for.</p>
+      <div className="pf-seg" role="group" aria-label="Role">
+        {TRACKS.map((t) => (
+          <button key={t} type="button" aria-pressed={track === t} onClick={() => setTrack(t)}>
+            {TRACK_LABEL[t]}
+          </button>
+        ))}
+      </div>
       <ul className="pf-todo">
         {todo.map((t) => (
           <li key={t.job} className={t.locked ? "pf-todo--locked" : ""}>
@@ -292,7 +307,7 @@ export function ProofEditor() {
                   <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
               )}
-              {t.title}
+              {taskLabel(t.bullets[track])}
               <small>{t.locked ? "Locked · resolve it in a live shift" : t.where}</small>
             </span>
             <Link href={t.href} className="pf-btn">

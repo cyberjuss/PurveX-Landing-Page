@@ -109,7 +109,18 @@ function Course({ outline }: { outline: CourseOutline }) {
    job. Custom is for whoever is answerable for a cohort. Each perk is one
    smooth line that fits on one, with commas kept out of it, so the step up
    between tiers reads at a glance. */
-const TIERS: { name: string; price: string; per?: string; forWho: string; perks: string[]; cta: string; href: string; featured?: boolean }[] = [
+const TIERS: {
+  name: string;
+  price: string;
+  per?: string;
+  trial?: string;
+  forWho: string;
+  perks: string[];
+  cta: string;
+  href: string;
+  secondaryCta?: { label: string; href: string };
+  featured?: boolean;
+}[] = [
   {
     name: "Explore",
     price: "Free",
@@ -128,6 +139,7 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
     name: "Pro",
     price: "$49",
     per: "/month",
+    trial: "Free for your first 3 days",
     forWho: "The shortest road from learning this to being hired for it",
     perks: [
       "Everything in Explore",
@@ -140,7 +152,10 @@ const TIERS: { name: string; price: string; per?: string; forWho: string; perks:
     cta: "Get Pro",
     // ?checkout=1 means "buy", not "read the offer": after signing up they
     // go straight to Stripe rather than landing on a second pricing screen.
+    // trial=0 on the secondary link carries the same intent through signup,
+    // to the other Payment Link -- see /range/upgrade for both.
     href: "/range/upgrade?checkout=1",
+    secondaryCta: { label: "Skip the trial, pay now", href: "/range/upgrade?checkout=1&trial=0" },
     featured: true,
   },
   {
@@ -239,6 +254,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
                   {t.price}
                   {t.per && <i>{t.per}</i>}
                 </span>
+                {t.trial && <p className="tp-tier__trial">{t.trial}</p>}
                 <p className="tp-tier__for">{t.forWho}</p>
               </div>
               <ul className="tp-tier__list">
@@ -256,6 +272,11 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
               ) : (
                 <Link href={t.href} className="tp-tier__cta">
                   {t.cta} <ArrowRight size={15} />
+                </Link>
+              )}
+              {t.secondaryCta && (
+                <Link href={t.secondaryCta.href} className="tp-tier__secondary">
+                  {t.secondaryCta.label}
                 </Link>
               )}
             </li>
@@ -332,6 +353,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           letter-spacing: -.03em; line-height: 1; color: var(--ink);
         }
         .tp-tier__price i { font-style: normal; font-size: .82rem; font-weight: 600; letter-spacing: 0; color: var(--muted) }
+        .tp-tier__trial { margin: 8px 0 0; font-size: .82rem; font-weight: 650; color: var(--accent-deep) }
         .tp-tier__for { margin: 14px 0 0; font-size: .92rem; line-height: 1.5; color: var(--muted); text-wrap: balance }
         .tp-tier__list { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 11px; flex: 1 }
         .tp-tier__list li { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; font-size: .92rem; line-height: 1.45; color: var(--ink) }
@@ -343,6 +365,11 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         }
         .tp-tier__cta:hover { gap: 12px }
         .tp-tiers > li.is-featured .tp-tier__cta { background: var(--accent); border-color: var(--accent); color: #fff }
+        .tp-tier__secondary {
+          display: inline-flex; margin-top: 10px; font-size: .82rem; font-weight: 600;
+          color: var(--muted); text-decoration: underline; text-underline-offset: 3px; text-align: center; justify-content: center;
+        }
+        .tp-tier__secondary:hover { color: var(--ink) }
         .tp-pricing__note { margin: 22px 0 0; text-align: center; font-size: .88rem; color: var(--muted) }
         @media (max-width: 900px) { .tp-tiers { grid-template-columns: 1fr; gap: 16px } }
 

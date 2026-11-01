@@ -5,22 +5,25 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { CoachChat, CoachHeader } from "@/components/academy/coach-chat";
 import { useCoach } from "@/components/academy/coach-context";
+import { useMounted } from "@/lib/use-mounted";
 
 function academyChrome() {
   const root = document.querySelector(".academy-bg");
-  const header = root?.querySelector("header");
+  // The app's own top nav, not any nested <header> a page like the Shift
+  // console renders further down (its own header would push the panel's
+  // top way past the real chrome, leaving a blank gap above it).
+  const header = document.querySelector(".academy-bg > header");
   return {
     theme: root?.getAttribute("data-academy-theme") === "dark" ? "dark" : "light",
-    top: header ? Math.round(header.getBoundingClientRect().bottom) : 0,
+    top: header instanceof HTMLElement ? Math.round(header.getBoundingClientRect().bottom) : 0,
   };
 }
 
 export function PurvexCoach() {
   const { modalOpen, setModalOpen } = useCoach();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [, setLayout] = useState(0);
 
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!modalOpen) return;

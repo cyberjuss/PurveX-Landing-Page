@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Clock, Gauge, KeyRound, MonitorPlay, Server, Timer, X, type LucideIcon } from "lucide-react";
 import "./lab-briefing.css";
+import { persistPortalFlag } from "@/lib/academy-client";
 
 // What a student needs to know before their first hosted lab. It stands
 // between the first "Start my lab" and the start itself, so reading it is on
@@ -29,11 +30,13 @@ export const markLabBriefed = (): void => {
   try {
     window.localStorage.setItem(KEY, "1");
   } catch {}
+  // Also remember it on the account, so a new browser skips the briefing.
+  persistPortalFlag("labBrief");
 };
 
 type Point = { Icon: LucideIcon; title: string; body: string };
 
-function points(sessionHours: number, monthlyHours: number | null): Point[] {
+function points(sessionHours: number, weeklyHours: number | null, idleStopMinutes: number, idleReadyMinutes: number): Point[] {
   const list: Point[] = [
     {
       Icon: Server,
@@ -53,14 +56,14 @@ function points(sessionHours: number, monthlyHours: number | null): Point[] {
     {
       Icon: Clock,
       title: `It stops itself after ${sessionHours} ${sessionHours === 1 ? "hour" : "hours"}`,
-      body: "Everything you changed is saved. Resume picks the lab up exactly where you left it, so a stop costs you nothing.",
+      body: `It also stops itself after ${idleStopMinutes} minutes with nobody at the keyboard, once the lab has been running for ${idleReadyMinutes} minutes or more. That gap gives a freshly started domain controller time to finish booting before the idle clock can end your session. Everything you changed is saved, and Resume picks the lab up where you left it.`,
     },
   ];
-  if (monthlyHours) {
+  if (weeklyHours) {
     list.push({
       Icon: Gauge,
-      title: `${monthlyHours} lab hours a month`,
-      body: "Stop the lab yourself when you are done and the rest of that session goes back on your balance. Only the time it is actually running counts.",
+      title: `${weeklyHours} lab hours a week`,
+      body: `They go back to ${weeklyHours} every Monday, and only the time the lab actually runs counts. A session needs its full ${sessionHours} hours free, so once less than that is left the rest of the week waits for Monday.`,
     });
   }
   list.push({
@@ -73,13 +76,17 @@ function points(sessionHours: number, monthlyHours: number | null): Point[] {
 
 export function LabBriefing({
   sessionHours,
-  monthlyHours,
+  weeklyHours,
+  idleStopMinutes,
+  idleReadyMinutes,
   onStart,
   onClose,
   starting,
 }: {
   sessionHours: number;
-  monthlyHours: number | null;
+  weeklyHours: number | null;
+  idleStopMinutes: number;
+  idleReadyMinutes: number;
   /** Absent when the briefing is reopened to be read rather than to start a lab. */
   onStart?: () => void;
   onClose: () => void;
@@ -118,7 +125,7 @@ export function LabBriefing({
         </header>
 
         <ul className="lbm__points">
-          {points(sessionHours, monthlyHours).map(({ Icon, title, body }) => (
+          {points(sessionHours, weeklyHours, idleStopMinutes, idleReadyMinutes).map(({ Icon, title, body }) => (
             <li key={title}>
               <span className="lbm__mark" aria-hidden>
                 <Icon className="h-[18px] w-[18px]" />

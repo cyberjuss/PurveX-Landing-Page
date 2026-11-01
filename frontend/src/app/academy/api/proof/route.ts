@@ -23,6 +23,16 @@ export const runtime = "nodejs";
 const MAX_BYTES = 4 * 1024 * 1024;
 const TYPES = new Set(["image/png", "image/jpeg"]);
 
+/** True when the file's first bytes match its declared type. The type comes
+ *  from the browser and can say anything; the signature cannot. */
+function bytesMatch(bytes: Buffer, type: string): boolean {
+  const starts = (...sig: number[]) => sig.every((b, i) => bytes[i] === b);
+  if (type === "image/png") return starts(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
+  if (type === "image/jpeg") return starts(0xff, 0xd8, 0xff);
+  if (type === "application/pdf") return starts(0x25, 0x50, 0x44, 0x46, 0x2d);
+  return false;
+}
+
 // Reading a draft is open to everyone -- a free student can see the profile
 // their work has already earned, which is the whole argument for upgrading.
 // Everything that writes needs Pro, because what Pro sells is the published,
@@ -207,7 +217,9 @@ export async function POST(request: Request) {
     if (kind === "avatar" && !TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG photo." }, { status: 400 });
     if (kind === "resume" && file.type !== "application/pdf") return NextResponse.json({ error: "Upload your resume as a PDF." }, { status: 400 });
     const what = kind === "avatar" ? "photo" : "resume";
-    const path = await putFile(a.student.id, kind, Buffer.from(await file.arrayBuffer()), file.type);
+    const bytes = Buffer.from(await file.arrayBuffer());
+    if (!bytesMatch(bytes, file.type)) return NextResponse.json({ error: kind === "avatar" ? "That file is not a PNG or JPEG photo." : "That file is not a PDF." }, { status: 400 });
+    const path = await putFile(a.student.id, kind, bytes, file.type);
     if (!path) return NextResponse.json({ error: `Unable to save your ${what} right now. Try again later.` }, { status: 500 });
     const settings = (await loadProofSettings(a.student.id)) ?? draftSettings(a.student, []);
     const old = kind === "avatar" ? settings.avatarPath : settings.resumePath;
@@ -227,7 +239,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `This task already has ${SHOTS_PER_ITEM} screenshots. Remove one first.` }, { status: 400 });
   }
   const caption = String(form.get("caption") ?? "").replace(/\s+/g, " ").trim().slice(0, 140);
-  const shot = await addShot(a.student.id, job, Buffer.from(await file.arrayBuffer()), file.type, caption);
+  const shotBytes = Buffer.from(await file.arrayBuffer());
+  if (!bytesMatch(shotBytes, file.type)) return NextResponse.json({ error: "That file is not a PNG or JPEG screenshot." }, { status: 400 });
+  const shot = await addShot(a.student.id, job, shotBytes, file.type, caption);
   if (!shot) return NextResponse.json({ error: "Unable to save the screenshot right now. Try again later." }, { status: 500 });
 
   // Adding a screenshot switches that task's screenshots on. A student who

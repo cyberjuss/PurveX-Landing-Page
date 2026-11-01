@@ -1,5 +1,7 @@
 import "server-only";
 import type Stripe from "stripe";
+import { stopHostedLabIfLapsed } from "@/lib/academy-hosted";
+import { PAYING } from "@/lib/range-plan";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 // The Stripe side of Range Pro ($49/month). Writes academy_subscriptions,
@@ -207,7 +209,7 @@ export async function handleRangeSubscriptionChange(subscription: Stripe.Subscri
     return false;
   }
 
-  return writeSubscription({
+  const wrote = await writeSubscription({
     userId,
     status: subscription.status,
     subscriptionId: subscription.id,
@@ -220,4 +222,17 @@ export async function handleRangeSubscriptionChange(subscription: Stripe.Subscri
         ? new Date().toISOString()
         : null,
   });
+
+  // A status that no longer pays stops a running lab now rather than on the
+  // next daily sweep -- a trial cancelled on day one should not keep a pod up
+  // for two more days on nobody's dime but ours. Checked against the real
+  // entitlement inside, not just this one subscription, since a class seat or
+  // comp can still be carrying the account Pro.
+  if (wrote && !PAYING.has(subscription.status)) {
+    await stopHostedLabIfLapsed(userId).catch((err) =>
+      console.error("[range-billing] lapsed-pro lab stop failed:", err instanceof Error ? err.message : err)
+    );
+  }
+
+  return wrote;
 }

@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { type PhaseDef, type WeekDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
-import { useResults } from "@/lib/academy-client";
+import { academyFetch, useResults } from "@/lib/academy-client";
 import { CHALLENGE_PATHS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import type { Results } from "@/lib/academy-score";
 import { isPhaseLocked } from "@/lib/academy-locks";
@@ -13,6 +13,12 @@ const STORAGE_KEY = "academy-progress-v1";
 const QUIZ_PASS_KEY = "academy-quiz-pass-v1";
 const LAST_STOP_KEY = "academy-last-stop-v1";
 const LABS_DONE_KEY = "academy-labs-done-v1";
+
+// Onboarding "seen" flags carried on the account, mapped to the localStorage
+// keys their synchronous readers (e.g. labBriefed()) still use.
+const FLAG_LOCAL_KEYS: Record<string, string> = {
+  labBrief: "purvex.lab.brief.v1",
+};
 
 /** The slug a tab gets in the URL. Section tabs use the same one. */
 export function slugify(label: string) {
@@ -56,7 +62,17 @@ function entryKey(phaseSlug: string, entrySlug: string) {
   return `${phaseSlug}:${entrySlug}`;
 }
 
-export type LastStop = { phaseSlug: string; entrySlug: string };
+export type LastStop = {
+  phaseSlug: string;
+  entrySlug: string;
+  /** The tab they had open, as the URL hash spells it. Only the account
+   *  knows this -- the browser's own note never recorded it -- so a resume
+   *  lands on the page they were reading rather than the top of it. */
+  tabSlug?: string;
+  /** And how that tab is written, so the card can name the place rather
+   *  than the kind of thing it is. */
+  tabLabel?: string;
+};
 
 function parseLastStop(raw: string | null): LastStop | null {
   if (!raw) return null;
@@ -81,7 +97,7 @@ interface AcademyProgressContextValue {
   recordQuizPass: (phaseSlug: string, entrySlug: string) => void;
   toggleComplete: (phaseSlug: string, entrySlug: string) => void;
   lastStop: LastStop | null;
-  setLastStop: (phaseSlug: string, entrySlug: string) => void;
+  setLastStop: (phaseSlug: string, entrySlug: string, tabLabel?: string) => void;
   completedCount: number;
   totalCount: number;
 }
@@ -94,6 +110,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
   const [labsDone, setLabsDone] = useState<Set<string>>(new Set());
   const [lastStop, setLastStopState] = useState<LastStop | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [serverSynced, setServerSynced] = useState(false);
   const results = useResults();
 
   useEffect(() => {
@@ -113,11 +130,41 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
       const labsSaved: string[] = labsRaw ? JSON.parse(labsRaw) : [];
       setLabsDone((prev) => new Set([...labsSaved, ...prev]));
       setLastStopState(parseLastStop(window.localStorage.getItem(LAST_STOP_KEY)));
+      // Seeded from this browser, then corrected from the account below.
     } catch {
       // Private browsing / blocked storage -- progress just won't persist.
     } finally {
       setLoaded(true);
     }
+  }, []);
+
+  // Where the account says they were, which beats where this browser says.
+  //
+  // The last stop lived only in localStorage, so it was lost on another
+  // browser, another machine, or a cleared cache -- while everything else
+  // about their progress followed the account. The server has known all
+  // along: a row is written every time they open a tab. Nothing read it.
+  useEffect(() => {
+    let cancelled = false;
+    academyFetch("/academy/api/activity", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { place?: { phase?: string; entry?: string; tab?: string } } | null) => {
+        const phaseSlug = d?.place?.phase;
+        const entrySlug = d?.place?.entry;
+        if (cancelled || !phaseSlug || !entrySlug) return;
+        // The tab is stored by the same label the hash is built from.
+        const tabLabel = d?.place?.tab || undefined;
+        const tabSlug = tabLabel ? slugify(tabLabel) : undefined;
+        setLastStopState((prev) =>
+          prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug && prev.tabSlug === tabSlug
+            ? prev
+            : { phaseSlug, entrySlug, tabSlug, tabLabel }
+        );
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -155,6 +202,62 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
       // Ignore -- nothing to persist to.
     }
   }, [lastStop, loaded]);
+
+  // Once local state is in, pull the account's copy and merge it, so a new
+  // browser or device restores the student's place. Sets only grow (union);
+  // onboarding flags hydrate into localStorage for their synchronous readers.
+  // Guests and locked sessions just get a 401, caught, and localStorage stands.
+  useEffect(() => {
+    if (!loaded || serverSynced) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await academyFetch("/academy/api/portal");
+        if (!res.ok || cancelled) return;
+        const { portal } = (await res.json()) as {
+          portal?: { completed?: string[]; quizPasses?: string[]; labsDone?: string[]; lastStop?: string | null; flags?: Record<string, boolean> };
+        };
+        if (!portal || cancelled) return;
+        if (portal.completed?.length) setCompleted((prev) => new Set([...prev, ...portal.completed!]));
+        if (portal.quizPasses?.length) setQuizPasses((prev) => new Set([...prev, ...portal.quizPasses!]));
+        if (portal.labsDone?.length) setLabsDone((prev) => new Set([...prev, ...portal.labsDone!]));
+        if (portal.lastStop) setLastStopState((prev) => prev ?? parseLastStop(portal.lastStop!));
+        if (portal.flags) {
+          for (const [flag, on] of Object.entries(portal.flags)) {
+            const lsKey = FLAG_LOCAL_KEYS[flag];
+            if (on && lsKey) {
+              try { window.localStorage.setItem(lsKey, "1"); } catch {}
+            }
+          }
+        }
+      } catch {
+        // Offline or no account -- localStorage remains the source of truth.
+      } finally {
+        if (!cancelled) setServerSynced(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [loaded, serverSynced]);
+
+  // Save progress to the account, debounced, after the server copy is merged in.
+  useEffect(() => {
+    if (!loaded || !serverSynced) return;
+    const t = setTimeout(() => {
+      void academyFetch("/academy/api/portal", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          portal: {
+            completed: [...completed],
+            quizPasses: [...quizPasses],
+            labsDone: [...labsDone],
+            lastStop: lastStop ? entryKey(lastStop.phaseSlug, lastStop.entrySlug) : null,
+          },
+        }),
+      }).catch(() => {});
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [completed, quizPasses, labsDone, lastStop, loaded, serverSynced]);
 
   const totalCount = useMemo(() => countEntries(phases), [phases]);
 
@@ -235,10 +338,22 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
         });
       },
       lastStop,
-      setLastStop: (phaseSlug, entrySlug) => {
-        setLastStopState((prev) =>
-          prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug ? prev : { phaseSlug, entrySlug }
-        );
+      // The tab is part of where they were, and the switcher is what knows
+      // it. Recording the entry alone meant opening a lesson overwrote the
+      // tab the account had reported a moment earlier, so within a session
+      // the last stop always decayed to the top of a page.
+      setLastStop: (phaseSlug, entrySlug, tabLabel) => {
+        setLastStopState((prev) => {
+          const same = prev?.phaseSlug === phaseSlug && prev.entrySlug === entrySlug;
+          // Two things record this: the entry page, which knows the page, and
+          // the tab switcher, which also knows the tab. A caller with no tab
+          // must not wipe one already known for the same page, or the answer
+          // would depend on which effect happened to run last.
+          const nextLabel = tabLabel ?? (same ? prev?.tabLabel : undefined);
+          const tabSlug = nextLabel ? slugify(nextLabel) : undefined;
+          if (same && prev?.tabSlug === tabSlug) return prev;
+          return { phaseSlug, entrySlug, tabSlug, tabLabel: nextLabel };
+        });
       },
       completedCount: [...completed].filter((key) => !isPhaseLocked(key.split(":")[0])).length,
       totalCount,
@@ -255,10 +370,10 @@ export function useAcademyProgress() {
   return ctx;
 }
 
-export function RecordLastStop({ phaseSlug, entrySlug }: { phaseSlug: string; entrySlug: string }) {
+export function RecordLastStop({ phaseSlug, entrySlug, tabLabel }: { phaseSlug: string; entrySlug: string; tabLabel?: string }) {
   const { setLastStop } = useAcademyProgress();
   useEffect(() => {
-    setLastStop(phaseSlug, entrySlug);
-  }, [phaseSlug, entrySlug, setLastStop]);
+    setLastStop(phaseSlug, entrySlug, tabLabel);
+  }, [phaseSlug, entrySlug, tabLabel, setLastStop]);
   return null;
 }

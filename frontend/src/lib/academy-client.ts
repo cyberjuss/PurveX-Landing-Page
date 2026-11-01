@@ -69,11 +69,27 @@ export function recordLabResult(id: LabPassId, passed: boolean, pts: number) {
   }).catch(() => {});
 }
 
+// Local preview: `npm run dev` with no Supabase keys opens the portal as a
+// stand-in student instead of a sign-in form nobody can get past. A
+// production build always has NODE_ENV=production, so it never ships.
+export const DEV_PREVIEW = process.env.NODE_ENV === "development" && !supabase;
+
 export async function academyFetch(path: string, init: RequestInit = {}) {
   const token = supabase ? (await supabase.auth.getSession()).data.session?.access_token : undefined;
   const headers = new Headers(init.headers);
   if (token) headers.set("Authorization", `Bearer ${token}`);
   return fetch(path, { ...init, headers, credentials: "same-origin" });
+}
+
+/** Remembers a one-time onboarding step (lab briefing, terms, tour) on the
+ *  student's account, so a new browser or device does not show it again.
+ *  Fire-and-forget: the localStorage flag still drives the synchronous read. */
+export function persistPortalFlag(name: string) {
+  void academyFetch("/academy/api/portal", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ portal: { flags: { [name]: true } } }),
+  }).catch(() => {});
 }
 
 // A copy of the student's intake answers, so a slow or failing server never

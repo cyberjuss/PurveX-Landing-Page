@@ -40,7 +40,7 @@ function isComped(email: string | null): boolean {
 }
 
 /** Only these two Stripe statuses grant access. past_due and unpaid do not. */
-const PAYING = new Set(["active", "trialing"]);
+export const PAYING = new Set(["active", "trialing"]);
 
 type SubscriptionRow = {
   status?: string | null;

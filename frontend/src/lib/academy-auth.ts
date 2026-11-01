@@ -20,18 +20,24 @@ function cookieOptions() {
   };
 }
 
-function expectedToken(): string | null {
-  const passcode = process.env.ACADEMY_PASSCODE;
-  if (!passcode) return null;
-  const salt = process.env.ACADEMY_SESSION_SALT || "purvex-academy";
-  return createHash("sha256").update(`${passcode}:${salt}`).digest("hex");
+// This cookie means "this browser already proved it belongs here," for
+// whatever reason that was true: a class passcode, a class code, or (far
+// more often now) just being signed in as a Range Pro subscriber or class
+// roster member. It must not depend on ACADEMY_PASSCODE being configured --
+// that env var is only relevant to the legacy shared-passcode entry form.
+// Tying this cookie's token to it meant the cookie silently never set for
+// anyone on any path whenever no passcode happened to be configured, which
+// locked out paying individuals who had no passcode to enter in the first
+// place. The secret here is whatever's actually guaranteed to be set in a
+// working deployment, not an optional cohort passcode.
+function expectedToken(): string {
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.ACADEMY_SESSION_SALT || "purvex-academy";
+  return createHash("sha256").update(`academy-unlocked:${secret}`).digest("hex");
 }
 
 export async function isAcademyUnlocked(): Promise<boolean> {
-  const expected = expectedToken();
-  if (!expected) return false;
   const store = await cookies();
-  return store.get(ACADEMY_COOKIE)?.value === expected;
+  return store.get(ACADEMY_COOKIE)?.value === expectedToken();
 }
 
 export function checkPasscode(input: string): boolean {
@@ -40,12 +46,9 @@ export function checkPasscode(input: string): boolean {
   return input.trim() === passcode;
 }
 
-/** False when no passcode is configured, so there is no cookie to set. */
 export async function setAcademyCookie(): Promise<boolean> {
-  const expected = expectedToken();
-  if (!expected) return false;
   const store = await cookies();
-  store.set(ACADEMY_COOKIE, expected, cookieOptions());
+  store.set(ACADEMY_COOKIE, expectedToken(), cookieOptions());
   return true;
 }
 
