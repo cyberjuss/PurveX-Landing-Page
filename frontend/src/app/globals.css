@@ -4951,6 +4951,20 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-lesstab svg { color: var(--rd-accent); opacity: 0.75; }
 .ax-lesstab--on svg { opacity: 1; }
 .ax-lesstab:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: -4px; }
+/* The pill row inside the Challenges tab, reaching one challenge out of
+   several that now share a single top-level tab (section-tabs.tsx). */
+.ax-challtabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1.25rem; }
+.ax-challtab {
+  display: inline-flex; align-items: center;
+  padding: 0.38rem 0.75rem; font: inherit; font-size: var(--ty-note); font-weight: 600;
+  color: var(--rd-ink-2); background: color-mix(in srgb, var(--rd-ink) var(--sf-mark-fill, 6%), transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rd-ink) var(--sf-mark-line, 14%), transparent);
+  border: 0; cursor: pointer;
+  transition: color var(--ax-dur-fast), background var(--ax-dur-fast), box-shadow var(--ax-dur-fast);
+}
+.ax-challtab:hover { color: var(--rd-ink); }
+.ax-challtab--on { color: #fff; background: var(--rd-accent); box-shadow: inset 0 0 0 1px var(--rd-accent); }
+.ax-challtab:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
 
 /* The section strip, refined. Each section gets a numbered mark: filled in
    the accent for the one you are on, a green tick once you have read it to

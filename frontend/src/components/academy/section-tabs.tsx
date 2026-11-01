@@ -121,6 +121,12 @@ export function SectionTabs({
   const challengeItems: Item[] = (challenges ?? []).map((c) => ({ kind: "challenge", label: c.label, markdown: c.markdown }));
   const troubleshootingItems: Item[] = (troubleshooting ?? []).map((t) => ({ kind: "troubleshooting", label: t.label, markdown: t.markdown }));
   const items = [...numberedItems, ...challengeItems, ...troubleshootingItems];
+  // Where the challenges sit in `items` -- always one contiguous run, since
+  // they are appended as a block. A week with several of them used to show
+  // one top-level tab per challenge, which is how the strip grew to eight or
+  // nine tabs on some weeks. They now share one "Challenges" tab, with a
+  // pill row inside it to reach any individual one.
+  const challengeStart = numberedItems.length;
 
   const router = useRouter();
   const [active, setActive] = useState(0);
@@ -212,6 +218,43 @@ export function SectionTabs({
       document.removeEventListener("visibilitychange", onHide);
     };
   }, [phaseSlug, entrySlug, current.kind, current.label]);
+  // The strip's own buttons: every numbered section and troubleshooting
+  // item keeps its own tab, but the whole run of challenges collapses into
+  // one "Challenges" tab, active whenever the current item is a challenge.
+  const visibleTabs: {
+    key: string;
+    label: string;
+    icon: Item["kind"];
+    isActive: boolean;
+    isDone: boolean;
+    onClick: () => void;
+    numberIndex?: number;
+  }[] = [];
+  items.forEach((item, i) => {
+    if (item.kind === "challenge") {
+      if (i !== challengeStart) return;
+      visibleTabs.push({
+        key: "challenges",
+        label: "Challenges",
+        icon: "challenge",
+        isActive: current.kind === "challenge",
+        isDone: false,
+        onClick: () => goTo(current.kind === "challenge" ? active : challengeStart),
+      });
+      return;
+    }
+    visibleTabs.push({
+      key: item.label,
+      label: item.label,
+      icon: item.kind,
+      isActive: active === i,
+      isDone: done.has(item.label),
+      onClick: () => goTo(i),
+      numberIndex: i,
+    });
+  });
+  const visibleActiveIndex = visibleTabs.findIndex((t) => t.isActive);
+
   const prevItem = active > 0 ? items[active - 1] : null;
   const nextItem = active < items.length - 1 ? items[active + 1] : null;
   // One underline that slides to the tab you pick, rather than one tab's line
@@ -224,7 +267,7 @@ export function SectionTabs({
     const bar = barRef.current;
     if (!nav || !bar) return;
     const place = () => {
-      const tab = nav.querySelectorAll<HTMLElement>('[role="tab"]')[active];
+      const tab = nav.querySelectorAll<HTMLElement>('[role="tab"]')[visibleActiveIndex];
       if (!tab) return;
       // Measured from the boxes rather than offsetLeft/offsetWidth, which round
       // to whole pixels and left the line a pixel short of the tab's own.
@@ -239,7 +282,7 @@ export function SectionTabs({
     const ro = new ResizeObserver(place);
     ro.observe(nav);
     return () => ro.disconnect();
-  }, [active, items.length]);
+  }, [visibleActiveIndex, visibleTabs.length]);
 
   // Ten sections do not fit across a laptop, so the strip scrolls. Nothing said
   // so: the last tabs sat past the right edge with no hint and no way to reach
@@ -263,13 +306,13 @@ export function SectionTabs({
       ro.disconnect();
       nav.removeEventListener("scroll", measure);
     };
-  }, [measure, items.length]);
+  }, [measure, visibleTabs.length]);
 
   // Only the strip moves. scrollIntoView would take the page with it, and this
   // strip is sticky, so the lesson would jump under the reader's eyes.
   useEffect(() => {
     const nav = tabsRef.current;
-    const tab = nav?.querySelectorAll<HTMLElement>('[role="tab"]')[active];
+    const tab = nav?.querySelectorAll<HTMLElement>('[role="tab"]')[visibleActiveIndex];
     if (!nav || !tab) return;
     const pad = 24;
     const left = tab.offsetLeft - pad;
@@ -278,7 +321,7 @@ export function SectionTabs({
     if (to === null) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     nav.scrollTo({ left: Math.max(0, to), behavior: reduce ? "auto" : "smooth" });
-  }, [active]);
+  }, [visibleActiveIndex]);
 
   const roll = (dir: 1 | -1) => {
     const nav = tabsRef.current;
@@ -390,6 +433,24 @@ export function SectionTabs({
             nextBeyond={nextTrail}
           />
         ) : (
+        <>
+        {current.kind === "challenge" && challengeItems.length > 1 && (
+          <nav className="ax-challtabs" aria-label="Challenges">
+            {challengeItems.map((c, ci) => {
+              const i = challengeStart + ci;
+              return (
+                <button
+                  key={c.label}
+                  type="button"
+                  className={`ax-challtab${active === i ? " ax-challtab--on" : ""}`}
+                  onClick={() => goTo(i)}
+                >
+                  {c.label}
+                </button>
+              );
+            })}
+          </nav>
+        )}
         <MissionPager
           key={current.label}
           prevSection={prevTrail}
@@ -402,6 +463,7 @@ export function SectionTabs({
             <Markdown content={current.markdown} />
           )}
         </MissionPager>
+        </>
         )}
       </>
     );
@@ -429,24 +491,24 @@ export function SectionTabs({
           aria-hidden
           style={{ ["--fill" as string]: current.kind === "section" && asDeck ? fill : 1 }}
         />
-        {items.map((item, i) => (
+        {visibleTabs.map((tab) => (
           <button
-            key={item.label}
+            key={tab.key}
             type="button"
             role="tab"
-            aria-selected={active === i}
-            onClick={() => goTo(i)}
-            className={`ax-lesstab ${active === i ? "ax-lesstab--on" : ""}${done.has(item.label) ? " is-done" : ""}`}
-            aria-label={done.has(item.label) ? `${item.label}, finished` : undefined}
+            aria-selected={tab.isActive}
+            onClick={tab.onClick}
+            className={`ax-lesstab ${tab.isActive ? "ax-lesstab--on" : ""}${tab.isDone ? " is-done" : ""}`}
+            aria-label={tab.isDone ? `${tab.label}, finished` : undefined}
           >
-            {item.kind === "challenge" ? (
+            {tab.icon === "challenge" ? (
               <Flag className="h-3.5 w-3.5 shrink-0" aria-hidden />
-            ) : item.kind === "troubleshooting" ? (
+            ) : tab.icon === "troubleshooting" ? (
               <Wrench className="h-3.5 w-3.5 shrink-0" aria-hidden />
             ) : (
-              <i aria-hidden>{done.has(item.label) && active !== i ? <Check strokeWidth={3} /> : pad(i + 1)}</i>
+              <i aria-hidden>{tab.isDone && !tab.isActive ? <Check strokeWidth={3} /> : pad((tab.numberIndex ?? 0) + 1)}</i>
             )}
-            <span>{item.label}</span>
+            <span>{tab.label}</span>
           </button>
         ))}
         </nav>
