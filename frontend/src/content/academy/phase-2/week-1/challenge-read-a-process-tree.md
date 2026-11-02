@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Follow the Process Tree to What Keeps It Alive</h3>
-<p class="ad-brief__ask">An alert says a process ran. Can you hunt it to the mechanism keeping it alive, and shut that down without destroying the evidence?</p>
-<p>Your hosted lab needs to be running, with the domain controller reachable. Sysmon is already installed. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">An alert says a process ran. Can you hunt it to what keeps it alive, and shut that down without destroying the evidence?</p>
+<p>Hosted lab required, with the domain controller reachable. Sysmon is installed.</p>
 </div>
 
 <div class="ad-progress">

@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The First Evidence in Almost Every Investigation</h3>
 <p class="ad-brief__ask">Every time someone proves who they are, a record is written. Can you make one, find it, and tell a success from a failure?</p>
-<p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. You know your own password, which is in the lab panel. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p>Hosted lab required, with a terminal open on the Ubuntu desktop.</p>
 </div>
 
 <div class="ad-progress">

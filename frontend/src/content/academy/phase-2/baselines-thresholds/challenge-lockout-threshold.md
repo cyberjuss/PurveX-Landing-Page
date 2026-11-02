@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Set a Defensible Lockout Threshold</h3>
 <p class="ad-brief__ask">Can you set a real threshold that balances catching an attacker against locking out your own users, on your own lab?</p>
-<p>This step checks your Phase 1 lab, so keep it running. You get three tries, and the hint unlocks after two misses.</p>
+<p>This step checks your Phase 1 lab, so keep it running.</p>
 </div>
 
 <div class="ad-progress">

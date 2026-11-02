@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Catch the Scan With Nobody Watching</h3>
-<p class="ad-brief__ask">You already learned to recognize a scan by eye, reading packets after the fact. Can you write the rule that catches the same scan the moment it happens, with nobody watching?</p>
-<p>Your hosted lab needs to be running, with the Ubuntu server reachable. Suricata is already installed. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">You can recognize a scan by eye. Can you write the rule that catches it live, with nobody watching?</p>
+<p>Hosted lab required, with the Ubuntu server reachable. Suricata is installed.</p>
 </div>
 
 <div class="ad-progress">

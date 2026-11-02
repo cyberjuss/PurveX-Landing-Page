@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Capture the Conversation, Not Just the Machine</h3>
-<p class="ad-brief__ask">From one machine, can you capture and read a conversation it is having with another? And what can that machine's capture never show you?</p>
-<p>Your hosted lab needs to be running, with both machines started. Wireshark is already installed on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">Can you capture and read one machine's conversation with another, and know what it can't show you?</p>
+<p>Hosted lab required, with both machines started. Wireshark is installed.</p>
 </div>
 
 <div class="ad-progress">

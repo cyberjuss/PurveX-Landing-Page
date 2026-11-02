@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Campaign 2 of 4</p>
 <h3>The Phishing Chain</h3>
-<p class="ad-brief__ask">A different attacker, a different way in: a disguised attachment. Can you work it Reconnaissance to Actions on Objectives, with the tools a real SOC analyst actually has open?</p>
-<p>Most steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">A disguised attachment, a different way in. Can you work it Reconnaissance to Actions on Objectives?</p>
+<p>Most steps check your Phase 1 lab, so keep it running.</p>
 </div>
 
 <div class="ad-progress">

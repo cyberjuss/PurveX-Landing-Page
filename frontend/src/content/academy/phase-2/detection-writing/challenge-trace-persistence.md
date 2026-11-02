@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Build the Detection That Would Have Caught It</h3>
 <p class="ad-brief__ask">You disabled <code>WindowsDiagnosticsSync</code> by hand in Week 1. The rule that let it call out is still open. Build the standing detection, then close what you left behind.</p>
-<p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p>Hosted lab required, with the domain controller reachable.</p>
 </div>
 
 <div class="ad-progress">

@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>One Timeline, Two Machines</h3>
-<p class="ad-brief__ask">An incident rarely stays on one machine. Can you read two different logs, on two different operating systems, and line them up into one account of what happened?</p>
-<p>Your hosted lab needs to be running, with both machines reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">An incident rarely stays on one machine. Can you line up two logs, two operating systems, into one account?</p>
+<p>Hosted lab required, with both machines reachable.</p>
 </div>
 
 <div class="ad-progress">

@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Campaign 1 of 4</p>
 <h3>The Credential Campaign</h3>
-<p class="ad-brief__ask">One attacker, no malware delivered, just guessed and stolen passwords. Can you work it start to finish, one operation instead of twelve unrelated alerts?</p>
-<p>Most steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">No malware, just guessed and stolen passwords. Can you work it start to finish, one operation instead of twelve alerts?</p>
+<p>Most steps check your Phase 1 lab, so keep it running.</p>
 </div>
 
 <div class="ad-progress">

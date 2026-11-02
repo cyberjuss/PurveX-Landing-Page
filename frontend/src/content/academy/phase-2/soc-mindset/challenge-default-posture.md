@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>What the Firewall Does With What You Never Mentioned</h3>
-<p class="ad-brief__ask">Before you add a single rule, a firewall has already decided what to do with everything you never mentioned. Can you read that default straight from your own domain controller?</p>
-<p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">A firewall already decided what to do with traffic you never mentioned. Can you read that default?</p>
+<p>Hosted lab required, with the domain controller reachable.</p>
 </div>
 
 <div class="ad-progress">

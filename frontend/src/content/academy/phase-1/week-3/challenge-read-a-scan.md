@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Open, Closed, or Just Guarded?</h3>
-<p class="ad-brief__ask">Before an attacker breaks in, they knock on every door to see which ones open. Captured from the defender's side, can you tell an open door from a closed one from a door a firewall is holding shut?</p>
-<p>Your hosted lab needs to be running, with both machines started and able to reach each other. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">Can you tell an open port from a closed one from one a firewall is holding shut?</p>
+<p>Hosted lab required, with both machines reachable.</p>
 </div>
 
 <div class="ad-progress">

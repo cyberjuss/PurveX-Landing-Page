@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Turn a Vague Alert Into a Documented Account</h3>
-<p class="ad-brief__ask">A vague alert says a sign-in failed. Can you turn that into the kind of documented account a Tier 2 analyst can actually act on, using only what the event itself records?</p>
-<p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">A vague alert says a sign-in failed. Can you document it the way Tier 2 can actually act on?</p>
+<p>Hosted lab required, with the domain controller reachable.</p>
 </div>
 
 <div class="ad-progress">

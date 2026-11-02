@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Score It the Way PurveX Actually Runs</h3>
 <p class="ad-brief__ask">Two machines share the same vulnerability. Why is it an emergency on one of them and almost nothing on the other?</p>
-<p>Your hosted lab needs to be running, with Firefox open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p>Hosted lab required, with Firefox open on the Ubuntu desktop.</p>
 </div>
 
 <div class="ad-progress">

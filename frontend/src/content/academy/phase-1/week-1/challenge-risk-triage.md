@@ -8,7 +8,7 @@
 <li><strong>C.</strong> The Wealth Management balances share is open to the whole domain.</li>
 <li><strong>D.</strong> Operations was added to a group that edits Wealth Management's fee schedule.</li>
 </ul>
-<p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p>Hosted lab required, with the domain controller reachable.</p>
 </div>
 
 <div class="ad-progress">

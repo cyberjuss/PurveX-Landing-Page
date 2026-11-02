@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Which Property Actually Failed?</h3>
-<p class="ad-brief__ask">Can you break each property of the CIA triad on purpose, fix the one you still can, and prove it with a command rather than an opinion?</p>
-<p>Your hosted lab needs to be running, with the Ubuntu desktop open. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">Can you break each CIA triad property on purpose, fix the one you still can, and prove it with a command?</p>
+<p>Hosted lab required, with the Ubuntu desktop open.</p>
 </div>
 
 <div class="ad-progress">

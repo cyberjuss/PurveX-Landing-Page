@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Encoded, Encrypted, or Hashed?</h3>
-<p class="ad-brief__ask">One reverses instantly, one needs a key, one never comes back. Can you tell which is which, then protect a real file with the one that needs a key?</p>
-<p>Your hosted lab needs to be running, with Firefox open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">One reverses instantly, one needs a key, one never comes back. Can you tell which, then protect a real file?</p>
+<p>Hosted lab required, with Firefox open on the Ubuntu desktop.</p>
 </div>
 
 <div class="ad-progress">

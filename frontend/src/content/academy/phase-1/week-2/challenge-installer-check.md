@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Mirror That Does Not Match</h3>
 <p class="ad-brief__ask">When you cannot see inside a file or a password, can you still prove what it is?</p>
-<p>IT keeps three mirrors of a VPN client manifest and a checksum to check them against. Hash what you are given, compare it against what was published, and say what a password export proves.</p>
+<p>Hash what you're given, compare it to the published checksum, and say what a password export proves.</p>
 </div>
 
 <div class="ad-progress">

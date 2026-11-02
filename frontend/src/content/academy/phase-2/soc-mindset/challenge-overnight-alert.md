@@ -3,7 +3,7 @@
 <h3>Approved Overnight, or Not?</h3>
 <p class="ad-brief__ask">Can you tell a real attack from an alert that only looks like one, using your own lab?</p>
 <p>Before you escalate anything, work it the way the 5 W's taught: check the record first, every field of it.</p>
-<p>Both steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
+<p>Both steps check your Phase 1 lab, so keep it running.</p>
 </div>
 
 <div class="ad-progress">

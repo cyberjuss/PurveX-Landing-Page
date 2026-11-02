@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Grant Exactly One Power, Not the Whole Machine</h3>
-<p class="ad-brief__ask">Priya Nair, IT's Help Desk Technician, needs to restart one service as an administrator and nothing more. Can you grant exactly that, and prove you did not quietly hand over the whole machine?</p>
-<p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">Priya Nair needs to restart one service, nothing more. Can you grant exactly that, and prove it?</p>
+<p>Hosted lab required, with a terminal open on the Ubuntu desktop.</p>
 </div>
 
 <div class="ad-progress">

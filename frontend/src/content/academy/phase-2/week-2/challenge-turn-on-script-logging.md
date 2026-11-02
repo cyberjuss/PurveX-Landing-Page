@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Keep What a Process Launch Alone Throws Away</h3>
-<p class="ad-brief__ask">A process-creation event tells you powershell.exe ran. It does not tell you what it actually did. Can you turn on the log that does?</p>
-<p>Your hosted lab needs to be running, with the domain controller reachable. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">A process-creation event tells you powershell.exe ran, not what it did. Can you turn on the log that does?</p>
+<p>Hosted lab required, with the domain controller reachable.</p>
 </div>
 
 <div class="ad-progress">

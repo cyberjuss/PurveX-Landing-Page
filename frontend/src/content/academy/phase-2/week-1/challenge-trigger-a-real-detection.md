@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Prove the Signature Match, Then Find Its Limit</h3>
-<p class="ad-brief__ask">Antivirus works by matching a file against a library of known-bad signatures. Can you create a file real enough to prove it, and read the detection it triggers?</p>
-<p>Your hosted lab needs to be running, with the domain controller reachable. Windows Defender is already on by default. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">Antivirus matches files against known signatures. Can you create one real enough to trigger an alert, and read it?</p>
+<p>Hosted lab required, with the domain controller reachable. Defender is on by default.</p>
 </div>
 
 <div class="ad-progress">

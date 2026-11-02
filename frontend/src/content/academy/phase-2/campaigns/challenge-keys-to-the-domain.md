@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Campaign 4 of 4</p>
 <h3>The Keys to the Domain</h3>
-<p class="ad-brief__ask">No guessed password, no attachment, no open door. Can you catch an attacker using Kerberoasting and DCSync, Active Directory exactly as it was designed to be used?</p>
-<p>Most steps check your Phase 1 lab, so keep it running. Each step takes a short answer, you get three tries per step, and the hint unlocks after two misses.</p>
+<p class="ad-brief__ask">No guessed password, no attachment, no open door. Can you catch Kerberoasting and DCSync, AD used exactly as designed?</p>
+<p>Most steps check your Phase 1 lab, so keep it running.</p>
 </div>
 
 <div class="ad-progress">

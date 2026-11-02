@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>What a Leaked Password File Actually Gives Away</h3>
 <p class="ad-brief__ask">Why can a stolen password file give one company away and tell an attacker almost nothing at another?</p>
-<p>Your hosted lab needs to be running, with a terminal open on the Ubuntu desktop. Each step takes a short answer, and the hint unlocks after two misses.</p>
+<p>Hosted lab required, with a terminal open on the Ubuntu desktop.</p>
 </div>
 
 <div class="ad-progress">
