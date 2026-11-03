@@ -16,6 +16,9 @@ export type MissionCatalogEntry = {
     | "keys-to-the-domain"
     | "risk-triage"
     | "cia-triad"
+    | "cia-confidentiality"
+    | "cia-integrity"
+    | "cia-availability"
     | "cvss-scoring"
     | "encode-encrypt-hash"
     | "store-a-password"
@@ -358,12 +361,13 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "rt-03": { id: "rt-03", challenge: "risk-triage", title: "Rank Them by Department (INC-1081)", prompt: "Rank the four tickets using department criticality.", skill: "risk" },
   "rt-04": { id: "rt-04", challenge: "risk-triage", title: "Why the Printer Waits (INC-1081)", prompt: "Justify ranking the loudest ticket last.", skill: "risk" },
   "rt-05": { id: "rt-05", challenge: "risk-triage", title: "Fix the Wealth Management Share (INC-1081)", prompt: "Lock the Wealth Management folder down to Wealth Management Users and confirm it.", skill: "risk" },
-  "w1e-c1": { id: "w1e-c1", challenge: "cia-triad", title: "Did the File's Contents Change? (INC-1082)", prompt: "After chmod 600, say whether ledger.txt's contents changed.", skill: "risk" },
-  "w1e-c2": { id: "w1e-c2", challenge: "cia-triad", title: "How Much of the Hash Changed (INC-1083)", prompt: "Say how much of the SHA-256 hash changed after editing one digit.", skill: "risk" },
-  "w1e-c3": { id: "w1e-c3", challenge: "cia-triad", title: "Did the Page Survive the Outage (INC-1084)", prompt: "Say whether index.html was still on disk while nginx was stopped.", skill: "risk" },
+  "w1e-c1": { id: "w1e-c1", challenge: "cia-confidentiality", title: "Did the File's Contents Change? (INC-1082)", prompt: "After chmod 600, say whether ledger.txt's contents changed.", skill: "risk" },
+  "w1e-c2": { id: "w1e-c2", challenge: "cia-integrity", title: "How Much of the Hash Changed (INC-1083)", prompt: "Say how much of the SHA-256 hash changed after editing one digit.", skill: "risk" },
+  "w1e-c3": { id: "w1e-c3", challenge: "cia-availability", title: "Did the Page Survive the Outage (INC-1084)", prompt: "Say whether index.html was still on disk while nginx was stopped.", skill: "risk" },
   "w1e-c4": { id: "w1e-c4", challenge: "cia-triad", title: "Which Property Failed, Client Portal Mixup (INC-1085)", prompt: "Name the CIA property that failed when a client saw another client's statement.", skill: "risk" },
   "w1e-c5": { id: "w1e-c5", challenge: "cia-triad", title: "Ransomware Plus Data Theft (INC-1086)", prompt: "Name which CIA properties failed in a ransomware attack that also stole data.", skill: "risk" },
   "w1e-c6": { id: "w1e-c6", challenge: "cia-triad", title: "Restore jamie.torres's Access (INC-1151)", prompt: "Restore read access on ledger.txt and confirm the permission string.", skill: "risk" },
+  "w1e-c7": { id: "w1e-c7", challenge: "cia-triad", title: "What a Backup Can't Touch (INC-1152)", prompt: "Say which CIA properties a clean backup restore fixes, and which one it can't.", skill: "risk" },
   "w1m-c0": { id: "w1m-c0", challenge: "cvss-scoring", title: "Confirm What the Machine Holds (INC-1154)", prompt: "Check the real contents of /var/www/html instead of taking it on faith.", skill: "risk" },
   "w1m-c1": { id: "w1m-c1", challenge: "cvss-scoring", title: "Did the Base Score Move? (INC-1087)", prompt: "Say whether the CVSS Base Score changed during this lab.", skill: "risk" },
   "w1m-c2": { id: "w1m-c2", challenge: "cvss-scoring", title: "Which Machine Scored Higher (INC-1088)", prompt: "Say which of two machines scored higher on the Environmental Score.", skill: "risk" },
@@ -678,7 +682,10 @@ export const CHALLENGE_PATHS: Record<
   "open-door": { href: "/range/phase-2/capstone", tab: "the-open-door" },
   "keys-to-the-domain": { href: "/range/phase-2/capstone", tab: "the-keys-to-the-domain" },
   "risk-triage": { href: "/range/phase-1/week-1", tab: "monday-morning-risk-triage" },
-  "cia-triad": { href: "/range/phase-1/week-1", tab: "which-property-actually-failed" },
+  "cia-confidentiality": { href: "/range/phase-1/week-1", tab: "predict-it-then-break-confidentiality" },
+  "cia-integrity": { href: "/range/phase-1/week-1", tab: "break-integrity-and-watch-the-hash-scramble" },
+  "cia-availability": { href: "/range/phase-1/week-1", tab: "break-availability-without-touching-the-file" },
+  "cia-triad": { href: "/range/phase-1/week-1", tab: "name-it-then-fix-what-you-broke" },
   "cvss-scoring": { href: "/range/phase-1/week-1", tab: "score-it-the-way-purvex-actually-runs" },
   "encode-encrypt-hash": { href: "/range/phase-1/week-2", tab: "encoded-encrypted-or-hashed" },
   "store-a-password": { href: "/range/phase-1/week-2", tab: "what-a-leaked-password-file-actually-gives-away" },
@@ -753,7 +760,10 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "open-door": "The Open Door",
   "keys-to-the-domain": "The Keys to the Domain",
   "risk-triage": "Monday Morning Risk Triage",
-  "cia-triad": "Which Property Actually Failed?",
+  "cia-confidentiality": "Predict It, Then Break Confidentiality",
+  "cia-integrity": "Break Integrity and Watch the Hash Scramble",
+  "cia-availability": "Break Availability Without Touching the File",
+  "cia-triad": "Name It, Then Fix What You Broke",
   "cvss-scoring": "Score It the Way PurveX Actually Runs",
   "encode-encrypt-hash": "Encoded, Encrypted, or Hashed?",
   "store-a-password": "What a Leaked Password File Actually Gives Away",

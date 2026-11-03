@@ -45,6 +45,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "w1e-c3": "risk",
   "w1e-c4": "risk",
   "w1e-c5": "risk",
+  "w1e-c7": "risk",
   // CVSS Vulnerability Scoring: same conversion.
   "w1m-c1": "risk",
   "w1m-c2": "risk",

@@ -1,234 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
-<h3>Which Property Actually Failed?</h3>
-<p class="ad-brief__ask">Can you break each CIA triad property on purpose, fix the one you still can, and prove it with a command?</p>
-<p>Hosted lab required, with the Ubuntu desktop open.</p>
+<h3>Name It, Then Fix What You Broke</h3>
+<p class="ad-brief__ask">You broke all three properties on purpose. Can you name which one failed in two new tickets, fix the one you can still undo, and say what a backup can't touch?</p>
+<p>Hosted lab required. Builds on the Confidentiality, Integrity, and Availability challenges above.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
-</div>
-
-### Before You Start
-
-Commit to an answer before you type anything. Being wrong here is useful, so pick one rather than skipping ahead. Nothing is marked right or wrong yet. You confirm each by doing the lab.
-
-<div class="ad-check ad-check--predict" data-check="w1e-p1">
-<p class="ad-check__q">If you remove another user's permission to read a file, does the file change?</p>
-<button type="button" class="ad-check__opt" data-i="0">Yes, its contents change</button>
-<button type="button" class="ad-check__opt" data-i="1">No, only who can read it changes</button>
-<p class="ad-check__note">Locked in. You prove this when you run <code>chmod</code> below.</p>
-</div>
-
-<div class="ad-check ad-check--predict" data-check="w1e-p2">
-<p class="ad-check__q">If you change one character inside a file, how many characters of its SHA-256 hash change?</p>
-<button type="button" class="ad-check__opt" data-i="0">Only the part for that character</button>
-<button type="button" class="ad-check__opt" data-i="1">Roughly half of it</button>
-<button type="button" class="ad-check__opt" data-i="2">Almost all of it</button>
-<p class="ad-check__note">Locked in. You compare the two hashes in the Integrity step.</p>
-</div>
-
-<div class="ad-check ad-check--predict" data-check="w1e-p3">
-<p class="ad-check__q">If a web server is stopped, is the page it served still on the disk?</p>
-<button type="button" class="ad-check__opt" data-i="0">Yes, the file stays put</button>
-<button type="button" class="ad-check__opt" data-i="1">No, stopping it removes the page</button>
-<p class="ad-check__note">Locked in. You check with <code>ls</code> in the Availability step.</p>
-</div>
-
-### Set Up One File
-
-Open a terminal on the Ubuntu desktop. These commands make a working folder and a file that stands in for a document the business cares about.
-
-```bash
-sudo mkdir -p /srv/cia
-sudo chown student:student /srv/cia
-chmod 755 /srv/cia
-cd /srv/cia
-printf 'Q3 advisory fees: 412500\n' > ledger.txt
-chmod 644 ledger.txt
-```
-
-Now make a second account, standing in for a coworker on the Wealth Management team this ledger belongs to.
-
-```bash
-sudo useradd -m jamie.torres
-sudo -u jamie.torres cat /srv/cia/ledger.txt
-```
-
-The second command prints the line. jamie.torres can read the file, which is the state you are about to change.
-
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-1/PLACEHOLDER-cia-setup.png" alt="Terminal showing the ledger file created and read successfully by a second user" />
-<figcaption>Screenshot 1. [ADD IMAGE] jamie.torres reads the file before any permission changes.</figcaption>
-</figure>
-</div>
-
-### Break Confidentiality
-
-Confidentiality means only the people who should see something can see it. Take jamie.torres's access away and prove it is gone.
-
-```bash
-chmod 600 ledger.txt
-ls -l ledger.txt
-sudo -u jamie.torres cat /srv/cia/ledger.txt
-```
-
-The last command fails with "Permission denied". Record the exact message. Then read the file yourself to confirm it is still there and still correct.
-
-```bash
-cat ledger.txt
-```
-
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-1/PLACEHOLDER-cia-confidentiality.png" alt="Terminal showing Permission denied for the second user after chmod 600" />
-<figcaption>Screenshot 2. [ADD IMAGE] The read is refused, and the owner still reads it fine.</figcaption>
-</figure>
-</div>
-
-### Break Integrity
-
-Integrity means the data is what it is supposed to be. Record a baseline first, because integrity can only be proved against something.
-
-```bash
-sha256sum ledger.txt > baseline.txt
-cat baseline.txt
-```
-
-Now change one digit inside the file and check the baseline again.
-
-```bash
-sed -i 's/412500/412501/' ledger.txt
-sha256sum -c baseline.txt
-```
-
-The check reports FAILED. Compare the new hash against the one in `baseline.txt` and note how much of it is different.
-
-```bash
-sha256sum ledger.txt
-```
-
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-1/PLACEHOLDER-cia-integrity.png" alt="Terminal showing sha256sum check reporting FAILED after one character changed" />
-<figcaption>Screenshot 3. [ADD IMAGE] One digit changed, and the check fails.</figcaption>
-</figure>
-</div>
-
-### Break Availability
-
-Availability means the thing is there when it is needed. Your server already runs a web server, so use that.
-
-```bash
-curl -I http://localhost
-sudo systemctl stop nginx
-curl -I http://localhost
-```
-
-The first request returns a status line. The second fails to connect. Confirm the page itself never moved.
-
-```bash
-ls -l /var/www/html/index.html
-sudo systemctl start nginx
-curl -I http://localhost
-```
-
-<div class="ad-shots">
-<figure class="ad-shot">
-<img src="/academy/week-1/PLACEHOLDER-cia-availability.png" alt="Terminal showing a successful request, a failed request after stopping nginx, and the file still present on disk" />
-<figcaption>Screenshot 4. [ADD IMAGE] The service is down while the file sits untouched on disk.</figcaption>
-</figure>
-</div>
-
-### Check Yourself
-
-Answer from what you saw, not from what you remember reading.
-
-<div class="ad-mission" data-id="w1e-c1" data-attempts="0">
-<span class="ad-mission__num">Hands-on · INC-1082 · Low</span>
-<p><strong>Task:</strong> After <code>chmod 600</code>, had the contents of <code>ledger.txt</code> changed in any way? Type its letter.<br><strong>A</strong> Yes.<br><strong>B</strong> No.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for whether the file's contents changed" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>Look at the two commands you ran right after <code>chmod 600</code>: one as jamie.torres, one as yourself. Only one of them could even open the file.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Run <code>cat ledger.txt</code> again as yourself. The line is exactly what you wrote with <code>printf</code>.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>B. No</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>Permissions decide who may read a file, never what it holds. Confidentiality failed while integrity stayed intact.</p>
-</div>
-</div>
-</div>
-</div>
-
-### Read the Avalanche Effect
-
-<div class="ad-mission" data-id="w1e-c2" data-attempts="0">
-<span class="ad-mission__num">Hands-on · INC-1083 · Low</span>
-<p><strong>Task:</strong> You changed one digit out of twenty-four characters. Roughly how many characters of the SHA-256 hash changed? Type its letter.<br><strong>A</strong> About one character.<br><strong>B</strong> About a quarter.<br><strong>C</strong> Almost all of it.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for how much of the hash changed" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>Put the two lines <code>sha256sum ledger.txt</code> printed, before and after the <code>sed</code> command, side by side and compare them character by character.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a|b">Compare the full 64-character hash from before the edit against the one after. This is not a partial match, even for a one-digit change.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>C. Almost all of it</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>A hash has no partial match. One changed character scrambles the whole digest, which is what lets it flag any change at all.</p>
-</div>
-</div>
-</div>
-</div>
-
-### Confirm Availability Failed Alone
-
-<div class="ad-mission" data-id="w1e-c3" data-attempts="0">
-<span class="ad-mission__num">Hands-on · INC-1084 · Low</span>
-<p><strong>Task:</strong> While nginx was stopped, was <code>index.html</code> still on the disk? Type its letter.<br><strong>A</strong> Yes.<br><strong>B</strong> No.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for whether the file was still on disk" placeholder="A or B" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>You ran <code>ls -l /var/www/html/index.html</code> while the service was down. Read what that command actually reported.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">The <code>ls -l</code> command you ran while nginx was stopped still listed the file. Stopping a service does not delete anything.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>A. Yes</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>Availability failed while the file sat untouched. The page was there the whole time, just not being served.</p>
-</div>
-</div>
-</div>
+<span id="ad-progress-label" class="ad-progress__label">0 / 4 solved</span>
 </div>
 
 ### Name the Property That Failed
@@ -334,7 +113,34 @@ Naming a failure and closing it are two different jobs. You still have one confi
 
 The company restores the ransomware-hit share from a clean backup made the night before the attack.
 
-Say which of the three properties that restore actually fixes, and which one it cannot touch no matter how recent the backup is.
+<div class="ad-mission ad-mission--capstone" data-id="w1e-c7" data-attempts="0">
+<span class="ad-mission__num">Ticket 06 · INC-1152 · Medium</span>
+<p><strong>SOC Lead · Post-Incident Review · 3:30 PM</strong><br>The restore finishes. Leadership asks whether this incident is now closed.</p>
+<p><strong>Task:</strong> Which properties does that restore actually fix, and which one is it powerless against no matter how recent the backup is? Type its letter.<br><strong>A</strong> It fixes integrity only. Availability and confidentiality stay broken either way.<br><strong>B</strong> It fixes integrity and availability, since the files come back correct and reachable, but it cannot touch confidentiality: a copy already in the attacker's hands stays there.<br><strong>C</strong> It fixes all three, since the backup contains the original, unaltered data.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for which properties a clean backup restore fixes" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>A backup is a copy of what the data should look like. It can replace a locked or corrupted file. It cannot reach into an attacker's machine and delete the copy they already took.</p>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">The restore does more than fix integrity. The files are reachable again too, which is an availability fix, not just a correctness one.</div>
+<div class="ad-miss" data-guess="c">A backup made the night before the attack has no idea a copy left the building. It can restore the data; it cannot undo who already has a copy of it.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>B. Integrity and availability, never confidentiality</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A clean backup is a complete fix for a locked or corrupted share: the data comes back correct and reachable. It is no fix at all for a copy that already left the building, which is exactly why INC-1086 is not closed the moment the restore finishes. The backup answers "is the data back." It never answers "who else has it now."</p>
+</div>
+</div>
+</div>
+</div>
 
 ### Why It Matters
 
