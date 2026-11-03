@@ -71,7 +71,7 @@ Stop the capture in Wireshark. The Info column on each line tells you how a port
 * **Closed.** The domain controller answers the SYN with `[RST, ACK]`, a reset. Nothing is listening, but the machine is reachable and says so plainly.
 * **Filtered.** The `[SYN]` goes out and nothing comes back. Wireshark shows the same SYN sent again a second or two later, still with no reply. A firewall is dropping it in silence rather than refusing it.
 
-Find one of each in the Packet List. The gap between a RST and total silence is the whole point. One tells the scanner a port is simply shut, the other tells them a firewall is in the way.
+Find one of each in the Packet List. The gap between an RST and total silence is the whole point. One tells the scanner a port is simply shut, the other tells them a firewall is in the way.
 
 ### See the Whole Scan at Once
 
@@ -146,7 +146,7 @@ Answer from what you captured, not from what you remember reading.
 
 <div class="ad-mission" data-id="w3m-c3" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1111 · Low</span>
-<p><strong>Task:</strong> What is the difference between a closed port and a filtered port? Type its letter.<br><strong>A</strong> There is none, both are shut.<br><strong>B</strong> Closed answers with a RST, filtered answers with silence.<br><strong>C</strong> Closed is slower than filtered.</p>
+<p><strong>Task:</strong> What is the difference between a closed port and a filtered port? Type its letter.<br><strong>A</strong> There is none, both are shut.<br><strong>B</strong> Closed answers with an RST, filtered answers with silence.<br><strong>C</strong> Closed is slower than filtered.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the difference between closed and filtered" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -162,11 +162,11 @@ Answer from what you captured, not from what you remember reading.
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>B. Closed answers with a RST, filtered answers with silence</code></p>
+<p class="ad-flag__code"><code>B. Closed answers with an RST, filtered answers with silence</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>A closed port is reachable and refuses with a RST. A filtered port is behind a firewall that drops the packet, so nothing comes back. The scanner learns different things from each.</p>
+<p>A closed port is reachable and refuses with an RST. A filtered port is behind a firewall that drops the packet, so nothing comes back. The scanner learns different things from each.</p>
 </div>
 </div>
 </div>

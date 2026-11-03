@@ -202,7 +202,7 @@
 <p>Domain controllers legitimately replicate with each other constantly, at any hour, under their own computer accounts. The question is not whether this access happened. It is who asked for it.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Any account can appear here, including a compromised ordinary user account with the right rights granted. Name doesn't tell you it on its own.</div>
+<div class="ad-miss" data-guess="a">Any account can appear here, including a compromised ordinary user account with the right rights granted. The name alone doesn't tell you that.</div>
 <div class="ad-miss" data-guess="c">Real replication happens around the clock, not only overnight. Time alone proves nothing.</div>
 <div class="ad-flag">
 <div class="ad-break">
