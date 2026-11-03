@@ -86,7 +86,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 </div>
 <div>
 <span>Why it matters</span>
-<p>One engine missing a file is normal — every signature library has gaps. Seventy missing the same file at once is a different story, which is why a hash and reputation lookup is worth running even when your own antivirus already came back clean.</p>
+<p>One engine missing a file is normal, every signature library has gaps. Seventy independent engines missing the same file at once is a different story, which is exactly why a hash and reputation lookup is worth running even when your own local antivirus already came back clean.</p>
 </div>
 </div>
 </div>

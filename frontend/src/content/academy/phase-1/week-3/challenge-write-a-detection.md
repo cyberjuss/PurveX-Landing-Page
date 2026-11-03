@@ -104,7 +104,7 @@ sudo cat /var/log/suricata/fast.log
 
 <div class="ad-mission ad-mission--capstone" data-id="wd1-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1115 · High</span>
-<p><strong>Detection Engineering Lead · Tuning Review · 4:00 PM</strong><br>The lead is tuning the rule you just wrote. Tighter catches a slower scan but risks firing on bursty normal traffic; looser stays quiet but lets a slow scan through.</p>
+<p><strong>Detection Engineering Lead · Tuning Review · 4:00 PM</strong><br>PurveX Financial's detection lead is deciding how to tune the scan rule you just wrote. A tighter threshold catches a slower scan but risks firing on bursty normal traffic. A looser one stays quiet but lets a slow scan straight through.</p>
 <p><strong>Task:</strong> What does that actually tell you about tuning a detection? Type its letter.<br><strong>A</strong> A threshold is always a trade-off between catching more and firing on things that are not attacks.<br><strong>B</strong> A threshold should always be set as low as it will technically allow.<br><strong>C</strong> Thresholds are foolproof once written correctly, so tuning does not matter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what tuning a threshold actually trades off" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">

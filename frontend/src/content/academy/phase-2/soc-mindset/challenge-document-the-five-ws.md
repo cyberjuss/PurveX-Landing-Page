@@ -78,7 +78,7 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 </div>
 <div>
 <span>Why it matters</span>
-<p>One wrong password on one real account is a typo. Five attempts against five different account names, all "account does not exist," is a different shape: someone probing for names that work. The Sub Status alone told you why one event failed — reading several together tells you whether it's a mistake or the opening move of something bigger.</p>
+<p>One wrong password, one real account, one Sub Status is a typo. Five attempts, five different account names, all the "account does not exist" code, is a different shape entirely: someone probing for names that work. The Sub Status alone told you why one event failed. Reading several together is what tells you whether you are looking at a mistake or the opening move of something bigger.</p>
 </div>
 </div>
 </div>

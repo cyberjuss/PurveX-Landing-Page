@@ -114,7 +114,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>20 isn't a number borrowed from a blog post. It sits well under a true 15-minute relaunch (about 96 a day) and well above what a person manually running a script a handful of times would ever produce — the same reasoning the lesson used to justify 5 failed sign-ins an hour for Password Spraying.</p>
+<p>20 is not a number borrowed from a blog post. It sits well under a true 15-minute relaunch (about 96 a day) and well above what a person manually running a script a handful of times would ever produce, the same reasoning the lesson used to justify 5 failed sign-ins an hour for Password Spraying. The rest of the query reads <code>where LaunchCount > threshold</code>, the same shape as the lesson's own <code>where FailedCount > threshold</code>.</p>
 </div>
 </div>
 </div>
@@ -173,7 +173,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every number in this detection so far came from reasoning about what seemed defensible; this one came off the task's own definition, on your own machine. The window and threshold aren't guesses now — they're sized against a real 15-minute interval that produces roughly 96 launches a day, the same way an analyst sizes them against a vendor's documented schedule rather than a hunch.</p>
+<p>Every number in this detection so far came from reasoning about what seemed defensible. This one came off the task's own definition on your own machine. A 7-day window and a threshold of 20 are not guesses now; they are sized against a real 15-minute interval that produces roughly 96 launches a day, the same way an analyst would size them against a vendor's documented schedule rather than a hunch.</p>
 </div>
 </div>
 </div>
@@ -235,7 +235,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A standing KQL detection and a disabled task both leave the door itself unlocked. The rule that let <code>WindowsDiagnosticsSync</code> reach out in the first place was never part of the Week 1 fix, and it sat open through every mission in this one until you closed it just now. Writing the detection was the engineering half of this ticket; closing the rule is the part that actually ends it.</p>
+<p>A standing KQL detection and a disabled task both leave the door itself unlocked. The rule that let <code>WindowsDiagnosticsSync</code> reach out in the first place was never part of the Week 1 fix, and it sat open through every mission in this one until you closed it just now. Writing the detection was the engineering half of this ticket. Closing the rule is the part that actually ends it.</p>
 </div>
 </div>
 </div>
@@ -243,4 +243,4 @@
 
 ### Why It Matters
 
-The lesson built one detection for you, start to finish, for Password Spraying. Building a second one yourself — for a technique your own lab already handed you real evidence for — is what turns TRACE from something you read into something you can do, and finding the real interval on your own task instead of guessing is what keeps this from being a KQL exercise with a story wrapped around it.
+The lesson built one detection for you, start to finish, for Password Spraying. Building a second one yourself, for a technique your own lab already handed you real evidence for, is what turns TRACE from something you read into something you can actually do the next time a vague alert needs a standing answer instead of another hour of manual hunting. Finding the real 15-minute interval on your own task and closing the rule it depended on is what keeps this from being a KQL-writing exercise with a story wrapped around it.

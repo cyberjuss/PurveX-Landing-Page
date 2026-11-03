@@ -51,7 +51,7 @@ openssl enc -d -aes-256-cbc -pbkdf2 -in ~/ledger-copy.enc -pass pass:PurveX-Back
 </div>
 <div>
 <span>Why it matters</span>
-<p>This is the same line from the CIA triad lab's ledger file, now actually protected instead of sitting in the clear. The plain copy is gone — only the encrypted one and the passphrase in your head can bring it back. That's what "needs a key to undo" means for a real file, not one word in a browser tool.</p>
+<p>This is the same line from the CIA triad lab's own ledger file, now actually protected rather than just sitting in the clear. The plain copy is gone; only the encrypted one and the passphrase in your head can bring it back. That is what "needs a key to undo" means when it is a real file instead of one word in a browser tool.</p>
 </div>
 </div>
 </div>
@@ -84,7 +84,7 @@ A different log shows a value that is exactly 64 characters long, no matter how 
 </div>
 <div>
 <span>Why it matters</span>
-<p>A SHA2-256 hash is always 64 hex characters, whether the input is one word or an entire file. That fixed length is itself the signature of a hash — and why it can never be "decompressed" back: a function that always outputs the same size can't hold all of a larger input's information to begin with.</p>
+<p>A SHA2-256 hash is always 64 hex characters, whether the input is one word or an entire file. That fixed length is itself the signature of a hash, and it is also why a hash can never be "decompressed" back into the original: a function that always outputs the same size cannot possibly hold all of a larger input's information to begin with.</p>
 </div>
 </div>
 </div>

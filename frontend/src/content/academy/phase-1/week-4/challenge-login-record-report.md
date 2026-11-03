@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Waiting for a success before you escalate means you only ever catch an attack after it's already worked. Sixty attempts in an hour, one account, one address, zero successes is a guessing attack still in progress — far more useful to a team that can still stop it than the same pattern reported after attempt sixty-one finally lands.</p>
+<p>Waiting for a successful login before you escalate means you only ever catch an attack after it has already worked. Sixty attempts in an hour against one account, from one address, with no success is the exact shape of a guessing attack still in progress, and it is far more useful to a team that can still stop it than the same pattern reported after the sixty-first attempt finally succeeds.</p>
 </div>
 </div>
 </div>
@@ -68,7 +68,7 @@ The same address that sent sixty failed logons against one account spends the ne
 </div>
 <div>
 <span>Why it matters</span>
-<p>Hammering one account is exactly what a per-account threshold is built to catch. Spraying a few guesses across many accounts stays under that same threshold on purpose — the total volume didn't drop, the attacker just stopped giving any single account enough failures to trip the rule watching for it.</p>
+<p>The first pattern, hammering one account, is exactly what a per-account threshold is built to catch. The second pattern, a few guesses against many accounts, is built to stay under that same threshold on purpose: five failures per account never crosses a limit tuned for forty or sixty. The total volume across the hour did not drop. The attacker just stopped giving any single account enough failures to trip the one rule watching for it.</p>
 </div>
 </div>
 </div>

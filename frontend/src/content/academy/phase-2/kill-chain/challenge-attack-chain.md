@@ -13,7 +13,7 @@
 
 ### The Pattern Underneath
 
-Line the three up and a pattern shows up that no single campaign makes obvious: every one of them reached Command and Control, using three different ports. Two of the three, Phishing Chain and Open Door, even reached Actions on Objectives, far enough to stage real data for exfiltration. Credential Campaign never got that far at all. But not one of the three ever got anything out. Three different front doors led to the same back door technique once each attacker was inside. A domain controller has no real reason to reach the open internet, so that one channel was unusual enough to close — and closing it is what stopped every chain short of its objective, staged or not.
+Line the three up and a pattern shows up that no single campaign makes obvious: every one of them reached Command and Control, using three different ports. Two of the three, Phishing Chain and Open Door, even reached Actions on Objectives, far enough to stage real data for exfiltration. Credential Campaign never got that far at all. But not one of the three ever got anything out. Three different front doors led to the same back door technique once each attacker was inside, and a domain controller's own outbound traffic is unusual enough, on a machine with no real reason to reach the open internet, that closing that one channel is what stopped every chain before its objective was ever completed, whether the attacker had reached the staging step or not.
 
 ### Two Findings That Were Never Part of a Chain
 

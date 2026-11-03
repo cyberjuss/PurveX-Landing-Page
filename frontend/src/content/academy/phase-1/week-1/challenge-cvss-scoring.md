@@ -107,9 +107,13 @@ ls -la /var/www/html
 </div>
 </div>
 
-Now answer two questions about the Ubuntu server in your pod. What does it hold? A default page and a practice account, nothing more — so Confidentiality, Integrity and Availability Requirement are all Low. Those three are the CIA triad, written as calculator inputs: how much each property is worth on this machine.
+Now answer two questions about the Ubuntu server in your pod, using what you just confirmed.
 
-Who can reach it? Nothing on the internet — only the browser gateway and the machine beside it can. That makes the Modified Attack Vector Adjacent, not Network.
+First, what does it hold? A default web page and a practice account, which you just checked yourself. It stores no client records and no money moves through it. In CVSS terms the Confidentiality Requirement, Integrity Requirement and Availability Requirement are all Low.
+
+Those three requirements are the CIA triad, written as calculator inputs. The standard is asking how much each property is worth on this machine.
+
+Second, who can reach it? Nothing on the internet can open a connection to your pod. Only the browser gateway and the other machine beside it can. That makes the Modified Attack Vector Adjacent rather than Network.
 
 ### Score the Environment
 

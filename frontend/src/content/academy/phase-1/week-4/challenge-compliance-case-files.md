@@ -40,7 +40,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A group reached through nesting never shows up on the Member Of tab at all. This cmdlet reads every membership an account actually has — what an access audit needs before it can say what someone can really open.</p>
+<p>An account's Member Of tab can run long, and a group it belongs to through a nested group never shows up there at all. This cmdlet is the one that reads every membership an account actually has, which is what an access audit needs before it can say what someone can really open.</p>
 </div>
 </div>
 </div>

@@ -15,7 +15,7 @@ Three pieces do this work:
 
 The gap between deciding something and enforcing it is where most of it goes wrong. You'll also hear these grouped as Triple A: authentication, authorization and accounting, where accounting is the record of who did what.
 
-Most real breaches begin here, not with clever malware. Somebody signs in with a credential they shouldn't have had, to a system that never checked whether they belonged. The three cases below are well documented, and each failed at a different point in that same chain.
+Most real breaches begin here, not with clever malware: somebody signs in with a credential they shouldn't have had, to a system that never checked whether they belonged. The three cases below are well documented, and each failed at a different point in that same chain.
 
 | Breach | The way in | What it cost | What failed |
 |---|---|---|---|
@@ -44,7 +44,7 @@ First American Financial = Changing one number in a web address, with no check o
 You'll likely occupy each of these seats at some stage:
 
 - **Help desk.** Resetting passwords and MFA makes you part of the authentication system, not an observer of it — which is why the desk gets called.
-- **Systems administrator.** You decide who belongs to which group, and groups grant permissions. Every extra membership is a door somebody may walk through later.
+- **Systems administrator.** You decide who belongs to which group, and groups are what grant permissions — every extra membership you hand out is a door somebody may walk through later.
 - **SOC analyst.** You read the record the other two leave behind. Sign-in logs and group changes are often the clearest evidence that somebody isn't who they claim, or is reaching further than their job needs.
 
 By the end of the week you will be able to name the three kinds of proof and rank MFA methods by how hard each is to trick, handle a password or MFA reset without becoming the attacker's route in, explain least privilege and read what an account can do from its groups, say why the server must re-check permissions on every request, and find a broken access control flaw in the lab, exploit it, and describe the fix.

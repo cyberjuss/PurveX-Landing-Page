@@ -41,7 +41,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 </div>
 <div>
 <span>Why it matters</span>
-<p>Outbound follows a blocklist model by default: allowed unless a rule blocks it. Every outbound rule you've closed this course existed to carve an exception out of that same default.</p>
+<p>Outbound follows a blocklist model by default: everything is allowed unless a rule specifically blocks it. Every outbound firewall rule you have seen in this course, including the ones you closed on past tickets, existed to carve an exception out of this same default.</p>
 </div>
 </div>
 </div>
@@ -72,7 +72,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 </div>
 <div>
 <span>Why it matters</span>
-<p>The task's own permissions don't decide whether its traffic leaves the machine — the firewall's default does. An outbound allowlist would have stopped it cold, with no rule written against it specifically, just by trusting nothing it hadn't already approved.</p>
+<p>Nothing about that task's own permissions decides whether its traffic leaves the machine. The firewall's default does. An outbound allowlist would have stopped it cold, with no rule written specifically against it, simply by trusting nothing it had not already approved.</p>
 </div>
 </div>
 </div>
@@ -82,7 +82,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 
 <div class="ad-mission ad-mission--capstone" data-id="sm2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1133 · Medium</span>
-<p><strong>Security Architecture Review · Policy Question · 3:30 PM</strong><br>Alex Rivera is presenting your finding to the architecture review board and needs the plain-terms version: why trust outbound by default while refusing inbound by default?</p>
+<p><strong>Security Architecture Review · Policy Question · 3:30 PM</strong><br>Alex Rivera is presenting your audit finding to the architecture review board, and needs you to explain, in plain terms, why the domain controller trusts outbound traffic by default while it refuses inbound traffic by default.</p>
 <p><strong>Task:</strong> What does that difference actually trade off? Type its letter.<br><strong>A</strong> Nothing, the two defaults are functionally identical.<br><strong>B</strong> Blocking inbound by default stops strangers from reaching in, while allowing outbound by default trusts the machine's own software not to call out to somewhere it should not.<br><strong>C</strong> Outbound is allowed by default because outbound traffic can never carry anything malicious.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what the two defaults trade off" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">

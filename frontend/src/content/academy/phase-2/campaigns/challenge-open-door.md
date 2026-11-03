@@ -42,7 +42,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Port 445 is SMB, the protocol file shares run on. T1021.002 is MITRE's name for exactly this: using file-sharing protocols to move around a network once inside it. Open to Any source, any machine on that network can reach the domain controller's shares with no further check.</p>
+<p>Port 445 is SMB, the protocol file shares run on. T1021.002 (SMB/Windows Admin Shares) is MITRE's name for exactly this: using file-sharing protocols to move onto or around a network once inside it. Allowing it from Any source means any machine on that network can reach the domain controller's shares without any further check.</p>
 </div>
 </div>
 </div>
@@ -188,7 +188,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Three campaigns, three beacons, three different non-standard ports (T1571) — none of them 443 or 80, because blending into ordinary web traffic is hard on a domain controller with no business browsing the web at all.</p>
+<p>Three campaigns this phase, three beacons, three different non-standard ports (T1571). None of them used 443 or 80, because blending into ordinary web traffic is harder on a domain controller that has no business browsing the web in the first place.</p>
 </div>
 </div>
 </div>
@@ -287,7 +287,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The Kill Chain is a model for thinking about a sequence, not a checklist every attacker must complete in full. A misconfigured trust boundary skips straight past Reconnaissance, Weaponization and Delivery, because being inside the network already did their job — and knowing which stages a path skips is part of reading it correctly.</p>
+<p>The Cyber Kill Chain is a model for thinking about a sequence, not a checklist every attacker must complete in full. A misconfigured trust boundary skips straight past Reconnaissance, Weaponization and Delivery, because being inside the network already did their job. Knowing which stages a given attack path skips is part of reading it correctly.</p>
 </div>
 </div>
 </div>
@@ -315,7 +315,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A domain controller rarely has a real reason to make new outbound connections on its own. An outbound allowlist would have broken all three campaigns at Command and Control, no matter which door each one used to get in — different Exploitation, same chokepoint, because that's exactly where a domain controller's normal behavior makes an attacker's traffic stand out most.</p>
+<p>A domain controller rarely has a real reason to make new outbound connections on its own. Restricting outbound traffic to a known allowlist would have broken all three campaigns at Command and Control, no matter which door each one used to get in. Different Exploitation, same chokepoint. That is not a coincidence. It is where a domain controller's own normal behavior makes an attacker's traffic stand out the most.</p>
 </div>
 </div>
 </div>

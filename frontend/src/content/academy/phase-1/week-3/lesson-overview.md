@@ -5,7 +5,7 @@
 
 ### Overview
 
-Opening a network capture for the first time is disorienting: thousands of rows, all numbers, none of them announcing which ones matter. There is no packet marked suspicious. A healthy environment produces just as many rows as a compromised one.
+Opening a network capture for the first time is disorienting: thousands of rows scroll past, every one of them full of numbers, and none of it offers an obvious clue about which rows matter. That's because there is nothing in a packet that announces itself as suspicious — an environment working perfectly produces just as many rows as one that's compromised.
 
 What makes a capture readable is knowing every conversation is built from the same small set of pieces, in the same order:
 

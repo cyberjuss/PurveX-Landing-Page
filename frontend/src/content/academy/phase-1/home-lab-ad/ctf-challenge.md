@@ -104,7 +104,7 @@
 <div class="ad-mission" data-id="d1-03" data-attempts="0">
 <span class="ad-mission__num">Task 03 · Find Where Things Live</span>
 <h4>Where Are the Access Groups?</h4>
-<p><strong>Situation:</strong> An external auditor is reviewing who can administer servers and workstations, and wants to know where the firm keeps its access-level groups: <code>Server Admins</code> and <code>Helpdesk</code>.</p>
+<p><strong>Situation:</strong> An external auditor is reviewing who can administer servers and workstations. They want to know where the firm keeps its access-level groups, <code>Server Admins</code> and <code>Helpdesk</code>, since those groups sit outside the department folders.</p>
 <p><strong>Task:</strong> Name the top-level OU that holds <code>Server Admins</code> and <code>Helpdesk</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Where Are the Access Groups?" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -226,7 +226,7 @@
 <div class="ad-mission" data-id="d1-06" data-attempts="0">
 <span class="ad-mission__num">Task 06 · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
-<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges she shouldn't have. Her title says Help Desk Technician — but a title is just a label. Privileges come from groups.</p>
+<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges she should not have. Her title is Help Desk Technician, but a title is only a label on the account. Privileges come from groups.</p>
 <p><strong>Task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Is Priya on the Help Desk Group?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">

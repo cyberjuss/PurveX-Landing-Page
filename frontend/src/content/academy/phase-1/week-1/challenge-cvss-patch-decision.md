@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The Base Score is identical on both machines, so it cannot justify treating them differently. The Security Requirements are built specifically to say what each machine actually holds — exactly the argument a manager needs when the scanner says the same word on both tickets.</p>
+<p>The Base Score is identical on both machines, so it cannot justify treating them differently. The Security Requirements are the one input built specifically to say what each machine actually holds, which is exactly the argument a manager needs when the scanner's report says the same word on both tickets.</p>
 </div>
 </div>
 </div>
@@ -68,7 +68,7 @@ A third machine in the same building runs the identical flaw, but nobody has eve
 </div>
 <div>
 <span>Why it matters</span>
-<p>A hostname like "WM-STMT01" is a strong hint, not evidence. The Security Requirements only mean something when they describe what a machine actually holds, confirmed the way you confirmed <code>/var/www/html</code> — not guessed from a name that could be wrong or out of date.</p>
+<p>A hostname like "WM-STMT01" is a strong hint, not evidence. The Security Requirements this lab kept coming back to only mean something when they describe what a machine actually holds, confirmed the way you confirmed <code>/var/www/html</code>, not guessed from a name that could be wrong or out of date.</p>
 </div>
 </div>
 </div>

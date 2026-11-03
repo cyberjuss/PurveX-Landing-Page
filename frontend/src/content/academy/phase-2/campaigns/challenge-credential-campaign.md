@@ -43,7 +43,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>One password tried once each against six accounts is a spray, not a brute force — MITRE's T1110.003, under Credential Access. In Kill Chain terms, this is Exploitation: turning a guess into a way in.</p>
+<p>One password tried once each against six different accounts is a spray, not a brute force. MITRE catalogs this exact pattern as T1110.003, Password Spraying, under the Credential Access tactic. In Cyber Kill Chain terms it is Exploitation: the attempt to actually turn a guess into a way in.</p>
 </div>
 </div>
 </div>
@@ -191,7 +191,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Four failures exactly two seconds apart, then a success two and a half minutes later — that steady spacing is a script, not a person retyping. One named account instead of the spray's six is Password Guessing, T1110.001: the same Brute Force family, aimed instead of wide.</p>
+<p>Four failures land exactly two seconds apart, then a success follows about two and a half minutes later. That steady spacing points to a script guessing passwords, not a person retyping one. Four attempts against one named account, rather than the spray's one attempt against many, is Password Guessing, T1110.001: the same Brute Force family aimed instead of wide.</p>
 </div>
 </div>
 </div>
@@ -292,7 +292,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Disable the account and isolate the machine while you keep the logs. Containing it now doesn't undo what twelve minutes of admin access could already have done — what got planted during that window is the next thing to check.</p>
+<p>Disable the account and isolate the machine while you keep the logs. Containing the session now does not undo what twelve minutes of admin access could already have been used for. What, if anything, got planted on the domain controller while that session was live is the next thing to check.</p>
 </div>
 </div>
 </div>
@@ -329,7 +329,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A task on a timer keeps acting without anyone signed in — it never needs the stolen credential again. That's what makes Installation (T1053.005, Scheduled Task) dangerous: it survives the containment step that just locked the account out.</p>
+<p>A task that runs on a timer keeps acting without anyone signed in. It does not need the stolen credential used again to keep working, which is exactly what makes Installation (T1053.005, Scheduled Task) dangerous: it survives the very containment step that just locked the account out.</p>
 </div>
 </div>
 </div>
@@ -366,7 +366,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Nothing on the domain controller is supposed to reach out on 8080. A beacon on a non-standard port instead of blending into ordinary 443 traffic is exactly what T1571 (Non-Standard Port) describes. Disabling the rule stops the beacon even with the task still sitting there.</p>
+<p>Port 8080 is not a port anything on the domain controller is supposed to use outbound. A beacon reaching out on a non-standard port, rather than blending into ordinary web traffic on 443, is exactly what T1571 (Non-Standard Port) under the Command and Control tactic describes. Disabling the rule stops the beacon even if the task itself is still sitting there.</p>
 </div>
 </div>
 </div>
@@ -400,7 +400,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A spray and a brute force both fill a log with 4625 events; counting distinct accounts instead of total failures is what tells them apart. This query still needs a Condition (a threshold, <code>| where AccountCount >= 5</code>) and an Escalation naming who gets paged — a detection nobody can explain is one nobody can tune later.</p>
+<p>A spray and a brute force both fill a log with 4625 events. Only counting distinct accounts, not total failures, tells them apart. The Condition step this query still needs is a threshold, <code>| where AccountCount >= 5</code>, and the Escalation step names who gets paged. A detection that cannot explain its own aggregate logic is a detection nobody can tune later.</p>
 </div>
 </div>
 </div>
@@ -429,7 +429,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Actions on Objectives is where an attacker finally does what they came for: steal data, destroy it, or use the access for fraud. This campaign stopped one stage short, at Command and Control — not luck, but what containing a session, closing a rule and unlocking an account inside the same hour actually buys.</p>
+<p>Actions on Objectives is where an attacker finally does what they came for: steal data, destroy it, or use the access for fraud. This campaign got stopped at Command and Control, one stage short. That is not luck. It is what containing a session, closing a rule and unlocking an account inside the same hour actually buys: the last and most damaging stage of the chain, never reached.</p>
 </div>
 </div>
 </div>

@@ -36,7 +36,7 @@ Look at the LDAP conversation's TCP handshake again. The source port, the one on
 </div>
 <div>
 <span>Why it matters</span>
-<p>A client picks a fresh source port per connection; a server stays put on the one its service is known by. That's why filtering by destination port finds every LDAP query a machine ever made, while filtering by source port finds only one connection.</p>
+<p>A client picks a fresh, random source port for every new connection so replies can find their way back to the right one. A server listens on the same fixed port every time, because that is the address its service is known by. That difference is why filtering a capture by destination port finds every LDAP query a machine ever made, while filtering by source port finds only one single connection.</p>
 </div>
 </div>
 </div>

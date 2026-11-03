@@ -47,7 +47,7 @@ sudo journalctl -u ssh -n 20
 </div>
 <div>
 <span>Why it matters</span>
-<p>The Windows side credits a logon to a Logon Type and a security subsystem; the Linux side, to a process name. Neither format is wrong, but correlating the two only works once you know what each side calls the same event.</p>
+<p>The Windows side credits a logon to a Logon Type and a security subsystem. The Linux side credits it to a process name instead. Neither format is wrong, but a correlation across the two only works once you know what each side actually calls the same kind of event.</p>
 </div>
 </div>
 </div>
@@ -78,7 +78,7 @@ sudo journalctl -u ssh -n 20
 </div>
 <div>
 <span>Why it matters</span>
-<p>A baseline isn't just what one event normally looks like — it's what a normal sequence looks like for one account. An account suddenly moving somewhere it's never gone is exactly the outlier a single machine's log can never show you alone, because the other half of the pattern happened somewhere else.</p>
+<p>A baseline is not just what one event normally looks like. It is what a normal sequence of events looks like for one account. An account suddenly moving somewhere it has never gone before is exactly the kind of outlier a single machine's log can never show you on its own, because the other half of the pattern never happened on that machine.</p>
 </div>
 </div>
 </div>

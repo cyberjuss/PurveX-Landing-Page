@@ -15,7 +15,7 @@ It's small enough to hold in your head: five departments, nine people, a defined
 
 A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are messier, so this lab is too: real departments and access groups, tickets that may not tell the whole story.
 
-A job title doesn't set access either. Somebody titled Helpdesk doesn't belong in the **Helpdesk** group just because of that title — membership follows what the job needs, and a ticket has to approve it. Callers and tickets can be wrong. Verify before you act.
+A job title doesn't set access either: somebody titled Helpdesk doesn't belong in the **Helpdesk** group just because of that title. Membership follows what the job needs, and a ticket has to approve it. Callers and tickets can be wrong too, which is why you verify what either one tells you before you act on it.
 
 ### The Role You Play
 

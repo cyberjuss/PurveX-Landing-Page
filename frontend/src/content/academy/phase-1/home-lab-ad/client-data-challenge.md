@@ -45,7 +45,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>You can't protect data you haven't found. Knowing exactly where the most sensitive field lives is the first thing any data review — and any auditor — asks for.</p>
+<p>You cannot protect data you have not found. Knowing exactly which file holds the most sensitive field is the first line of any data review, and auditors ask for it before anything else.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -87,7 +87,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The number of people in a file sets the size of a breach — how many notices go out, how much the firm reports to regulators. Know it in advance and you respond in hours, not days.</p>
+<p>The number of people in a file sets the size of a breach: how many notices go out, and how much the firm reports to regulators. A team that knows it in advance responds in hours instead of days.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -204,7 +204,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Two trades in that batch didn't match — either an error, or money that went somewhere it shouldn't have. Until someone explains it, that night's books can't be trusted. That's an integrity question, not just an accounting one.</p>
+<p>Two trades in that batch did not match. An unmatched trade is either an error or money that went somewhere it should not, and until someone explains it the books for that night cannot be trusted. That is an integrity question, not just an accounting one.</p>
 </div>
 <div>
 <span>What to do</span>
