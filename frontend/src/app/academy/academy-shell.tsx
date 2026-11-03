@@ -30,12 +30,13 @@ import {
   loadCachedProfile,
   LINKED_SCRIPT_PATH,
   READINESS_PATH,
+  recordLabResult,
   RESULTS_CHANGED_EVENT,
   RESULTS_OWNER_KEY,
   RESULTS_UPDATED_EVENT,
   saveCachedProfile,
 } from "@/lib/academy-client";
-import { clearResults, loadResults, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
+import { clearResults, hasReadyBadge, loadResults, READY_BADGE_ID, saveResults, scorecardHtml, summarize, type MissionResult, type Results } from "@/lib/academy-score";
 import { LabSetupScreen } from "@/components/academy/lab-setup-screen";
 import { confettiFrom } from "@/lib/confetti";
 import { signOut } from "@/lib/portal-auth";
@@ -298,9 +299,15 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     // Readiness score: every answer is stored by mission id, then the
     // scorecard is redrawn from what is stored.
     const renderScore = () => {
+      const results = loadResults();
+      const summary = summarize(results);
+      // Reached Ready just now: pin it, so later course growth (new
+      // challenges land in MISSION_SKILLS often) can never quietly pull this
+      // student back out of a level they already earned. See READY_BADGE_ID.
+      if (summary.level === "ready" && !hasReadyBadge(results)) recordLabResult(READY_BADGE_ID, true, 100);
       const el = document.querySelector<HTMLElement>("#ad-scorecard");
       if (!el) return;
-      const html = scorecardHtml(summarize(loadResults()));
+      const html = scorecardHtml(summary);
       if (el.dataset.sig !== html) {
         el.innerHTML = html;
         el.dataset.sig = html;

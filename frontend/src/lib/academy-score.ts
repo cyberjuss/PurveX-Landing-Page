@@ -267,8 +267,22 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "rt-04": "risk",
 };
 
+/**
+ * A marker, not a real lab: once a student ever reaches the "Ready" level,
+ * this is written `solved: true` and never unwritten. The course keeps
+ * growing (new challenges land in MISSION_SKILLS all the time), which moves
+ * `total` in `summarize` below and would otherwise quietly pull a student
+ * back out of "Ready" for no reason of their own -- new content shipping is
+ * not something they did wrong. This id rides the exact same storage path
+ * as a scored lab (sanitizeResults keeps it, the progress API's merge only
+ * ever ORs `solved` forward, never back), so it is just as safe against the
+ * same client-overwrite and sync-failure risks as everything else here,
+ * with no new storage or schema of its own.
+ */
+export const READY_BADGE_ID = "readiness-badge-ready";
+
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
-export const LAB_PASS_IDS = [] as const;
+export const LAB_PASS_IDS = [READY_BADGE_ID] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
 const isLabPass = (id: string) => (LAB_PASS_IDS as readonly string[]).includes(id);
 
@@ -448,7 +462,17 @@ export function summarize(results: Results): Summary {
     const weakest = Math.min(...skills.map((k) => k.score ?? 0));
     level = overall >= SCORE_READY && weakest >= SCORE_SOLID ? "ready" : overall >= SCORE_SOLID ? "almost" : "practice";
   }
+  // New challenges land in MISSION_SKILLS often, which grows `total` for
+  // everyone the moment they ship. A student who already reached Ready
+  // under a smaller course did not get worse; the course got bigger. Once
+  // earned, Ready floors the level here for good -- see READY_BADGE_ID.
+  if (level !== "ready" && hasReadyBadge(results)) level = "ready";
   return { overall, accuracy, finished, total, level, skills, focus };
+}
+
+/** Whether this student has ever reached Ready, regardless of what the live total says now. */
+export function hasReadyBadge(results: Results): boolean {
+  return Boolean(results[READY_BADGE_ID]?.solved);
 }
 
 /**

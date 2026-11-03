@@ -425,7 +425,10 @@ export function buildWorkItems(results: Results, drills: DrillEntry[]): WorkItem
 
 /** Skills as the keywords job postings use, grouped like a resume Skills section. */
 /** Skills a passed browser lab shows. Each lab confirms the work: the hash must match, the decode must be right. */
-const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {};
+const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
+  // Not a lab, just the Ready-level marker (see READY_BADGE_ID) -- it shows no skill of its own.
+  "readiness-badge-ready": [],
+};
 
 /**
  * Phase 2's hands-on labs (soc-mindset, Malware, Log Analysis Fundamentals,
