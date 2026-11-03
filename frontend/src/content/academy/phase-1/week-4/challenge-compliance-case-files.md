@@ -67,6 +67,7 @@
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="devon.brooks|morgan.lee|nina.castillo|owen.brandt|lena.farooq|theo.walsh">That account is Compliance staff. Compliance Users is their own department group, not the finding. Check the Help Desk technicians instead.</div>
+<div class="ad-miss" data-guess="priya.nair">priya.nair is a Help Desk Technician too, but her Member Of tab shows no Compliance Users membership. Check the other technician instead.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

@@ -21,7 +21,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A second, stricter policy for one group is a Password Settings Object, the same tool that holds IT administrators to a tighter standard elsewhere in this domain.</p>
+<p>A second, stricter policy for one group, layered on top of the domain's default, is a Password Settings Object. It applies only to the group you target, and nowhere else.</p>
 <ol>
 <li>Open Active Directory Administrative Center with Win+R and <code>dsac.exe</code>.</li>
 <li>Go to System, then Password Settings Container, then New, then Password Settings.</li>

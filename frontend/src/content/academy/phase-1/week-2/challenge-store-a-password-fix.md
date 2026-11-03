@@ -55,29 +55,30 @@ sudo grep priya.sample /etc/shadow
 
 <div class="ad-mission ad-mission--capstone" data-id="w2m-c6" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1152 · Low</span>
-<p><strong>Task:</strong> Read <code>priya.sample</code>'s line in <code>/etc/shadow</code>. What number sits between the first two <code>$</code> signs, marking the hashing method the system used on its own?</p>
+<p><strong>Task:</strong> Read <code>priya.sample</code>'s line in <code>/etc/shadow</code>. What marker sits between the first two <code>$</code> signs, identifying the hashing method the system picked on its own?</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for the hashing method number in /etc/shadow" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{6}">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for the hashing method marker in /etc/shadow" placeholder="a letter" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{y}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The line reads <code>priya.sample:$N$salt$hash:...</code>. <code>N</code> is the number you want, and you have already seen this exact digit once before in this lab.</p>
+<p>The line reads <code>priya.sample:$X$salt$hash:...</code>. <code>X</code> is what you want, and it is not <code>6</code>. Ubuntu's own default moved on since the <code>openssl passwd -6</code> command you ran by hand earlier in this lab.</p>
 <ol>
 <li>Clean up when you are done: <code>sudo userdel -r priya.sample</code>.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="1|5">Those mark MD5 and SHA-256 respectively, both weaker and neither one what a current Ubuntu system actually uses by default.</div>
+<div class="ad-miss" data-guess="6">That is the SHA-512 marker from the <code>openssl passwd -6</code> command you ran by hand earlier. The system picked something newer on its own, without being asked.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>6</code></p>
+<p class="ad-flag__code"><code>y</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p><code>$6$</code> is SHA-512, salted, the exact same method behind the <code>openssl passwd -6</code> command earlier in this lab. You never had to choose it: creating the account the normal way did the right thing automatically. The weak storage in this whole lab only ever happens when someone builds their own password handling by hand instead of trusting the tool built for the job.</p>
+<p><code>$y$</code> is yescrypt, Ubuntu's actual default since 22.04, a memory-hard scheme built specifically to be slow and expensive to brute-force at scale, newer and tougher to crack than the SHA-512 you configured by hand with <code>openssl passwd -6</code>. You never had to choose it, or even know its name: creating the account the normal way did better than the manual demonstration did. The weak storage in this whole lab only ever happens when someone builds their own password handling by hand instead of trusting the tool built for the job.</p>
 </div>
 </div>
 </div>

@@ -11,7 +11,7 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="rc-01" data-attempts="0">
-<span class="ad-mission__num">Stage 1 · Reconnaissance · T1589.003 Gather Victim Identity Information · INC-1073 · Low</span>
+<span class="ad-mission__num">Stage 1 · Reconnaissance · T1589.003 Employee Names · INC-1073 · Low</span>
 <h4>Four Names That Were Never Real</h4>
 <p><strong>IT Lead · Routine log review · 9:00 AM</strong><br>A handful of failed sign-ins showed up in the Security log recently. None of the account names match anyone who actually works here.</p>
 <p><strong>Task:</strong> Find the failed sign-ins (event 4625) whose status code says the account itself does not exist, not that the password was wrong, and count the distinct fake usernames tried.</p>
@@ -87,7 +87,7 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="pc-03" data-attempts="0">
-<span class="ad-mission__num">Stage 2 · Delivery · T1036.008 Masquerade File Type · INC-1074 · Medium</span>
+<span class="ad-mission__num">Stage 2 · Delivery · T1036.007 Double File Extension · INC-1074 · Medium</span>
 <h4>Hash It and Check It</h4>
 <p><strong>IT Lead · Mail gateway flag · 8:50 AM</strong><br>Naming the disguise is not the same as proving what the file is. Before this goes in a report, hash it and check that hash against a real reputation database.</p>
 <p><strong>Task:</strong> Compute the file's SHA-256 hash, then paste that exact hash into <a href="https://www.virustotal.com/gui/home/search" target="_blank" rel="noopener">VirusTotal's search</a>. Report how many bits long this algorithm's hash value is.</p>
@@ -114,7 +114,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>This exact hash is real and already in VirusTotal's database: the file's content is the EICAR standard antivirus test string, a 68-byte file every major engine flags on sight, which is why the lookup shows real detections rather than "no results." A lookup against an unknown, freshly-built payload often comes back with nothing, because a brand-new file has no reputation yet. Either answer, flagged or unknown, is real information. Renaming the extension (T1036.008, Masquerade File Type) is step one. A hash is what lets you prove what the file actually is underneath the name.</p>
+<p>This exact hash is real and already in VirusTotal's database: the file's content is the EICAR standard antivirus test string, a 68-byte file every major engine flags on sight, which is why the lookup shows real detections rather than "no results." A lookup against an unknown, freshly-built payload often comes back with nothing, because a brand-new file has no reputation yet. Either answer, flagged or unknown, is real information. Renaming the extension (T1036.007, Double File Extension) is step one. A hash is what lets you prove what the file actually is underneath the name.</p>
 </div>
 </div>
 </div>

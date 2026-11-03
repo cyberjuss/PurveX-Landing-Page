@@ -347,37 +347,37 @@
 
 <div class="ad-mission" data-id="d1-09" data-attempts="0">
 <span class="ad-mission__num">Task 09 · Count a Group</span>
-<h4>How Many People Are in Compliance?</h4>
-<p><strong>Situation:</strong> An auditor wants a starting count of who can reach Compliance data, so any later change stands out.</p>
-<p><strong>Task:</strong> Count the members of the <code>Compliance Users</code> group.</p>
+<h4>How Many People Hold IT's Elevated Access?</h4>
+<p><strong>Situation:</strong> An auditor wants a starting count of who holds elevated IT access beyond standard IT Users, so any later change stands out.</p>
+<p><strong>Task:</strong> Count the members of the <code>IT Admins</code> group.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for How Many People Are in Compliance?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{2}" data-lab-answer="members:Compliance Users">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for How Many People Hold IT's Elevated Access?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{1}" data-lab-answer="members:IT Admins">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
 <p>Count the people listed on the group's Members tab.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click the domain and use Find to search for <code>Compliance Users</code>.</li>
+<li>Right-click the domain and use Find to search for <code>IT Admins</code>.</li>
 <li>Open the group and count the entries on the Members tab.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
-<li><code>(Get-ADGroupMember "Compliance Users").Count</code></li>
+<li><code>(Get-ADGroupMember "IT Admins").Count</code></li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="#">Count only the entries on the Members tab of Compliance Users. People in other groups or OUs do not count.</div>
+<div class="ad-miss" data-guess="#">Count only the entries on the Members tab of IT Admins. People in other groups or OUs do not count.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>GTF{2}</code></p>
+<p class="ad-flag__code"><code>GTF{1}</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>Without a starting count, nobody notices when someone is quietly added to a group that reaches regulated client data.</p>
+<p>Without a starting count, nobody notices when someone is quietly added to a group that carries elevated privilege across the domain.</p>
 </div>
 <div>
 <span>What to do</span>

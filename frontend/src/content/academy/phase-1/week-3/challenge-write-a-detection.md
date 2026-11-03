@@ -75,22 +75,22 @@ sudo cat /var/log/suricata/fast.log
 
 <div class="ad-mission" data-id="wd1-02" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1114 · Medium</span>
-<p><strong>Task:</strong> Your rule reads <code>count 5, seconds 10</code>. Suppose an attacker sent exactly one SYN every 3 seconds instead, spacing 5 attempts across 20 seconds total. Would this exact rule still fire? Type its letter.<br><strong>A</strong> Yes, count 5 is all that matters, however long it takes to reach it.<br><strong>B</strong> No. All 5 have to land inside the same rolling 10-second window, and spacing them 3 seconds apart means at most 3 or 4 ever fall inside any single 10-second slice.<br><strong>C</strong> Yes, because threshold only counts total packets ever sent, with no time limit.</p>
+<p><strong>Task:</strong> Your rule reads <code>count 5, seconds 10</code>. Suppose an attacker sent exactly one SYN every 3 seconds instead, spacing 5 attempts across 20 seconds total. Would this exact rule still fire? Type its letter.<br><strong>A</strong> Yes, count 5 is all that matters, however long it takes to reach it.<br><strong>B</strong> No. All 5 have to land within the same 10-second span, and spacing them 3 seconds apart means the first and fifth are 12 seconds apart, too far to ever share one window.<br><strong>C</strong> Yes, because threshold only counts total packets ever sent, with no time limit.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether the spaced-out scan would still trigger the rule" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>"seconds 10" is a rolling window, not a running total since the scan began. Slide a 10-second window across 20 seconds of SYNs spaced 3 seconds apart and count how many fit at once.</p>
+<p>"seconds 10" bounds count 5 to a 10-second span, not a running total since the scan began. Five SYNs 3 seconds apart span 12 seconds start to finish, longer than the window the rule allows.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a|c">The <code>seconds 10</code> part of the rule is not decoration. It bounds count 5 to a rolling window, and this pacing never puts all 5 inside one.</div>
+<div class="ad-miss" data-guess="a|c">The <code>seconds 10</code> part of the rule is not decoration. It bounds count 5 to a 10-second span, and this pacing never puts all 5 inside one.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>B. No, a rolling 10-second window never holds all 5</code></p>
+<p class="ad-flag__code"><code>B. No, a 10-second span never holds all 5</code></p>
 </div>
 <div>
 <span>Why it matters</span>

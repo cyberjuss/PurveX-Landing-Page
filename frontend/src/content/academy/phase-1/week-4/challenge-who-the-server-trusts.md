@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Who the Server Actually Trusts</h3>
 <p class="ad-brief__ask">What happens when an app trusts the client to say who it is? Gain admin access with no admin credentials, and prove it.</p>
-<p>You need a free PortSwigger Web Security Academy account and Burp Suite Community Edition.</p>
+<p>Deliberately outside PurveX's own lab: reviewing a vendor's demo environment before a contract is signed is a real part of the job, and that review has to run on the vendor's own system, not yours. You need a free PortSwigger Web Security Academy account and Burp Suite Community Edition.</p>
 </div>
 
 <div class="ad-progress">
