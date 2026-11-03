@@ -1,13 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
-<h3>Encoded, Encrypted, or Hashed?</h3>
-<p class="ad-brief__ask">One reverses instantly, one needs a key, one never comes back. Can you tell which, then protect a real file?</p>
+<h3>Tell Encoding, Hashing, and Encryption Apart</h3>
+<p class="ad-brief__ask">One reverses instantly, one needs a key, one never comes back. Can you tell which is which?</p>
 <p>Hosted lab required, with Firefox open on the Ubuntu desktop.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 2 solved</span>
 </div>
 
 ### Before You Start
@@ -167,150 +167,6 @@ Answer from what you saw in the tool.
 </div>
 </div>
 
-### Match the Job to the Tool
-
-<div class="ad-mission" data-id="w2e-c3" data-attempts="0">
-<span class="ad-mission__num">Ticket 03 · INC-1094 · Medium</span>
-<p><strong>Engineering · Design Review · 11:00 AM</strong><br>PurveX Financial's engineering team is designing how the client portal stores login passwords. The server only ever needs to check a password against what it has on file; it never needs to read the original back.</p>
-<p><strong>Task:</strong> Which of the three transformations fits that job? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Encryption.<br><strong>C</strong> Hashing.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for which transformation fits password storage" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>The job never needs the original value back, only a way to confirm a guess matches it. One of the three has no reverse operation at all, by design.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Encoding is reversible by anyone, since its rule is public. Storing a password that way lets anyone who reads it recover the real password.</div>
-<div class="ad-miss" data-guess="b">Encryption needs a key kept somewhere, and whoever holds that key could read every password back. The job never needs the original at all.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>C. Hashing</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>Hashing. The server stores the hash and compares against it, and never needs the original, so one-way is a feature.</p>
-</div>
-</div>
-</div>
-</div>
-
-### Read a Real Value Cold
-
-<div class="ad-mission" data-id="w2e-c4" data-attempts="0">
-<span class="ad-mission__num">Hands-on · INC-1095 · Low</span>
-<p><strong>Task:</strong> You intercept the value <code>YWR2aXNvcnk=</code> in a log. Encoding, encryption or hashing? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Encryption.<br><strong>C</strong> Hashing.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for what the intercepted value is" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>This is the exact value you produced earlier in this lab. Drop it back into CyberChef with "From Base64" and see what comes out.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">An AES-encrypted value does not end in a trailing <code>=</code> the way this one does, and this string reverses with a single public operation.</div>
-<div class="ad-miss" data-guess="c">A SHA2-256 hash is a fixed 64-character string. This value is shorter and reverses cleanly, which a hash never does.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>A. Encoding</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>The trailing <code>=</code> and the character set mark it as Base64. You could read it in seconds, so treating it as encrypted would be a costly mistake.</p>
-</div>
-</div>
-</div>
-</div>
-
-### Prove a Teammate Wrong
-
-<div class="ad-mission ad-mission--capstone" data-id="w2e-c5" data-attempts="0">
-<span class="ad-mission__num">Ticket 05 · INC-1096 · High</span>
-<p><strong>SOC Queue · Data-Loss Alert · 3:30 PM</strong><br>An alert flags data leaving IT-WKS04, Priya Nair's workstation, that reads <code>cGF5bG9hZA==</code>. Teammate noor.ahmadi says it is encrypted and the firm cannot know what it is.</p>
-<p><strong>Task:</strong> Decode it yourself and report the actual word.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for the decoded word" placeholder="one word" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{payload}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>The trailing <code>=</code> and the character set are the same tell as the value you decoded earlier in this lab. Use the same recipe.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="advisory">That is the word from earlier in this lab, encoded differently. Decode this value on its own.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>payload</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>The teammate was wrong, and you just proved it in seconds with the same CyberChef recipe from the start of this lab. Calling a Base64 string "encrypted" is not a small mistake. It tells a manager the data is safe when anyone who looks at the log can already read it.</p>
-</div>
-</div>
-</div>
-</div>
-
-### Protect a Real File
-
-CyberChef proved encryption needs a key where encoding does not. Now use that for real, on your own machine, with a file instead of a toy word.
-
-```bash
-printf 'Q3 advisory fees: 412500' > ~/ledger-copy.txt
-openssl enc -aes-256-cbc -pbkdf2 -salt -in ~/ledger-copy.txt -out ~/ledger-copy.enc -pass pass:PurveX-Backup-Key1
-rm ~/ledger-copy.txt
-```
-
-The plain file is gone. Only `ledger-copy.enc` is left in your home directory, and it is unreadable without the passphrase you just chose. Decrypt it back.
-
-```bash
-openssl enc -d -aes-256-cbc -pbkdf2 -in ~/ledger-copy.enc -pass pass:PurveX-Backup-Key1
-```
-
-<div class="ad-mission ad-mission--capstone" data-id="w2e-c6" data-attempts="0">
-<span class="ad-mission__num">Hands-on · INC-1153 · Low</span>
-<p><strong>Task:</strong> Run the decrypt command above. What line does it print?</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for the decrypted file content" placeholder="the decrypted line" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{q3 advisory fees: 412500}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>It is exactly what you wrote into the file before encrypting it, nothing more and nothing less. The round trip only works because you supplied the same passphrase both times.</p>
-<ol>
-<li>Try the decrypt command with a wrong passphrase first, and watch it refuse rather than return garbage.</li>
-<li>Then run it again with the real one, <code>PurveX-Backup-Key1</code>.</li>
-</ol>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="q3advisoryfees412500">Keep the spaces and the colon exactly as you typed them into the original file.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>Q3 advisory fees: 412500</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>This is the same line from the CIA triad lab's own ledger file, now actually protected rather than just sitting in the clear. The plain copy is gone; only the encrypted one and the passphrase in your head can bring it back. That is what "needs a key to undo" means when it is a real file instead of one word in a browser tool.</p>
-</div>
-</div>
-</div>
-</div>
-
-### Take It Further
-
-A different log shows a value that is exactly 64 characters long, no matter how short or long the original data was.
-
-Name which of the three transformations produces a fixed-length output no matter what goes in, and say what that fixed length tells you before you even try to reverse anything.
-
 ### Why It Matters
 
-Analysts read strange-looking strings in logs every day, and the first decision is always which of the three they are looking at. Call an encoded value encrypted and you escalate a non-event. Miss that a value is only encoded and you overlook data walking out in plain sight.
+Three transformations, three different answers to "can this come back." The next challenge in this set puts that difference to work on a real decision and a real log.

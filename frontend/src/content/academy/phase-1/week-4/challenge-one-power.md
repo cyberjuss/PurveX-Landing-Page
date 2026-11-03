@@ -1,13 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
-<h3>Grant Exactly One Power, Not the Whole Machine</h3>
+<h3>Grant Exactly One Power, Then Prove It Stops</h3>
 <p class="ad-brief__ask">Priya Nair needs to restart one service, nothing more. Can you grant exactly that, and prove it?</p>
 <p>Hosted lab required, with a terminal open on the Ubuntu desktop.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 4 solved</span>
 </div>
 
 ### Before You Start
@@ -236,43 +236,6 @@ Answer from what you saw, not from what you remember reading.
 </div>
 </div>
 
-### Audit a Real Over-Broad Rule
-
-<div class="ad-mission ad-mission--capstone" data-id="w4m-c5" data-attempts="0">
-<span class="ad-mission__num">Ticket 05 · INC-1127 · High</span>
-<p><strong>IT Audit · Privilege Review · 2:15 PM</strong><br>A PurveX Financial access review turns up a sudo rule for a backup account: it may run sudo for any command in <code>/usr/bin</code> with no password.</p>
-<p><strong>Task:</strong> Does that follow least privilege, and what could the account do beyond backups? Type its letter.<br><strong>A</strong> Yes, it follows least privilege, since it is scoped to a specific folder.<br><strong>B</strong> No. Almost every common tool on Linux lives in <code>/usr/bin</code>, so this account can run essentially anything as root, far beyond whatever backup command it actually needs.<br><strong>C</strong> It cannot be judged without knowing who uses the account.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for whether the backup account's rule follows least privilege" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>Think about the gap between the two systemctl rules earlier in this lab. A folder of hundreds of commands is the same kind of gap, written differently.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">A folder is not a command. <code>/usr/bin</code> holds hundreds of real, unrelated tools, exactly the same mistake as granting bare <code>systemctl</code> with no service named.</div>
-<div class="ad-miss" data-guess="c">The rule itself already grants far more than a backup job needs, regardless of who ends up using the account.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>B. No, essentially anything as root</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>A folder path is not a command list. <code>/usr/bin</code> holds hundreds of real tools, and "any command in a folder" is exactly the same mistake as the unscoped systemctl rule you just read, just spelled differently. The fix is the same one you wrote earlier in this lab: name the exact backup command and nothing else.</p>
-</div>
-</div>
-</div>
-</div>
-
-### Take It Further
-
-The backup account's rule gets rewritten to name one exact script, `/usr/local/bin/run-backup.sh`, instead of the whole `/usr/bin` folder.
-
-Say whether that alone is enough, or whether the script's own contents now matter just as much as the sudo rule did.
-
 ### Why It Matters
 
-Most privilege problems are not clever attacks. They are an account that was given more than it needed, found by someone who should not have had it. An administrator who writes the narrowest rule that still does the job, and who can audit what an account may do, closes the hole before anyone goes looking for it.
+One line in a sudoers file is the whole difference between "restart nginx" and "control any service on the machine." The next challenge in this set audits a real rule written the broad way.

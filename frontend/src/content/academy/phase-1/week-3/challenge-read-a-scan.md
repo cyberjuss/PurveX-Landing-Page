@@ -1,13 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
-<h3>Open, Closed, or Just Guarded?</h3>
+<h3>Scan It by Hand, Then Read the Three Answers</h3>
 <p class="ad-brief__ask">Can you tell an open port from a closed one from one a firewall is holding shut?</p>
 <p>Hosted lab required, with both machines reachable.</p>
 </div>
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
-<span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
+<span id="ad-progress-label" class="ad-progress__label">0 / 3 solved</span>
 </div>
 
 ### Before You Start
@@ -80,81 +80,6 @@ Wireshark can show the shape rather than the single packets. Open Statistics →
 One machine opening a row for port after port of the same target, each only a packet or two, is a scan laid out in a table. A normal session would be a few rows with many packets each. This is many rows with almost none.
 
 That shape, one source spraying SYNs across many ports fast, is a scan. It looks nothing like normal traffic, which settles into a few steady conversations. Seeing it in a real capture is often the first sign that someone is mapping a machine before they move on it.
-
-### Confirm It With the Tool the Job Actually Uses
-
-You just read a scan by hand, one packet at a time. On the job, almost every posting for this role names the same tool for this exact task: Nmap. It is not doing anything the bash loop did not already do. It is reporting the same three answers, just faster and in its own column.
-
-Install it on the Ubuntu server.
-
-```bash
-sudo apt install -y nmap
-```
-
-Then scan the same ports with a connect scan, the same handshake you just read packet by packet.
-
-```bash
-nmap -sT -p 53,88,389,445,3389,23,8080,9999 dc01
-```
-
-Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the exact three answers you already read from raw packets, just labeled for you instead of worked out by hand.
-
-<div class="ad-mission" data-id="w3m-c5" data-attempts="0">
-<span class="ad-mission__num">Hands-on · INC-1107 · Low</span>
-<p><strong>Task:</strong> Run the Nmap scan above. What does it report for port 445?</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for what Nmap reports on port 445" placeholder="open, closed, or filtered" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{open}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>You already read this port's handshake by hand in your Wireshark capture a few steps ago. Nmap should land on the same answer.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="closed|filtered">Check your capture again: port 445 completed the full three-way handshake, SYN, SYN-ACK, ACK.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>open</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>A real scanner lands on the same answer as the raw packets did, because it is reading the same handshake. Knowing the tool matters on the job, but reading the traffic underneath it is what tells you whether the tool is right.</p>
-</div>
-</div>
-</div>
-</div>
-
-### Weigh a Stealthier Scan
-
-<div class="ad-mission" data-id="w3m-c6" data-attempts="0">
-<span class="ad-mission__num">Hands-on · INC-1108 · Low</span>
-<p><strong>Task:</strong> The scan you just ran (<code>-sT</code>) completes the full three-way handshake on every open port, same as your bash loop. A SYN scan (<code>-sS</code>) instead sends SYN, reads SYN-ACK, then sends RST instead of finishing with ACK. Why might an attacker prefer that? Type its letter.<br><strong>A</strong> It is faster, and it never fully opens a connection the target's own application might log.<br><strong>B</strong> It is slower but gives a more accurate result.<br><strong>C</strong> There is no real difference between the two on the wire.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for why an attacker might prefer a SYN scan" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>Think about which layer of logging only ever sees a connection that fully completed, versus the packet capture, which sees every packet regardless.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">A SYN scan sends fewer packets per port, not more, so it is the faster option, not the slower one.</div>
-<div class="ad-miss" data-guess="c">Finishing with ACK versus RST is a real, visible difference in the capture: one completes the connection, the other tears it down early.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>A. Faster, and it never fully opens a connection the target's own application might log</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>Some application-level logging only records a connection once it is fully established, so a SYN scan can slip past that layer entirely. It cannot slip past the packet capture, though, which is exactly why a defender who reads the wire catches what an application log alone would miss.</p>
-</div>
-</div>
-</div>
-</div>
 
 ### Check Yourself
 
@@ -247,43 +172,6 @@ Answer from what you captured, not from what you remember reading.
 </div>
 </div>
 
-### Name What Detection Rests On
-
-<div class="ad-mission ad-mission--capstone" data-id="w3m-c4" data-attempts="0">
-<span class="ad-mission__num">Ticket 07 · INC-1112 · Medium</span>
-<p><strong>Detection Engineering · Design Question · 2:30 PM</strong><br>PurveX Financial's detection team wants to write a rule for scans like the one you just ran, but the scan used a plain bash loop, not a hacking tool.</p>
-<p><strong>Task:</strong> What does that mean for detection? Type its letter.<br><strong>A</strong> Scans cannot be detected.<br><strong>B</strong> You detect the pattern in the traffic, not a banned tool.<br><strong>C</strong> Only special attacker tools leave a trace.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for what detection actually relies on" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>The bash loop and Nmap produced the exact same shape on the wire: one source, many ports, in a burst. That shape is what a detection would have to key on.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">You already saw the scan's shape clearly in Statistics → Conversations: one source hitting many ports. That is detectable.</div>
-<div class="ad-miss" data-guess="c">The plain bash loop you ran was not a special attacker tool at all, and it produced the same detectable pattern as Nmap did.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>B. You detect the pattern in the traffic, not a banned tool</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>The same loop inventories a server or maps it for attack. You cannot ban the tool, so detection rests on the behavior, the burst of SYNs to many ports. The next lab turns that exact behavior into a rule an IDS checks for automatically, instead of a pattern only a human reading a capture would ever notice.</p>
-</div>
-</div>
-</div>
-</div>
-
-### Take It Further
-
-A week later the security team pulls a capture from the file server. One workstation sent SYN packets to forty ports in under ten seconds. Two ports completed a handshake, a handful answered with RST, and the rest got no reply.
-
-Say what that workstation was doing, and explain what the team learns from the two that answered versus the many that stayed silent.
-
 ### Why It Matters
 
-Reconnaissance is the quietest stage of an attack and the best chance to stop it, because nothing is broken yet. A team that can read a scan, and can tell a closed port from one a firewall is guarding, catches the knock before the break-in and knows how well its own doors are holding.
+Three different answers from three different states, all readable from the raw packets alone. The next challenge in this set confirms the same read with the tool the job actually uses.
