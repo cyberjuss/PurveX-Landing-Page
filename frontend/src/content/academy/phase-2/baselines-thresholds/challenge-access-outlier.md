@@ -42,7 +42,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Three accounts holding the exact same membership is what makes it a baseline rather than a hunch. The fourth account breaking that pattern is the outlier a baseline is built to surface, the same way a sign-in pattern or a file-access pattern would.</p>
+<p>Three accounts holding the exact same membership is what makes it a baseline rather than a hunch. The fourth breaking that pattern is exactly the outlier a baseline exists to surface — the same way a sign-in or file-access pattern would.</p>
 </div>
 <div>
 <span>What to do</span>

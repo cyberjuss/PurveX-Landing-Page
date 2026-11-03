@@ -78,7 +78,7 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every PowerShell AD cmdlet you have run since Week 1 depended on this exact port being open, whether you ever noticed it or not. A lesson only has room to name the ports that explain the big picture. The real list shows you the ones you have been relying on the whole time.</p>
+<p>Every PowerShell AD cmdlet you've run since Week 1 depended on this exact port being open, whether you noticed or not. A lesson only has room to name the ports that explain the big picture — the real list shows you the ones you've actually been relying on.</p>
 </div>
 </div>
 </div>

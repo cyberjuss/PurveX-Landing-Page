@@ -99,7 +99,7 @@ Answer from what you just did, not from what sounds plausible.
 </div>
 <div>
 <span>Why it matters</span>
-<p>Anything checked in the browser is a suggestion, not a control. You just controlled Burp directly and the server still trusted whatever showed up. A hard-to-guess URL is not a control either, only a delay, and this lab's own `/admin` path proved that in Step 3.</p>
+<p>Anything checked only in the browser is a suggestion, not a control — you controlled Burp directly and the server still trusted whatever showed up. A hard-to-guess URL is just a delay, as Step 3's own `/admin` path already proved.</p>
 </div>
 </div>
 </div>

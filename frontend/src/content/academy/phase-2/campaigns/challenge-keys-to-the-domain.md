@@ -42,7 +42,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>0x17 is RC4, a fast, breakable encryption type. Real attacker tools request RC4 on purpose, because an RC4 ticket can be cracked offline against the account's own password hash, while an AES ticket resists that far better. CISA names this exact pattern, T1558.003, as one of the two most common ways a single foothold becomes full domain control.</p>
+<p>0x17 is RC4, fast and breakable. Attacker tools request it on purpose, since an RC4 ticket cracks offline against the account's own password hash far more easily than AES does. CISA names this exact pattern, T1558.003, as one of the two most common ways a single foothold becomes full domain control.</p>
 </div>
 </div>
 </div>
@@ -147,7 +147,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A service that genuinely needs its SPN also needs AES encryption turned on and a long, random password, since the account stays Kerberoastable either way. An SPN nobody can explain, for a job that no longer runs, is simplest to remove outright. Either fix beats leaving a crackable ticket sitting in the directory.</p>
+<p>A service that genuinely needs its SPN also needs AES turned on and a long, random password — the account stays Kerberoastable either way. An SPN nobody can explain, for a job that no longer runs, is simplest to remove outright. Either fix beats leaving a crackable ticket in the directory.</p>
 </div>
 </div>
 </div>
@@ -212,7 +212,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every real domain controller replicates under its own computer account, which is exactly what a defender rules out first. A Control Access request carrying this exact right from anything else, a user account, a server, a workstation, is the signal. Tools like Azure AD Connect are the common legitimate exception worth checking before escalating.</p>
+<p>Every real domain controller replicates under its own computer account — that's what a defender rules out first. A Control Access request carrying this right from anything else, a user, a server, a workstation, is the signal. Azure AD Connect is the common legitimate exception worth checking before escalating.</p>
 </div>
 </div>
 </div>
@@ -310,7 +310,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Any domain user can ask for a service ticket. Any domain controller can ask another for replication data. Both are trusted, intended behavior, which is exactly why CISA's own guide spends less time on exploits and more on the handful of signatures, an encryption type, an access mask, a requester who isn't a domain controller, that tell the normal use of a feature apart from its abuse.</p>
+<p>Any domain user can ask for a service ticket. Any domain controller can ask another for replication data. Both are trusted, intended behavior — which is why CISA's own guide spends less time on exploits and more on the handful of signatures (an encryption type, an access mask, a requester that isn't a domain controller) that tell normal use of a feature apart from its abuse.</p>
 </div>
 </div>
 </div>

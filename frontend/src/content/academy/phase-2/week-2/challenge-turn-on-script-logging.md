@@ -83,7 +83,7 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 </div>
 <div>
 <span>Why it matters</span>
-<p>A process-creation event hands you the command exactly as it was launched, obfuscation and all. Script-block logging hands you what PowerShell itself decoded that into right before running it. That difference is the entire reason this setting exists on top of process-creation auditing instead of replacing it.</p>
+<p>A process-creation event hands you the command exactly as launched, obfuscation and all. Script-block logging hands you what PowerShell decoded that into right before running it — the entire reason this setting exists on top of process-creation auditing instead of replacing it.</p>
 </div>
 </div>
 </div>
@@ -114,7 +114,7 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encoding only disguises a command on its way in. Once PowerShell decodes it to actually run it, that decoded text is what script-block logging writes down, the same way la2-06 just showed you. Hiding a command behind Base64 does not make it disappear from this log, it just delays when it becomes readable until the moment it matters most.</p>
+<p>Encoding only disguises a command on its way in — once PowerShell decodes it to run, that decoded text is what script-block logging writes down, same as la2-06 just showed. Hiding a command behind Base64 doesn't make it disappear from this log; it just delays when it becomes readable until the moment it matters most.</p>
 </div>
 </div>
 </div>
