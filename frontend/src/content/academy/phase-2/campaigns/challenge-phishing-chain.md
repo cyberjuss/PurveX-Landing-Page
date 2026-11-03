@@ -43,7 +43,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Nobody can guess a password for an account that does not exist. MITRE catalogs probing for real identities before an attack under the Reconnaissance tactic (T1589, Gather Victim Identity Information). It leaves no victim account to flag, which is exactly why it is easy to miss.</p>
+<p>Nobody can guess a password for an account that doesn't exist. MITRE catalogs this as Reconnaissance (T1589, Gather Victim Identity Information) — it leaves no victim account to flag, which is exactly why it's easy to miss.</p>
 </div>
 </div>
 </div>
@@ -114,7 +114,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>This exact hash is real and already in VirusTotal's database: the file's content is the EICAR standard antivirus test string, a 68-byte file every major engine flags on sight, which is why the lookup shows real detections rather than "no results." A lookup against an unknown, freshly-built payload often comes back with nothing, because a brand-new file has no reputation yet. Either answer, flagged or unknown, is real information. Renaming the extension (T1036.007, Double File Extension) is step one. A hash is what lets you prove what the file actually is underneath the name.</p>
+<p>This hash is real and already in VirusTotal's database: the file's content is the EICAR standard antivirus test string, which every major engine flags on sight. An unknown, freshly-built payload often comes back with nothing instead, since a brand-new file has no reputation yet — either answer is real information. Renaming the extension (T1036.007) is step one; a hash is what proves what the file actually is underneath the name.</p>
 </div>
 </div>
 </div>
@@ -186,7 +186,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>You do not need someone else's packet capture to find a beacon. If it is still running, it is still generating real traffic you can see yourself. Command and Control over a non-standard port, dressed up to look like ordinary application traffic, is exactly what T1071 (Application Layer Protocol) describes, and 203.0.113.0/24 routes nowhere, so the connection itself will time out even while you watch it attempt.</p>
+<p>You don't need someone else's capture to find a beacon — if it's still running, it's still generating real traffic you can see yourself. C2 dressed up as ordinary application traffic is exactly what T1071 describes, and 203.0.113.0/24 routes nowhere, so you'll watch the connection time out in real time.</p>
 </div>
 </div>
 </div>
@@ -321,7 +321,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Two different entry vectors, credential guessing and a phishing attachment, converged on the exact same chokepoint: a firewall rule that let a task reach outside the firm. This campaign got one stage further than the first, far enough to stage a file for exfiltration, but disabling that one rule meant neither attacker ever got what they touched back out of the network. Different Delivery, different Exploitation, same place both chains actually lost their exit. A domain controller that cannot freely talk to the outside internet turns every attacker's last mile into the same narrow, closely-watched door.</p>
+<p>Credential guessing and a phishing attachment converged on the exact same chokepoint: a firewall rule letting a task reach outside the firm. This campaign got one stage further, far enough to stage a file for exfiltration, but disabling that one rule meant neither attacker ever got what they touched out of the network. Different Delivery, different Exploitation, same place both chains lost their exit.</p>
 </div>
 </div>
 </div>

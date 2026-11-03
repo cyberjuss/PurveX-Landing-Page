@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The manager is only half right. SHA-256 really cannot be reversed, but "cannot be reversed" is not the same as "safe." Matching values across a leaked file hand an attacker a ready-made list of accounts to try one cracked or reused password against, which is exactly the finding this lab let you make without cracking anything at all.</p>
+<p>The manager is only half right. SHA-256 really cannot be reversed, but "cannot be reversed" isn't "safe." Matching values hand an attacker a ready-made list of accounts to try one cracked or reused password against — the exact finding this lab let you make without cracking anything.</p>
 </div>
 </div>
 </div>
@@ -78,7 +78,7 @@ sudo grep priya.sample /etc/shadow
 </div>
 <div>
 <span>Why it matters</span>
-<p><code>$y$</code> is yescrypt, Ubuntu's actual default since 22.04, a memory-hard scheme built specifically to be slow and expensive to brute-force at scale, newer and tougher to crack than the SHA-512 you configured by hand with <code>openssl passwd -6</code>. You never had to choose it, or even know its name: creating the account the normal way did better than the manual demonstration did. The weak storage in this whole lab only ever happens when someone builds their own password handling by hand instead of trusting the tool built for the job.</p>
+<p><code>$y$</code> is yescrypt, Ubuntu's actual default since 22.04 — memory-hard, built to be slow and expensive to brute-force, tougher to crack than the SHA-512 you set by hand with <code>openssl passwd -6</code>. You never had to choose it, or even know its name: the normal way did better than the manual demonstration. The weak storage in this lab only ever happens when someone builds password handling by hand instead of trusting the tool built for the job.</p>
 </div>
 </div>
 </div>
@@ -111,7 +111,7 @@ The same manager asks whether switching to a salted hash would have stopped the 
 </div>
 <div>
 <span>Why it matters</span>
-<p>A salted database would have hidden the fact that accounts shared <code>Summer2024!</code>, but it would not have made <code>Summer2024!</code> a harder password to guess. Salting and password strength fix two different problems, and a breach review that only asks "was it salted" misses the half of the question a weak password answers on its own.</p>
+<p>A salted database would have hidden that accounts shared <code>Summer2024!</code>, but it wouldn't have made <code>Summer2024!</code> harder to guess. Salting and password strength fix two different problems — a breach review that only asks "was it salted" misses the half a weak password answers on its own.</p>
 </div>
 </div>
 </div>

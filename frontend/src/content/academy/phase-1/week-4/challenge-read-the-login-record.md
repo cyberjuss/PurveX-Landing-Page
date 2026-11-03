@@ -204,7 +204,7 @@ Answer from what you saw, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>A failure means an attempt was made, not that the account is real. Attackers guess names too, so a failure alone proves only that someone tried. Look at the details before you decide. On Windows the 4625 sub-status tells an unknown name apart from a wrong password.</p>
+<p>A failure means an attempt was made, not that the account is real — attackers guess names too. Look at the details before you decide: on Windows, the 4625 sub-status tells an unknown name apart from a wrong password.</p>
 </div>
 </div>
 </div>

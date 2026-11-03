@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A folder path is not a command list. <code>/usr/bin</code> holds hundreds of real tools, and "any command in a folder" is exactly the same mistake as the unscoped systemctl rule from the challenge above, just spelled differently. The fix is the same one you wrote in the challenge above: name the exact backup command and nothing else.</p>
+<p>A folder path is not a command list. "Any command in a folder" is the same mistake as the unscoped systemctl rule from the challenge above, just spelled differently — and the fix is the same: name the exact command and nothing else.</p>
 </div>
 </div>
 </div>
@@ -68,7 +68,7 @@ The backup account's rule gets rewritten to name one exact script, `/usr/local/b
 </div>
 <div>
 <span>Why it matters</span>
-<p>Naming one script instead of a whole folder is a real fix for the gap this lab demonstrated. But a sudo rule that runs a script as root is only as safe as that script: if the backup account itself can edit <code>run-backup.sh</code>, or the script takes an argument it was never meant to, the account can still reach root through it. The audit does not end at the sudoers line. It continues into what the named command actually does.</p>
+<p>Naming one script is a real fix for the folder-wide gap. But a sudo rule that runs a script as root is only as safe as that script — if the account can edit <code>run-backup.sh</code>, or it takes an argument it was never meant to, root is still reachable. The audit doesn't end at the sudoers line.</p>
 </div>
 </div>
 </div>

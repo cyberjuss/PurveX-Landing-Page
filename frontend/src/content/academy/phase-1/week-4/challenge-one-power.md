@@ -102,9 +102,9 @@ Now look at the rule a hurried administrator often writes instead. Read it, do n
 priya.nair ALL=(root) NOPASSWD: /usr/bin/systemctl
 ```
 
-It looks almost the same, but it names no service. That one difference lets priya.nair run `systemctl` with any service and any action. They could stop the firewall, restart sshd, or interfere with the logging that recorded the last lab, so their next actions leave less of a trace.
+It looks almost the same, but it names no service. That one difference lets priya.nair run `systemctl` with any service and any action — stop the firewall, restart sshd, interfere with the logging that recorded the last lab.
 
-The narrow rule gave away one service. The broad rule gave away every service on the machine, and in practice root itself, because anyone who can run any `systemctl` command as root can also start a service they wrote. All of that came from the same one line. That gap is what least privilege is about.
+The narrow rule gave away one service. The broad rule gave away every service on the machine, and in practice root itself: anyone who can run any `systemctl` command as root can also start a service they wrote. All of that from the same one line — that gap is what least privilege is about.
 
 ### Clean Up
 

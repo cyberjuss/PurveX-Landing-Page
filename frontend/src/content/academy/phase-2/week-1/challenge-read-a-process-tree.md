@@ -77,7 +77,7 @@ The ParentImage field your query returned is a system service hosting the task s
 </div>
 <div>
 <span>Why it matters</span>
-<p>An office application spawning PowerShell is one of the most common signs of a phishing attachment doing its job the moment it is opened, a completely different stage and a completely different response than a task that has already been sitting there for weeks. The command line told you what ran. The parent told you how it got there, and those are two different questions with two different answers.</p>
+<p>An office application spawning PowerShell is one of the clearest signs of a phishing attachment doing its job the moment it's opened — a different stage and a different response than a task that's been sitting there for weeks. The command line told you what ran; the parent told you how it got there.</p>
 </div>
 </div>
 </div>
@@ -132,7 +132,7 @@ Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True |
 </div>
 <div>
 <span>Why it matters</span>
-<p>A scheduled task that relaunches the same hardcoded command every 15 minutes, with no file and no owner behind it, is how an attacker keeps a foothold after the machine restarts. The firewall rule you found is what lets its traffic leave at all. Neither one looks suspicious alone next to this lab's own real sync task. Reading what each one's arguments actually say is what separates them.</p>
+<p>A scheduled task relaunching the same hardcoded command every 15 minutes, with no file and no owner, is how an attacker keeps a foothold after a restart — and the firewall rule you found is what lets its traffic leave at all. Neither looks suspicious next to this lab's own real sync task; reading what each one's arguments actually say is what separates them.</p>
 </div>
 </div>
 </div>
@@ -180,4 +180,4 @@ Disable-ScheduledTask -TaskName "WindowsDiagnosticsSync"
 
 ### Why It Matters
 
-An EDR alert hands you a process name. The process tree underneath it, the task keeping it alive, and the firewall rule letting it talk are where the actual decision gets made: ordinary administration, or something that needs to be contained right now, the way you just contained it, from the command line, without losing the evidence of what it was.
+An EDR alert hands you a process name. The process tree underneath it, the task keeping it alive, and the firewall rule letting it talk are where the actual decision gets made: ordinary administration, or something that needs containing right now — the way you just did, from the command line, without losing the evidence of what it was.
