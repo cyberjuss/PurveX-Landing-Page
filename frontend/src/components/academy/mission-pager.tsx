@@ -8,6 +8,7 @@ import { academyFetch, READINESS_PATH, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EV
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
 import { useHostedLab } from "./hosted-lab-button";
 import { TrailDock } from "./trail-dock";
+import { ChallengeRecorder } from "./challenge-recorder";
 
 type Neighbor = { label: string; go: () => void };
 
@@ -21,11 +22,14 @@ export function MissionPager({
   prevSection,
   nextSection,
   actionHost,
+  recordLabel,
 }: {
   children: ReactNode;
   prevSection?: Neighbor | null;
   nextSection?: Neighbor | null;
   actionHost?: HTMLElement | null;
+  /** Set only for challenge content. Shows the Record Your Challenge control, named for the download. */
+  recordLabel?: string;
 }) {
   const router = useRouter();
   const root = useRef<HTMLDivElement>(null);
@@ -225,6 +229,7 @@ export function MissionPager({
 
   return (
     <div ref={root}>
+      {recordLabel && <ChallengeRecorder label={recordLabel} />}
       {children}
       {strip && !onBrief &&
         createPortal(

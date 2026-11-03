@@ -4383,6 +4383,40 @@ html:active-view-transition .ax-page { animation: none }
 .academy-prose .ad-score__reset:hover { border-color: #e5484d; color: #e5484d; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-score__focuslabel { color: #9a8cff; }
 
+/* Record Your Challenge: a local-only screen recording control that sits
+   above every challenge's content, brief or no brief, paging or not. */
+.ad-record { margin: 0 0 20px; }
+.ad-record__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(229, 72, 77, 0.55);
+  border-radius: 0;
+  background: none;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #e5484d;
+  cursor: pointer;
+  transition: border-color var(--ax-dur-fast), color var(--ax-dur-fast), background var(--ax-dur-fast);
+}
+.ad-record__btn svg { color: #e5484d; }
+.ad-record__btn:hover { border-color: #e5484d; background: color-mix(in srgb, #e5484d 8%, transparent); }
+.ad-record__btn--on { background: #e5484d; border-color: #e5484d; color: #fff; }
+.ad-record__btn--on svg { color: #fff; animation: ad-record-pulse 1.4s ease-in-out infinite; }
+.ad-record__btn--on:hover { background: #c93d41; border-color: #c93d41; }
+@keyframes ad-record-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .ad-record__btn--on svg { animation: none; } }
+.ad-record__note { max-width: 56ch; margin: 8px 0 0; font-size: var(--ty-note, 0.8125rem); line-height: 1.5; color: var(--rd-ink-3, #8a94a8); }
+.academy-bg[data-academy-theme="dark"] .ad-record__btn { border-color: rgba(252, 165, 165, 0.45); color: #fca5a5; }
+.academy-bg[data-academy-theme="dark"] .ad-record__btn svg { color: #fca5a5; }
+.academy-bg[data-academy-theme="dark"] .ad-record__btn:hover { border-color: #fca5a5; background: color-mix(in srgb, #fca5a5 10%, transparent); }
+.academy-bg[data-academy-theme="dark"] .ad-record__btn--on { background: #e5484d; border-color: #e5484d; color: #fff; }
+.academy-bg[data-academy-theme="dark"] .ad-record__btn--on svg { color: #fff; }
+
 /* Readiness report and the Academy's report-style design system */
 /* Light theme. The muted ink and the status colours are measured against white:
    ink-3 carries 10-13px labels all over the portal, so it has to clear 4.5:1

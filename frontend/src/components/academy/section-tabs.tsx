@@ -456,6 +456,7 @@ export function SectionTabs({
           prevSection={prevTrail}
           nextSection={nextTrail}
           actionHost={current.kind === "challenge" ? challengeFoot : undefined}
+          recordLabel={current.kind === "challenge" ? current.label.replace(/^Challenge:\s*/, "") : undefined}
         >
           {current.kind === "section" && current.label === "Resources" ? (
             <ResourcesView markdown={current.markdown} fallback={<Markdown content={current.markdown} />} />
