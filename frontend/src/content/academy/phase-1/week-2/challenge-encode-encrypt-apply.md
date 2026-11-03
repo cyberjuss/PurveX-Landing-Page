@@ -95,7 +95,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The teammate was wrong, and you just proved it in seconds with the same CyberChef recipe from the start of this lab. Calling a Base64 string "encrypted" is not a small mistake. It tells a manager the data is safe when anyone who looks at the log can already read it.</p>
+<p>The teammate was wrong, and you proved it in seconds with the same CyberChef recipe. Calling a Base64 string "encrypted" isn't a small mistake — it tells a manager the data is safe when anyone reading the log can already read it.</p>
 </div>
 </div>
 </div>

@@ -37,7 +37,7 @@ You capture from the Ubuntu box and see its conversation with the domain control
 </div>
 <div>
 <span>Why it matters</span>
-<p>A capture only ever shows what the capturing machine itself sends or receives. The domain controller's conversation with a backup server never passes through Ubuntu's network card, so no filter or amount of waiting on Ubuntu will ever produce it. The fix is not a better filter; it is capturing from a machine that was actually part of the conversation.</p>
+<p>A capture only ever shows what the capturing machine sends or receives. The domain controller's traffic to the backup server never touches Ubuntu's card, so no filter fixes this — only capturing from a machine that was actually part of the conversation does.</p>
 </div>
 </div>
 </div>

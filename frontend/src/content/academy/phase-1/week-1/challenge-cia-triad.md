@@ -113,7 +113,7 @@ sudo useradd -m jamie.torres 2>/dev/null
 </div>
 <div>
 <span>Why it matters</span>
-<p>Confidentiality is the one property in this whole lab you can actually put back the way it was. A hash can prove integrity broke but never un-happen the change itself, and the minutes nginx was down are gone either way. A wrong permission is just a wrong permission, fixed with the same tool that broke it, which is why access reviews exist: the fix is this cheap, every time, if anyone ever checks.</p>
+<p>Confidentiality is the one property here you can actually undo. A hash can prove integrity broke, never erase the change; the minutes nginx was down are gone either way. A wrong permission is just a wrong permission, fixed with the same tool that broke it — which is why access reviews exist: the fix is this cheap, if anyone ever checks.</p>
 </div>
 </div>
 </div>
@@ -146,7 +146,7 @@ The company restores the ransomware-hit share from a clean backup made the night
 </div>
 <div>
 <span>Why it matters</span>
-<p>A clean backup is a complete fix for a locked or corrupted share: the data comes back correct and reachable. It is no fix at all for a copy that already left the building, which is exactly why INC-1086 is not closed the moment the restore finishes. The backup answers "is the data back." It never answers "who else has it now."</p>
+<p>A clean backup fully fixes a locked or corrupted share — the data comes back correct and reachable. It is no fix at all for a copy that already left the building, which is why INC-1086 is not closed the moment the restore finishes. The backup answers "is the data back." It never answers "who else has it now."</p>
 </div>
 </div>
 </div>

@@ -46,7 +46,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The account's Description names IT-WKS01 as the only workstation this overnight work is authorized from. The alert's sign-in came from REMOTE-SUPPORT4 instead. The time alone made this sound exactly like INC-1046, but the record tells a fuller story once you read every field of it.</p>
+<p>The account's Description names IT-WKS01 as the only authorized workstation; the alert's sign-in came from REMOTE-SUPPORT4 instead. The time alone made this sound exactly like INC-1046 — reading every field told the fuller story.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -82,7 +82,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An approved overnight window authorizes work from one named workstation, not a sign-in from anywhere at that hour. Stolen credentials get used at convenient times on purpose, often inside a window staff already expect activity in. Checking the time and stopping there would have closed this out clean.</p>
+<p>An approved overnight window authorizes one named workstation, not a sign-in from anywhere at that hour. Stolen credentials get used at convenient times on purpose, often inside a window staff already expect — which is exactly why checking the time and stopping there would have closed this clean.</p>
 </div>
 <div>
 <span>What to do</span>

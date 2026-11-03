@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The same loop inventories a server or maps it for attack. You cannot ban the tool, so detection rests on the behavior, the burst of SYNs to many ports. The next lab turns that exact behavior into a rule an IDS checks for automatically, instead of a pattern only a human reading a capture would ever notice.</p>
+<p>The same loop inventories a server or maps it for attack. You can't ban the tool, so detection rests on the behavior: the burst of SYNs to many ports, turned into a rule instead of a pattern only a human would ever notice.</p>
 </div>
 </div>
 </div>
@@ -68,7 +68,7 @@ A week later the security team pulls a capture from the file server. One worksta
 </div>
 <div>
 <span>Why it matters</span>
-<p>The shape alone, one source and forty ports in ten seconds, is already the scan signature from the challenge above. But the shape only tells you a scan happened. Reading each port's own answer is what tells you what it found: two real open services, a few ports actively refusing, and a firewall standing silently in front of everything else. That second read is the part a detection rule flags; the first read is what an analyst still has to do by hand.</p>
+<p>The shape alone, one source and forty ports in ten seconds, is already the scan signature from the challenge above — but it only tells you a scan happened. Reading each port's answer is what tells you what it found: two services open, a few refusing, a firewall silent in front of the rest. The shape is what a detection rule flags; reading the answers is still an analyst's job.</p>
 </div>
 </div>
 </div>
