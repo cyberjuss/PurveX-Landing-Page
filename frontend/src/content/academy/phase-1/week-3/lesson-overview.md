@@ -5,43 +5,18 @@
 
 ### Overview
 
-Opening a network capture for the first time is a disorienting experience. Thousands of rows scroll past, every one of them full of numbers. None of it offers any obvious clue about which rows matter. The instinct is to start reading at the top and hope something stands out. It will not, because there is nothing in a packet that announces itself as suspicious. An environment working perfectly produces just as many rows as one that is compromised.
+Opening a network capture for the first time is disorienting: thousands of rows, all numbers, none of them announcing which ones matter. There is no packet marked suspicious. A healthy environment produces just as many rows as a compromised one.
 
-What makes a capture readable is knowing that every conversation in it is built from the same small set of pieces:
+What makes a capture readable is knowing every conversation is built from the same small set of pieces, in the same order:
 
 - An **address**, so the traffic knows where to go
 - A **reliable connection**, established before any data moves
-- A **port**, selecting a particular service on the machine at the other end
+- A **port**, selecting a particular service on the other machine
 - A **protocol**, governing what the two sides actually say
-- Often **encryption** layered on top of all of it
+- Often **encryption**, layered on top of all of it
 
-Nearly every conversation is built from those pieces, in that order. A capture is therefore not an undifferentiated wall of data but the same structure repeating.
+This week takes them one at a time: TCP/IP addressing, the TCP three-way handshake, the ports and protocols you'll meet most often, and how TLS wraps a connection once TCP has already brought it up. Each is simple alone; the difficulty is absorbing them all at once.
 
-This week takes them one at a time:
+The labs then put you in Wireshark with real traffic. You're not hunting for a packet marked malicious — none exists. You're hunting for something that doesn't fit a pattern you've already learned, which is why the learning has to come first. Know what normal looks like at each layer and the exception jumps out; don't, and you'll stare at a healthy capture for an hour.
 
-- TCP/IP addressing
-- the TCP three-way handshake
-- the ports and protocols you will meet most often
-- how TLS wraps a connection once TCP has already brought it up
-
-Each is straightforward on its own. The difficulty of network analysis comes almost entirely from trying to absorb them all at once.
-
-The labs then put you in Wireshark with real traffic and ask you to separate what is ordinary from what does not belong. It is worth setting expectations about that part, because you are not looking for a packet marked malicious. No such packet exists. What you are looking for is something that does not fit a pattern you have already learned, which means the learning has to come first. An analyst who knows what normal looks like at each layer notices the exception quickly, while one who does not will stare at a perfectly healthy capture for an hour.
-
-By the end of the week you should be able to look at any conversation in a capture and answer four questions:
-
-- Where is it going?
-- Which port did it use?
-- Did the handshake complete?
-- Could anybody watching the wire read what was said?
-
-Those four answers are enough to decide whether a conversation deserves more of your attention, and deciding that quickly is most of the job.
-
-### Questions Answered in This Week
-
-- What do IP and TCP each do, and why does the difference matter when a capture looks broken?
-- What happens in the TCP three-way handshake, and what does an incomplete one tell you?
-- What are the ports you will meet most often, and which of them deserve a second look?
-- What is a protocol, and how is it different from the port it arrives on?
-- Why do analysts check DNS activity so early in an investigation?
-- What does TLS actually encrypt, and what can you still see in a capture when it is in use?
+By the end of the week, any conversation in a capture should answer four questions for you: Where is it going? Which port did it use? Did the handshake complete? Could anybody watching the wire read what was said? Those four answers decide whether it deserves more of your attention — and deciding that fast is most of the job.

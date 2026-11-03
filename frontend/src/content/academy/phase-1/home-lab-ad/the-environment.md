@@ -1,6 +1,6 @@
 ### The Environment
 
-This tab is the inventory of every user account and workstation, with the totals at the end. The build script creates everything listed here. The Range download also adds the Ticket Queue objects listed at the bottom.
+The full inventory of every user account and workstation, totals at the end. The build script creates everything listed here; the Range download adds the Ticket Queue objects at the bottom.
 
 Learn the roster well enough to notice when someone is missing. If your directory and this page ever disagree, stop and find out why before you close a ticket.
 

@@ -5,29 +5,17 @@
 
 ### Before You Touch a Ticket, Learn the Environment
 
-You cannot call something suspicious until you know what **normal** looks like. In this lab, normal is PurveX Financial.
+You can't call something suspicious until you know what **normal** looks like. In this lab, normal is PurveX Financial: a mid-sized wealth management firm whose environment holds client money and records regulated under GLBA and SOX. That's what's at stake on every ticket.
 
-PurveX Financial is a mid-sized wealth management firm, and its environment holds client money and records regulated under GLBA and SOX. That is what is at stake on every ticket you work.
+The firm is also your baseline for judging any sign-in. A 2 AM login from a Wealth Management workstation raises a different question than one from an unfamiliar lab machine — either could be legitimate, and only knowing the environment tells you which.
 
-The firm is also your baseline for judging every account and sign-in. A 2 AM sign-in from a Wealth Management workstation raises a different question from a 2 AM sign-in on an unfamiliar lab machine. Either might still be legitimate, and only knowing the environment lets you decide which one fits.
-
-The environment is small enough to hold in your head:
-
-- Five departments
-- Nine people
-- A defined set of groups
-
-A real desk works the same way: you learn who works where and what access each person should have, and over time you learn what normal activity looks like.
+It's small enough to hold in your head: five departments, nine people, a defined set of groups. A real desk works the same way — you learn who works where, and over time you learn what normal looks like.
 
 ### A Directory Built Like a Real Firm
 
-A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are messier, so this lab is built like a real firm.
+A textbook gives you `User1` inside `OU=Users` and explains everything. Real environments are messier, so this lab is too: real departments and access groups, tickets that may not tell the whole story.
 
-Here you work with real departments and access groups, and with tickets that may not tell the whole story.
-
-A job title does not set anyone's access, either. Somebody whose title says Helpdesk does not belong in the **Helpdesk** group because of the title alone. Membership follows what the job needs, and a ticket has to approve it.
-
-Callers and tickets can be wrong, and handling that is part of the job. Verify what a ticket or caller tells you before you act on it.
+A job title doesn't set access either. Somebody titled Helpdesk doesn't belong in the **Helpdesk** group just because of that title — membership follows what the job needs, and a ticket has to approve it. Callers and tickets can be wrong. Verify before you act.
 
 ### The Role You Play
 
