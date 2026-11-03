@@ -71,7 +71,7 @@ A different log shows a value that is exactly 64 characters long, no matter how 
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You hashed one short word earlier in this lab and got a 64-character hex string back. Changing the input's length has never changed that number.</p>
+<p>You hashed one short word in the first challenge above and got a 64-character hex string back. Changing the input's length has never changed that number.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Base64's output length scales with the input: a longer word produces a longer encoded string. It is not fixed.</div>

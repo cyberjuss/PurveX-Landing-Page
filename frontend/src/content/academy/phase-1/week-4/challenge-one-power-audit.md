@@ -22,7 +22,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Think about the gap between the two systemctl rules earlier in this lab. A folder of hundreds of commands is the same kind of gap, written differently.</p>
+<p>Think about the gap between the two systemctl rules in the challenge above. A folder of hundreds of commands is the same kind of gap, written differently.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">A folder is not a command. <code>/usr/bin</code> holds hundreds of real, unrelated tools, exactly the same mistake as granting bare <code>systemctl</code> with no service named.</div>
@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A folder path is not a command list. <code>/usr/bin</code> holds hundreds of real tools, and "any command in a folder" is exactly the same mistake as the unscoped systemctl rule you just read, just spelled differently. The fix is the same one you wrote earlier in this lab: name the exact backup command and nothing else.</p>
+<p>A folder path is not a command list. <code>/usr/bin</code> holds hundreds of real tools, and "any command in a folder" is exactly the same mistake as the unscoped systemctl rule from the challenge above, just spelled differently. The fix is the same one you wrote in the challenge above: name the exact backup command and nothing else.</p>
 </div>
 </div>
 </div>

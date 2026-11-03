@@ -14,7 +14,7 @@
 
 <div class="ad-mission ad-mission--capstone" data-id="w3m-c4" data-attempts="0">
 <span class="ad-mission__num">Ticket 07 · INC-1112 · Medium</span>
-<p><strong>Detection Engineering · Design Question · 2:30 PM</strong><br>PurveX Financial's detection team wants to write a rule for scans like the one you just ran, but the scan used a plain bash loop, not a hacking tool.</p>
+<p><strong>Detection Engineering · Design Question · 2:30 PM</strong><br>PurveX Financial's detection team wants to write a rule for scans like the one you ran in the challenges above, but the scan used a plain bash loop, not a hacking tool.</p>
 <p><strong>Task:</strong> What does that mean for detection? Type its letter.<br><strong>A</strong> Scans cannot be detected.<br><strong>B</strong> You detect the pattern in the traffic, not a banned tool.<br><strong>C</strong> Only special attacker tools leave a trace.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what detection actually relies on" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -68,7 +68,7 @@ A week later the security team pulls a capture from the file server. One worksta
 </div>
 <div>
 <span>Why it matters</span>
-<p>The shape alone, one source and forty ports in ten seconds, is already the scan signature from earlier in this lab. But the shape only tells you a scan happened. Reading each port's own answer is what tells you what it found: two real open services, a few ports actively refusing, and a firewall standing silently in front of everything else. That second read is the part a detection rule flags; the first read is what an analyst still has to do by hand.</p>
+<p>The shape alone, one source and forty ports in ten seconds, is already the scan signature from the challenge above. But the shape only tells you a scan happened. Reading each port's own answer is what tells you what it found: two real open services, a few ports actively refusing, and a firewall standing silently in front of everything else. That second read is the part a detection rule flags; the first read is what an analyst still has to do by hand.</p>
 </div>
 </div>
 </div>

@@ -57,7 +57,7 @@
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Encryption is not the only thing that happened. A copy also left the building before the files were locked.</div>
-<div class="ad-miss" data-guess="c">The share being encrypted is a real failure too, the same one you caused with <code>systemctl stop nginx</code> earlier, just harder to undo this time.</div>
+<div class="ad-miss" data-guess="c">The share being encrypted is a real failure too, the same one you caused with <code>systemctl stop nginx</code> in the Availability challenge above, just harder to undo this time.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -75,6 +75,16 @@
 ### Fix What You Broke
 
 Naming a failure and closing it are two different jobs. You still have one confidentiality failure sitting open on your own machine: <code>ledger.txt</code> at <code>chmod 600</code>, unreadable by jamie.torres.
+
+If you jumped straight to this challenge and skipped Confidentiality above, recreate that state first; otherwise skip ahead.
+
+```bash
+sudo mkdir -p /srv/cia
+sudo chown student:student /srv/cia
+printf 'Q3 advisory fees: 412500\n' > /srv/cia/ledger.txt
+chmod 600 /srv/cia/ledger.txt
+sudo useradd -m jamie.torres 2>/dev/null
+```
 
 <div class="ad-mission ad-mission--capstone" data-id="w1e-c6" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · INC-1151 · Low</span>
@@ -114,7 +124,7 @@ Naming a failure and closing it are two different jobs. You still have one confi
 The company restores the ransomware-hit share from a clean backup made the night before the attack.
 
 <div class="ad-mission ad-mission--capstone" data-id="w1e-c7" data-attempts="0">
-<span class="ad-mission__num">Ticket 06 · INC-1152 · Medium</span>
+<span class="ad-mission__num">Ticket 06 · INC-1162 · Medium</span>
 <p><strong>SOC Lead · Post-Incident Review · 3:30 PM</strong><br>The restore finishes. Leadership asks whether this incident is now closed.</p>
 <p><strong>Task:</strong> Which properties does that restore actually fix, and which one is it powerless against no matter how recent the backup is? Type its letter.<br><strong>A</strong> It fixes integrity only. Availability and confidentiality stay broken either way.<br><strong>B</strong> It fixes integrity and availability, since the files come back correct and reachable, but it cannot touch confidentiality: a copy already in the attacker's hands stays there.<br><strong>C</strong> It fixes all three, since the backup contains the original, unaltered data.</p>
 <div class="ad-guess">

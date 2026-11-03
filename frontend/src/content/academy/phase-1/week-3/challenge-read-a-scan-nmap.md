@@ -20,7 +20,7 @@ Install it on the Ubuntu server.
 sudo apt install -y nmap
 ```
 
-Then scan the same ports with a connect scan, the same handshake you just read packet by packet.
+Then scan the same ports with a connect scan, the same handshake you read packet by packet in the challenge above.
 
 ```bash
 nmap -sT -p 53,88,389,445,3389,23,8080,9999 dc01

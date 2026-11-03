@@ -62,7 +62,7 @@ sudo grep priya.sample /etc/shadow
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The line reads <code>priya.sample:$X$salt$hash:...</code>. <code>X</code> is what you want, and it is not <code>6</code>. Ubuntu's own default moved on since the <code>openssl passwd -6</code> command you ran by hand earlier in this lab.</p>
+<p>The line reads <code>priya.sample:$X$salt$hash:...</code>. <code>X</code> is what you want, and it is not <code>6</code>. Ubuntu's own default moved on since the <code>openssl passwd -6</code> command you ran by hand in the challenge above.</p>
 <ol>
 <li>Clean up when you are done: <code>sudo userdel -r priya.sample</code>.</li>
 </ol>
@@ -101,7 +101,7 @@ The same manager asks whether switching to a salted hash would have stopped the 
 <p>Salting changed one thing in this whole lab: whether identical passwords looked identical in storage. It never touched how guessable any single password was.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">You proved earlier in this lab that salting stops correlation, not guessing. A weak password salted is still a weak password.</div>
+<div class="ad-miss" data-guess="a">You proved in the challenge above that salting stops correlation, not guessing. A weak password salted is still a weak password.</div>
 <div class="ad-miss" data-guess="c">Salting is not cosmetic. It is the exact difference between the "weak" and "strong" storage you ran side by side in this lab.</div>
 <div class="ad-flag">
 <div class="ad-break">

@@ -27,7 +27,7 @@ You capture from the Ubuntu box and see its conversation with the domain control
 <p>You already proved this once in this lab: a capture on one machine's network card only sees what that machine sends or receives, nothing on a switched network between two other hosts.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">You proved the opposite earlier in this lab: a switched network only shows a machine its own traffic, never a conversation between two other hosts.</div>
+<div class="ad-miss" data-guess="a">You proved the opposite in the challenge above: a switched network only shows a machine its own traffic, never a conversation between two other hosts.</div>
 <div class="ad-miss" data-guess="c">No amount of waiting puts traffic on a wire your own machine was never part of. A switched network does not broadcast every conversation to every card.</div>
 <div class="ad-flag">
 <div class="ad-break">

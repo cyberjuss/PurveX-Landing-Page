@@ -54,7 +54,7 @@ Look at the LDAP conversation's TCP handshake again. The source port, the one on
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You used this exact move on the LDAP connection earlier in this lab to pull one conversation out of the noise.</p>
+<p>You used this exact move on the LDAP connection in the challenge above to pull one conversation out of the noise.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">The Bytes pane shows raw data for one packet at a time. It does not reassemble a whole conversation.</div>

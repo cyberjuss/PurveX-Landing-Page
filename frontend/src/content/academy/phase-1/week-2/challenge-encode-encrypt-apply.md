@@ -52,7 +52,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>This is the exact value you produced earlier in this lab. Drop it back into CyberChef with "From Base64" and see what comes out.</p>
+<p>This is the exact value you produced in the challenge above. Drop it back into CyberChef with "From Base64" and see what comes out.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="b">An AES-encrypted value does not end in a trailing <code>=</code> the way this one does, and this string reverses with a single public operation.</div>
@@ -83,10 +83,10 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The trailing <code>=</code> and the character set are the same tell as the value you decoded earlier in this lab. Use the same recipe.</p>
+<p>The trailing <code>=</code> and the character set are the same tell as the value you decoded in the challenge above. Use the same recipe.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="advisory">That is the word from earlier in this lab, encoded differently. Decode this value on its own.</div>
+<div class="ad-miss" data-guess="advisory">That is the word from the challenge above, encoded differently. Decode this value on its own.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
