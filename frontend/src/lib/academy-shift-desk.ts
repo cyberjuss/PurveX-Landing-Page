@@ -78,7 +78,7 @@ export const DESK_EVENTS: DeskDef[] = [
         },
         {
           id: "ignore",
-          text: "Delete it. MFA resets are never done for travelling staff",
+          text: "Delete it. MFA resets are never done for traveling staff",
           correct: false,
           why: "Real people do lose phones. Refusing outright leaves a colleague locked out; the job is to verify and then help, and to report the email if it does not check out.",
         },
@@ -133,7 +133,7 @@ export const DESK_EVENTS: DeskDef[] = [
     source: "FBI IC3, Business Email Compromise public service announcements · Week 4, Authentication: pressure is the most common social engineering move",
     build: () => ({
       from: "Dana Whitmore (CEO) <dana.whitmore.ceo@gmail.com>",
-      title: "Quick favour, keep this between us",
+      title: "Quick favor, keep this between us",
       body: `"Are you at your desk? I need six $200 gift cards for a client thank-you before the board call. I'm stuck in meetings and can't talk. Buy them, scratch the backs, and email me the codes. I'll make sure you're reimbursed today."`,
       choices: [
         {
@@ -168,7 +168,7 @@ export const DESK_EVENTS: DeskDef[] = [
     kind: "email",
     minLevel: 2,
     points: 15,
-    lesson: "Privileged access needs a change ticket and an approver, not a convincing email. Least privilege is a process, not a favour.",
+    lesson: "Privileged access needs a change ticket and an approver, not a convincing email. Least privilege is a process, not a favor.",
     source: "NIST SP 800-53 Rev. 5, AC-6 Least Privilege and CM-3 Configuration Change Control · Week 4, Authorization",
     build: (who) => ({
       from: `${who.name} <${who.sam}@purvex.local>`,
@@ -304,7 +304,7 @@ export const DESK_EVENTS: DeskDef[] = [
     build: (who) => ({
       from: `${who.name} <${who.sam}@purvex.local>`,
       title: "Opened an invoice attachment, now my PC is acting weird",
-      body: `"I opened the invoice attached to an email from a supplier I didn't recognise. Nothing seemed to open, but now there's a command window flashing and my laptop fan is going crazy. Should I just restart it?"`,
+      body: `"I opened the invoice attached to an email from a supplier I didn't recognize. Nothing seemed to open, but now there's a command window flashing and my laptop fan is going crazy. Should I just restart it?"`,
       choices: [
         {
           id: "restart",
@@ -494,7 +494,7 @@ export const DESK_EVENTS: DeskDef[] = [
     kind: "email",
     minLevel: 2,
     points: 15,
-    lesson: "Access ends when the engagement ends. An extension is an approved change with a new end date on the account, never a favour.",
+    lesson: "Access ends when the engagement ends. An extension is an approved change with a new end date on the account, never a favor.",
     source: "NIST SP 800-53 Rev. 5, AC-2 Account Management · Home lab, INC-1047",
     build: (who) => ({
       from: `${who.name} <${who.sam}@purvex.local>`,

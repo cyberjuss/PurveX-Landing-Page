@@ -9,7 +9,7 @@ ATT&CK organizes that behavior in three layers:
 - **Technique:** a specific way of reaching that goal.
 - **Sub-technique:** a technique narrowed further.
 
-Password Spraying is a technique under the Credential Access tactic. It already has a name and an ID (T1110.003). That label exists before you ever see the technique in your own queue, because enough real incidents followed the same pattern for MITRE to catalogue it.
+Password Spraying is a technique under the Credential Access tactic. It already has a name and an ID (T1110.003). That label exists before you ever see the technique in your own queue, because enough real incidents followed the same pattern for MITRE to catalog it.
 
 You have already met several of these techniques without the label. Every Shift incident in your own hosted lab carries a real ATT&CK tag, because the incidents were built to mirror actual attacker behavior rather than invented ones:
 

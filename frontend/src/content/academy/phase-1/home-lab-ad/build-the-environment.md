@@ -806,7 +806,7 @@ function Ensure-IntegrityTickets {
     Write-Host "`n== Integrity ticket ==" -ForegroundColor Cyan
 
     # INC-1058: three mirrors of the same VPN client manifest, one of them altered,
-    # plus an exported password table to practise on. The manifests are text so the
+    # plus an exported password table to practice on. The manifests are text so the
     # student can read what changed once the hash tells them something did. Nothing
     # here runs: there is no installer and no payload, only a manifest to compare.
     #

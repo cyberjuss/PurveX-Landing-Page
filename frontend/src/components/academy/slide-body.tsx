@@ -408,7 +408,7 @@ export function Recap({ items, slides, activities, where }: { items: RecapItem[]
         </svg>
         <span className="lk-recap__lead">
           <strong>{finish ? "Section complete." : done ? "All in your deck." : `${kept} of ${items.length} in your deck.`}</strong>{" "}
-          {done ? "They come back when it is time to practise." : "Say what each one means, then flip it to keep it for review."}
+          {done ? "They come back when it is time to practice." : "Say what each one means, then flip it to keep it for review."}
         </span>
         <span className="lk-recap__meta">
           <span>
