@@ -9,12 +9,19 @@ page (`/academy/phase-1/home-lab-active-directory`): 5 departments, 9 users,
 actual lab VMs/network, not student-facing content -- it isn't linked from
 the site and shouldn't be.
 
+> **These are copies.** The live scripts, the ones the site serves, hosted
+> labs download and the Build the Environment lesson embeds, are in
+> `frontend/public/lab-scripts/`, and `Build-Environment.ps1` there is signed.
+> Edit those, run `npm run sign:lab-script`, then copy them here. These copies
+> were last synced from the live scripts on 2026-11-04.
+
 ## What's here
 
 | File | Purpose |
 | --- | --- |
 | `Install-Forest.ps1` | One-time bootstrap: promotes a clean Windows Server to the `purvexfinancial.local` forest root. Skip this if the domain already exists. |
 | `Build-Environment.ps1` | Idempotent: creates the OUs, groups, users, and workstation object. Safe to re-run any time. |
+| `Remove-Environment.ps1` | Removes what `Build-Environment.ps1` created, to start the lab over. |
 
 ## Prerequisites
 
