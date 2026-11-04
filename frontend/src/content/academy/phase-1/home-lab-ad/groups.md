@@ -5,7 +5,7 @@
 
 ### Containers
 
-A **Container** looks like an OU in the console. Both use a folder icon, and the OU's extra badge is easy to miss. It is a different kind of object, and the icon will fool you if you stop at appearance.
+Before we get to groups, there's one look-alike to watch for. In the console, a **Container** looks just like an OU, because both use a folder icon and the OU's extra badge is easy to miss. But a Container is a different kind of object, and the icon will fool you if you judge by appearance alone.
 
 | | Organizational Unit | Container |
 | ----- | ----- | ----- |
@@ -14,16 +14,16 @@ A **Container** looks like an OU in the console. Both use a folder icon, and the
 | Can you create your own in the console? | Yes, anywhere | No, Windows builds the default set |
 | Examples in this domain | `OU=IT`, `OU=Compliance` | `CN=Users`, `CN=Computers` |
 
-The default `Users` and `Computers` folders are Containers, not OUs. Windows creates those two folders, and they stay where they are.
+The two you'll meet most are the default `Users` and `Computers` folders, which are Containers rather than OUs. Windows creates both of them, and they stay where they are.
 
-You cannot do either of these with a Container:
+That matters because you can't do either of these with a Container:
 
 - Create your own from the console
 - Link a GPO
 
-That is why the build script puts every account in a real OU. No OU-linked Group Policy can reach an account left in a Container.
+That's why the build script puts every account in a real OU: no Group Policy linked to an OU can reach an account left in a Container.
 
-If you find someone in a default folder, that account is not where it belongs. Never treat the default folders as a department.
+So if you ever find someone in a default folder, that account isn't where it belongs. Never treat the default folders as a department.
 
 ```sort
 prompt: Organizational Unit or Container?
@@ -33,11 +33,11 @@ Container: Windows builds it and you cannot make your own | CN=Computers | CN=Us
 
 ### Security Groups
 
-A **Security Group** is a list of accounts. You use it to grant permissions or apply Group Policy to exactly the people who need them, whatever OU they live in.
+Now for groups themselves. A **Security Group** is a list of accounts, and you use it to grant permissions or apply Group Policy to exactly the people who need them, whatever OU they happen to live in.
 
-A group can cross departments, unlike a folder. An account has exactly one OU but can sit in any number of groups.
+That's the big difference from a folder: a group can cross departments. While an account has exactly one OU, it can sit in any number of groups.
 
-Every department has a standard access group:
+At PurveX, every department has a standard access group:
 
 - `IT Users`
 - `Compliance Users`
@@ -45,9 +45,9 @@ Every department has a standard access group:
 - `Operations Users`
 - `Finance Accounting Users`
 
-IT also has a second, more privileged group called `IT Admins`. That extra group is how two people in the same folder end up with different access.
+IT also has a second, more privileged group called `IT Admins`, and that extra group is how two people in the same folder can end up with different access.
 
-To read access, open the object and read its folder first, then every group on its Member Of tab. Compare these two:
+To read someone's access, open the object and read its folder first, then every group on its Member Of tab. Try it by comparing these two:
 
 <div class="ad-og" aria-label="Alex Rivera and Priya Nair with their groups">
   <article class="ad-og__card">
@@ -87,6 +87,6 @@ To read access, open the object and read its folder first, then every group on i
   </article>
 </div>
 
-Alex and Priya both live under IT, but only Alex is in IT Admins. The folder alone never tells you what someone can do.
+Alex and Priya both live under IT, but only Alex is in IT Admins. That answers this tab's question: the folder alone never tells you what someone can do.
 
-The OU tells you where an account lives. The groups tell you what it can do. Check both, and confirm both match what this environment says they should be.
+To sum up, the OU tells you where an account lives, and the groups tell you what it can do. So check both, and confirm that both match what this environment says they should be.

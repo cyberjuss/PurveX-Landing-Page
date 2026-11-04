@@ -5,12 +5,12 @@
 
 ### Resetting and Unlocking a Password
 
-A locked account and a forgotten password are two different problems. New technicians often mix them up, and each one has its own fix:
+"I can't sign in" is one of the most common calls you'll take, and it usually means one of two different problems: a locked account or a forgotten password. New technicians often mix them up, so it's worth being clear that each one has its own fix:
 
 * **Account locked.** The user knows the password but mistyped it too many times, so AD locked the account as a precaution. Open **Properties → Account** and check **Unlock account** before you click Apply. The password stays the same.
 * **Password forgotten.** The user no longer knows the password. Choose **Reset Password** on the account and set a temporary password. Check **User must change password at next logon** as well.
 
-If a forgotten password also locked the account, check **Unlock the user's account** in the same Reset Password dialog.
+Sometimes you'll get both at once, when a forgotten password also locked the account. In that case, check **Unlock the user's account** in the same Reset Password dialog.
 
 <div class="ad-decision">
 <div class="ad-decision__q">User calls in locked out.<br>Does she remember her password?</div>
@@ -32,11 +32,11 @@ If a forgotten password also locked the account, check **Unlock the user's accou
 </div>
 </div>
 
-Say Riley Kwan in Operations calls in locked out after too many failed logon attempts. The question that decides the fix is whether she still remembers her password.
+To see how that plays out, say Riley Kwan in Operations calls in, locked out after too many failed logon attempts. The one question that decides the fix is whether she still remembers her password.
 
-If she remembers it, unlock the account. If she has forgotten it, reset it and force a change at next logon. A temporary password is never a long-term credential.
+If she remembers it, unlock the account. If she's forgotten it, reset it and force a change at next logon, because a temporary password should never become a long-term credential.
 
-Check the Account tab before you change anything. If **Account is disabled** is ticked, neither unlock nor reset restores sign-in. That is a different fix. Afterward, open the tab again and confirm the box you meant to clear is cleared.
+Whichever it turns out to be, check the Account tab before you change anything. If **Account is disabled** is ticked, neither an unlock nor a reset will restore sign-in, because a disabled account needs a different fix. And once you've made your change, open the tab again and confirm that the box you meant to clear really is cleared.
 
 <style>
 .ad-decision { margin: 1.25rem 0; }

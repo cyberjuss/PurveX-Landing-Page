@@ -5,14 +5,14 @@
 
 ### Service Accounts
 
-A **service account** gives an identity to a service rather than a person:
+You met service accounts briefly on the Accounts tab. A **service account** gives an identity to a service rather than a person, such as:
 
 - A scheduled task
 - An automated process
 
-That is how an account can log on every night at 2 AM with nobody at a keyboard.
+That's how an account can log on every night at 2 AM with nobody at a keyboard, which answers this tab's question.
 
-Follow these practices every time:
+Because service accounts work so differently from people, follow these practices every time you set one up:
 
 * **Dedicated OU.** Keep service accounts apart from real people. You can apply different policy and spot them at a glance. The Range download creates `OU=ServiceAccounts` under the domain root for this.
 * **Naming convention.** Use a prefix that makes the account unmistakable, such as `svc-`. `svc-backup-job` is a service account. `j.smith` is not.
@@ -20,14 +20,14 @@ Follow these practices every time:
 * **Restricted logon hours.** If a backup job only runs overnight, the account's **Logon Hours** should reflect that. A logon outside that window is a red flag.
 * **A filled-in Description.** "Runs the nightly backup job on IT-WKS01" tells the next person what breaks if this account is disabled.
 
-Treat the account like a person until its name, OU and Description all show it is a service.
+Until its name, OU and Description all show it's a service, treat the account like a person.
 
 ### Onboarding by Mirroring Group Membership
 
-The fastest way to onboard someone into an existing role is to copy a peer's group membership. Say PurveX Financial hires a second Help Desk Technician to work alongside Priya Nair.
+Group membership also gives you a quick way to set up new staff. The fastest way to onboard someone into an existing role is to copy a peer's group membership. Say, for example, that PurveX Financial hires a second Help Desk Technician to work alongside Priya Nair.
 
-Open Priya's **Member Of** tab and note every group. Then open the new hire's **Member Of** tab and add the same groups. Keep both Properties windows side by side so you do not miss one.
+To set them up, open Priya's **Member Of** tab and note every group, then open the new hire's **Member Of** tab and add the same groups. It helps to keep both Properties windows side by side, so you don't miss one.
 
-The same comparison helps during an investigation. An account with more groups than its peers and no onboarding record to explain them is worth asking about.
+That same side-by-side comparison helps during an investigation, too. An account with more groups than its peers, and no onboarding record to explain them, is worth asking about.
 
-Mirroring also copies any access the peer should not have, so check the peer's groups against The Environment tab first, not against the ticket.
+One caution, though: mirroring also copies any access the peer shouldn't have. So before you copy anything, check the peer's groups against The Environment tab rather than against the ticket.

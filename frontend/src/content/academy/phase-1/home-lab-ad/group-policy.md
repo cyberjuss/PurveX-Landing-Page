@@ -5,25 +5,25 @@
 
 ### Group Policy Objects (GPOs)
 
-A **GPO** is a bundle of settings. The domain applies it to everything inside the object the GPO is linked to. Common settings include:
+A **GPO**, or Group Policy Object, is a bundle of settings. The domain applies those settings to everything inside the object the GPO is linked to. Common settings include:
 
 - Password policy
 - Screen-lock timeout
 - Software restrictions
 
-A GPO links only to a **Site**, a **Domain**, or an **OU**. It never links to a Container or directly to a group. That is why every account in this lab sits in an OU instead of a default Container.
+A GPO can only link to a **Site**, a **Domain**, or an **OU**, never to a Container or directly to a group. That's the reason, as you saw on the Groups tab, that every account in this lab sits in an OU rather than a default Container.
 
-For example, a GPO linked to `OU=IT` could set a shorter screen-lock timeout for IT staff and leave other departments untouched.
+For example, a GPO linked to `OU=IT` could set a shorter screen-lock timeout for IT staff while leaving other departments untouched.
 
-Password policy is the exception. For domain accounts it only takes effect from a GPO linked at the domain. Stricter rules for one group use a fine-grained password policy instead.
+Password policy is the one exception to that pattern. For domain accounts, it only takes effect from a GPO linked at the domain itself, so if one group needs stricter rules, you'd use a fine-grained password policy instead.
 
-Groups can narrow who inside that OU the GPO applies to, through security filtering. The link still starts at the OU.
+Groups still play a part, though. Through security filtering, a group can narrow down who inside that OU the GPO applies to, even though the link itself still starts at the OU.
 
-If a setting is not applying, ask where the object lives before you blame the GPO. An account in a Container never gets an OU-linked policy. It still gets policy linked at the domain.
+So if a setting isn't applying, ask where the object lives before you blame the GPO. An account in a Container never gets a policy linked to an OU, although it does still get policy linked at the domain.
 
 ### Putting It Together
 
-Each object in this lab answers a different question. You need every answer before you decide something is in the right place.
+You've now met every kind of object in this lab, and each one answers a different question. Before you decide something is in the right place, you need every one of those answers.
 
 | Object | Answers | Can hold a GPO link? | Can nest? |
 | ----- | ----- | ----- | ----- |
@@ -35,11 +35,11 @@ Each object in this lab answers a different question. You need every answer befo
 | Security Group | What can this account access? | No (can filter one) | Yes, groups can contain groups |
 | Group Policy Object | What settings apply here? | n/a | Links to Sites, Domains, or OUs |
 
-Use that table on every object you open:
+Use that table as a checklist on every object you open, working in this order:
 
 - Folder first
 - Person or machine second
 - Group third
 - Settings last
 
-If any one of those does not match PurveX Financial, you have something to explain.
+If any one of those doesn't match PurveX Financial, you've found something that needs explaining.

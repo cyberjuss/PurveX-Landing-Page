@@ -5,11 +5,11 @@
 
 ### Point DNS at the domain controller
 
-A workstation finds `purvexfinancial.local` through DNS. A production network usually hands out the right DNS address. In this lab, you set the workstation's preferred DNS server to the domain controller's IP address yourself.
+Before a workstation can join the domain, it has to find it, and it does that through DNS. On a production network, the right DNS address is usually handed out automatically, but in this lab you'll set the workstation's preferred DNS server to the domain controller's IP address yourself.
 
-If that address is wrong, the join fails even when the domain controller is up. The directory exists, but the workstation cannot reach it to sign in.
+Getting that address right matters, because if it's wrong, the join fails even though the domain controller is up. The directory exists, but the workstation simply can't reach it to sign in.
 
-That is an availability failure, not a password problem. The domain controller never checked the password.
+In Week 1 terms, that's an availability failure rather than a password problem, because the domain controller never even got as far as checking the password.
 
 1. Press Win+R and run `ncpa.cpl`. Right-click the adapter and choose Properties.
 2. Select Internet Protocol Version 4, then Properties.
@@ -55,15 +55,15 @@ That is an availability failure, not a password problem. The domain controller n
 
 ### Confirm the computer object
 
-On the domain controller, open Active Directory Users and Computers. Open the domain, then open Computers.
+Once the workstation has restarted, check that the domain knows about it. On the domain controller, open Active Directory Users and Computers, open the domain, and then open Computers.
 
-A newly joined workstation appears there. A computer created ahead of time appears in the OU where it was staged instead.
+A newly joined workstation appears there. A computer that was created ahead of time, however, appears in the OU where it was staged instead.
 
-The build script staged `IT-WKS01` under IT Workstations, so look there for that one.
+For example, the build script staged `IT-WKS01` under IT Workstations, so that's where you'll find that one.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/computers.png" alt="Active Directory Users and Computers with a computer object under Computers" />
 <figcaption>A joined computer shows up as a computer object. This practice domain is cyberjuss.local. Yours is purvexfinancial.local.</figcaption>
 </figure>
 
-If the name is missing, the join did not finish. Check the DNS address first, because a wrong DNS server is the usual reason a workstation cannot find the domain.
+If the name is missing, the join didn't finish. In that case, check the DNS address first, because a wrong DNS server is the most common reason a workstation can't find the domain.
