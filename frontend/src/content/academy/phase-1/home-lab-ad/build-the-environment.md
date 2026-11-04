@@ -5,7 +5,7 @@
 
 ### Build the environment
 
-After the domain reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this script. It creates the departments, groups, users, and workstation from the baseline tabs.
+Now that the domain exists, it's time to fill it. After the domain reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this script, which creates the departments, groups, users, and workstation you learned about on the baseline tabs.
 
 **What this script does:**
 
@@ -19,15 +19,15 @@ After the domain reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this
 * The Range download plants the ticket-queue challenge objects on the first build and sends your lab right away. Add `-NoCTF` to skip them
 * The Range download also starts a background Coach sync on the domain controller after the first successful build. The VM only has to stay on
 
-**How the Coach sync works.** A change in the lab folders or the DNS zone is sent within about a second, and firewall or share changes within about two. If an upload fails, the change stays queued and is retried within seconds. The Security log goes out once a minute. To stop the sync, run `./Build-Environment.ps1 -UninstallSync`.
+**How the Coach sync works.** Once it's running, a change in the lab folders or the DNS zone is sent within about a second, and firewall or share changes within about two. If an upload ever fails, the change stays queued and is retried within seconds, while the Security log goes out once a minute. If you want to stop the sync, run `./Build-Environment.ps1 -UninstallSync`.
 
-The sync also sends your security settings, such as password and lockout policy, auditing, and log size. It adds a 30-day count of Security log events, such as failed sign-ins and accounts created.
+Along with those changes, the sync sends your security settings, such as your password and lockout policy, auditing, and log size. It also adds a 30-day count of Security log events, such as failed sign-ins and accounts created.
 
-The sync never sends passwords or raw log entries. The drills and the weekly CTF depend on it. If you built your lab before this feature existed, download the script again and run it once.
+What the sync never sends is passwords or raw log entries. The drills and the weekly CTF depend on it, so if you built your lab before this feature existed, download the script again and run it once.
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
 
-You can also copy the script from here. A pasted copy is not linked to your Range account, so Coach and your drills will not see your lab. Use the download when you want that link.
+You can also copy the script from here instead. Keep in mind, though, that a pasted copy isn't linked to your Range account, so Coach and your drills won't be able to see your lab. Use the download whenever you want that link.
 
 <details class="ad-code">
 <summary>Show Build-Environment.ps1 (copy/paste)</summary>
@@ -2117,15 +2117,15 @@ if (-not $IncludeCTF) {
 ./Build-Environment.ps1
 ```
 
-To preview what the script will do before it changes anything, run it with `-WhatIf` first:
+If you'd like to preview what the script will do before it changes anything, run it with `-WhatIf` first:
 
 ```powershell
 ./Build-Environment.ps1 -WhatIf
 ```
 
-If the script will not run, open Check the Build. That tab lists the usual causes and their fixes.
+If the script won't run, don't worry. The Check the Build tab lists the usual causes and how to fix each one.
 
-The Range download plants the ticket-queue challenge data on the same run, so the missions work as soon as the lab reports. It adds these objects:
+On that same run, the Range download also plants the data for the ticket-queue challenges, so the missions work as soon as your lab reports in. It adds these objects:
 
 - A service-account OU
 - A backup service account
@@ -2140,5 +2140,5 @@ The Range download plants the ticket-queue challenge data on the same run, so th
 - A broken DNS record, a stale record left from a server migration, a leftover vendor firewall rule and a misplaced screen lock GPO
 - A Finance share under `C:\PurveX\Shares` with one suspicious file, which is plain text and cannot run
 
-Each ticket object is planted only once, so running the script again never undoes a ticket you already worked. To build the clean baseline without them, run `./Build-Environment.ps1 -NoCTF`.
+Each ticket object is planted only once, so running the script again will never undo a ticket you've already worked. If you'd prefer a clean baseline without them, run `./Build-Environment.ps1 -NoCTF`.
 

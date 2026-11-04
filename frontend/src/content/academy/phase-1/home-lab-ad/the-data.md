@@ -5,7 +5,7 @@
 
 ### Data Categories
 
-Knowing where data lives changes how you read a ticket. Instead of saying an account was accessed, you can say what was at risk when it was.
+Knowing where data lives changes how you read a ticket. Instead of only saying that an account was accessed, you'll be able to say what was actually at risk when it was.
 
 | Data Category | Examples | Primarily Handled By |
 | :---- | :---- | :---- |
@@ -19,11 +19,11 @@ Knowing where data lives changes how you read a ticket. Instead of saying an acc
 | Regulatory and audit material | Compliance filings, audit trails, GLBA and SOX documentation | Compliance |
 | System and access logs | Authentication logs, admin activity, account changes | IT |
 
-Find the row in play before you decide how urgent a ticket is. A group change in Wealth Management is a bigger problem than the same change in Operations.
+So before you decide how urgent a ticket is, find the row that's in play. That's why a group change in Wealth Management is a bigger problem than the same change in Operations: the data behind it is far more sensitive.
 
 ### Who Wealth Management Serves
 
-Wealth Management serves private clients, not corporate accounts. Its client list mirrors a real advisory firm's.
+Since Wealth Management handles so much of that data, it helps to know who it serves. The department works with private clients rather than corporate accounts, and its client list mirrors a real advisory firm's.
 
 | Client Type | Description |
 | ----- | ----- |
@@ -32,4 +32,4 @@ Wealth Management serves private clients, not corporate accounts. Its client lis
 | Trust and estate accounts | Accounts tied to trusts, wills, and estate planning |
 | Retirement-focused clients | Clients nearing or already in retirement |
 
-These clients are why Wealth Management is on the critical list. Size a login or group change there against this table, not against how urgent the ticket sounds.
+These clients are the reason Wealth Management is on the critical list. So when you size up a login or group change there, measure it against this table rather than against how urgent the ticket sounds.

@@ -5,20 +5,20 @@
 
 ### What you need
 
-The lab runs as virtual machines on your own computer. Before you touch Active Directory, you need two machines on the same virtual network:
+The lab runs as virtual machines, or VMs, on your own computer. So before you touch Active Directory, you'll need two machines on the same virtual network:
 
 - **A Windows Server 2022 VM.** It becomes the domain controller.
 - **A Windows 10 VM.** It becomes the workstation you join to the domain.
 
-Both run inside VMware Workstation Pro. Build them first, because every tab after this one assumes they are up.
+Both of them run inside VMware Workstation Pro. Build them first, because every tab after this one assumes they're already up and running.
 
-Windows 10 reached end of support in October 2025. It is fine for a lab VM that never holds real data. Windows 11 Pro joins a domain the same way.
+You may have heard that Windows 10 reached end of support in October 2025. That's fine for a lab VM that never holds real data, and if you'd rather use Windows 11 Pro, it joins a domain in exactly the same way.
 
 Source: [Microsoft Learn: Windows 10 Home and Pro lifecycle](https://learn.microsoft.com/en-us/lifecycle/products/windows-10-home-and-pro)
 
 ### Install VMware Workstation Pro
 
-Download VMware Workstation Pro for Windows and run the installer with the default options.
+To get started, download VMware Workstation Pro for Windows and run the installer with the default options.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/setup/vmware-download.png" alt="VMware Workstation 17 Pro download page with Windows and Linux download links" />
@@ -27,9 +27,9 @@ Download VMware Workstation Pro for Windows and run the installer with the defau
 
 ### Download the two ISO files
 
-An ISO file is the installer disk for an operating system. VMware boots each new VM from one.
+Next, you need an installer for each operating system. These come as ISO files, which work like an installer disk, and VMware boots each new VM from one.
 
-**Windows 10.** Open Microsoft's Download Windows 10 page and click Download tool now. Run the tool and follow these screens:
+**Windows 10.** Open Microsoft's Download Windows 10 page and click Download tool now. Then run the tool and follow these screens:
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -46,7 +46,7 @@ An ISO file is the installer disk for an operating system. VMware boots each new
 </figure>
 </div>
 
-**Windows Server 2022.** Open the Windows Server 2022 page on the Microsoft Evaluation Center. Download the English 64-bit ISO.
+**Windows Server 2022.** For the server, open the Windows Server 2022 page on the Microsoft Evaluation Center and download the English 64-bit ISO.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/setup/server-download.png" alt="Microsoft Evaluation Center Windows Server 2022 download options" />
@@ -55,7 +55,7 @@ An ISO file is the installer disk for an operating system. VMware boots each new
 
 ### Create a virtual machine
 
-You create both VMs with the same New Virtual Machine wizard. Open VMware and choose Create a New Virtual Machine, then walk through these screens.
+With both ISO files saved, you can create the VMs. Both are made with the same New Virtual Machine wizard, so open VMware, choose Create a New Virtual Machine, and walk through these screens.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -84,7 +84,7 @@ You create both VMs with the same New Virtual Machine wizard. Open VMware and ch
 </figure>
 </div>
 
-Before you click Finish, open Customize Hardware and select Network Adapter. Choose Custom and pick the NAT network, usually `VMnet8 (NAT)`.
+There's one more setting to check before you click Finish. Open Customize Hardware, select Network Adapter, then choose Custom and pick the NAT network, which is usually `VMnet8 (NAT)`.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/setup/vm-network.png" alt="VM hardware settings with Network Adapter set to Custom, VMnet8 (NAT)" />
@@ -93,7 +93,7 @@ Before you click Finish, open Customize Hardware and select Network Adapter. Cho
 
 ### Install Windows 10
 
-Power on the Windows 10 VM. It boots from the ISO and opens Windows Setup.
+Now power on the Windows 10 VM. It boots from the ISO you chose and opens Windows Setup.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -116,9 +116,9 @@ Power on the Windows 10 VM. It boots from the ISO and opens Windows Setup.
 
 ### Install Windows Server 2022
 
-Create a second VM with the same wizard and point it at the Windows Server 2022 ISO. Three settings differ from the workstation.
+For the server, create a second VM with the same wizard and point it at the Windows Server 2022 ISO. Most of the steps match the workstation, but three settings are different.
 
-VMware may offer Easy Install for the server. Skip the product key and any edition it suggests, because you choose the edition yourself during setup.
+VMware may offer Easy Install for the server. If it does, skip the product key and any edition it suggests, because you'll choose the edition yourself during setup.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -135,9 +135,9 @@ VMware may offer Easy Install for the server. Skip the product key and any editi
 </figure>
 </div>
 
-Confirm the network adapter uses the same `VMnet8 (NAT)` network as the workstation. Then power on the server and run Windows Setup.
+Before you start it, confirm that the network adapter uses the same `VMnet8 (NAT)` network as the workstation. Then power on the server and run Windows Setup.
 
-Choose Custom: Install Windows only, as you did for the workstation. When the server restarts, set the Administrator password.
+Choose Custom: Install Windows only, just as you did for the workstation. When the server restarts, it will ask you to set the Administrator password.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -152,10 +152,10 @@ Choose Custom: Install Windows only, as you did for the workstation. When the se
 
 ### Before you move on
 
-Check both machines before you open the next tab:
+Before you open the next tab, check that both machines are ready:
 
 - The server shows Server Manager after sign-in
 - The workstation reaches the Windows 10 desktop
 - Both VMs use the same `VMnet8 (NAT)` network
 
-If all three are true, open The Domain Controller and turn the server into the directory.
+If all three are true, you're ready to open The Domain Controller tab and turn the server into the directory.

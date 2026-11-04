@@ -1,12 +1,12 @@
 ### The Environment
 
-The full inventory of every user account and workstation, totals at the end. The build script creates everything listed here; the Range download adds the Ticket Queue objects at the bottom.
+This page is the full inventory of every user account and workstation, with the totals at the end. When you build the lab, the build script creates everything listed here, and the Range download adds the Ticket Queue objects shown at the bottom.
 
-Learn the roster well enough to notice when someone is missing. If your directory and this page ever disagree, stop and find out why before you close a ticket.
+Try to learn the roster well enough that you'd notice if someone were missing. That way, if your directory and this page ever disagree, you'll know to stop and find out why before you close a ticket.
 
 ### Full User Directory
 
-Every user account in the environment with its department, title, username, and group membership.
+Here is every user account in the environment, with its department, title, username, and group membership.
 
 | Department | Name | Title | Username | Group Membership |
 | :---- | :---- | :---- | :---- | :---- |
@@ -20,17 +20,17 @@ Every user account in the environment with its department, title, username, and 
 | Operations | Riley Kwan | Settlements Coordinator | riley.kwan | Operations Users |
 | Finance and Accounting | Jordan Ellis | Staff Accountant | jordan.ellis | Finance Accounting Users |
 
-There are nine users, and each sits in one standard group. Alex Rivera is the exception because he also holds IT Admins.
+There are nine users, and each one sits in a single standard group. The one exception is Alex Rivera, who also holds IT Admins.
 
-Remember that extra group. Unusual activity on Alex carries more risk than unusual activity on Jordan.
+That extra group is worth remembering, because it means unusual activity on Alex's account carries more risk than unusual activity on Jordan's.
 
-A title is not a group. Priya Nair is a Help Desk Technician, but she sits in IT Users rather than Helpdesk.
+Notice, too, that a title isn't a group. Priya Nair is a Help Desk Technician, for example, yet she sits in IT Users rather than Helpdesk.
 
-When a ticket names a person, look up the username and read the account's Member Of list. Do not guess access from the title.
+So when a ticket names a person, look up the username and read the account's Member Of list, rather than guessing their access from their title.
 
 ### The Client Workstation
 
-The lab has only one client machine. Learn where it belongs so you notice if it moves.
+Alongside the users, the lab has just one client machine. Learn where it belongs, so you'll notice if it ever moves.
 
 | Item | Detail |
 | :---- | :---- |
@@ -38,11 +38,11 @@ The lab has only one client machine. Learn where it belongs so you notice if it 
 | Assigned department | IT |
 | Location | Workstations folder under IT |
 
-A ticket that names a different workstation is already a finding. So is IT-WKS01 showing up under a different department. Confirm the folder before you treat the name as proof.
+Because there's only one, a ticket that names a different workstation is already a finding, and so is IT-WKS01 showing up under a different department. In either case, confirm the folder before you treat the name as proof.
 
 ### What Is in This Environment
 
-These totals are what normal looks like here.
+Putting it all together, these totals are what normal looks like here.
 
 | Item | Count |
 | :---- | :---- |
@@ -53,13 +53,13 @@ These totals are what normal looks like here.
 | User accounts | 9 |
 | Client workstations | 1 |
 
-Level 1 uses the built-in `Domain Admins` group, so the build does not create a third access level group.
+You might wonder why there are only two access level groups when there are three levels. Level 1 uses the built-in `Domain Admins` group, so the build doesn't need to create a third one.
 
-Once you build the lab, compare it to these counts. If anything differs, check the build before you trust a ticket answer.
+Once you've built the lab, compare it with these counts. If anything differs, check the build before you trust any ticket answer.
 
 ### Ticket Queue Objects
 
-The Range download also plants these for the Ticket Queue. They are work to do, not part of the baseline:
+Finally, the Range download also plants the following objects for the Ticket Queue. Treat them as work to do, rather than as part of the baseline:
 
 - The `All Employees` and `Finance Reports` groups in `AccessLevels`
 - `old.intern` in IT and `svc-backup-job` in `OU=ServiceAccounts`

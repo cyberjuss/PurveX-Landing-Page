@@ -5,19 +5,19 @@
 
 ### Install the domain
 
-Without a domain, the departments and accounts have nowhere to live. This script creates it. Skip this tab if `purvexfinancial.local` already exists.
+As you saw on the last tab, the departments and accounts have nowhere to live until a domain exists, and this script creates that domain for you. If `purvexfinancial.local` already exists, you can skip this tab.
 
-The script installs Active Directory Domain Services and promotes the server, the same job you saw screen by screen on The Domain Controller. It asks for a recovery-mode password and then reboots.
+It installs Active Directory Domain Services and promotes the server, which is the same job you walked through screen by screen on The Domain Controller tab. Along the way, it asks for a recovery-mode password, and then it reboots.
 
-**Before you run it.** Use an elevated PowerShell on a fresh Windows Server that is not yet a domain controller.
+**Before you run it.** Open an elevated PowerShell window (Run as administrator) on a fresh Windows Server that isn't a domain controller yet.
 
-The script asks you to type one password twice: the DSRM recovery password. It is for Directory Services Restore Mode, not for any user. Use at least 8 characters and three of these: lowercase, uppercase, a number, and a symbol.
+When it runs, the script asks you to type one password twice. That's the DSRM recovery password, which is only used for Directory Services Restore Mode, not by any user. It needs at least 8 characters, using three of these: lowercase letters, uppercase letters, numbers, and symbols.
 
-**What you should see at the end.** The server reboots on its own. Sign back in as `PURVEXFINANCIAL\Administrator`, then go to Build the Environment. That download is the one linked to your Range account, and it is what connects your lab to Coach.
+**What you should see at the end.** The server reboots on its own. When it comes back, sign in as `PURVEXFINANCIAL\Administrator` and go to the Build the Environment tab. The download there is the one linked to your Range account, and it's what connects your lab to Coach.
 
 [Download Install-Forest.ps1](/lab-scripts/Install-Forest.ps1)
 
-You can also copy it straight from here:
+If you'd rather not download it, you can also copy it straight from here:
 
 <details class="ad-code">
 <summary>Show Install-Forest.ps1 (copy/paste)</summary>
