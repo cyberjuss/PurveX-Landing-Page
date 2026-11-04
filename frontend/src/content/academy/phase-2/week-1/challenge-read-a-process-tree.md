@@ -12,7 +12,7 @@
 
 ### Build the Hunt Query
 
-Theo Walsh escalated this one from Tier 2: a process name alone rarely tells you anything, its parent and command line do. Sysmon's Process Create events (Event ID 1) sit in their own log, and PowerShell can filter and parse them directly.
+Theo Walsh escalated this one from Tier 2 with a reminder worth keeping: a process name on its own rarely tells you much, but its parent and its command line usually do. Sysmon records every new process as a Process Create event (Event ID 1) in its own log, and PowerShell can filter and read those events directly.
 
 ```powershell
 $hits = Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -FilterHashtable @{ Id = 1 } |
@@ -21,7 +21,7 @@ $xml = [xml]$hits[0].ToXml()
 $xml.Event.EventData.Data | Where-Object Name -in "Image","ParentImage","CommandLine" | Select-Object Name, "#text"
 ```
 
-That pulls every process-creation event, keeps the one whose command line tried to run with a hidden window, then parses its raw Sysmon XML for the three fields that matter: what ran, what launched it, and what it was told to do.
+The query pulls every process-creation event and keeps only the ones whose command line asked for a hidden window. From there, it reads each event's raw Sysmon XML and prints the three fields that matter: what ran, what launched it, and what it was told to do.
 
 <div class="ad-mission" data-id="mw2-01" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1137 · Medium</span>
@@ -32,7 +32,7 @@ That pulls every process-creation event, keeps the one whose command line tried 
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The CommandLine field your query printed contains a network connection attempt written out in full, address and port together.</p>
+<p>Look at the CommandLine field your query printed. Somewhere in it, a network connection is written out in full, with the address and port together.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="4444">That is only the port. Report the full address and port together, as address:port.</div>
@@ -44,7 +44,7 @@ That pulls every process-creation event, keeps the one whose command line tried 
 </div>
 <div>
 <span>Why it matters</span>
-<p>The process name told you almost nothing. The command line, pulled straight from the event's own XML instead of a GUI click-through, told you exactly where this is reaching and how often, which is the actual evidence an escalation needs.</p>
+<p>Notice how little the process name told you on its own. The command line, read straight from the event's XML, told you exactly where this process is reaching and how often, and that's the evidence an escalation actually needs.</p>
 </div>
 </div>
 </div>
@@ -52,7 +52,7 @@ That pulls every process-creation event, keeps the one whose command line tried 
 
 ### Weigh the Parent
 
-The ParentImage field your query returned is a system service hosting the task scheduler, not a person's own interactive session.
+Now look at the ParentImage field your query returned. It points to the system service that hosts the task scheduler, which means no person launched this from their own session.
 
 <div class="ad-mission" data-id="mw2-06" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1138 · Medium</span>
@@ -64,7 +64,7 @@ The ParentImage field your query returned is a system service hosting the task s
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The command line tells you what ran. The parent tells you how it got there, and those are two different questions.</p>
+<p>Keep the two fields apart. The command line tells you what ran, while the parent tells you how it got there.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">The ParentImage is a different field from CommandLine, and it answers a different question: how the process got launched, not what it was told to do.</div>
@@ -77,7 +77,7 @@ The ParentImage field your query returned is a system service hosting the task s
 </div>
 <div>
 <span>Why it matters</span>
-<p>An office application spawning PowerShell is one of the most common signs of a phishing attachment doing its job the moment it is opened, a completely different stage and a completely different response than a task that has already been sitting there for weeks. The command line told you what ran. The parent told you how it got there, and those are two different questions with two different answers.</p>
+<p>When an office application spawns PowerShell, it's usually a phishing attachment doing its job the moment someone opens it. That's a much earlier stage of an attack than a task that has been sitting on the box for weeks, and it calls for a different response. So even with an identical command line, the parent changes the story, because it answers a different question.</p>
 </div>
 </div>
 </div>
@@ -85,7 +85,7 @@ The ParentImage field your query returned is a system service hosting the task s
 
 ### Find What Keeps Bringing It Back
 
-A single process-creation event does not explain why the same command runs again every 15 minutes with nobody typing it. Something on this box is scheduling it, and PowerShell can list every scheduled task's own action and arguments instead of opening Task Scheduler by hand.
+One process-creation event still doesn't explain why the same command runs again every 15 minutes with nobody typing it. Something on this box must be scheduling it, and rather than clicking through Task Scheduler, you can have PowerShell list every scheduled task along with its action and arguments.
 
 ```powershell
 Get-ScheduledTask | Where-Object {
@@ -94,15 +94,15 @@ Get-ScheduledTask | Where-Object {
 } | Select-Object TaskName, State
 ```
 
-That filter will not return just one result. This lab's own background sync task also runs PowerShell with a hidden window, and it is legitimate. Tell the two apart by what each one's Arguments actually say.
+Expect more than one result here. This lab's own background sync task also runs PowerShell with a hidden window, and that one is legitimate, so you'll need to tell the two apart by reading what each task's Arguments say.
 
 ```powershell
 (Get-ScheduledTask -TaskName "<each name the filter returned>").Actions.Arguments
 ```
 
-One result runs `-File` against a real script on disk, with a name and a purpose you can go read. The other runs `-Command` with a single hardcoded address and port typed directly into the task, no file, no owner, no business reason anyone could name.
+One result runs `-File` against a real script on disk, with a name and a purpose you can go and read. The other uses `-Command` with an address and port typed straight into the task, and there's no file, no owner and no business reason anyone could name.
 
-Once you have the suspicious one, confirm what lets its traffic out at all.
+Once you've picked out the suspicious task, the next question is how its traffic is getting out at all.
 
 ```powershell
 Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True |
@@ -120,10 +120,10 @@ Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True |
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>One task's Arguments point to a real <code>-File</code> on disk with a name and a purpose. The other hardcodes <code>-Command</code> with an address and port, nothing else.</p>
+<p>Compare the Arguments. One task points to a real <code>-File</code> on disk that has a name and a purpose, while the other hardcodes <code>-Command</code> with an address and port and nothing else.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="purvex coach lab sync">That is this lab's own legitimate sync task. It runs a real file with a real purpose. Read the other task's Arguments instead.</div>
+<div class="ad-miss" data-guess="purvex coach lab sync">That one is this lab's own legitimate sync task, and it runs a real file with a real purpose. Take a look at the other task's Arguments instead.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -132,7 +132,7 @@ Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True |
 </div>
 <div>
 <span>Why it matters</span>
-<p>A scheduled task that relaunches the same hardcoded command every 15 minutes, with no file and no owner behind it, is how an attacker keeps a foothold after the machine restarts. The firewall rule you found is what lets its traffic leave at all. Neither one looks suspicious alone next to this lab's own real sync task. Reading what each one's arguments actually say is what separates them.</p>
+<p>A scheduled task that relaunches the same hardcoded command every 15 minutes, with no file and no owner behind it, is how an attacker holds on to a machine after it restarts. The firewall rule you found is what lets that traffic leave. Next to the lab's real sync task, neither one looks suspicious at a glance, which is why reading the arguments is what separates them.</p>
 </div>
 </div>
 </div>
@@ -140,7 +140,7 @@ Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True |
 
 ### Contain It Without Destroying the Evidence
 
-You could delete the task outright, but that erases the configuration that proves what it was built to do. An analyst disables it instead, which stops it from ever firing again while leaving its action, trigger, and history in place for whoever investigates next.
+It's tempting to delete the task outright, but that would erase the configuration that proves what it was built to do. Instead, an analyst disables it. That stops it from firing again while leaving its action, trigger and history in place for whoever investigates next.
 
 ```powershell
 Disable-ScheduledTask -TaskName "WindowsDiagnosticsSync"
@@ -156,10 +156,10 @@ Disable-ScheduledTask -TaskName "WindowsDiagnosticsSync"
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Run <code>Disable-ScheduledTask</code> against the task first. Then, and only then, check its State property again.</p>
+<p>Order matters here. Run <code>Disable-ScheduledTask</code> against the task first, and only after that check its State property again.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="ready|running">That is the state before you disabled it, or the task is still set to fire. Run Disable-ScheduledTask against it first, then check its state again.</div>
+<div class="ad-miss" data-guess="ready|running">That state means the task is still set to fire, so it hasn't been disabled yet. Run Disable-ScheduledTask against it first, then check its state again.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -168,11 +168,11 @@ Disable-ScheduledTask -TaskName "WindowsDiagnosticsSync"
 </div>
 <div>
 <span>Why it matters</span>
-<p>Unregister-ScheduledTask would have deleted the task's action, trigger, and history along with its ability to run, the exact record a later investigation needs to confirm what it was and how long it ran. Disabling it stops the persistence and keeps the proof.</p>
+<p>Unregister-ScheduledTask would have stopped the task too, but it would also have deleted its action, trigger and history. That's the very record a later investigation needs to confirm what the task was and how long it ran. Disabling it stops the persistence and keeps the proof.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Log what you found and disabled, including the address, the task name, and the firewall rule, so the next person does not have to hunt it all over again.</p>
+<p>Before you move on, log what you found and what you disabled, including the address, the task name and the firewall rule. That way, the next person won't have to hunt it all down again.</p>
 </div>
 </div>
 </div>
@@ -180,4 +180,4 @@ Disable-ScheduledTask -TaskName "WindowsDiagnosticsSync"
 
 ### Why It Matters
 
-An EDR alert hands you a process name. The process tree underneath it, the task keeping it alive, and the firewall rule letting it talk are where the actual decision gets made: ordinary administration, or something that needs to be contained right now, the way you just contained it, from the command line, without losing the evidence of what it was.
+An EDR alert only hands you a process name. The real decision comes from what sits underneath it: the process tree, the task keeping it alive and the firewall rule letting it talk. Those tell you whether you're looking at ordinary administration or something that needs containing right now. When it's the second, you contain it the way you just did, from the command line and without losing the evidence of what it was.

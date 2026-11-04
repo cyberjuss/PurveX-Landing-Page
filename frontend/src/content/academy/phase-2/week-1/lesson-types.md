@@ -1,8 +1,8 @@
 ### Types of Malware
 
-Malware is grouped by how it spreads and what it does once it lands. Naming the type quickly tells you what to expect next and how urgent the response is.
+Malware is grouped by how it spreads and what it does once it lands. That grouping is useful on the job, because naming the type quickly tells you what to expect next and how urgent your response needs to be.
 
-The main types you will see include:
+The main types you'll see include:
 
 - Virus
 - Worm
@@ -11,43 +11,43 @@ The main types you will see include:
 - Spyware and infostealers
 - Rootkit
 
-The response changes with the type, so what matters is what makes each one different.
+Since your response changes with the type, what matters most is what makes each one different, so let's take them one at a time.
 
 #### Virus
 
-A virus attaches itself to a file or program and runs when that file is opened. It needs a person to run the infected file to spread, so it moves as fast as people share and open files.
+A virus attaches itself to a file or program and runs whenever that file is opened. Because it needs a person to run the infected file before it can spread, it only moves as fast as people share and open files.
 
-On the job, a virus alert usually points at one file on one machine. The response is to quarantine the file and isolate the host, then check whether the same file reached anyone else.
+On the job, then, a virus alert usually points at one file on one machine. Your response is to quarantine the file and isolate the host, and then check whether the same file reached anyone else.
 
 #### Worm
 
-A worm spreads on its own across a network, with no one needing to open anything. It exploits a weakness or uses stolen credentials to copy itself from machine to machine.
+A worm is different, because it spreads across a network on its own, without anyone needing to open anything. It exploits a weakness or uses stolen credentials to copy itself from machine to machine.
 
-A worm is more urgent than a virus because it does not wait for a person. If one machine is hit, assume others may be next and contain it right away.
+That makes a worm more urgent than a virus, since it doesn't wait for a person. So if one machine is hit, assume others may be next, and contain it right away.
 
 #### Trojan
 
-A trojan hides inside something that looks legitimate, such as a cracked app or a fake installer. The user runs it on purpose believing it is safe, and it opens a door for the attacker.
+A trojan hides inside something that looks legitimate, such as a cracked app or a fake installer. The user runs it on purpose, believing it's safe, and it quietly opens a door for the attacker.
 
-Trojans are common because they rely on trust rather than a technical flaw. The response is to isolate the host and reset the credentials of the account that ran it. Then note what the trojan dropped or connected to, so whoever investigates can follow it.
+Trojans are common precisely because they rely on trust rather than a technical flaw. To respond, isolate the host and reset the credentials of the account that ran it. Then note what the trojan dropped or connected to, so whoever investigates next can follow its trail.
 
 #### Ransomware
 
-Ransomware encrypts files and demands payment for the key. Attackers often reach file shares and delete backups before they start encrypting, so the damage is wide by the time anyone sees the ransom note.
+Ransomware encrypts files and demands payment for the key. What makes it so damaging is that attackers often reach file shares and delete backups before they start encrypting, so the damage is already widespread by the time anyone sees the ransom note.
 
-Ransomware is a top-severity incident. Speed matters: isolate affected hosts from the network immediately to stop the encryption from spreading, and escalate at once.
+For that reason, ransomware is always a top-severity incident, and speed matters. Isolate affected hosts from the network immediately to stop the encryption spreading, and escalate at once.
 
 #### Spyware and infostealers
 
-Spyware watches what a user does. An infostealer grabs specific data such as passwords and session cookies and sends it to the attacker.
+Spyware watches what a user does, while an infostealer goes after specific data, such as passwords and session cookies, and sends it to the attacker.
 
-The danger is quiet: no files are locked, so it can run for weeks. When you suspect it, treat the account's credentials and sessions as compromised along with the machine.
+The danger here is how quiet it is. Since no files get locked, it can run for weeks without anyone noticing. So when you suspect it, treat the account's credentials and sessions as compromised, not just the machine.
 
 #### Rootkit
 
-A rootkit hides an attacker's presence by tampering with the operating system itself, so normal tools may report that nothing is wrong. It is often what keeps other malware hidden.
+Finally, a rootkit hides an attacker's presence by tampering with the operating system itself, which means normal tools may report that nothing is wrong. It's often what keeps other malware hidden.
 
-A suspected rootkit is beyond a tier-1 fix. Preserve the machine and do not trust its own output. Escalate to a team that can inspect it from outside the running system.
+A suspected rootkit is beyond a Tier 1 fix. Preserve the machine, and don't trust anything it reports about itself. Instead, escalate to a team that can inspect it from outside the running system.
 
 ```sort
 prompt: Match each behavior to its type.
@@ -70,7 +70,7 @@ Spyware = Treat the account's credentials and sessions as compromised
 
 ### What Kind of Malware Is This?
 
-A real alert rarely names its own type. It shows up as a symptom, and naming the type is the first thing you have to work out.
+In practice, a real alert rarely tells you its own type. It shows up as a symptom instead, so working out the type is the first thing you have to do.
 
 ```sort
 prompt: Read what was reported. Sort each one by what it actually is.

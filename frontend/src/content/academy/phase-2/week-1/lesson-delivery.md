@@ -1,41 +1,41 @@
 ### How Malware Gets In
 
-Malware almost never appears from nowhere. It arrives through a delivery path, and knowing the common paths tells you where to look first and how to stop the next one.
+Malware almost never appears out of nowhere. It arrives through a delivery path, and knowing the common paths tells you where to look first and how to stop the next one.
 
-The paths you will see most are:
+These are the paths you'll see most:
 
 - Phishing
 - Malicious downloads
 - Removable media
 - Exploited software
 
-Most of these depend on a person or an unpatched weakness. Those are exactly what a SOC watches for.
+Notice that most of these depend on a person or an unpatched weakness, which is exactly what a SOC watches for.
 
 #### Phishing
 
-Phishing is the most common way in. An email or message tricks the user into opening an attachment or clicking a link that runs the payload.
+Phishing is the most common way in. An email or message tricks the user into opening an attachment or clicking a link, which then runs the malicious code.
 
-When a machine is infected, the user's recent email is one of the first things to check. Finding the message that started it tells you what was delivered and who else received it.
+That's why, when a machine is infected, the user's recent email is one of the first things to check. Finding the message that started it tells you both what was delivered and who else received it.
 
 #### Malicious downloads
 
-A user downloads and runs what looks like a normal installer, often from a search result or a cracked-software site. This is how many trojans arrive.
+With a malicious download, the user downloads and runs what looks like a normal installer, often from a search result or a cracked-software site. This is how many trojans arrive.
 
-The browser history and downloads folder show what was fetched and when. That timeline usually lines up with the moment the alert fired.
+To trace one, look at the browser history and downloads folder, which show what was fetched and when. That timeline usually lines up with the moment the alert fired.
 
 #### Removable media
 
-A USB drive can carry malware onto a machine, including machines with no internet access. Windows no longer runs files from a USB drive automatically, so the drive usually needs someone to open a file on it. Attackers name that file to look worth opening.
+A USB drive can also carry malware onto a machine, even one with no internet access. Windows no longer runs files from a USB drive automatically, so the drive usually needs someone to open a file on it, which is why attackers name that file to look worth opening.
 
-In an environment that should not allow unknown USB devices, a removable-media infection is a policy finding as well as a cleanup job.
+In an environment that shouldn't allow unknown USB devices at all, an infection like this is a policy finding as well as a cleanup job.
 
 #### Exploited software
 
-Unpatched software can be attacked directly over the network, with no user action at all. Worms spread this way, and so do targeted intrusions.
+The last path needs no user at all. Unpatched software can be attacked directly over the network, and that's how worms spread, along with many targeted intrusions.
 
-This is why patching is a security control, not just maintenance. An infection with no user action points here, and it raises the question of what else on the network shares the same flaw.
+This is why patching counts as a security control, not just maintenance. So if an infection happened with no user action, suspect this path, and ask what else on the network shares the same flaw.
 
-Whatever the path, closing it is part of the fix. Cleaning one machine without closing the way in leaves the next infection waiting.
+Whatever the path turns out to be, closing it is part of the fix, because cleaning one machine without closing the way in just leaves the next infection waiting.
 
 ```sort
 prompt: Which path did it come in through?

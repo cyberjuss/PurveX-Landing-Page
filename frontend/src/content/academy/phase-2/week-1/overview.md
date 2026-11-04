@@ -5,13 +5,13 @@
 
 ### Malware
 
-Malware is any software written to do harm, such as stealing data or holding it for ransom. Most incidents an analyst sees start here, so knowing the common kinds and how they behave is the first step to responding well.
+Malware is any software written to do harm, such as stealing data or holding it for ransom. Since most incidents an analyst sees start with malware, knowing the common kinds and how they behave is the first step to responding well.
 
-This week covers four things:
+To get you there, this week covers four things:
 
 - The main types of malware and how each behaves
 - How malware gets onto a machine in the first place
 - What to do when a malware alert fires on an endpoint
 - The tools you will actually use to verify, contain and investigate
 
-You do not need to reverse-engineer malware to work a tier-1 alert. You need to recognize what you are looking at and contain it, then escalate with the right evidence. That is what this week builds.
+Don't worry if malware sounds intimidating. You don't need to take malware apart to work a Tier 1 alert. What you do need is to recognize what you're looking at, contain it, and then escalate with the right evidence, and that's exactly what this week builds.

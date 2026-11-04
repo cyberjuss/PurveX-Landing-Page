@@ -12,23 +12,23 @@
 
 ### Create the File
 
-Noor Ahmadi wants Windows Defender's coverage confirmed live, and the EICAR test file is the industry's safe, standard way to prove it without touching real malware. Open PowerShell on the domain controller and write the standard EICAR string to a file.
+Noor Ahmadi wants proof that Windows Defender is actually working, not just switched on. The industry's standard way to check that safely is the EICAR test file, a harmless string that every antivirus product agrees to treat as malware. Open PowerShell on the domain controller and write it to a file.
 
 ```powershell
 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' | Out-File -Encoding ascii C:\Users\Public\eicar-test.com
 ```
 
-Watch what happens. Defender's real-time protection usually reacts within a second or two, often before the command even finishes.
+Now watch closely. Defender's real-time protection usually reacts within a second or two, and often it acts before the command has even finished.
 
 ### Confirm It, Either Way
 
-If the file is gone a moment later, Defender already caught it on write. If it is still there, scan it directly.
+Check whether the file is still there. If it has already disappeared, Defender caught it the moment it was written. If it's still sitting there, scan it directly so Defender gets a look at it.
 
 ```powershell
 Start-MpScan -ScanType CustomScan -ScanPath "C:\Users\Public\eicar-test.com"
 ```
 
-Either way, Defender logs what it found.
+Whichever way it went, Defender keeps a record of what it found, and that record is what you'll read next.
 
 ```powershell
 Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
@@ -55,7 +55,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 </div>
 <div>
 <span>Why it matters</span>
-<p>That is a real signature match, the exact mechanism the antivirus lesson described: your file's contents matched a known-bad pattern in Defender's library, instantly, with no behavior analysis needed at all.</p>
+<p>What you just saw is a real signature match, the same mechanism the antivirus lesson described. Your file's contents matched a known-bad pattern in Defender's library, so the verdict came instantly, without any need to watch how the file behaved.</p>
 </div>
 </div>
 </div>
@@ -73,7 +73,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>One engine missing a file is ordinary. Think about what it means for sixty-eight separate, independent engines to agree.</p>
+<p>One engine missing a file happens all the time. So ask yourself what it means when sixty-eight separate engines, built independently, all agree.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Being installed on the endpoint does not make one engine's signature library more complete than the combined judgment of seventy others.</div>
@@ -86,7 +86,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 </div>
 <div>
 <span>Why it matters</span>
-<p>One engine missing a file is normal, every signature library has gaps. Seventy independent engines missing the same file at once is a different story, which is exactly why a hash and reputation lookup is worth running even when your own local antivirus already came back clean.</p>
+<p>One engine missing a file is normal, because every signature library has gaps. When sixty-eight independent engines flag the same file, though, the lone clean verdict is the one to doubt. That's why a hash and reputation lookup is worth running even after your own antivirus has come back clean.</p>
 </div>
 </div>
 </div>
@@ -104,7 +104,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>EICAR caught instantly because its signature is permanently, deliberately known in advance. A real attacker's file usually is not.</p>
+<p>EICAR was caught instantly because its signature is known in advance, on purpose. Ask yourself whether the same is true of a real attacker's file.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">EICAR only caught instantly because its signature was already known. A file nobody has seen before has no signature to match yet.</div>
@@ -117,7 +117,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 </div>
 <div>
 <span>Why it matters</span>
-<p>EICAR caught instantly because its signature is deliberately, permanently known. A real attacker counts on their file not being known yet, which is exactly the gap EDR's behavior watching exists to close.</p>
+<p>EICAR was caught instantly because its signature is known on purpose. A real attacker is counting on the opposite, a file nobody has catalogued yet. Closing that gap is exactly what EDR is for, because it watches what a program does rather than what it looks like.</p>
 </div>
 </div>
 </div>
@@ -125,4 +125,4 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 
 ### Why It Matters
 
-You just watched signature-based detection do exactly what it is built to do: catch something it already knows. The next lab in this week watches a process behave suspiciously instead, which is what catches the file it has never seen before.
+You've just watched signature-based detection do exactly what it was built to do, which is catch something it already knows. In the next lab, you'll come at it from the other side and watch a process behave suspiciously, because behavior is what catches the file nobody has seen before.
