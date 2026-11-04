@@ -265,6 +265,29 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "rt-02": "risk",
   "rt-03": "risk",
   "rt-04": "risk",
+  "rt-05": "risk",
+  // Questions added to the course without a line here. An id missing from this
+  // map is dropped every time progress is read back (sanitizeResults), so the
+  // solve vanished on reload and its challenge could never complete.
+  // check:range:challenges now fails if a challenge question is left out.
+  "w1e-c6": "risk",
+  "w1m-c0": "risk",
+  "w2e-c6": "security",
+  "w2m-c6": "security",
+  "sm-01": "security",
+  "sm-02": "security",
+  "bt-01": "security",
+  "bt-02": "security",
+  "bt-03": "security",
+  "th-01": "security",
+  "tr-01": "logs",
+  "tr-02": "logs",
+  "tr-03": "logs",
+  "tr-04": "logs",
+  "tr-05": "logs",
+  "tr-06": "logs",
+  "tr-07": "logs",
+  "tr-08": "logs",
 };
 
 /**
