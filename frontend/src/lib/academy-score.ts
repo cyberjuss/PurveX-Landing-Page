@@ -281,6 +281,17 @@ export const MISSION_SKILLS: Record<string, Skill> = {
  */
 export const READY_BADGE_ID = "readiness-badge-ready";
 
+/**
+ * The highest Readiness score this student has ever had, in pts. Readiness is
+ * points earned out of every challenge in the course, so each new challenge
+ * that ships lowers everyone's percentage though nobody did anything wrong.
+ * The score a student sees never goes below this. Written by the server alone
+ * (pinReadiness, on every progress save), never taken from a browser.
+ */
+export const READINESS_BEST_ID = "readiness-best";
+/** Rows only the server writes. A browser's copy of these is ignored. */
+export const SERVER_MARKER_IDS: readonly string[] = [READY_BADGE_ID, READINESS_BEST_ID];
+
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
 export const LAB_PASS_IDS = [READY_BADGE_ID] as const;
 export type LabPassId = (typeof LAB_PASS_IDS)[number];
@@ -437,7 +448,8 @@ export function summarize(results: Results): Summary {
   }
   // Readiness counts every mission, so it only reaches 100 when all are done cleanly.
   // Accuracy and skill scores average only what is finished.
-  const overall = Math.round(sum / total);
+  // Floored at the best this student has had, so new challenges never take points away.
+  const overall = Math.max(Math.round(sum / total), readinessBest(results));
   const accuracy = finished ? Math.round(sum / finished) : null;
   const skills: SkillRow[] = (Object.keys(per) as Skill[]).map((key) => ({
     key,
@@ -470,6 +482,24 @@ export function summarize(results: Results): Summary {
   return { overall, accuracy, finished, total, level, skills, focus };
 }
 
+/** The highest Readiness score on record for this student. See READINESS_BEST_ID. */
+export function readinessBest(results: Results): number {
+  const pts = results[READINESS_BEST_ID]?.pts;
+  return typeof pts === "number" ? pts : 0;
+}
+
+/**
+ * Before a save on the server: record the Readiness score and the Ready level
+ * this student has now, so neither can drop later. Only ever raises them.
+ */
+export function pinReadiness(results: Results): Results {
+  const s = summarize(results);
+  const out = { ...results };
+  if (s.finished > 0 && s.overall > readinessBest(results)) out[READINESS_BEST_ID] = { solved: true, wrong: 0, hint: false, pts: s.overall, at: new Date().toISOString() };
+  if (s.level === "ready" && !hasReadyBadge(results)) out[READY_BADGE_ID] = { solved: true, wrong: 0, hint: false, pts: 100, at: new Date().toISOString() };
+  return out;
+}
+
 /** Whether this student has ever reached Ready, regardless of what the live total says now. */
 export function hasReadyBadge(results: Results): boolean {
   return Boolean(results[READY_BADGE_ID]?.solved);
@@ -483,7 +513,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
   if (!raw || typeof raw !== "object") return {};
   const out: Results = {};
   for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
-    if (!(id in MISSION_SKILLS || isLabPass(id)) || !value || typeof value !== "object") continue;
+    if (!(id in MISSION_SKILLS || isLabPass(id) || id === READINESS_BEST_ID) || !value || typeof value !== "object") continue;
     const v = value as Record<string, unknown>;
     const at = typeof v.at === "string" && !Number.isNaN(new Date(v.at).getTime()) ? new Date(v.at).toISOString() : undefined;
     const flagged = v.flagged === true && v.solved !== true;
@@ -494,7 +524,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
       ...(flagged ? { flagged: true } : {}),
       ...(trustLabOk && v.labOk === true ? { labOk: true } : {}),
       ...(trustLabOk && v.labOk === true && v.labVerified === true ? { labVerified: true } : {}),
-      ...(isLabPass(id) && typeof v.pts === "number" && Number.isFinite(v.pts) ? { pts: Math.min(100, Math.max(0, Math.round(v.pts))) } : {}),
+      ...((isLabPass(id) || id === READINESS_BEST_ID) && typeof v.pts === "number" && Number.isFinite(v.pts) ? { pts: Math.min(100, Math.max(0, Math.round(v.pts))) } : {}),
       ...(at ? { at } : {}),
     };
   }

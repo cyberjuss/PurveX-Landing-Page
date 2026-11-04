@@ -846,7 +846,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         closeHintCard();
         return;
       }
-      recordResult(wrap, { hint: true });
+      // Opening the hint after a solve costs nothing: those points are earned.
+      if (!loadResults()[id]?.solved) recordResult(wrap, { hint: true });
       openHintCard(wrap);
     };
 

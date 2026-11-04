@@ -5,7 +5,7 @@ import type { ShiftRun } from "@/lib/academy-shift";
 import { sanitizeProfile, type RoleBrief, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import type { DrillEntry, EntryMode } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
-import { sanitizeResults, type Results } from "@/lib/academy-score";
+import { pinReadiness, sanitizeResults, type Results } from "@/lib/academy-score";
 import { applyPatch, sanitizeSaved, type Saved, type SavedPatch } from "@/lib/academy-saved";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
@@ -39,9 +39,13 @@ export async function loadProgress(userId: string): Promise<Results> {
   return memoryProgress.get(userId) || {};
 }
 
-export async function saveProgress(userId: string, email: string | null, results: Results) {
+/** Returns what was stored: the results with the best score and Ready level pinned. */
+export async function saveProgress(userId: string, email: string | null, scored: Results): Promise<Results> {
+  // Every save records the best Readiness and the Ready level, so later
+  // course growth can only ever leave a student where they were or higher.
+  const results = pinReadiness(scored);
   memoryProgress.set(userId, results);
-  if (!supabaseAdmin) return;
+  if (!supabaseAdmin) return results;
   const { error } = await supabaseAdmin.from("academy_progress").upsert({
     user_id: userId,
     email,
@@ -49,6 +53,7 @@ export async function saveProgress(userId: string, email: string | null, results
     updated_at: new Date().toISOString(),
   });
   if (error) console.error("academy_progress upsert failed", error.message);
+  return results;
 }
 
 /** Null when the stored copy could not be read, so a caller never mistakes an outage for an empty account. */

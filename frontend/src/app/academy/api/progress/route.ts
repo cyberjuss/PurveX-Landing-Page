@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { clearClassCookie, isAcademyUnlocked, readClassCookie } from "@/lib/academy-auth";
 import { findClassByCode, joinClass } from "@/lib/academy-classes";
-import { MISSION_SKILLS, sanitizeResults, type Results } from "@/lib/academy-score";
+import { MISSION_SKILLS, sanitizeResults, SERVER_MARKER_IDS, type Results } from "@/lib/academy-score";
 import { loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { sendEmail } from "@/lib/email";
@@ -73,7 +73,8 @@ export async function PUT(request: Request) {
   for (const [id, row] of Object.entries(incoming)) {
     if (!(id in MISSION_SKILLS) || wiped(id)) continue;
     const cur = results[id] ?? { solved: false, wrong: 0, hint: false };
-    const next = { ...cur, hint: cur.hint || row.hint };
+    // A hint opened after the solve changes nothing: the points were already earned.
+    const next = { ...cur, hint: cur.hint || (row.hint && !cur.solved) };
     if (row.flagged && !cur.solved) next.flagged = true;
     if (!cur.solved && row.at && (!cur.at || row.at > cur.at)) next.at = row.at;
     results[id] = next;
@@ -82,12 +83,11 @@ export async function PUT(request: Request) {
   if (!resetAll) for (const [id, row] of Object.entries(saved)) if (!(id in MISSION_SKILLS)) results[id] = row;
   // A lab's first finished score is the one that counts. A later save can add a pass, never change the score.
   for (const [id, row] of Object.entries(incoming)) {
-    if (id in MISSION_SKILLS) continue;
+    // The best score and the Ready level are the server's to record (saveProgress).
+    if (id in MISSION_SKILLS || SERVER_MARKER_IDS.includes(id)) continue;
     const cur = results[id];
     results[id] = cur ? { ...cur, solved: cur.solved || row.solved, ...(cur.pts === undefined && row.pts !== undefined ? { pts: row.pts } : {}) } : row;
   }
 
-  await saveProgress(student.id, student.email, results);
-
-  return NextResponse.json({ ok: true, results });
+  return NextResponse.json({ ok: true, results: await saveProgress(student.id, student.email, results) });
 }
