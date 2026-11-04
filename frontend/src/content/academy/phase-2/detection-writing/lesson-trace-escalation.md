@@ -1,11 +1,11 @@
 ### E: Escalation
 <!-- art: ticket -->
 
-Escalation is what happens the moment a detection fires. It is not KQL at all, the same way Technique was not. A detection firing is the start of the work, not the end of it. This last step of TRACE decides the severity the alert gets and who or what it notifies. It uses the same P1, P2, P3 scale Week 1 taught for classifying any incident.
+Escalation covers what happens the moment a detection fires. Like Technique, it isn't KQL at all, and it's there because a detection firing is the start of the work rather than the end of it. This last step of TRACE decides what severity the alert gets and who or what it notifies, using the same P1, P2 and P3 scale you learned in Week 1 for classifying any incident.
 
-For Password Spraying specifically, that means routing the alert as a P2, High. That is worked after any open P1, the same way the Shift incident built from this exact technique already does in your own queue. An attack in progress against a real account is not routine, so it does not wait for P3-level attention. It is also not an active breach with confirmed access, so it does not outrank a P1 already in front of you.
+For Password Spraying, that means routing the alert as a P2, High, so it's worked after any open P1. That's exactly how the Shift incident built from this technique already sits in your own queue. The reasoning runs both ways. An attack in progress against real accounts isn't routine, so it shouldn't wait for P3-level attention. But it isn't yet a breach with confirmed access either, so it shouldn't outrank a P1 that's already in front of you.
 
-Here is the full detection, built by walking through all five TRACE letters in order:
+Here's the full detection, built by working through all five TRACE letters in order:
 
 ```
 let threshold = 5;
@@ -17,7 +17,7 @@ SigninLogs
 | order by FailedCount desc
 ```
 
-Every line traces back to a letter:
+As you read it, notice that every line traces back to one of the letters:
 
 - `let threshold = 5;` and the final `where FailedCount > threshold` are Condition.
 - `SigninLogs` and `ago(24h)` are Reference.
@@ -25,7 +25,7 @@ Every line traces back to a letter:
 - `order by FailedCount desc` sorts the worst offenders to the top, so whoever works this queue sees the most severe case first.
 - Technique and Escalation never appear in the query text at all. Technique is the decision made before writing it, that this hunts Password Spraying. Escalation is the decision made after, that this fires as a P2 and routes to the SOC queue.
 
-This query is this course's own construction for teaching TRACE, built from Microsoft's documented KQL operators. It has not been run against a live Sentinel workspace, so verify its syntax against your own tenant before using it for real.
+One word of caution before you use it anywhere real. This course built the query to teach TRACE, using Microsoft's documented KQL operators, but it hasn't been run against a live Sentinel workspace. Check its syntax against your own tenant first.
 
 ```order
 prompt: Put these TRACE steps in the order you would actually build this detection.

@@ -1,13 +1,13 @@
 ### R: Reference
 <!-- art: logs -->
 
-Reference is where TRACE becomes actual KQL. Once you know the technique you are hunting, Reference answers two questions: which table holds the evidence, and how far back do you need to look to catch it. For Password Spraying, the evidence is failed sign-in attempts. Those live in the `SigninLogs` table.
+Reference is the point where TRACE turns into actual KQL. Once you know which technique you're hunting, Reference answers two questions: which table holds the evidence, and how far back you need to look to catch it. For Password Spraying, the evidence is failed sign-in attempts, and those live in the `SigninLogs` table.
 
 ```
 SigninLogs
 | where TimeGenerated > ago(24h)
 ```
 
-`ago(24h)` sets the time window: everything from 24 hours before the query runs to now. A window that is too short misses an attack that unfolds slowly. A window that is too wide buries a real spike in a long, noisy average. Twenty-four hours is a reasonable starting point for a technique like Password Spraying, which produces a fast burst of activity, not a slow drip.
+`ago(24h)` sets the time window, covering everything from 24 hours before the query runs up to now. Choosing that window takes some care. Too short, and you'll miss an attack that unfolds slowly. Too wide, and a real spike gets buried in a long, noisy average. Twenty-four hours is a reasonable starting point for Password Spraying, because it produces a fast burst of activity rather than a slow drip.
 
-`where` is the KQL operator doing the filtering here. It keeps only the rows that match a condition, in this case the time window, and drops the rest before anything downstream has to process them. Scoping early like this, before aggregating or filtering further, is also what keeps a detection query fast against a table with millions of rows a day.
+The filtering itself is done by `where`. It keeps only the rows that match a condition, in this case the time window, and drops everything else before later steps have to process it. Narrowing the data this early, before any aggregating or further filtering, is also what keeps a detection fast against a table that gains millions of rows a day.
