@@ -1,9 +1,9 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Approved Overnight, or Not?</h3>
-<p class="ad-brief__ask">Can you tell a real attack from an alert that only looks like one, using your own lab?</p>
-<p>Before you escalate anything, work it the way the 5 W's taught: check the record first, every field of it.</p>
-<p>Both steps check your Phase 1 lab, so keep it running.</p>
+<p class="ad-brief__ask">Using your own lab, can you tell a real attack apart from an alert that only looks like one?</p>
+<p>Before you escalate anything, work it the way the 5 W's taught you: check the record first, and read every field of it.</p>
+<p>Both steps check your Phase 1 lab, so keep it running while you work.</p>
 </div>
 
 <div class="ad-progress">
@@ -22,7 +22,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The investigation mindset starts with the account itself, before the log and before the clock. One field on this account answers the time question and the location question. Read all of it.</p>
+<p>The investigation mindset starts with the account itself, before the log and before the clock. One field on this account answers both the time question and the location question, so read all of it.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>morgan.reyes</code>.</li>
@@ -46,11 +46,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The account's Description names IT-WKS01 as the only workstation this overnight work is authorized from. The alert's sign-in came from REMOTE-SUPPORT4 instead. The time alone made this sound exactly like INC-1046, but the record tells a fuller story once you read every field of it.</p>
+<p>The account's Description names IT-WKS01 as the only workstation this overnight work is authorized from, yet the alert's sign-in came from REMOTE-SUPPORT4. On the time alone, this sounded exactly like INC-1046, but once you read every field, the record tells a fuller story.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Carry both facts into the next step: the time that matched and the workstation that didn't.</p>
+<p>So carry both facts into the next step: the time that matched, and the workstation that didn't.</p>
 </div>
 </div>
 </div>
@@ -67,8 +67,8 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Classify by what the evidence showed, not by how alarming "3:40 AM sign-in" sounds on its own, and not by only the half of the record that happens to check out.</p>
-<p>The time matching the approved window explains the hour. It does not explain the workstation, and an approved window names one machine, not any machine at that hour.</p>
+<p>Classify by what the evidence showed, rather than by how alarming "3:40 AM sign-in" sounds on its own, and rather than by only the half of the record that happens to check out.</p>
+<p>The time matching the approved window explains the hour, but it doesn't explain the workstation, because an approved window names one machine, not any machine at that hour.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Treating every off-hours alert as Critical is what buries the real ones. Part of this record does check out.</div>
@@ -82,11 +82,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An approved overnight window authorizes work from one named workstation, not a sign-in from anywhere at that hour. Stolen credentials get used at convenient times on purpose, often inside a window staff already expect activity in. Checking the time and stopping there would have closed this out clean.</p>
+<p>An approved overnight window authorizes work from one named workstation, not a sign-in from anywhere at that hour. Attackers use stolen credentials at convenient times on purpose, often inside a window when staff already expect activity. So if you'd checked the time and stopped there, you'd have closed this as clean.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Log it as P2 and route it to IT on-call to confirm whether REMOTE-SUPPORT4 belongs to morgan.reyes at all before closing it.</p>
+<p>Instead, log it as P2 and route it to IT on-call, so they can confirm whether REMOTE-SUPPORT4 belongs to morgan.reyes at all before anyone closes it.</p>
 </div>
 </div>
 </div>

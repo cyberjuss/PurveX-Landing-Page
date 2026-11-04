@@ -1,8 +1,8 @@
 ### The 5 W's of an Investigation
 
-Checking an alert against the baseline tells you *that* something does not fit. It does not by itself give you a record another analyst, your lead, or an auditor can pick up and follow. The 5 W's, who, what, when, where, and why, are the questions that turn a mismatch into a documented account. Journalists have used the same five questions to structure a factual account for over a century, and scholars now trace the underlying idea further back, to Aristotle's framework in the Nicomachean Ethics for judging the circumstances of an act. Incident response guidance recommends the same five questions as a starting point for what to document during an incident, sometimes with how added as a sixth.
+Checking an alert against the baseline tells you *that* something doesn't fit. On its own, though, it doesn't give you a record that another analyst, your lead, or an auditor could pick up and follow. That's what the 5 W's are for: who, what, when, where, and why are the questions that turn a mismatch into a documented account. Journalists have used these same five questions to structure a factual story for over a century, and scholars trace the idea back even further, to Aristotle's framework in the Nicomachean Ethics for judging the circumstances of an act. Today, incident response guidance recommends the same five questions as a starting point for what to document during an incident, sometimes adding how as a sixth.
 
-Each question pulls a specific piece of the alert apart, and skipping one leaves a gap someone else will have to fill in later:
+Each question pulls out one specific piece of the alert, so skipping any of them leaves a gap that someone else will have to fill in later:
 
 - **Who** is the account or user involved, and does this match what they normally do?
 - **What** actually happened, stated as a fact rather than the alert's own characterization of it?
@@ -10,7 +10,7 @@ Each question pulls a specific piece of the alert apart, and skipping one leaves
 - **Where** in the environment did it happen: which host, which network segment, which application?
 - **Why** might this have happened, considering both the innocent explanation and the malicious one?
 
-The order matters less than covering all five before you commit to a decision. An analyst who can answer who, what, and when but not where or why has a partial case. A partial case is where investigations go wrong, because the gaps get filled with assumptions instead of facts.
+The order matters less than covering all five before you commit to a decision. An analyst who can answer who, what, and when, but not where or why, has only a partial case, and partial cases are where investigations go wrong, because the gaps get filled with assumptions instead of facts.
 
 ```sort
 prompt: Sort each alert detail into the question it answers.

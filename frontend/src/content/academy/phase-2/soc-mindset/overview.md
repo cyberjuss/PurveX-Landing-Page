@@ -5,11 +5,11 @@
 
 ### Overview
 
-Everything before this week built a baseline: what a correctly configured system looks like, what a normal authentication flow looks like, what a login record should contain. This week turns that baseline into a job. A SOC (Security Operations Center) analyst watches the environment and decides, alert by alert, whether what's happening still matches it.
+Everything before this week built you a baseline: what a correctly configured system looks like, what a normal sign-in looks like, and what a login record should contain. This week turns that baseline into a job. As a SOC (Security Operations Center) analyst, you watch the environment and decide, alert by alert, whether what's happening still matches that baseline.
 
-That's harder than it sounds, because most of what reaches a SOC is noise: a patch triggers a file-scan alert, an employee logs in from a new laptop, a service account restarts after maintenance. None of that is an attack, and treating it all like one buries the handful of alerts a week that actually are.
+That's harder than it sounds, because most of what reaches a SOC is noise. A patch triggers a file-scan alert, an employee logs in from a new laptop, or a service account restarts after maintenance. None of that is an attack, and if you treat all of it like one, you'll bury the handful of alerts each week that actually are.
 
-This is the same judgment you'll use in every lab and challenge from here forward, including the ones built from your own hosted environment.
+Learning to tell the two apart is the judgment you'll use in every lab and challenge from here on, including the ones built from your own hosted environment.
 
 ```order
 prompt: Put these in the order a SOC alert actually moves through.

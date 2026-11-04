@@ -1,10 +1,10 @@
 ### Allowlisting and Blocklisting
 
-Before anything can misbehave on a system, it has to be allowed to run in the first place. That permission is governed by one of two opposite default postures. An allowlist, also called application whitelisting and documented formally in NIST SP 800-167, denies everything by default and only permits software that has been explicitly approved. Approved software is typically identified by its file hash, its signer, or its installation path. A blocklist does the reverse. It allows everything by default and only denies what is already known to be malicious.
+Before anything can misbehave on a system, it has to be allowed to run in the first place, and that permission follows one of two opposite default settings. An allowlist, also called application whitelisting and formally documented in NIST SP 800-167, blocks everything by default and only permits software that has been explicitly approved. That approved software is usually identified by its file hash, its signer, or the path it's installed to. A blocklist works the other way round: it allows everything by default and only blocks what's already known to be malicious.
 
-The difference in default posture is the whole point, and it is why the two controls catch different things. A blocklist only stops what someone has already seen and flagged. That means it does nothing against malware nobody has catalogued yet. An allowlist stops anything unapproved, known or not. That is why it is the stronger control against novel threats. That strength comes at a cost. Building and maintaining an allowlist that does not break legitimate software is real, ongoing work. That is why many organizations run blocklists everywhere and reserve allowlisting for their most sensitive systems rather than the whole fleet.
+That difference in the default is the whole point, and it's why the two controls catch different things. A blocklist only stops what someone has already seen and flagged, so it does nothing against malware nobody has catalogued yet. An allowlist, on the other hand, stops anything that hasn't been approved, whether it's known or not, which makes it the stronger control against brand-new threats. That strength comes at a cost, though. Building and maintaining an allowlist that doesn't break legitimate software is real, ongoing work, so many organizations use blocklists everywhere and keep allowlisting for their most sensitive systems.
 
-The terms "whitelist" and "blacklist" are still common in older documentation and some vendor tools. Current guidance has moved toward "allowlist" and "blocklist," or "denylist," instead. The UK's National Cyber Security Centre is one source of that guidance. Equating "white" with permitted and "black" with denied carries baggage the function of the control does not need. This course uses the newer terms. You will still see the older ones in the field, and knowing both matters more than picking a side in the naming.
+You'll still see the terms "whitelist" and "blacklist" in older documentation and some vendor tools. Current guidance, including from the UK's National Cyber Security Centre, has moved towards "allowlist" and "blocklist", or "denylist", because equating "white" with permitted and "black" with denied carries baggage the control itself doesn't need. This course uses the newer terms, but since you'll meet the older ones in the field, knowing both matters more than picking a side.
 
 ```match
 prompt: Match each scenario to the control it describes.
@@ -16,12 +16,12 @@ A legitimate new app an employee needs, blocked until IT adds it to the approved
 
 ### Work the Queue
 
-Everything this week taught is a way of reading an alert: the tier structure, the investigation mindset, the 5 W's, how it gets classified, and what control let it run in the first place. None of it holds up as theory. It only holds up against a real alert you have not seen yet.
+Looking back, everything this week taught is a way of reading an alert: the tier structure, the investigation mindset, the 5 W's, how an incident gets classified, and what control let something run in the first place. None of that sticks as theory, though. It only really sticks once you've used it on a real alert you haven't seen before.
 
-Before you move on, open your Shift console and work three incidents from your queue. For each one:
+So before you move on, open your Shift console and work three incidents from your queue. For each one:
 
 - Name which tier would actually own it, and why.
 - Run the 5 W's before you decide anything.
 - Classify it P1, P2, or P3, by impact rather than by how urgent the wording sounds.
 
-That is this week, done for real instead of read.
+Do that, and you'll have done this week for real rather than just read it.

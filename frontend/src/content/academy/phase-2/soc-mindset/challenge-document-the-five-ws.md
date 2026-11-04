@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Turn a Vague Alert Into a Documented Account</h3>
-<p class="ad-brief__ask">A vague alert says a sign-in failed. Can you document it the way Tier 2 can actually act on?</p>
+<p class="ad-brief__ask">A vague alert says a sign-in failed. Can you document it in a way Tier 2 can actually act on?</p>
 <p>Hosted lab required, with the domain controller reachable.</p>
 </div>
 
@@ -12,7 +12,7 @@
 
 ### Make a Real Event
 
-Theo Walsh on Tier 2 only ever acts on what the handoff actually records, not a vague "a sign-in failed." Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
+Theo Walsh on Tier 2 only ever acts on what a handoff actually records, never on a vague "a sign-in failed." So let's create a real event to document. Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
 
 ```powershell
 Add-Type -AssemblyName System.DirectoryServices.AccountManagement
@@ -20,11 +20,11 @@ $ctx = New-Object System.DirectoryServices.AccountManagement.PrincipalContext([S
 $ctx.ValidateCredentials("your-account", "DefinitelyWrongPassword1")
 ```
 
-This is a real authentication attempt against the domain controller, the same call Windows itself makes when you type a password. A wrong password here writes a real 4625 to the Security log, not a simulated one.
+This is a real sign-in attempt against the domain controller, using the same call Windows itself makes when you type a password. That means a wrong password here writes a real 4625 to the Security log, not a simulated one.
 
 ### Read What the Event Actually Answers
 
-Open Event Viewer and find the 4625 you just generated. Every field on it answers one of the 5 W's. The Account Name answers who. The time stamp answers when. The Status and Sub Status fields answer why, by naming the exact reason the sign-in failed.
+Now open Event Viewer and find the 4625 you just generated. You'll find that its fields answer the 5 W's for you: the Account Name answers who, and the time stamp answers when. Most usefully, the Status and Sub Status fields answer why, by naming the exact reason the sign-in failed.
 
 <div class="ad-mission" data-id="sm2-01" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1128 · Low</span>
@@ -35,10 +35,10 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Open the 4625 event's General tab in Event Viewer and read the Sub Status field directly; it is printed in hex, starting with 0x.</p>
+<p>Open the 4625 event's General tab in Event Viewer and read the Sub Status field directly. It's printed in hex, so it starts with 0x.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="0xc0000064|c0000064">That is the code for a name that does not exist at all. Your account is real; only the password was wrong.</div>
+<div class="ad-miss" data-guess="0xc0000064|c0000064">That's the code for a name that doesn't exist at all. Your account is real, and only the password was wrong.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -47,7 +47,7 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 </div>
 <div>
 <span>Why it matters</span>
-<p>That code means the account is real and the password was wrong. A sign-in attempt against an account that does not exist at all logs a different code, 0xC0000064, which is why the Sub Status is worth more than the word "failed" alone.</p>
+<p>That code means the account is real and the password was wrong. A sign-in attempt against an account that doesn't exist at all logs a different code, 0xC0000064, and that difference is why the Sub Status tells you far more than the word "failed" alone.</p>
 </div>
 </div>
 </div>
@@ -65,7 +65,7 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The code here is 0xC0000064, not the 0xC000006A you just generated. That difference means the accounts themselves, not just the passwords, are the thing being tested.</p>
+<p>Notice that the code here is 0xC0000064, not the 0xC000006A you just generated. That difference tells you the account names themselves are being tested, not just the passwords.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">One person mistyping their own password would log 0xC000006A against one account name, not 0xC0000064 against five different ones.</div>
@@ -78,7 +78,7 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 </div>
 <div>
 <span>Why it matters</span>
-<p>One wrong password, one real account, one Sub Status is a typo. Five attempts, five different account names, all the "account does not exist" code, is a different shape entirely: someone probing for names that work. The Sub Status alone told you why one event failed. Reading several together is what tells you whether you are looking at a mistake or the opening move of something bigger.</p>
+<p>One wrong password on one real account is a typo. Five attempts against five different account names, all with the "account doesn't exist" code, is a different shape entirely: someone probing for names that work. So while the Sub Status told you why one event failed, reading several together is what tells you whether you're looking at a mistake or the opening move of something bigger.</p>
 </div>
 </div>
 </div>
@@ -96,7 +96,7 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Account Name and the time stamp already cover two of the 5 W's. The Sub Status is the one that explains the failure itself.</p>
+<p>Account Name and the time stamp already cover two of the 5 W's. The Sub Status is the field that explains the failure itself.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Account Name is the field that answers who. Sub Status answers a different question.</div>
@@ -109,7 +109,7 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 </div>
 <div>
 <span>Why it matters</span>
-<p>Account Name is who, the time stamp is when, Sub Status is why. A documented account that is missing even one of the 5 W's leaves the next analyst to go find it themselves, which is exactly the handoff this framework exists to prevent.</p>
+<p>Account Name is who, the time stamp is when, and Sub Status is why. If a write-up is missing even one of the 5 W's, the next analyst has to go and find it themselves, and that's exactly the kind of handoff this framework exists to prevent.</p>
 </div>
 </div>
 </div>
@@ -117,4 +117,4 @@ Open Event Viewer and find the 4625 you just generated. Every field on it answer
 
 ### Why It Matters
 
-A vague alert and a documented account can describe the exact same failed sign-in. The difference is whether the next person who reads it has to go find the who, when, and why themselves, or whether you already did.
+A vague alert and a documented account can describe exactly the same failed sign-in. The difference is whether the next person to read it has to go and find the who, when, and why themselves, or whether you've already done it for them.

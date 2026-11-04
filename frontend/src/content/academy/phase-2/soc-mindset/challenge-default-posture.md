@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>What the Firewall Does With What You Never Mentioned</h3>
-<p class="ad-brief__ask">A firewall already decided what to do with traffic you never mentioned. Can you read that default?</p>
+<p class="ad-brief__ask">Every firewall has already decided what to do with traffic you never mentioned. Can you read that default?</p>
 <p>Hosted lab required, with the domain controller reachable.</p>
 </div>
 
@@ -12,13 +12,13 @@
 
 ### Ask the Firewall What It Actually Does by Default
 
-Alex Rivera wants the domain controller's own default written down for the audit file, not assumed. Open PowerShell on the domain controller.
+Alex Rivera wants the domain controller's own default written down for the audit file, rather than assumed. To read it, open PowerShell on the domain controller.
 
 ```powershell
 Get-NetFirewallProfile -Profile Domain | Select-Object Name, DefaultInboundAction, DefaultOutboundAction
 ```
 
-Two different answers sit side by side here. Inbound traffic nobody asked for is blocked by default. Outbound traffic the machine itself starts is allowed by default, unless a specific rule says otherwise.
+Notice that two different answers sit side by side here. Inbound traffic that nobody asked for is blocked by default, while outbound traffic that the machine itself starts is allowed by default, unless a specific rule says otherwise.
 
 <div class="ad-mission" data-id="sm2-03" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1131 · Low</span>
@@ -29,7 +29,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Read the DefaultOutboundAction column in the PowerShell output, not DefaultInboundAction. The two are different on purpose.</p>
+<p>Read the DefaultOutboundAction column in the PowerShell output, not DefaultInboundAction, because the two are deliberately different.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="block">That describes the inbound default on this machine, not outbound. Read the DefaultOutboundAction column specifically.</div>
@@ -41,7 +41,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 </div>
 <div>
 <span>Why it matters</span>
-<p>Outbound follows a blocklist model by default: everything is allowed unless a rule specifically blocks it. Every outbound firewall rule you have seen in this course, including the ones you closed on past tickets, existed to carve an exception out of this same default.</p>
+<p>Outbound traffic follows a blocklist model by default: everything is allowed unless a rule specifically blocks it. In fact, every outbound firewall rule you've seen in this course, including the ones you closed on past tickets, existed to carve an exception out of this same default.</p>
 </div>
 </div>
 </div>
@@ -59,7 +59,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You just read this machine's actual outbound default. Apply the same logic you used to answer the previous question, just with the opposite setting.</p>
+<p>You've just read this machine's actual outbound default, so apply the same logic you used in the previous question, only with the opposite setting.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="b">The default you just read is exactly what decides whether unapproved outbound traffic leaves at all. It is not automatic.</div>
@@ -72,7 +72,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 </div>
 <div>
 <span>Why it matters</span>
-<p>Nothing about that task's own permissions decides whether its traffic leaves the machine. The firewall's default does. An outbound allowlist would have stopped it cold, with no rule written specifically against it, simply by trusting nothing it had not already approved.</p>
+<p>Nothing about the task's own permissions decides whether its traffic leaves the machine. The firewall's default does. So an outbound allowlist would have stopped it cold, without anyone writing a rule specifically against it, simply by trusting nothing it hadn't already approved.</p>
 </div>
 </div>
 </div>
@@ -90,7 +90,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You just reasoned through exactly this scenario with the beacon: a Block default would have stopped it. That is the cost side of trusting outbound traffic by default.</p>
+<p>You've just reasoned through exactly this with the beacon: a Block default would have stopped it. That's the cost of trusting outbound traffic by default.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">You just read the two settings directly from the machine: Block for inbound, Allow for outbound. They are not the same value.</div>
@@ -103,7 +103,7 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 </div>
 <div>
 <span>Why it matters</span>
-<p>That trust is exactly what a beacon abuses: a scheduled task calling out to an address nobody approved still passes, because outbound traffic is allowed unless something blocks it by name. Flipping that default to an allowlist is stricter and breaks less often than people assume, which is why some environments do it anyway.</p>
+<p>That trust is exactly what a beacon abuses. A scheduled task calling out to an address nobody approved still gets through, because outbound traffic is allowed unless something blocks it by name. Flipping that default to an allowlist is stricter, but it breaks things less often than people assume, which is why some environments do it anyway.</p>
 </div>
 </div>
 </div>
@@ -111,4 +111,4 @@ Two different answers sit side by side here. Inbound traffic nobody asked for is
 
 ### Why It Matters
 
-A default is a decision nobody has to remember to make again. Reading it straight from the machine, instead of assuming it, is how you know what you are actually defending before the first alert ever fires.
+A default is a decision that nobody has to remember to make again, so it quietly shapes everything that follows. Reading it straight from the machine, rather than assuming it, is how you know what you're actually defending before the first alert ever fires.
