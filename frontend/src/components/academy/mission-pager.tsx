@@ -229,7 +229,6 @@ export function MissionPager({
 
   return (
     <div ref={root}>
-      {recordLabel && <ChallengeRecorder label={recordLabel} />}
       {children}
       {strip && !onBrief &&
         createPortal(
@@ -287,10 +286,18 @@ export function MissionPager({
         </div>
       ) : null}
       {nav && actionHost ? createPortal(nav, actionHost) : nav}
-      {started && !onBrief ? (
-        <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
-          Reset challenge
-        </button>
+      {/* Reset and Record share one row under the question. The recorder stays
+          mounted in this one spot from the brief onward, so moving between the
+          brief and the questions never cuts a recording short. */}
+      {(started && !onBrief) || recordLabel ? (
+        <div className="ad-challenge-actions">
+          {started && !onBrief ? (
+            <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
+              Reset challenge
+            </button>
+          ) : null}
+          {recordLabel ? <ChallengeRecorder label={recordLabel} /> : null}
+        </div>
       ) : null}
     </div>
   );

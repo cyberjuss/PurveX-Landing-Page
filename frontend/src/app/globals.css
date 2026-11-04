@@ -4384,13 +4384,16 @@ html:active-view-transition .ax-page { animation: none }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-score__focuslabel { color: #9a8cff; }
 
 /* Record Your Challenge: a local-only screen recording control that sits
-   above every challenge's content, brief or no brief, paging or not. */
-.ad-record { margin: 0 0 20px; }
+   beside Reset challenge, under every challenge's content. */
+.ad-challenge-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 0; }
+.ad-challenge-actions:empty { display: none; }
+.ad-challenge-actions .ad-challenge-reset { margin: 0; }
+.ad-record { margin: 0; }
 .ad-record__btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 36px;
+  height: 40px;
   padding: 0 14px;
   border: 1px solid rgba(229, 72, 77, 0.55);
   border-radius: 0;
@@ -4410,7 +4413,6 @@ html:active-view-transition .ax-page { animation: none }
 .ad-record__btn--on:hover { background: #c93d41; border-color: #c93d41; }
 @keyframes ad-record-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 @media (prefers-reduced-motion: reduce) { .ad-record__btn--on svg { animation: none; } }
-.ad-record__note { max-width: 56ch; margin: 8px 0 0; font-size: var(--ty-note, 0.8125rem); line-height: 1.5; color: var(--rd-ink-3, #8a94a8); }
 .academy-bg[data-academy-theme="dark"] .ad-record__btn { border-color: rgba(252, 165, 165, 0.45); color: #fca5a5; }
 .academy-bg[data-academy-theme="dark"] .ad-record__btn svg { color: #fca5a5; }
 .academy-bg[data-academy-theme="dark"] .ad-record__btn:hover { border-color: #fca5a5; background: color-mix(in srgb, #fca5a5 10%, transparent); }

@@ -120,14 +120,9 @@ export function ChallengeRecorder({ label }: { label: string }) {
           <Square className="h-3.5 w-3.5" aria-hidden /> Stop recording · {mm}:{ss}
         </button>
       ) : (
-        <>
-          <button type="button" className="ad-record__btn" onClick={start}>
-            <Circle className="h-3.5 w-3.5" aria-hidden /> Record your challenge
-          </button>
-          <p className="ad-record__note">
-            First pass, use hints if you need them — that run doesn&rsquo;t need to be clean. Once you&rsquo;ve got it solid, hit record and run it again off the dome, no notes, no hints, for a take worth keeping.
-          </p>
-        </>
+        <button type="button" className="ad-record__btn" onClick={start}>
+          <Circle className="h-3.5 w-3.5" aria-hidden /> Record your challenge
+        </button>
       )}
     </div>
   );
