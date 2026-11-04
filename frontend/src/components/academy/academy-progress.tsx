@@ -50,6 +50,14 @@ function challengeDone(key: ChallengeKey, results: Results) {
   return list.length > 0 && list.every((m) => results[m.id]?.solved);
 }
 
+// A challenge or phase, once complete, stays complete. New challenge pills
+// land often (and existing ones get split), which would otherwise quietly
+// un-complete work a student already finished. These marks ride in labsDone,
+// which is saved on the account and only ever grows. A lab key has two
+// colons, so these one-colon keys never collide with one.
+const challengeMark = (key: ChallengeKey) => `challenge-done:${key}`;
+const phaseMark = (phaseSlug: string) => `phase-done:${phaseSlug}`;
+
 /** Each "Challenge: ..." tab of an entry, with the challenge it runs. */
 function entryChallenges(phaseSlug: string, entry: WeekDef): { label: string; key: ChallengeKey }[] {
   return entry.sections
@@ -272,7 +280,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
         for (const s of entry.sections.filter((s) => s.label.startsWith("Lab:"))) {
           list.push({ label: s.label, done: labsDone.has(labKey(phase.slug, entry.slug, slugify(s.label.replace(/^Lab:\s*/, "")))) });
         }
-        for (const c of entryChallenges(phase.slug, entry)) list.push({ label: c.label, done: challengeDone(c.key, results) });
+        for (const c of entryChallenges(phase.slug, entry)) list.push({ label: c.label, done: labsDone.has(challengeMark(c.key)) || challengeDone(c.key, results) });
         map.set(key, list);
       }
     }
@@ -297,12 +305,26 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
       // A phase without challenges falls back to every published week being complete.
       const complete =
         challenges.length > 0
-          ? challenges.every((c) => challengeDone(c.key, results))
+          ? challenges.every((c) => labsDone.has(challengeMark(c.key)) || challengeDone(c.key, results))
           : live.length > 0 && live.every((e) => completed.has(entryKey(phase.slug, e.slug)));
-      if (complete) done.add(phase.slug);
+      if (complete || labsDone.has(phaseMark(phase.slug))) done.add(phase.slug);
     }
     return done;
-  }, [phases, results, completed]);
+  }, [phases, results, completed, labsDone]);
+
+  // Pin every challenge and phase the moment it is complete, so it stays that way.
+  useEffect(() => {
+    if (!loaded) return;
+    const marks: string[] = [];
+    for (const phase of phases) {
+      for (const c of entriesOf(phase).flatMap((e) => entryChallenges(phase.slug, e))) {
+        if (!labsDone.has(challengeMark(c.key)) && challengeDone(c.key, results)) marks.push(challengeMark(c.key));
+      }
+      if (phaseDone.has(phase.slug) && !labsDone.has(phaseMark(phase.slug))) marks.push(phaseMark(phase.slug));
+    }
+    if (marks.length === 0) return;
+    setLabsDone((prev) => new Set([...prev, ...marks]));
+  }, [phases, results, phaseDone, labsDone, loaded]);
 
   const value = useMemo<AcademyProgressContextValue>(
     () => ({
