@@ -1,9 +1,9 @@
 ### The Cyber Kill Chain
 <!-- art: tree -->
 
-The Cyber Kill Chain is a model Lockheed Martin analysts Eric Hutchins, Michael Cloppert, and Rohan Amin introduced in 2011. It breaks an intrusion into seven stages that run in order, from first contact to the attacker's final goal. What matters is the idea underneath the specific names. An attack is a sequence of stages, and breaking the chain at any earlier stage stops everything that would have followed it.
+The Cyber Kill Chain is a model introduced in 2011 by Lockheed Martin analysts Eric Hutchins, Michael Cloppert and Rohan Amin. It breaks an intrusion into seven stages that run in order, from first contact to the attacker's final goal. The stage names matter less than the idea underneath them. An attack is a sequence, so breaking the chain at any stage stops everything that would have followed.
 
-The seven stages, each covered in its own lesson next, are:
+Here are the seven stages. Each one gets its own lesson after this one:
 
 1. **Reconnaissance.** The attacker researches the target.
 2. **Weaponization.** The attacker builds or obtains the tool that will exploit a weakness.
@@ -13,7 +13,7 @@ The seven stages, each covered in its own lesson next, are:
 6. **Command and Control.** The compromised system reaches back out to attacker-controlled infrastructure.
 7. **Actions on Objectives.** The attacker does what they actually came for.
 
-The techniques you already know from this phase's ATT&CK lesson each sit at one of these stages, which the lesson for that stage names directly. A chain of incidents is more dangerous than any one of them read in isolation, because a technique like Disable Windows Event Logging (T1562.002) does not win anything for the attacker on its own. Its purpose is to make every other stage harder to see.
+Each technique you learned in this phase's ATT&CK lesson sits at one of these stages, and the lesson for that stage will name it. Keep in mind that a chain of incidents is more dangerous than any single one read on its own. Disable Windows Event Logging (T1562.002), for example, gains the attacker nothing by itself. Its purpose is to make every other stage harder to see.
 
 ```order
 prompt: Put the seven Cyber Kill Chain stages in order.

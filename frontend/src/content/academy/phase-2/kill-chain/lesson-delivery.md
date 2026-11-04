@@ -1,8 +1,8 @@
 ### Delivery
 <!-- art: mail -->
 
-Delivery is the stage where the weapon built in the previous step actually reaches the target, commonly through a phishing email, a malicious link, or a compromised website. Everything before this stage happened out of view. Delivery is usually the first moment a defender has any real chance of seeing the attack at all.
+Delivery is the stage where the weapon built in the previous step reaches the target, most often through a phishing email, a malicious link or a compromised website. Everything before this happened out of view, so Delivery is usually a defender's first real chance to see the attack at all.
 
-MITRE ATT&CK's [Initial Access (TA0001)](https://attack.mitre.org/tactics/TA0001/) tactic covers this ground. Its best-known technique is [Phishing (T1566)](https://attack.mitre.org/techniques/T1566/): an email carrying a malicious attachment or link, sent to a person rather than a system. A person's judgment is easier to exploit than a patched server's code.
+In MITRE ATT&CK, this ground is covered by the [Initial Access (TA0001)](https://attack.mitre.org/tactics/TA0001/) tactic. Its best-known technique is [Phishing (T1566)](https://attack.mitre.org/techniques/T1566/), an email carrying a malicious attachment or link. Phishing is aimed at a person rather than a system, because a person's judgment is easier to exploit than a patched server's code.
 
-A SOC's visibility here runs through email security tooling, which can flag or quarantine a suspicious message. It also runs through the people who receive what gets through. User reporting of a suspicious email is therefore a real detection, not an inconvenience: an employee who forwards a phishing attempt to the SOC may be catching an intrusion at the one stage where it was still cheap to stop.
+A SOC sees this stage in two ways. The first is email security tooling, which can flag or quarantine a suspicious message. The second is the people who receive whatever gets through. That's why a user reporting a suspicious email counts as a real detection, not an inconvenience. When an employee forwards a phishing attempt to the SOC, they may be catching an intrusion at the one stage where it's still cheap to stop.

@@ -1,8 +1,8 @@
 ### Weaponization
 <!-- art: bug -->
 
-Weaponization is where the attacker builds or obtains the tool that will exploit a weakness found during reconnaissance, commonly malware paired with an exploit for a specific vulnerability. This stage happens entirely on the attacker's own infrastructure, before anything reaches the target. That is why a defender essentially never observes it directly.
+Weaponization is where the attacker builds or obtains the tool that will exploit a weakness found during reconnaissance, which is often malware paired with an exploit for a specific vulnerability. All of this happens on the attacker's own infrastructure before anything reaches the target, so a defender almost never sees it directly.
 
-MITRE ATT&CK's closest equivalent tactic is [Resource Development (TA0042)](https://attack.mitre.org/tactics/TA0042/): techniques an attacker uses to establish the resources that later stages of the chain depend on, from acquired infrastructure to custom-built or modified malware.
+The closest match in MITRE ATT&CK is the [Resource Development (TA0042)](https://attack.mitre.org/tactics/TA0042/) tactic. It covers how attackers set up the resources that later stages depend on, from acquired infrastructure to custom-built or modified malware.
 
-Because this stage is invisible to the target, defenses built around it are indirect. Patching known vulnerabilities removes the exact weakness a weaponized tool was built to exploit, which can make that tooling worthless before it is ever used. That is also why vulnerability management and the Delivery stage that follows it carry more of a SOC's actual defensive weight than this one does.
+Since the target can't see this stage, the defenses against it are indirect. Patching known vulnerabilities removes the exact weakness a weaponized tool was built to exploit, which can make that tool worthless before it's ever used. For the same reason, vulnerability management and the Delivery stage that follows carry far more of a SOC's defensive weight than this stage does.
