@@ -90,6 +90,17 @@ for (const t of scriptMarks) if (!(PLANTED_TICKETS as readonly string[]).include
 for (const t of PLANTED_TICKETS) if (!scriptMarks.has(t)) add("J. Ticket the server expects but the build never plants", t);
 const waiting = [...onPage.keys()].filter((id) => missionTickets(id).some((t) => scriptMarks.has(t)));
 
+// K. A home lab is two Windows machines, with no Ubuntu server. A challenge
+// worked on the Ubuntu box has to say it needs the hosted lab, or a home-lab
+// student goes looking for a machine they were never told to build. The
+// installer check is the exception: it shows the PowerShell route as well.
+const UBUNTU_OK = new Set(["phase-1/week-2/challenge-installer-check.md"]);
+for (const t of chTabs) {
+  const md = t.md ?? "";
+  if (!/Ubuntu/.test(md) || UBUNTU_OK.has(t.file)) continue;
+  if (!/hosted lab required|needs the cloud lab|cloud lab required/i.test(md)) add("K. Ubuntu challenge with no hosted-lab note", `${href(t)} "${t.label}"`);
+}
+
 // Screenshots not taken yet are hidden by markdown.tsx, so they are listed, not failed.
 const placeholders = tabs.flatMap((t) => [...(t.md ?? "").matchAll(/src="([^"]*PLACEHOLDER[^"]*)"/g)].map((m) => `${m[1]} (${t.file})`));
 for (const [k, v] of Object.entries(out).sort()) {
