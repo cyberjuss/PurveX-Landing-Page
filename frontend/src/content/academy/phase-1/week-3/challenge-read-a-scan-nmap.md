@@ -12,21 +12,21 @@
 
 ### Confirm It With the Tool the Job Actually Uses
 
-You just read a scan by hand, one packet at a time. On the job, almost every posting for this role names the same tool for this exact task: Nmap. It is not doing anything the bash loop did not already do. It is reporting the same three answers, just faster and in its own column.
+You've just read a scan by hand, one packet at a time. On the job, though, almost every posting for this role names one tool for this exact task: Nmap. The good news is that Nmap isn't doing anything your bash loop didn't already do. It reports the same three answers, just faster and laid out in its own column.
 
-Install it on the Ubuntu server.
+First, install it on the Ubuntu server.
 
 ```bash
 sudo apt install -y nmap
 ```
 
-Then scan the same ports with a connect scan, the same handshake you read packet by packet in the challenge above.
+Then scan the same ports with a connect scan, which uses the same handshake you read packet by packet in the last challenge.
 
 ```bash
 nmap -sT -p 53,88,389,445,3389,23,8080,9999 dc01
 ```
 
-Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the exact three answers you already read from raw packets, just labeled for you instead of worked out by hand.
+For each port, Nmap prints one word: `open`, `closed`, or `filtered`. Those are exactly the three answers you already read from the raw packets, only this time they're labeled for you instead of worked out by hand.
 
 <div class="ad-mission" data-id="w3m-c5" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1107 · Low</span>
@@ -37,7 +37,7 @@ Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the ex
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You already read this port's handshake by hand in your Wireshark capture a few steps ago. Nmap should land on the same answer.</p>
+<p>You read this port's handshake by hand in your Wireshark capture a few steps ago, so Nmap should land on the same answer.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="closed|filtered">Check your capture again: port 445 completed the full three-way handshake, SYN, SYN-ACK, ACK.</div>
@@ -49,7 +49,7 @@ Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the ex
 </div>
 <div>
 <span>Why it matters</span>
-<p>A real scanner lands on the same answer as the raw packets did, because it is reading the same handshake. Knowing the tool matters on the job, but reading the traffic underneath it is what tells you whether the tool is right.</p>
+<p>The real scanner lands on the same answer as the raw packets did, because it's reading the very same handshake. Knowing the tool matters on the job, but being able to read the traffic underneath it is what tells you whether the tool is right.</p>
 </div>
 </div>
 </div>
@@ -66,7 +66,7 @@ Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the ex
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Think about which layer of logging only ever sees a connection that fully completed, versus the packet capture, which sees every packet regardless.</p>
+<p>Think about two layers that might be watching. Some logging only ever sees a connection once it fully completes, whereas the packet capture sees every packet regardless. Which one could a SYN scan avoid?</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="b">A SYN scan sends fewer packets per port, not more, so it is the faster option, not the slower one.</div>
@@ -79,7 +79,7 @@ Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the ex
 </div>
 <div>
 <span>Why it matters</span>
-<p>Some application-level logging only records a connection once it is fully established, so a SYN scan can slip past that layer entirely. It cannot slip past the packet capture, though, which is exactly why a defender who reads the wire catches what an application log alone would miss.</p>
+<p>Some application logging only records a connection once it's fully established, so a SYN scan can slip past that layer entirely. It can't slip past the packet capture, though, and that's exactly why a defender who reads the wire catches what an application log alone would miss.</p>
 </div>
 </div>
 </div>
@@ -87,4 +87,4 @@ Nmap prints one word per port: `open`, `closed`, or `filtered`. Those are the ex
 
 ### Why It Matters
 
-Nmap confirmed exactly what the raw packets already showed, and a stealthier scan changes what gets logged, not what a capture sees. The next challenge in this set is about writing a rule that catches either one automatically.
+Nmap confirmed exactly what the raw packets had already shown you, and you've seen that a stealthier scan changes what gets logged, not what a capture sees. Next, you'll think about writing a rule that catches either kind of scan automatically.

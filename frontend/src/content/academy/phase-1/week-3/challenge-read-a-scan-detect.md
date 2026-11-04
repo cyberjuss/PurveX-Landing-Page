@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Name What Detection Rests On, Then Take It Further</h3>
-<p class="ad-brief__ask">If you can't ban the tool, what do you actually detect? Can you read a stranger's capture the same way you just read your own?</p>
+<p class="ad-brief__ask">If you can't ban the tool, what do you actually detect? And can you read someone else's capture the same way you just read your own?</p>
 <p>Hosted lab required. Builds on the two scanning challenges above.</p>
 </div>
 
@@ -22,10 +22,10 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The bash loop and Nmap produced the exact same shape on the wire: one source, many ports, in a burst. That shape is what a detection would have to key on.</p>
+<p>Remember that the bash loop and Nmap produced exactly the same shape on the wire: one source hitting many ports in a burst. That shape is what a detection would have to look for.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">You already saw the scan's shape clearly in Statistics → Conversations: one source hitting many ports. That is detectable.</div>
+<div class="ad-miss" data-guess="a">You've already seen the scan's shape clearly in Statistics → Conversations, with one source hitting many ports. That shape is detectable.</div>
 <div class="ad-miss" data-guess="c">The plain bash loop you ran was not a special attacker tool at all, and it produced the same detectable pattern as Nmap did.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The same loop inventories a server or maps it for attack. You cannot ban the tool, so detection rests on the behavior, the burst of SYNs to many ports. The next lab turns that exact behavior into a rule an IDS checks for automatically, instead of a pattern only a human reading a capture would ever notice.</p>
+<p>The very same loop can inventory a server or map it for an attack. Since you can't ban the tool, detection has to rest on the behavior instead: the burst of SYNs to many ports. Later this week, you'll turn that exact behavior into a rule that an intrusion detection system checks for automatically, so it no longer depends on a human happening to read the capture.</p>
 </div>
 </div>
 </div>
@@ -43,7 +43,7 @@
 
 ### Take It Further
 
-A week later the security team pulls a capture from the file server. One workstation sent SYN packets to forty ports in under ten seconds. Two ports completed a handshake, a handful answered with RST, and the rest got no reply.
+Now try reading someone else's capture. A week later, the security team pulls a capture from the file server. In it, one workstation sent SYN packets to forty ports in under ten seconds. Two of those ports completed a handshake, a handful answered with RST, and the rest got no reply at all.
 
 <div class="ad-mission ad-mission--capstone" data-id="w3m-c7" data-attempts="0">
 <span class="ad-mission__num">Ticket 08 · INC-1159 · Medium</span>
@@ -55,7 +55,7 @@ A week later the security team pulls a capture from the file server. One worksta
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Forty ports from one source in under ten seconds is the exact shape you saw in Statistics → Conversations. Then read each of the three answers the same way you read your own capture.</p>
+<p>Forty ports from one source in under ten seconds is exactly the shape you saw in Statistics → Conversations. Once you've recognized that, read each of the three kinds of answer the same way you read your own capture.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">A normal file transfer is a few steady conversations, not one source touching forty different ports in ten seconds. That shape is a scan.</div>
@@ -68,7 +68,7 @@ A week later the security team pulls a capture from the file server. One worksta
 </div>
 <div>
 <span>Why it matters</span>
-<p>The shape alone, one source and forty ports in ten seconds, is already the scan signature from the challenge above. But the shape only tells you a scan happened. Reading each port's own answer is what tells you what it found: two real open services, a few ports actively refusing, and a firewall standing silently in front of everything else. That second read is the part a detection rule flags; the first read is what an analyst still has to do by hand.</p>
+<p>The shape alone, one source and forty ports in ten seconds, is already the scan signature you learned. But the shape only tells you that a scan happened. To learn what the scan found, you have to read each port's answer: two real open services, a few ports actively refusing, and a firewall standing silently in front of everything else. A detection rule can flag the shape automatically, but reading those answers is still an analyst's job.</p>
 </div>
 </div>
 </div>
@@ -76,4 +76,4 @@ A week later the security team pulls a capture from the file server. One worksta
 
 ### Why It Matters
 
-Reconnaissance is the quietest stage of an attack and the best chance to stop it, because nothing is broken yet. A team that can read a scan, and can tell a closed port from one a firewall is guarding, catches the knock before the break-in and knows how well its own doors are holding.
+Reconnaissance, the scouting stage of an attack, is the quietest stage and also the best chance to stop one, because nothing has been broken yet. A team that can read a scan, and tell a closed port from one a firewall is guarding, hears the knock before the break-in. It also learns how well its own doors are holding.

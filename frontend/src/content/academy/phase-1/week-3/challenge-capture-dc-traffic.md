@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Capture a Real Conversation and Read It</h3>
-<p class="ad-brief__ask">Can you capture one machine's conversation with another, and read what actually happened on the wire?</p>
+<p class="ad-brief__ask">Can you capture a conversation between two machines and read what actually happened on the wire?</p>
 <p>Hosted lab required, with both machines started. Wireshark is installed.</p>
 </div>
 
@@ -34,28 +34,28 @@ Make a prediction for each of these before you capture anything. Nothing gets ma
 <button type="button" class="ad-check__opt" data-i="0">80</button>
 <button type="button" class="ad-check__opt" data-i="1">389</button>
 <button type="button" class="ad-check__opt" data-i="2">443</button>
-<p class="ad-check__note">Got it. The port numbers from this week are about to appear in a real capture.</p>
+<p class="ad-check__note">Got it. The port numbers you learned this week are about to show up in a real capture.</p>
 </div>
 
 ### Find the Domain Controller
 
-Alex Rivera wants the domain controller's core services confirmed reachable, read back from a real capture rather than taken on faith. Open a terminal on the Ubuntu desktop. The domain controller is already known to this machine by name, so look up its address.
+Alex Rivera wants confirmation that the domain controller's core services are reachable, read from a real capture rather than taken on faith. To start, open a terminal on the Ubuntu desktop. This machine already knows the domain controller by name, so you can look up its address directly.
 
 ```bash
 getent hosts dc01
 ```
 
-Write down the address it prints. Every packet in this lab goes to or from it.
+Write down the address it prints, because every packet in this lab will go to or from it.
 
 ### Start Wireshark on the Right Interface
 
-Open Wireshark from the desktop. Applications → Internet → Wireshark. It lists the network interfaces it can capture on.
+Next, open Wireshark from the desktop by going to Applications → Internet → Wireshark. When it opens, it lists the network interfaces it can capture on.
 
-Choose the interface named `ens5`, the Ubuntu server's network card. Double-click it to start capturing. Packets begin scrolling immediately.
+Choose the interface named `ens5`, which is the Ubuntu server's network card, and double-click it to start capturing. You'll see packets start scrolling right away.
 
 ### Make the Two Machines Talk
 
-Leave Wireshark running. In the terminal, send the domain controller two kinds of request. The first asks it to resolve a name, the second asks its directory for its naming contexts.
+With Wireshark still running, go back to the terminal and send the domain controller two kinds of request. The first asks it to resolve a name, and the second asks its directory for its naming contexts.
 
 ```bash
 dig @dc01 purvexfinancial.local
@@ -80,57 +80,57 @@ ldapsearch -x -H ldap://dc01 -s base -b "" namingContexts
 <li><em>On the wire</em><span>A TCP connection, so a handshake opens it before any directory traffic.</span></li>
 </ul>
 
-The pair is deliberate. One is a single exchange over UDP and the other is a conversation over TCP, both to the same host, and neither of them is encrypted.
+These two were chosen on purpose. One is a single exchange over UDP and the other is a full conversation over TCP, both with the same host, and neither one is encrypted, so you'll be able to see everything.
 
 ### Filter to the Domain Controller
 
-Wireshark is now full of unrelated packets. In the filter bar at the top, type the filter below, using the address you wrote down, and press Enter.
+By now, Wireshark is full of unrelated packets, so let's narrow it down. In the filter bar at the top, type the filter below using the address you wrote down, and press Enter.
 
 ```
 ip.addr == 10.60.1.x
 ```
 
-Only the traffic to and from the domain controller remains. This is the conversation you just created, and nothing else.
+Now only the traffic to and from the domain controller remains, which means you're looking at exactly the conversation you just created and nothing else.
 
 ### Read the Three Panes
 
-Wireshark shows every capture in three stacked panes, and learning to move between them is most of the skill.
+Before reading the packets, it helps to know the layout. Wireshark shows every capture in three stacked panes, and learning to move between them is most of the skill.
 
 * **Packet List, at the top.** One line per packet. The Protocol column names what it is, and the Info column summarizes it. This is your timeline.
 * **Packet Details, in the middle.** The selected packet opened up layer by layer, from Ethernet at the top down to the application at the bottom.
 * **Packet Bytes, at the bottom.** The raw data, for when the parsed view is not enough.
 
-Click a packet in the top pane and watch the middle pane fill with its layers. You will repeat that click for most of your time in Wireshark.
+Try clicking a packet in the top pane, and watch the middle pane fill with its layers. That one click is something you'll repeat constantly in Wireshark.
 
 ### Find the Handshake and the Ports
 
-Read down the Protocol and Info columns. You will see several things from this week.
+Now read down the Protocol and Info columns. You should recognize several things from this week's lessons.
 
 * A TCP handshake opening the LDAP connection. The Info column labels the packets `[SYN]`, then `[SYN, ACK]` coming back from the domain controller, then `[ACK]`.
 * The LDAP query itself on port 389, after the handshake finishes.
 * The DNS request and reply on port 53, which is UDP and needs no handshake at all.
 
-DNS did its whole job in two packets while LDAP set up a connection first. That is the difference between UDP and TCP, seen once rather than described.
+Notice that DNS did its whole job in two packets, while LDAP set up a connection first. That's the difference between UDP and TCP, and now you've seen it for yourself rather than just read about it.
 
 ### Follow the Whole Conversation
 
-Right-click any LDAP packet and choose Follow → TCP Stream. Wireshark pulls every packet of that one connection out of the noise and lays the exchange out in order, both directions, in a single window.
+When one conversation matters, there's a quicker way to read it. Right-click any LDAP packet and choose Follow → TCP Stream. Wireshark pulls every packet of that one connection out of the noise and lays out the whole exchange in order, in both directions, in a single window.
 
-This is the move an analyst reaches for first when one conversation matters. Close the stream window and the filter it set stays in the bar, showing only that connection.
+That's usually the first move an analyst makes when a single conversation matters. When you close the stream window, the filter it set stays in the bar, so you'll still see only that connection.
 
 ### Troubleshooting
 
-If `dig` or `ldapsearch` hangs or cannot reach the domain controller, the two machines cannot talk to each other yet. Test it first.
+If `dig` or `ldapsearch` hangs or can't reach the domain controller, the two machines can't talk to each other yet. In that case, test the connection first.
 
 ```bash
 ping -c 2 dc01
 ```
 
-No reply means the pod's own firewall is blocking traffic between the two machines, and the labs that use both will not work until that is fixed. A reply means the path is open and the capture steps will work.
+If you get no reply, your lab's own firewall is blocking traffic between the two machines, and the labs that use both won't work until that's fixed. If you do get a reply, the path is open and the capture steps will work.
 
 ### Check Yourself
 
-Answer from what you captured, not from what you remember reading.
+Answer based on what you actually captured, rather than on what you remember reading.
 
 <div class="ad-mission" data-id="w3e-c1" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1102 · Low</span>
@@ -141,7 +141,7 @@ Answer from what you captured, not from what you remember reading.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You started the capture on the Ubuntu box's own network card, `ens5`. Think about whose traffic a network card actually sees on a switched network.</p>
+<p>You started the capture on the Ubuntu box's own network card, `ens5`. So think about whose traffic a network card actually sees on a switched network.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="yes">A network card on a switched network sees only what it sends or receives, not traffic between two other machines entirely.</div>
@@ -153,7 +153,7 @@ Answer from what you captured, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>A machine captures its own card. On a switched network it sees only what it sends or receives, which is why analysts need a capture from the right place.</p>
+<p>A machine can only capture what passes through its own network card. On a switched network, that means it sees only what it sends or receives, which is why analysts need to capture from the right place.</p>
 </div>
 </div>
 </div>
@@ -170,7 +170,7 @@ Answer from what you captured, not from what you remember reading.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The three-way handshake is SYN, then a reply, then ACK. Your Ubuntu box sent the first and third; the domain controller sent the one in between.</p>
+<p>The three-way handshake goes SYN, then a reply, then ACK. Your Ubuntu box sent the first and third packets, so the domain controller sent the one in between.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="syn">That packet opened the handshake, but it came from your Ubuntu box, not back from the domain controller.</div>
@@ -183,7 +183,7 @@ Answer from what you captured, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>The Ubuntu box sent SYN, the domain controller answered SYN-ACK, the Ubuntu box sent ACK. Only then did the LDAP query move.</p>
+<p>The Ubuntu box sent SYN, the domain controller answered with SYN-ACK, and then the Ubuntu box sent ACK. Only after that did the LDAP query itself move.</p>
 </div>
 </div>
 </div>
@@ -200,7 +200,7 @@ Answer from what you captured, not from what you remember reading.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>DNS runs over UDP, which has no handshake to set up first. Count just the question and the answer.</p>
+<p>DNS runs over UDP, which has no handshake to set up first, so you only need to count the question and the answer.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="3">That is the LDAP handshake's packet count, not DNS. DNS over UDP needs no handshake at all.</div>
@@ -212,7 +212,7 @@ Answer from what you captured, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>DNS runs over UDP, which has no handshake. One question, one answer, done. LDAP runs over TCP, so it sets up a connection first.</p>
+<p>Because DNS runs over UDP, there's no handshake: just one question and one answer, and it's done. LDAP runs over TCP instead, so it has to set up a connection first.</p>
 </div>
 </div>
 </div>
@@ -220,4 +220,4 @@ Answer from what you captured, not from what you remember reading.
 
 ### Why It Matters
 
-Knowing where to capture is as important as knowing how to read the result. A capture taken in the wrong place is empty of the very traffic you were sent to find. The next challenge in this set reads two more things the same capture is already holding.
+Knowing where to capture matters just as much as knowing how to read the result, because a capture taken in the wrong place won't contain the very traffic you were sent to find. In the next challenge, you'll read two more things that this same capture is already holding.

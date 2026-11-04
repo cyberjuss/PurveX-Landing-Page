@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Read What the Ports Tell You, Then Isolate One Conversation</h3>
-<p class="ad-brief__ask">Can you say which port a repeat capture would change, and pull one connection out of the noise on command?</p>
+<p class="ad-brief__ask">Can you predict which port would change if you captured the same query again, and pull one connection out of the noise whenever you need to?</p>
 <p>Hosted lab required, with your Wireshark capture from the challenge above still open.</p>
 </div>
 
@@ -12,7 +12,7 @@
 
 ### Read What Stays the Same
 
-Look at the LDAP conversation's TCP handshake again. The source port, the one on the Ubuntu box, is a high, random-looking number. The destination port, the one on the domain controller, is 389 every single time.
+Go back to the TCP handshake for the LDAP conversation and look at its two ports. The source port, on the Ubuntu box, is a high, random-looking number. The destination port, on the domain controller, is 389, and it's 389 every single time.
 
 <div class="ad-mission" data-id="w3e-c5" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1105 · Low</span>
@@ -23,7 +23,7 @@ Look at the LDAP conversation's TCP handshake again. The source port, the one on
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Think about how a reply finds its way back to the right connection, versus how a client finds the LDAP service on the domain controller in the first place.</p>
+<p>Think about two different problems. How does a reply find its way back to the right connection? And how does a client find the LDAP service on the domain controller in the first place?</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Every new connection gets a fresh source port, picked by the client, so it cannot stay the same on every run.</div>
@@ -36,7 +36,7 @@ Look at the LDAP conversation's TCP handshake again. The source port, the one on
 </div>
 <div>
 <span>Why it matters</span>
-<p>A client picks a fresh, random source port for every new connection so replies can find their way back to the right one. A server listens on the same fixed port every time, because that is the address its service is known by. That difference is why filtering a capture by destination port finds every LDAP query a machine ever made, while filtering by source port finds only one single connection.</p>
+<p>A client picks a fresh, random source port for every new connection, so that replies can find their way back to the right one. A server, on the other hand, listens on the same fixed port every time, because that's the address its service is known by. That difference has a practical payoff: filtering a capture by destination port finds every LDAP query a machine ever made, while filtering by source port finds just one connection.</p>
 </div>
 </div>
 </div>
@@ -54,7 +54,7 @@ Look at the LDAP conversation's TCP handshake again. The source port, the one on
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You used this exact move on the LDAP connection in the challenge above to pull one conversation out of the noise.</p>
+<p>You used this exact move in the last challenge, when you pulled the LDAP conversation out of the noise.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">The Bytes pane shows raw data for one packet at a time. It does not reassemble a whole conversation.</div>
@@ -67,7 +67,7 @@ Look at the LDAP conversation's TCP handshake again. The source port, the one on
 </div>
 <div>
 <span>Why it matters</span>
-<p>Follow TCP Stream reassembles a single conversation into one readable window and sets a filter to just that connection. It is the first move when one exchange matters.</p>
+<p>Follow TCP Stream puts a single conversation back together in one readable window, and it sets a filter to just that connection. That's why it's the first move to make whenever one exchange matters.</p>
 </div>
 </div>
 </div>
@@ -75,4 +75,4 @@ Look at the LDAP conversation's TCP handshake again. The source port, the one on
 
 ### Why It Matters
 
-Ports tell you which side is the client and which is the server, and Follow TCP Stream turns a wall of packets into one readable exchange. The next challenge in this set is about a capture you cannot take from here at all.
+Between them, ports tell you which side is the client and which is the server, and Follow TCP Stream turns a wall of packets into one readable exchange. The next challenge looks at the opposite problem: a capture you can't take from here at all.
