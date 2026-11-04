@@ -12,13 +12,13 @@
 
 ### Before You Start
 
-Commit to an answer before you capture anything. Nothing is marked yet. The capture settles each one.
+Make a prediction for each of these before you capture anything. Nothing gets marked here, and the capture will show you whether you were right.
 
 <div class="ad-check ad-check--predict" data-check="w3e-p1">
 <p class="ad-check__q">Wireshark on the Ubuntu box captures its network card. Which traffic can it see?</p>
 <button type="button" class="ad-check__opt" data-i="0">Every machine's traffic on the whole network</button>
 <button type="button" class="ad-check__opt" data-i="1">Only traffic this machine is part of</button>
-<p class="ad-check__note">Locked in. You will test this by capturing a conversation you start yourself.</p>
+<p class="ad-check__note">Got it. You'll test this by capturing a conversation you start yourself.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w3e-p2">
@@ -26,7 +26,7 @@ Commit to an answer before you capture anything. Nothing is marked yet. The capt
 <button type="button" class="ad-check__opt" data-i="0">SYN, then SYN-ACK back, then ACK</button>
 <button type="button" class="ad-check__opt" data-i="1">The query goes straight across, no setup</button>
 <button type="button" class="ad-check__opt" data-i="2">A single CONNECT packet</button>
-<p class="ad-check__note">Locked in. You will find this exact pattern filtered to the domain controller.</p>
+<p class="ad-check__note">Got it. You'll find this exact pattern filtered to the domain controller.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w3e-p3">
@@ -34,7 +34,7 @@ Commit to an answer before you capture anything. Nothing is marked yet. The capt
 <button type="button" class="ad-check__opt" data-i="0">80</button>
 <button type="button" class="ad-check__opt" data-i="1">389</button>
 <button type="button" class="ad-check__opt" data-i="2">443</button>
-<p class="ad-check__note">Locked in. The port numbers from this week are about to appear in a real capture.</p>
+<p class="ad-check__note">Got it. The port numbers from this week are about to appear in a real capture.</p>
 </div>
 
 ### Find the Domain Controller

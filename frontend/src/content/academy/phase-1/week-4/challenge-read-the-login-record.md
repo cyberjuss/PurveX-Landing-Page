@@ -12,27 +12,27 @@
 
 ### Before You Start
 
-Commit to an answer before you type anything. Nothing is marked yet. The log settles each one.
+Make a prediction for each of these before you type anything. Nothing gets marked here, and the log will show you whether you were right.
 
 <div class="ad-check ad-check--predict" data-check="w4e-p1">
 <p class="ad-check__q">You type the wrong password for a sudo command. Is that attempt written down anywhere?</p>
 <button type="button" class="ad-check__opt" data-i="0">No, only successful logins are recorded</button>
 <button type="button" class="ad-check__opt" data-i="1">Yes, the failed attempt is logged</button>
-<p class="ad-check__note">Locked in. You will go and find your own failed attempt in a moment.</p>
+<p class="ad-check__note">Got it. You'll go and find your own failed attempt in a moment.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w4e-p2">
 <p class="ad-check__q">In an investigation, which is usually the more interesting line?</p>
 <button type="button" class="ad-check__opt" data-i="0">A single successful login</button>
 <button type="button" class="ad-check__opt" data-i="1">A run of failures, then a success</button>
-<p class="ad-check__note">Locked in. You will produce exactly this shape and read it back.</p>
+<p class="ad-check__note">Got it. You'll produce exactly this shape and read it back.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w4e-p3">
 <p class="ad-check__q">Does a failed authentication tell you the account exists?</p>
 <button type="button" class="ad-check__opt" data-i="0">Always, a failure means the account is real</button>
 <button type="button" class="ad-check__opt" data-i="1">Not on its own, the password was simply wrong</button>
-<p class="ad-check__note">Locked in. Keep this one in mind. It matters for how you read a log.</p>
+<p class="ad-check__note">Got it. Keep this one in mind. It matters for how you read a log.</p>
 </div>
 
 ### Produce a Failure

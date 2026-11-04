@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Protect a Real File, Then Take It Further</h3>
-<p class="ad-brief__ask">Can you encrypt and decrypt a real file on your own machine, then name the one transformation that always comes out the same length?</p>
+<p class="ad-brief__ask">Can you encrypt and decrypt a real file on your own machine, and then name the one transformation whose output is always the same length?</p>
 <p>Hosted lab required, with the Ubuntu desktop open. Builds on the two challenges above.</p>
 </div>
 
@@ -12,7 +12,7 @@
 
 ### Protect a Real File
 
-CyberChef proved encryption needs a key where encoding does not. Now use that for real, on your own machine, with a file instead of a toy word.
+In CyberChef, you proved that encryption needs a key while encoding doesn't. Now it's time to use that for real, on your own machine, with a whole file instead of a single test word.
 
 ```bash
 printf 'Q3 advisory fees: 412500' > ~/ledger-copy.txt
@@ -20,7 +20,7 @@ openssl enc -aes-256-cbc -pbkdf2 -salt -in ~/ledger-copy.txt -out ~/ledger-copy.
 rm ~/ledger-copy.txt
 ```
 
-The plain file is gone. Only `ledger-copy.enc` is left in your home directory, and it is unreadable without the passphrase you just chose. Decrypt it back.
+At this point, the plain file is gone. Only `ledger-copy.enc` is left in your home directory, and without the passphrase you just chose, nobody can read it. So let's decrypt it back.
 
 ```bash
 openssl enc -d -aes-256-cbc -pbkdf2 -in ~/ledger-copy.enc -pass pass:PurveX-Backup-Key1
@@ -35,14 +35,14 @@ openssl enc -d -aes-256-cbc -pbkdf2 -in ~/ledger-copy.enc -pass pass:PurveX-Back
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>It is exactly what you wrote into the file before encrypting it, nothing more and nothing less. The round trip only works because you supplied the same passphrase both times.</p>
+<p>You should get back exactly what you wrote into the file before encrypting it, nothing more and nothing less. That round trip only works because you supplied the same passphrase both times.</p>
 <ol>
 <li>Try the decrypt command with a wrong passphrase first, and watch it refuse rather than return garbage.</li>
 <li>Then run it again with the real one, <code>PurveX-Backup-Key1</code>.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="q3advisoryfees412500">Keep the spaces and the colon exactly as you typed them into the original file.</div>
+<div class="ad-miss" data-guess="q3advisoryfees412500">You're very close. Keep the spaces and the colon exactly as they were in the original file.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -51,7 +51,7 @@ openssl enc -d -aes-256-cbc -pbkdf2 -in ~/ledger-copy.enc -pass pass:PurveX-Back
 </div>
 <div>
 <span>Why it matters</span>
-<p>This is the same line from the CIA triad lab's own ledger file, now actually protected rather than just sitting in the clear. The plain copy is gone; only the encrypted one and the passphrase in your head can bring it back. That is what "needs a key to undo" means when it is a real file instead of one word in a browser tool.</p>
+<p>That's the same line from the ledger file in the CIA triad lab, except now it's actually protected rather than sitting in the clear. The plain copy is gone, so only the encrypted copy plus the passphrase you know can bring it back. That's what "needs a key to undo" really means once it's a real file rather than one word in a browser tool.</p>
 </div>
 </div>
 </div>
@@ -59,7 +59,7 @@ openssl enc -d -aes-256-cbc -pbkdf2 -in ~/ledger-copy.enc -pass pass:PurveX-Back
 
 ### Take It Further
 
-A different log shows a value that is exactly 64 characters long, no matter how short or long the original data was.
+Now let's take what you know one step further. A different log shows a value that's exactly 64 characters long, no matter how short or long the original data was.
 
 <div class="ad-mission ad-mission--capstone" data-id="w2e-c7" data-attempts="0">
 <span class="ad-mission__num">Ticket 06 · INC-1156 · Medium</span>
@@ -71,11 +71,11 @@ A different log shows a value that is exactly 64 characters long, no matter how 
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You hashed one short word in the first challenge above and got a 64-character hex string back. Changing the input's length has never changed that number.</p>
+<p>Think back to the first challenge in this set. You hashed one short word and got a 64-character string back, and changing the length of the input never changed that number.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Base64's output length scales with the input: a longer word produces a longer encoded string. It is not fixed.</div>
-<div class="ad-miss" data-guess="c">AES's output length also scales with the input, padded to a block size, not fixed to one number regardless of input length.</div>
+<div class="ad-miss" data-guess="a">Base64's output grows with the input, so a longer word gives a longer encoded string. That means its length isn't fixed.</div>
+<div class="ad-miss" data-guess="c">AES output grows with the input too. It gets padded up to a block size, but it isn't fixed to one length no matter what goes in.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -84,7 +84,7 @@ A different log shows a value that is exactly 64 characters long, no matter how 
 </div>
 <div>
 <span>Why it matters</span>
-<p>A SHA2-256 hash is always 64 hex characters, whether the input is one word or an entire file. That fixed length is itself the signature of a hash, and it is also why a hash can never be "decompressed" back into the original: a function that always outputs the same size cannot possibly hold all of a larger input's information to begin with.</p>
+<p>A SHA2-256 hash is always 64 hex characters, whether the input is one word or an entire file. That fixed length is a hash's signature, and it also explains why a hash can never be "unpacked" back into the original. If the output is always the same small size, it simply can't hold all the information from a larger input in the first place.</p>
 </div>
 </div>
 </div>
@@ -92,4 +92,4 @@ A different log shows a value that is exactly 64 characters long, no matter how 
 
 ### Why It Matters
 
-Analysts read strange-looking strings in logs every day, and the first decision is always which of the three they are looking at. Call an encoded value encrypted and you escalate a non-event. Miss that a value is only encoded and you overlook data walking out in plain sight.
+As an analyst, you'll read strange-looking strings in logs every day, and your first decision will always be which of the three you're looking at. That decision matters in both directions. If you assume an encoded value is safe because it looks encrypted, you'll miss data walking out in plain sight. And if you can't tell a hash from a leak, you'll escalate things that were never a problem.

@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Put the Right One to Work</h3>
-<p class="ad-brief__ask">Can you pick the right transformation for a real design decision, then catch a teammate calling one by the wrong name?</p>
+<p class="ad-brief__ask">Now that you can tell the three apart, can you pick the right one for a real design decision, and then catch a teammate calling one by the wrong name?</p>
 <p>Hosted lab required, with Firefox open on the Ubuntu desktop. Builds on the Tell Encoding, Hashing, and Encryption Apart challenge above.</p>
 </div>
 
@@ -14,7 +14,7 @@
 
 <div class="ad-mission" data-id="w2e-c3" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1094 · Medium</span>
-<p><strong>Engineering · Design Review · 11:00 AM</strong><br>PurveX Financial's engineering team is designing how the client portal stores login passwords. The server only ever needs to check a password against what it has on file; it never needs to read the original back.</p>
+<p><strong>Engineering · Design Review · 11:00 AM</strong><br>PurveX Financial's engineering team is designing how the client portal stores login passwords. The server only ever needs to check a password against what it has on file, so it never needs to read the original back.</p>
 <p><strong>Task:</strong> Which of the three transformations fits that job? Type its letter.<br><strong>A</strong> Encoding.<br><strong>B</strong> Encryption.<br><strong>C</strong> Hashing.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which transformation fits password storage" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -22,7 +22,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The job never needs the original value back, only a way to confirm a guess matches it. One of the three has no reverse operation at all, by design.</p>
+<p>Notice what the job really needs. It never needs the original value back, only a way to confirm that a guess matches it. Which of the three has no reverse operation at all, by design?</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Encoding is reversible by anyone, since its rule is public. Storing a password that way lets anyone who reads it recover the real password.</div>
@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Hashing. The server stores the hash and compares against it, and never needs the original, so one-way is a feature.</p>
+<p>Hashing is the right fit. The server stores the hash and compares each login against it, and since it never needs the original, being one-way isn't a limitation here. It's the whole point.</p>
 </div>
 </div>
 </div>
@@ -52,7 +52,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>This is the exact value you produced in the challenge above. Drop it back into CyberChef with "From Base64" and see what comes out.</p>
+<p>You've actually seen this exact value before, because you produced it in the challenge above. Drop it back into CyberChef with "From Base64" and see what comes out.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="b">An AES-encrypted value does not end in a trailing <code>=</code> the way this one does, and this string reverses with a single public operation.</div>
@@ -65,7 +65,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The trailing <code>=</code> and the character set mark it as Base64. You could read it in seconds, so treating it as encrypted would be a costly mistake.</p>
+<p>The trailing <code>=</code> and the set of characters mark it as Base64. Since you could read it in seconds, treating it as encrypted would have been a costly mistake.</p>
 </div>
 </div>
 </div>
@@ -83,10 +83,10 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The trailing <code>=</code> and the character set are the same tell as the value you decoded in the challenge above. Use the same recipe.</p>
+<p>Look at the end of the value. The trailing <code>=</code> and the set of characters are the same giveaway as the value you just decoded, so the same recipe will work here.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="advisory">That is the word from the challenge above, encoded differently. Decode this value on its own.</div>
+<div class="ad-miss" data-guess="advisory">That's the word from the challenge above. This is a different value, so decode it on its own and see what it says.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -95,7 +95,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The teammate was wrong, and you just proved it in seconds with the same CyberChef recipe from the start of this lab. Calling a Base64 string "encrypted" is not a small mistake. It tells a manager the data is safe when anyone who looks at the log can already read it.</p>
+<p>Your teammate was wrong, and you proved it in seconds with the same CyberChef recipe you used at the start of this lab. Calling a Base64 string "encrypted" isn't a small slip, either. It tells a manager the data is safe, when in fact anyone who looks at the log can already read it.</p>
 </div>
 </div>
 </div>
@@ -103,4 +103,4 @@
 
 ### Why It Matters
 
-Naming the right tool for a design decision and reading a strange value cold are the same skill, used two different ways. The next challenge in this set uses encryption for real, on an actual file.
+Picking the right tool for a design decision and reading a strange value cold might feel like different tasks, but they're really the same skill used two ways. In the next challenge, you'll use encryption for real, on an actual file.

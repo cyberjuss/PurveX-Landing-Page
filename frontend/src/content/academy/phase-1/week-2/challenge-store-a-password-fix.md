@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Correct the Record, Then Prove the System Already Fixed It</h3>
-<p class="ad-brief__ask">Can you correct a manager's wrong read on a breach, then prove the system's own tools already store passwords the right way?</p>
+<p class="ad-brief__ask">Can you correct a manager who has misread a breach, and then prove that the system's own tools already store passwords the right way?</p>
 <p>Hosted lab required, with a terminal open on the Ubuntu desktop. Builds on the Store It Weak, Then See Why That Leaks challenge above.</p>
 </div>
 
@@ -22,10 +22,10 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Think back to the three-account loop. You identified two accounts sharing a password without ever knowing what the password was.</p>
+<p>Think back to the three-account loop in the last challenge. You spotted two accounts sharing a password without ever knowing what that password was.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">The manager is half right that the hashes cannot be reversed, but that is not the same as the file being safe. Matching values still say something.</div>
+<div class="ad-miss" data-guess="a">The manager is right that the hashes can't be reversed, but that isn't the same as the file being safe. Ask yourself what matching values still tell you.</div>
 <div class="ad-miss" data-guess="c">SHA-256 being one-way is exactly why the attacker cannot read a password straight out of the file. That part of the manager's claim is true.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The manager is only half right. SHA-256 really cannot be reversed, but "cannot be reversed" is not the same as "safe." Matching values across a leaked file hand an attacker a ready-made list of accounts to try one cracked or reused password against, which is exactly the finding this lab let you make without cracking anything at all.</p>
+<p>The manager is only half right. SHA-256 really can't be reversed, but "can't be reversed" isn't the same thing as "safe." Matching values in a leaked file hand an attacker a ready-made list of accounts to try a single cracked or reused password against. That's exactly the finding you made in the last challenge, without cracking anything at all.</p>
 </div>
 </div>
 </div>
@@ -43,7 +43,7 @@
 
 ### Create One the Right Way
 
-You hashed a password by hand twice, unsalted and salted, as a demonstration. Nobody should ever store a real account's password that way; the system has its own tool for this, and it is worth checking that the tool actually does what you just proved matters.
+So far, you've hashed a password by hand twice, once unsalted and once salted, purely as a demonstration. Nobody should ever store a real account's password that way, because the system has its own tool for the job. What's worth doing, though, is checking that the tool really does what you just proved matters.
 
 ```bash
 sudo useradd -m priya.sample
@@ -51,7 +51,7 @@ echo 'priya.sample:Summer2024!' | sudo chpasswd
 sudo grep priya.sample /etc/shadow
 ```
 
-`chpasswd` is the real, standard way to set a Linux account's password, the same mechanism behind `passwd` and behind account creation itself. Read the second field in the line it printed, between the first two `$` signs.
+`chpasswd` is the standard way to set a Linux account's password, and it's the same mechanism that sits behind `passwd` and behind creating an account in the first place. Once it's run, read the second field in the line that was printed, the part between the first two `$` signs.
 
 <div class="ad-mission ad-mission--capstone" data-id="w2m-c6" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1152 · Low</span>
@@ -62,14 +62,14 @@ sudo grep priya.sample /etc/shadow
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The line reads <code>priya.sample:$X$salt$hash:...</code>. <code>X</code> is what you want, and it is not <code>6</code>. Ubuntu's own default moved on since the <code>openssl passwd -6</code> command you ran by hand in the challenge above.</p>
+<p>The line reads <code>priya.sample:$X$salt$hash:...</code>, and <code>X</code> is the part you want. Here's a hint: it isn't <code>6</code>, because Ubuntu's own default has moved on since the <code>openssl passwd -6</code> command you ran by hand in the last challenge.</p>
 <ol>
 <li>Clean up when you are done: <code>sudo userdel -r priya.sample</code>.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="1|5">Those mark MD5 and SHA-256 respectively, both weaker and neither one what a current Ubuntu system actually uses by default.</div>
-<div class="ad-miss" data-guess="6">That is the SHA-512 marker from the <code>openssl passwd -6</code> command you ran by hand earlier. The system picked something newer on its own, without being asked.</div>
+<div class="ad-miss" data-guess="6">That's the SHA-512 marker from the <code>openssl passwd -6</code> command you ran by hand earlier. Read the line again, because the system picked something newer on its own.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -78,7 +78,7 @@ sudo grep priya.sample /etc/shadow
 </div>
 <div>
 <span>Why it matters</span>
-<p><code>$y$</code> is yescrypt, Ubuntu's actual default since 22.04, a memory-hard scheme built specifically to be slow and expensive to brute-force at scale, newer and tougher to crack than the SHA-512 you configured by hand with <code>openssl passwd -6</code>. You never had to choose it, or even know its name: creating the account the normal way did better than the manual demonstration did. The weak storage in this whole lab only ever happens when someone builds their own password handling by hand instead of trusting the tool built for the job.</p>
+<p><code>$y$</code> stands for yescrypt, which has been Ubuntu's default since version 22.04. It's deliberately built to use a lot of memory, so it's slow and expensive to guess against at scale, and that makes it newer and tougher to crack than the SHA-512 you set up by hand with <code>openssl passwd -6</code>. Notice that you never had to choose it, or even know its name. Simply creating the account the normal way did better than your manual demonstration. That's the real lesson here: weak password storage only happens when someone builds their own password handling by hand instead of trusting the tool made for the job.</p>
 </div>
 </div>
 </div>
@@ -86,7 +86,7 @@ sudo grep priya.sample /etc/shadow
 
 ### Take It Further
 
-The same manager asks whether switching to a salted hash would have stopped the breach from happening at all.
+Before the briefing ends, the same manager has one more question. Would switching to a salted hash have stopped the breach from happening at all?
 
 <div class="ad-mission ad-mission--capstone" data-id="w2m-c7" data-attempts="0">
 <span class="ad-mission__num">Ticket 06 · INC-1157 · Medium</span>
@@ -98,7 +98,7 @@ The same manager asks whether switching to a salted hash would have stopped the 
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Salting changed one thing in this whole lab: whether identical passwords looked identical in storage. It never touched how guessable any single password was.</p>
+<p>Across this whole lab, salting changed exactly one thing: whether identical passwords looked identical in storage. It never touched how guessable any single password was.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">You proved in the challenge above that salting stops correlation, not guessing. A weak password salted is still a weak password.</div>
@@ -111,7 +111,7 @@ The same manager asks whether switching to a salted hash would have stopped the 
 </div>
 <div>
 <span>Why it matters</span>
-<p>A salted database would have hidden the fact that accounts shared <code>Summer2024!</code>, but it would not have made <code>Summer2024!</code> a harder password to guess. Salting and password strength fix two different problems, and a breach review that only asks "was it salted" misses the half of the question a weak password answers on its own.</p>
+<p>A salted database would have hidden the fact that several accounts shared <code>Summer2024!</code>, but it wouldn't have made <code>Summer2024!</code> any harder to guess. In other words, salting and password strength fix two different problems. So a breach review that only asks "was it salted?" misses the other half of the question, which is whether the passwords were weak to begin with.</p>
 </div>
 </div>
 </div>
@@ -119,4 +119,4 @@ The same manager asks whether switching to a salted hash would have stopped the 
 
 ### Why It Matters
 
-When a breach is reported, the first technical question is how the passwords were stored, because that decides whether every reused credential across the company is now exposed. Salting closes one door. It was never going to be the whole fix.
+Whenever a breach is reported, the first technical question to ask is how the passwords were stored, because that decides whether every reused credential across the company is now exposed. As you've just seen, though, salting only closes one door, and it was never going to be the whole fix on its own.

@@ -12,13 +12,13 @@
 
 ### Before You Start
 
-Commit to an answer first. Nothing is marked yet. The capture settles each one.
+Make a prediction for each of these first. Nothing gets marked here, and the capture will show you whether you were right.
 
 <div class="ad-check ad-check--predict" data-check="w3m-p1">
 <p class="ad-check__q">You connect to a port where a service is listening and the firewall allows it. How does the handshake go?</p>
 <button type="button" class="ad-check__opt" data-i="0">It completes, SYN then SYN-ACK then ACK</button>
 <button type="button" class="ad-check__opt" data-i="1">Nothing comes back</button>
-<p class="ad-check__note">Locked in. You will watch an open port answer in the capture.</p>
+<p class="ad-check__note">Got it. You'll watch an open port answer in the capture.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w3m-p2">
@@ -26,7 +26,7 @@ Commit to an answer first. Nothing is marked yet. The capture settles each one.
 <button type="button" class="ad-check__opt" data-i="0">A clear RST, refusing the connection</button>
 <button type="button" class="ad-check__opt" data-i="1">Nothing, the firewall drops it in silence</button>
 <button type="button" class="ad-check__opt" data-i="2">A SYN-ACK, same as an open port</button>
-<p class="ad-check__note">Locked in. The difference between a refusal and silence tells you a firewall is there.</p>
+<p class="ad-check__note">Got it. The difference between a refusal and silence tells you a firewall is there.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w3m-p3">
@@ -34,7 +34,7 @@ Commit to an answer first. Nothing is marked yet. The capture settles each one.
 <button type="button" class="ad-check__opt" data-i="0">One machine touching many ports in a short burst</button>
 <button type="button" class="ad-check__opt" data-i="1">A single long file download</button>
 <button type="button" class="ad-check__opt" data-i="2">Nothing, a scan looks like ordinary use</button>
-<p class="ad-check__note">Locked in. You will see the shape of it in your own capture.</p>
+<p class="ad-check__note">Got it. You'll see the shape of it in your own capture.</p>
 </div>
 
 ### Start the Capture

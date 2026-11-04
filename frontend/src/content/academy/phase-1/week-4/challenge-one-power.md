@@ -18,21 +18,21 @@ Commit to an answer first. Nothing is marked yet. The rules settle each one.
 <p class="ad-check__q">You give a user sudo rights to exactly one command. Can they use sudo for anything else?</p>
 <button type="button" class="ad-check__opt" data-i="0">Yes, one sudo rule unlocks all of sudo</button>
 <button type="button" class="ad-check__opt" data-i="1">No, only the command you listed</button>
-<p class="ad-check__note">Locked in. You will try a second command and watch what happens.</p>
+<p class="ad-check__note">Got it. You'll try a second command and watch what happens.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w4m-p2">
 <p class="ad-check__q">A rule grants sudo for "systemctl" with no service named. How much does that give the user?</p>
 <button type="button" class="ad-check__opt" data-i="0">Only the ability to restart the one service you had in mind</button>
 <button type="button" class="ad-check__opt" data-i="1">The ability to start, stop or restart any service on the machine</button>
-<p class="ad-check__note">Locked in. You will compare the narrow rule against this broad one.</p>
+<p class="ad-check__note">Got it. You'll compare the narrow rule against this broad one.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w4m-p3">
 <p class="ad-check__q">Why does least privilege matter if you trust the coworker?</p>
 <button type="button" class="ad-check__opt" data-i="0">It does not, trust is enough</button>
 <button type="button" class="ad-check__opt" data-i="1">If their account is ever stolen, the attacker inherits exactly what it could do</button>
-<p class="ad-check__note">Locked in. The rule is not about the person, it is about what a stolen account is worth.</p>
+<p class="ad-check__note">Got it. The rule is not about the person, it is about what a stolen account is worth.</p>
 </div>
 
 ### Make a User to Grant To

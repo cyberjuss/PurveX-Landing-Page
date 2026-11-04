@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Mirror That Does Not Match</h3>
 <p class="ad-brief__ask">When you cannot see inside a file or a password, can you still prove what it is?</p>
-<p>Hash what you're given, compare it to the published checksum, and say what a password export proves.</p>
+<p>In this challenge, you'll hash the files you're given, compare them to a published checksum, and work out what a leaked password export really proves.</p>
 </div>
 
 <div class="ad-progress">
@@ -13,7 +13,7 @@
 <div class="ad-mission" data-id="cry-01" data-attempts="0">
 <span class="ad-mission__num">Task 01 · INC-1058 · Medium</span>
 <h4>Three Mirrors and One Checksum</h4>
-<p><strong>Situation:</strong> IT mirrors the VPN client manifest three ways so a download never fails. A published checksum from 22 September says what the genuine file should hash to, and nobody has checked the mirrors against it since.</p>
+<p><strong>Situation:</strong> IT keeps three mirrored copies of the VPN client manifest, so a download never fails. A checksum published on 22 September says what the genuine file should hash to, but nobody has checked the mirrors against it since then.</p>
 <p><strong>Task:</strong> Hash all three mirrors in <code>C:\PurveX\Shares\IT</code> and give the file name of the one that does not match <code>checksums.txt</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Three Mirrors and One Checksum" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -21,7 +21,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A checksum is only useful against a value published somewhere the file itself cannot change.</p>
+<p>Remember that a checksum is only useful if you compare against a value published somewhere the file itself can't change, so use the published checksum file as your reference rather than the other mirrors.</p>
 <ol>
 <li>Open PowerShell on the domain controller and change to <code>C:\PurveX\Shares\IT</code>.</li>
 <li>Read the published value with <code>Get-Content checksums.txt</code>.</li>
@@ -40,11 +40,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Two mirrors agreeing proves nothing on its own, because a mirror can be replaced as easily as a file. The published checksum is the only value that showed which copy was altered after it was signed off.</p>
+<p>It's tempting to trust the two mirrors that agree with each other, but that proves nothing on its own, because a mirror can be replaced just as easily as a file. The published checksum is the only value that could show which copy was altered after it was signed off.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Stop distributing from that mirror and keep the file for review. Check the published value against the vendor rather than against the other mirrors, so a changed source cannot vouch for itself.</p>
+<p>So the next step is to stop distributing from that mirror and keep the file for review. When you do check further, compare the published value against the vendor's own copy rather than the other mirrors, so a source that's been changed can't vouch for itself.</p>
 </div>
 </div>
 </div>
@@ -53,7 +53,7 @@
 <div class="ad-mission" data-id="cry-02" data-attempts="0">
 <span class="ad-mission__num">Task 02 · INC-1058 · Medium</span>
 <h4>What Changed Inside It</h4>
-<p><strong>Situation:</strong> A different hash says a file changed, and it says nothing at all about what changed. Your lead wants the actual difference before the mirror is reported to the vendor.</p>
+<p><strong>Situation:</strong> A different hash tells you that a file changed, but it says nothing at all about what changed. Before the mirror is reported to the vendor, your lead wants to see the actual difference.</p>
 <p><strong>Task:</strong> Compare the mirror that failed against one that passed and give the name of the field whose line differs.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for What Changed Inside It" placeholder="a field name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -61,7 +61,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The manifests are plain text, so a line by line comparison shows the change the hash only hinted at.</p>
+<p>Since the manifests are plain text, a line-by-line comparison will show you the change that the hash only hinted at.</p>
 <ol>
 <li>In PowerShell, read both files with <code>Get-Content</code> and compare them with <code>Compare-Object</code>.</li>
 <li>Read the line that differs and look at the field name before the colon.</li>
@@ -80,11 +80,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The failing mirror claims to be version 2.4.1 while carrying a build nobody signed. Anyone installing from it would have trusted the version number, which is the one thing the altered file kept intact.</p>
+<p>The failing mirror claims to be version 2.4.1, yet it carries a build nobody signed. Anyone installing from it would have trusted that version number, and that's exactly the one thing the altered file left intact.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Report what the hash proved and what the comparison showed, because a report needs both. A version number is a claim, and a signature is the part that can be checked.</p>
+<p>When you report it, include both what the hash proved and what the comparison showed, because a good report needs both. Keep in mind that a version number is only a claim, whereas a signature is something you can actually check.</p>
 </div>
 </div>
 </div>
@@ -93,7 +93,7 @@
 <div class="ad-mission" data-id="cry-03" data-attempts="0">
 <span class="ad-mission__num">Task 03 · INC-1058 · Low</span>
 <h4>Naming the Algorithm</h4>
-<p><strong>Situation:</strong> The password export in the same folder lists one hash per account and never says how they were made. Your lead wants the algorithm named before anyone decides whether the hashes are weak.</p>
+<p><strong>Situation:</strong> In the same folder, a password export lists one hash per account, but it never says how those hashes were made. Before anyone decides whether they're weak, your lead wants the algorithm named.</p>
 <p><strong>Task:</strong> Read <code>exported-hashes.txt</code> and name the hashing algorithm from the length of the values.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Naming the Algorithm" placeholder="an algorithm" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -101,7 +101,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Each hashing algorithm produces a value of a fixed length, so the length alone names it.</p>
+<p>Each hashing algorithm produces a value of one fixed length, so counting the characters is enough to name it.</p>
 <ol>
 <li>Open <code>exported-hashes.txt</code> and look at one of the hash values.</li>
 <li>Count its characters, which are written in hexadecimal.</li>
@@ -121,11 +121,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>SHA-256 is fast to compute, which is a virtue for checking a file and a weakness for storing a password. A fast hash lets an attacker try billions of guesses a second against a stolen list.</p>
+<p>SHA-256 is fast to compute. That speed is a strength when you're checking a file, but it's a weakness when you're storing a password, because a fast hash lets an attacker try billions of guesses a second against a stolen list.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Flag that passwords were stored with a plain fast hash and no salt. A password store should use a slow algorithm built for the job, such as bcrypt or Argon2id.</p>
+<p>So flag that these passwords were stored with a plain, fast hash and no salt. A password store should use a slow algorithm built for the job instead, such as bcrypt or Argon2id.</p>
 </div>
 </div>
 </div>
@@ -134,7 +134,7 @@
 <div class="ad-mission" data-id="cry-04" data-attempts="0">
 <span class="ad-mission__num">Task 04 · INC-1058 · Medium</span>
 <h4>Cracking a Weak Hash</h4>
-<p><strong>Situation:</strong> The vendor review left a short list of common passwords next to the export. If a staff password is on that list, the hash gives it up in seconds, which is exactly what an attacker would try first.</p>
+<p><strong>Situation:</strong> The vendor review left a short list of common passwords next to the export. If any staff password is on that list, its hash will give it up in seconds, and that's exactly what an attacker would try first.</p>
 <p><strong>Task:</strong> Recover the password behind <code>taylor.osei</code>'s hash using <code>common-passwords.txt</code> and give the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Cracking a Weak Hash" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -142,7 +142,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Cracking a fast hash is guessing: hash each candidate and stop when one matches the target.</p>
+<p>Cracking a fast hash is really just organized guessing: you hash each candidate and stop when one matches the target.</p>
 <ol>
 <li>Read <code>taylor.osei</code>'s hash from <code>exported-hashes.txt</code>.</li>
 <li>On the Ubuntu server, hash each candidate and compare it, looping the list with <code>while read p; do printf '%s' "$p" | sha256sum; done &lt; common-passwords.txt</code>.</li>
@@ -161,11 +161,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A password on a common list is already public, so the hash protects nothing. With a fast unsalted hash the match is found in seconds, and the account is open to anyone holding the export.</p>
+<p>A password that's on a common list is effectively already public, so hashing it protects nothing. With a fast, unsalted hash, the match turns up in seconds, which leaves the account open to anyone holding the export.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Force a reset on any account whose password was recovered this way, and require length that keeps it off a guessing list. One cracked hash is a reset, and a pattern across many is a policy problem.</p>
+<p>Any account whose password was recovered this way needs a forced reset, along with a length requirement that keeps the new password off guessing lists. One cracked hash calls for a reset, but a pattern across many accounts points to a policy problem.</p>
 </div>
 </div>
 </div>
@@ -174,7 +174,7 @@
 <div class="ad-mission" data-id="cry-05" data-attempts="0">
 <span class="ad-mission__num">Task 05 · INC-1058 · Medium</span>
 <h4>The Hash That Repeats</h4>
-<p><strong>Situation:</strong> Reading the export, you notice two accounts show the same hash value. The same hash from the same algorithm means the same input went in.</p>
+<p><strong>Situation:</strong> As you read through the export, you notice that two accounts show the same hash value. Since the algorithm is the same, that can only mean the same input went in.</p>
 <p><strong>Task:</strong> Name the other account whose hash matches <code>taylor.osei</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Hash That Repeats" placeholder="account name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -182,7 +182,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A hash is deterministic, so two identical hashes mean two identical passwords.</p>
+<p>Because a hash is deterministic, two identical hashes mean two identical passwords.</p>
 <ol>
 <li>Read every row of <code>exported-hashes.txt</code>.</li>
 <li>Find the hash value that appears twice.</li>
@@ -201,11 +201,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Identical hashes reveal reuse without any cracking at all. One password recovered now opens both accounts, and an attacker who cracks one hash gets the second for free.</p>
+<p>Identical hashes reveal password reuse without any cracking at all. That also means the password you recovered in the last task now opens both accounts, so an attacker who cracks one hash gets the second for free.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Reset both accounts and treat reuse as its own finding. Salting each password would have hidden the reuse, because the same password would then hash to different values.</p>
+<p>Reset both accounts, and report the reuse as a finding in its own right. If each password had been salted, the reuse would have stayed hidden, because the same password would then have hashed to two different values.</p>
 </div>
 </div>
 </div>
@@ -214,7 +214,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="cry-06" data-attempts="0">
 <span class="ad-mission__num">Task 06 · INC-1058 · Medium</span>
 <h4>Containing the Unsigned Mirror</h4>
-<p><strong>Situation:</strong> You have shown that one mirror fails the published checksum and carries a build nobody signed. Your lead wants it off the share before anyone installs it, kept where it can still be reviewed.</p>
+<p><strong>Situation:</strong> By now you've shown that one mirror fails the published checksum and carries a build nobody signed. Your lead wants it off the share before anyone installs it, but kept somewhere it can still be reviewed.</p>
 <p><strong>Task:</strong> Move the failing mirror from <code>C:\PurveX\Shares\IT</code> to <code>C:\PurveX\Quarantine</code>, then name the thing a trustworthy build carries that this one did not.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Containing the Unsigned Mirror" placeholder="one word" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -222,7 +222,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Moving the file keeps it as evidence, where deleting it would destroy what a review still needs.</p>
+<p>Moving the file is the right call, because it keeps the file as evidence, whereas deleting it would destroy what a review still needs.</p>
 <ol>
 <li>On the domain controller, open PowerShell and change to <code>C:\PurveX\Shares\IT</code>.</li>
 <li>Move the failing mirror with <code>Move-Item vpn-client-2.4.1-mirror-b.txt C:\PurveX\Quarantine</code>.</li>
@@ -241,11 +241,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A checksum proves a file has not changed since it was published, and a signature proves who published it. The altered mirror kept its version and lost its signature, which is the claim that would have failed a check.</p>
+<p>A checksum proves a file hasn't changed since it was published, while a signature proves who published it. The altered mirror kept its version number but lost its signature, and that missing signature is the claim that would have failed a check.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Quarantine the file and keep it for review, then distribute only builds that carry a valid signature. Verify the signature before the checksum, because a correct checksum of the wrong file still passes.</p>
+<p>With the file safely in quarantine for review, the lasting fix is to distribute only builds that carry a valid signature. And check the signature before the checksum, because a correct checksum of the wrong file will still pass.</p>
 </div>
 </div>
 </div>

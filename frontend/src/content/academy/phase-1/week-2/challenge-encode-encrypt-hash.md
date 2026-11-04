@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Tell Encoding, Hashing, and Encryption Apart</h3>
-<p class="ad-brief__ask">One reverses instantly, one needs a key, one never comes back. Can you tell which is which?</p>
+<p class="ad-brief__ask">One of these reverses instantly, one needs a key, and one never comes back at all. Can you tell which is which?</p>
 <p>Hosted lab required, with Firefox open on the Ubuntu desktop.</p>
 </div>
 
@@ -12,21 +12,21 @@
 
 ### Before You Start
 
-Commit to an answer before you open anything. Nothing is marked yet. The tool settles each one.
+Make a prediction for each of these before you open anything. Nothing gets marked here, and the tool itself will show you whether you were right.
 
 <div class="ad-check ad-check--predict" data-check="w2e-p1">
 <p class="ad-check__q">Base64 and encryption both produce gibberish. Which one can anyone reverse without a secret?</p>
 <button type="button" class="ad-check__opt" data-i="0">Base64</button>
 <button type="button" class="ad-check__opt" data-i="1">Encryption</button>
 <button type="button" class="ad-check__opt" data-i="2">Neither</button>
-<p class="ad-check__note">Locked in. You will reverse one of them with a single operation and need a key for the other.</p>
+<p class="ad-check__note">Got it. In a moment you'll reverse one of them with a single operation, and you'll find the other needs a key.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w2e-p2">
 <p class="ad-check__q">If you hash a password and later lose the original, can you get the password back from the hash?</p>
 <button type="button" class="ad-check__opt" data-i="0">Yes, by reversing the hash</button>
 <button type="button" class="ad-check__opt" data-i="1">No, hashing is one-way</button>
-<p class="ad-check__note">Locked in. You will search the tool for a reverse operation and see what you find.</p>
+<p class="ad-check__note">Got it. You'll search the tool for a reverse operation and see for yourself what turns up.</p>
 </div>
 
 <div class="ad-check ad-check--predict" data-check="w2e-p3">
@@ -34,18 +34,18 @@ Commit to an answer before you open anything. Nothing is marked yet. The tool se
 <button type="button" class="ad-check__opt" data-i="0">Encoding</button>
 <button type="button" class="ad-check__opt" data-i="1">Hashing</button>
 <button type="button" class="ad-check__opt" data-i="2">Encryption</button>
-<p class="ad-check__note">Locked in. You will change the key and watch the result stop coming back.</p>
+<p class="ad-check__note">Got it. You'll change the key and watch the original stop coming back.</p>
 </div>
 
 ### Open CyberChef
 
-In Firefox on the Ubuntu desktop, open the live tool.
+To start, open Firefox on the Ubuntu desktop and go to the live tool.
 
 ```
 https://gchq.github.io/CyberChef/
 ```
 
-The screen has three areas. The left is a list of operations you search and drag. The middle is your recipe, the operations stacked in order. The bottom boxes are Input and Output.
+Take a moment to get your bearings, because the screen has three areas. On the left is a list of operations that you search and drag from. In the middle is your recipe, which is simply those operations stacked in order. Along the bottom are the Input and Output boxes.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -56,9 +56,9 @@ The screen has three areas. The left is a list of operations you search and drag
 
 ### Encode It
 
-In the Input box, type the single word `advisory`. Search the operations list for "To Base64" and drag it into the recipe.
+Let's start with encoding. In the Input box, type the single word `advisory`. Then search the operations list for "To Base64" and drag it into the recipe.
 
-The Output shows `YWR2aXNvcnk=`. This is encoding. It rearranges the characters by a public rule, so anyone can undo it. Add "From Base64" under the first operation and the word returns.
+The Output now shows `YWR2aXNvcnk=`, and that's encoding. It rearranges the characters by a public rule, which means anyone can undo it. To prove it, add "From Base64" under the first operation, and you'll see the word come straight back.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -67,7 +67,7 @@ The Output shows `YWR2aXNvcnk=`. This is encoding. It rearranges the characters 
 </figure>
 </div>
 
-Confirm it in a terminal.
+You can confirm the same thing in a terminal, too.
 
 ```bash
 printf 'advisory' | base64
@@ -76,15 +76,15 @@ printf 'advisory' | base64 | base64 -d
 
 ### Hash It
 
-Clear the recipe. With `advisory` still in the Input, search for "SHA2" and drag in "SHA2" set to 256.
+Next, clear the recipe so you can try hashing. With `advisory` still in the Input, search for "SHA2" and drag in "SHA2" set to 256.
 
-The Output is a long fixed-length string. This is hashing. It is one-way by design, so there is no "unhash" operation anywhere in the list to drag in. Search for one and see.
+This time the Output is a long, fixed-length string, and that's hashing. Because a hash is one-way by design, there's no "unhash" operation anywhere in the list for you to drag in. Go ahead and search for one, so you can see that for yourself.
 
 ```bash
 printf 'advisory' | sha256sum
 ```
 
-Change one letter of the input in CyberChef and watch the whole hash change. A hash proves whether data changed. It never stores the data.
+While you're here, change one letter of the input and watch the whole hash change. That's the useful part: a hash can prove whether data changed, even though it never stores the data itself.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -95,9 +95,9 @@ Change one letter of the input in CyberChef and watch the whole hash change. A h
 
 ### Encrypt It
 
-Clear the recipe. Search for "AES Encrypt" and drag it in. In its Key field type `00000000000000000000000000000000` and leave the mode as it is. Put `advisory` in the Input.
+Finally, clear the recipe once more for encryption. Search for "AES Encrypt" and drag it in. In its Key field, type `00000000000000000000000000000000`, and leave the mode as it is. Then put `advisory` in the Input.
 
-The Output is the encrypted value. This is encryption. Drag in "AES Decrypt" below it with the same key and the word returns. Change one character of the key and it does not.
+What you see in the Output now is the encrypted value. Drag "AES Decrypt" in below it with the same key, and the word comes back. But change just one character of the key, and it won't.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -108,7 +108,7 @@ The Output is the encrypted value. This is encryption. Drag in "AES Decrypt" bel
 
 ### Check Yourself
 
-Answer from what you saw in the tool.
+Answer based on what you actually saw in the tool.
 
 <div class="ad-mission" data-id="w2e-c1" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1092 · Low</span>
@@ -119,11 +119,11 @@ Answer from what you saw in the tool.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You added a reverse operation right under both of the other two. Only one of the three never got one.</p>
+<p>Think back over the three recipes. You added a reverse operation right under two of them, so which one never got one?</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">You reversed this one with "From Base64" right below "To Base64." It has a reverse operation.</div>
-<div class="ad-miss" data-guess="c">You reversed this one with "AES Decrypt" using the matching key. It has a reverse operation too.</div>
+<div class="ad-miss" data-guess="a">Look again: you reversed this one with "From Base64" right below "To Base64", so it does have a reverse operation.</div>
+<div class="ad-miss" data-guess="c">You reversed this one too, with "AES Decrypt" and the matching key, so it has a reverse operation as well.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -132,7 +132,7 @@ Answer from what you saw in the tool.
 </div>
 <div>
 <span>Why it matters</span>
-<p>Hashing is one-way by design. There is no unhash operation to drag in, which is exactly why it suits password storage.</p>
+<p>Hashing is one-way by design, so there's no unhash operation to drag in. That's exactly why hashing suits password storage: even the system storing the hash can't turn it back into the password.</p>
 </div>
 </div>
 </div>
@@ -149,10 +149,10 @@ Answer from what you saw in the tool.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>"From Base64" needed nothing typed into it. "AES Decrypt" had a field you had to fill in to match "AES Encrypt."</p>
+<p>Compare the two reverse operations. "From Base64" needed nothing typed into it, whereas "AES Decrypt" had a field you had to fill in to match "AES Encrypt."</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">You did have to supply something for AES Decrypt to work: the same value you typed into AES Encrypt's Key field.</div>
+<div class="ad-miss" data-guess="b">You did have to supply something for AES Decrypt to work. Look at the field you filled in with the same value you typed into AES Encrypt.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -161,7 +161,7 @@ Answer from what you saw in the tool.
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encryption is reversible only with the key. Base64 is reversible by anyone, because its rule is public.</p>
+<p>Encryption can only be reversed with the key. Base64, on the other hand, can be reversed by anyone, because the rule it follows is public.</p>
 </div>
 </div>
 </div>
@@ -169,4 +169,4 @@ Answer from what you saw in the tool.
 
 ### Why It Matters
 
-Three transformations, three different answers to "can this come back." The next challenge in this set puts that difference to work on a real decision and a real log.
+You just ran three transformations and got three different answers to the question "can this come back?" In the next challenge, you'll put that difference to work on a real decision and a real log.
