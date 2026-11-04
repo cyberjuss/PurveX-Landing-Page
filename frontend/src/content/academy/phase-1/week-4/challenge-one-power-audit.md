@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Audit a Real Over-Broad Rule, Then Take It Further</h3>
-<p class="ad-brief__ask">Can you spot a sudoers rule that hands away more than it should, then say whether naming one exact script actually closes the gap?</p>
+<p class="ad-brief__ask">Can you spot a sudoers rule that hands away more than it should, and then say whether naming one exact script really closes the gap?</p>
 <p>Hosted lab required. Builds on the Grant Exactly One Power challenge above.</p>
 </div>
 
@@ -22,7 +22,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Think about the gap between the two systemctl rules in the challenge above. A folder of hundreds of commands is the same kind of gap, written differently.</p>
+<p>Think back to the gap between the two systemctl rules in the last challenge. A folder holding hundreds of commands is the same kind of gap, just written differently.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">A folder is not a command. <code>/usr/bin</code> holds hundreds of real, unrelated tools, exactly the same mistake as granting bare <code>systemctl</code> with no service named.</div>
@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A folder path is not a command list. <code>/usr/bin</code> holds hundreds of real tools, and "any command in a folder" is exactly the same mistake as the unscoped systemctl rule from the challenge above, just spelled differently. The fix is the same one you wrote in the challenge above: name the exact backup command and nothing else.</p>
+<p>A folder path isn't a list of commands. <code>/usr/bin</code> holds hundreds of real tools, so "any command in a folder" is exactly the same mistake as the systemctl rule with no service named, only spelled differently. That means the fix is the same one you wrote in the last challenge: name the exact backup command and nothing else.</p>
 </div>
 </div>
 </div>
@@ -43,7 +43,7 @@
 
 ### Take It Further
 
-The backup account's rule gets rewritten to name one exact script, `/usr/local/bin/run-backup.sh`, instead of the whole `/usr/bin` folder.
+Following your finding, the backup account's rule is rewritten to name one exact script, `/usr/local/bin/run-backup.sh`, instead of the whole `/usr/bin` folder.
 
 <div class="ad-mission ad-mission--capstone" data-id="w4m-c6" data-attempts="0">
 <span class="ad-mission__num">Ticket 06 · INC-1160 · Medium</span>
@@ -55,11 +55,11 @@ The backup account's rule gets rewritten to name one exact script, `/usr/local/b
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A sudo rule that names a script grants root to whatever runs when that script runs. That is only as narrow as the script's own contents and who can change them.</p>
+<p>A sudo rule that names a script grants root to whatever runs when that script runs. So the rule is only as narrow as the script's contents, and as safe as the list of people who can change them.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Naming the exact path is real progress over the whole folder, but it only narrows the rule to one file. What that file actually does, and who can edit it, still matters.</div>
-<div class="ad-miss" data-guess="c">Naming one script is a real improvement over a whole folder of hundreds of tools. It is just not automatically the entire fix.</div>
+<div class="ad-miss" data-guess="c">Naming one script is a real improvement over a whole folder of hundreds of tools. It just isn't automatically the entire fix.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -68,7 +68,7 @@ The backup account's rule gets rewritten to name one exact script, `/usr/local/b
 </div>
 <div>
 <span>Why it matters</span>
-<p>Naming one script instead of a whole folder is a real fix for the gap this lab demonstrated. But a sudo rule that runs a script as root is only as safe as that script: if the backup account itself can edit <code>run-backup.sh</code>, or the script takes an argument it was never meant to, the account can still reach root through it. The audit does not end at the sudoers line. It continues into what the named command actually does.</p>
+<p>Naming one script instead of a whole folder really does fix the gap this lab demonstrated. But a sudo rule that runs a script as root is only as safe as the script itself. If the backup account can edit <code>run-backup.sh</code>, or the script accepts an argument it was never meant to, the account can still reach root through it. So the audit doesn't stop at the sudoers line. It carries on into what the named command actually does.</p>
 </div>
 </div>
 </div>
@@ -76,4 +76,4 @@ The backup account's rule gets rewritten to name one exact script, `/usr/local/b
 
 ### Why It Matters
 
-Most privilege problems are not clever attacks. They are an account that was given more than it needed, found by someone who should not have had it. An administrator who writes the narrowest rule that still does the job, and who can audit what an account may do, closes the hole before anyone goes looking for it.
+Most privilege problems aren't clever attacks. Usually, they're an account that was given more than it needed, which someone who shouldn't have it eventually finds. That's why an administrator who writes the narrowest rule that still does the job, and who can audit what an account may do, closes the hole before anyone goes looking for it.

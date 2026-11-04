@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Produce the Record, Then Read It</h3>
-<p class="ad-brief__ask">Every time someone proves who they are, a record is written. Can you make one, find it, and tell a success from a failure?</p>
+<p class="ad-brief__ask">Every time someone proves who they are, a record gets written. Can you make one, find it, and tell a success from a failure?</p>
 <p>Hosted lab required, with a terminal open on the Ubuntu desktop.</p>
 </div>
 
@@ -32,19 +32,19 @@ Make a prediction for each of these before you type anything. Nothing gets marke
 <p class="ad-check__q">Does a failed authentication tell you the account exists?</p>
 <button type="button" class="ad-check__opt" data-i="0">Always, a failure means the account is real</button>
 <button type="button" class="ad-check__opt" data-i="1">Not on its own, the password was simply wrong</button>
-<p class="ad-check__note">Got it. Keep this one in mind. It matters for how you read a log.</p>
+<p class="ad-check__note">Got it. Keep this one in mind, because it matters for how you read a log.</p>
 </div>
 
 ### Produce a Failure
 
-A run of failures followed by one success is what a break-in looks like from the log. Open a terminal on the Ubuntu desktop. First clear any remembered sudo session, then run a command as root and type the wrong password on purpose.
+In a log, a break-in often looks like a run of failures followed by one success, so that's the pattern you're going to create. Open a terminal on the Ubuntu desktop. First, clear any remembered sudo session, and then run a command as root and type the wrong password on purpose.
 
 ```bash
 sudo -k
 sudo true
 ```
 
-When it asks for a password, type something wrong three times. It gives up with "3 incorrect password attempts". You have just created a failed authentication, which is now in the log.
+When it asks for a password, type something wrong three times, until it gives up with "3 incorrect password attempts". You've just created a failed authentication, and it's now sitting in the log.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -55,23 +55,23 @@ When it asks for a password, type something wrong three times. It gives up with 
 
 ### Produce a Success
 
-Now run it again and type your real password.
+Now run the same command again, and this time type your real password.
 
 ```bash
 sudo true
 ```
 
-It returns with no message, which means it worked. That success is in the log too, right after the failures.
+It returns without any message, which means it worked. That success is in the log too, right after the failures.
 
 ### Read the Record
 
-The system log holds both. Read the recent authentication lines.
+Since the system log holds both, let's read the recent authentication lines.
 
 ```bash
 sudo journalctl -e _COMM=sudo
 ```
 
-Scroll to the end. You will see your failed attempts marked `authentication failure`, then a line showing the session was opened for root. The failures and the success sit together, with times, which is exactly how an analyst reads them.
+Scroll to the end, and you'll see your failed attempts marked `authentication failure`, followed by a line showing that a session was opened for root. The failures and the success sit together, each with a time, and reading them side by side like that is exactly what an analyst does.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -82,16 +82,16 @@ Scroll to the end. You will see your failed attempts marked `authentication fail
 
 ### The Same Thing on Windows
 
-A domain controller records the same events with numbers every analyst learns. On Windows you open Event Viewer and read the Security log.
+Windows records the same kinds of events, using numbers that every analyst learns. On a domain controller, you'd open Event Viewer and read the Security log, where two numbers matter most:
 
 * **4624** is a successful logon.
 * **4625** is a failed logon.
 
-A burst of 4625 events followed by a 4624 for the same account is the Windows version of what you just made on Linux. The log is in a different place and the events have numbers rather than words, but the story it tells is the same.
+So a burst of 4625 events followed by a 4624 for the same account is the Windows version of what you just created on Linux. The log lives in a different place, and the events have numbers rather than words, but the story they tell is the same.
 
 ### Check Yourself
 
-Answer from what you saw, not from what you remember reading.
+Answer based on what you actually saw, rather than on what you remember reading.
 
 <div class="ad-mission" data-id="w4e-c1" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1118 · Low</span>
@@ -102,7 +102,7 @@ Answer from what you saw, not from what you remember reading.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Scroll back a few lines further up from the "session opened" line in your journalctl output. Your three wrong passwords are right there.</p>
+<p>Scroll a few lines further up from the "session opened" line in your journalctl output, and look at what's just above it.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Scroll further up in your journalctl output. The three "authentication failure" lines are right above the success.</div>
@@ -114,7 +114,7 @@ Answer from what you saw, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>Both are recorded. Failed authentication is often the more useful of the two, because a run of failures is the first sign of someone trying to get in.</p>
+<p>Both are recorded. In fact, failed authentication is often the more useful of the two, because a run of failures is the first sign that someone is trying to get in.</p>
 </div>
 </div>
 </div>
@@ -131,7 +131,7 @@ Answer from what you saw, not from what you remember reading.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The pair of numbers in "The Same Thing on Windows" above names the success and the failure right next to each other.</p>
+<p>Look back at "The Same Thing on Windows" above, where the success and the failure are listed right next to each other.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="b">4624 is the successful logon, the Windows twin of what your sudo success wrote to the Linux log.</div>
@@ -144,7 +144,7 @@ Answer from what you saw, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>4625 is a failed logon, 4624 is a success. These two numbers come up in almost every SOC interview.</p>
+<p>4625 is a failed logon, and 4624 is a success. It's worth memorizing these two, because they come up in almost every SOC interview.</p>
 </div>
 </div>
 </div>
@@ -161,7 +161,7 @@ Answer from what you saw, not from what you remember reading.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Compare this to the three failures you just made on purpose. Scale matters: forty is well past what a person fumbling their own password looks like.</p>
+<p>Compare this with the three failures you just made on purpose. Scale matters here, because forty is far beyond what someone fumbling their own password looks like.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Nobody mistypes a password forty times in a row. That volume is the shape of something automated trying one guess after another.</div>
@@ -174,7 +174,7 @@ Answer from what you saw, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>Many failures then a success is the shape of a password being guessed. It does not prove an attack, but it is exactly what you escalate for a closer look.</p>
+<p>Many failures followed by a success is the shape of a password being guessed. It doesn't prove an attack on its own, but it's exactly the kind of pattern you escalate for a closer look.</p>
 </div>
 </div>
 </div>
@@ -191,10 +191,10 @@ Answer from what you saw, not from what you remember reading.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Attackers guess account names as often as they guess passwords. A failure alone cannot tell you which part of the guess was wrong.</p>
+<p>Attackers guess account names just as often as they guess passwords, so a failure on its own can't tell you which part of the guess was wrong.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">A failure does not confirm the name is real; an attacker guessing names gets the exact same failure against one that does not exist.</div>
+<div class="ad-miss" data-guess="a">A failure doesn't confirm the name is real, because an attacker guessing names gets exactly the same failure against a name that doesn't exist.</div>
 <div class="ad-miss" data-guess="c">A lockout is its own separate event, not something a single failed login by itself tells you.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -204,7 +204,7 @@ Answer from what you saw, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>A failure means an attempt was made, not that the account is real. Attackers guess names too, so a failure alone proves only that someone tried. Look at the details before you decide. On Windows the 4625 sub-status tells an unknown name apart from a wrong password.</p>
+<p>A failure tells you an attempt was made, not that the account is real. Since attackers guess names too, a failure alone only proves that someone tried. So look at the details before you decide: on Windows, for example, the 4625 sub-status code tells an unknown name apart from a wrong password.</p>
 </div>
 </div>
 </div>
@@ -212,4 +212,4 @@ Answer from what you saw, not from what you remember reading.
 
 ### Why It Matters
 
-Authentication logs are the first evidence in most investigations, because they record who tried to get in and whether they made it. The next challenge in this set puts a real, harder judgment call in front of you.
+Authentication logs are the first evidence in most investigations, because they record who tried to get in and whether they made it. In the next challenge, you'll use them to make a harder, real-world judgment call.
