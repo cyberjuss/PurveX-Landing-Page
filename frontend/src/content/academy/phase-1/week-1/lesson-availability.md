@@ -1,15 +1,15 @@
 ### Availability
 
-Availability means that systems and data are there when the people who need them go to use them. When availability fails, nothing has leaked and nothing has been changed, so the data is still intact and still private. What's stopped is the work itself, which is why we call this failure a **lockout**. It's also the most visible of the three failures and usually the first one to land in your queue, because the people affected notice straight away and can't carry on until it's fixed.
+Availability means that systems and data are there when the people who need them go to use them. When it fails, nothing has leaked and nothing has been changed, so the data is still intact and still private. What's stopped instead is the work itself, which is why we call this failure a **lockout**. It's also the most visible of the three failures, and usually the first to land in your queue, because the people affected notice straight away and can't carry on until it's fixed.
 
-Availability matters most where being unreachable is the harm in itself, such as:
+So availability matters most where being unreachable is the harm in itself, such as:
 
 - email
 - the time clock
 - the VPN
 - a payment page at checkout
 
-Think about what each outage actually costs. A payment page that won't load loses money for every minute it stays down. A time clock that's unreachable at shift change creates a payroll mess that someone will have to sort out by hand later.
+To see why, think about what each outage actually costs. A payment page that won't load loses money for every minute it stays down. In the same way, a time clock that's unreachable at shift change creates a payroll mess that someone will have to sort out by hand later.
 
 **Controls:** backups, redundancy and patching.
 
@@ -17,7 +17,7 @@ Think about what each outage actually costs. A payment page that won't load lose
 - **Redundancy** keeps a second path open when the first one fails.
 - **Patching** closes the defects that would otherwise be used to bring a service down deliberately.
 
-You need all three because a service can go down for more than one reason: hardware fails, a change goes wrong, or someone attacks it on purpose. That last case has a name you'll hear often. A **distributed denial of service** (DDoS) attack goes straight after availability by flooding a service with more requests than it can answer, until real users can't get through. Nothing is stolen and nothing is changed, so the attack succeeds just by making the service unreachable. Keep that in mind, because it's a good reminder that a security incident doesn't have to involve data leaving the building.
+You need all three of these because a service can go down for more than one reason: hardware fails, a change goes wrong, or someone attacks it on purpose. That last case has a name you'll hear often. A **distributed denial of service** (DDoS) attack goes straight after availability by flooding a service with more requests than it can answer, until real users can't get through. Since nothing is stolen and nothing is changed, the attack succeeds just by making the service unreachable. That makes it a useful reminder that a security incident doesn't have to involve data leaving the building.
 
 ```match
 prompt: Match each control to what it does.

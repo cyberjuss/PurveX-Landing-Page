@@ -119,6 +119,21 @@ Three or more consecutive short declaratives is the signal to re-read. There
 are no em dashes and no semicolons here, so the joins get made with
 conjunctions, a colon, or a phrase that refers back.
 
+### Every sentence is a handoff
+
+Lesson slides build a paragraph up two lines at a time, so the student meets
+every sentence join on its own. Each sentence therefore has to hand off to
+the next one. Open with something that points back (that, this, so,
+because of that, for example, in other words, even so, by contrast, which
+means), or carry a word or idea from the sentence before into the start of
+the next. A paragraph's first sentence connects to the paragraph or heading
+before it, and a new section opens by saying how it follows from the last.
+
+Vary the joins. "So", "That's why" and "This means" each work once, but the
+same opener three times on one slide reads as a tic, not as flow. When a
+sentence starts a genuinely new idea, say so plainly ("There's one more idea
+to carry forward...") rather than starting cold.
+
 Reference material such as event-ID tables and command explanations is
 exempt. Terse is correct there.
 
