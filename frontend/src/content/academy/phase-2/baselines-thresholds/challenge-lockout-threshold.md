@@ -13,7 +13,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="th-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · INC-1068 · Routine</span>
 <h4>Wealth Management Needs Its Own Threshold</h4>
-<p><strong>Devon Brooks · Compliance · 2:15 PM</strong><br>The firm's default password policy treats every department the same. Wealth Management handles client funds directly, and the audit wants their accounts held to a stronger standard, without making a normal typo lock someone out of their own workday.</p>
+<p><strong>Devon Brooks · Compliance · 2:15 PM</strong><br>The firm's default password policy treats every department the same. Because Wealth Management handles client funds directly, the audit wants their accounts held to a stronger standard. At the same time, an ordinary typo shouldn't lock someone out of their workday.</p>
 <p><strong>Task:</strong> Apply a Fine-Grained Password Policy to Wealth Management Users requiring at least 12 characters and locking out after no more than 12 failed attempts. Then type the lockout threshold you set.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Wealth Management Needs Its Own Threshold" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -21,7 +21,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A second, stricter policy for one group, layered on top of the domain's default, is a Password Settings Object. It applies only to the group you target, and nowhere else.</p>
+<p>What you need is a Password Settings Object, a second, stricter policy layered on top of the domain's default. It applies only to the group you target and nowhere else.</p>
 <ol>
 <li>Open Active Directory Administrative Center with Win+R and <code>dsac.exe</code>.</li>
 <li>Go to System, then Password Settings Container, then New, then Password Settings.</li>
@@ -36,8 +36,8 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="3|5|6|7">That is tight enough to catch a typo-prone afternoon and lock out real users on ordinary mistakes. Loosen it toward the middle of the defensible band.</div>
-<div class="ad-miss" data-guess="20|30|40|50">That gives a guessing script dozens of free attempts before anything stops it. Tighten it toward the middle of the defensible band.</div>
+<div class="ad-miss" data-guess="3|5|6|7">That's so tight that one clumsy afternoon of typing would lock real users out over ordinary mistakes. Loosen it toward the middle of the defensible band.</div>
+<div class="ad-miss" data-guess="20|30|40|50">That would give a guessing script dozens of free attempts before anything stops it. Tighten it toward the middle of the defensible band.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -46,11 +46,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The exact number matters less than landing in the band that actually balances the two costs. Too low drowns the help desk in lockout tickets from real users. Too high hands a password-guessing script dozens of tries before the account ever locks, the same trade-off this week's detection threshold lesson makes with alert volume instead of lockouts.</p>
+<p>The exact number matters less than landing in the band that balances the two costs. Set it too low and the help desk drowns in lockout tickets from real users. Set it too high and a password-guessing script gets dozens of tries before the account locks. It's the same trade-off you met in this week's threshold lesson, only measured in lockouts instead of alerts.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Confirm the policy applies before closing the ticket. A policy that exists but targets the wrong group protects nothing.</p>
+<p>Before you close the ticket, confirm the policy actually applies, because a policy that targets the wrong group protects nobody.</p>
 </div>
 </div>
 </div>

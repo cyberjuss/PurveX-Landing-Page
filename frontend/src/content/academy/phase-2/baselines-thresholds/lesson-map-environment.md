@@ -1,17 +1,17 @@
 ### Mapping Your Environment
 <!-- art: network -->
 
-Every lab you have worked in this course so far runs inside your own pod: a Windows domain controller and an Ubuntu server, provisioned together and sitting on the same small network. The two machines can reach each other on every port. Nothing else can reach either one. Your pod cannot see another student's pod, and nothing on the open internet can open a connection into yours. That isolation is enforced at the network level by its own security group, not by a setting either machine could be tricked into changing.
+Every lab you've worked so far in this course has run inside your own pod, which is a Windows domain controller and an Ubuntu server built together on the same small network. The two machines can reach each other on every port, but nothing else can reach either of them. Your pod can't see another student's pod, and nothing on the open internet can open a connection into yours. That isolation is enforced at the network level by the pod's own security group, so it isn't a setting either machine could be tricked into changing.
 
-That is worth sitting with before you touch a single log. Every lesson this phase asks you to judge whether traffic or an authentication attempt fits what the environment should be doing. You cannot make that judgment about a network you have never actually looked at. The two machines in your pod, their roles, and the ports they actually use are the smallest real environment you will ever need to practice that judgment on. It is already yours.
+It's worth taking that in before you touch a single log. Throughout this phase, you'll be asked to judge whether some traffic or a sign-in attempt fits what the environment should be doing, and you can't make that call about a network you've never looked at. Your pod is the smallest real environment you could practice on, with just two machines, their roles and the ports they use. And it's already yours.
 
-A domain controller and a Linux server each expose a small, predictable set of services. Knowing the port is what lets you read a connection attempt at a glance instead of looking it up every time:
+A domain controller and a Linux server each expose a small, predictable set of services. Once you know their ports, you can read a connection attempt at a glance instead of looking it up every time:
 
 - Port 3389 is someone trying to open a remote desktop session.
 - Port 88 on a domain controller is a Kerberos ticket request, the backbone of how every sign-in in your directory actually gets authenticated.
 - Port 22 on the Linux box is SSH.
 
-None of these appearing is itself suspicious. What would be worth a second look is one of them appearing from somewhere, or at a time, that does not fit the pattern. That is exactly the skill the next lesson builds.
+Seeing any of these isn't suspicious in itself. What deserves a second look is one of them showing up from a place, or at a time, that doesn't fit the pattern. Recognizing that is exactly the skill the next lesson builds.
 
 ```match
 prompt: Match each port to the service it belongs to.

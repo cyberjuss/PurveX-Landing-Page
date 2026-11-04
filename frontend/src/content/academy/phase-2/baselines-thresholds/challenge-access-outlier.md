@@ -21,7 +21,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A baseline is not a guess about what a role should have. It is what the peers actually share, read off every one of them.</p>
+<p>Don't guess at what the role should have. A baseline is what the peers actually share, so read it off every one of them.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Find each of the four accounts and open its Member Of tab.</li>
@@ -33,7 +33,7 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="nina.castillo|owen.brandt|lena.farooq">That account's membership matches the other two baseline peers. Keep comparing until one account has a group the rest do not.</div>
+<div class="ad-miss" data-guess="nina.castillo|owen.brandt|lena.farooq">That account's membership matches two of its peers, so it's part of the baseline. Keep comparing until you find the account with a group the others don't have.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -42,11 +42,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Three accounts holding the exact same membership is what makes it a baseline rather than a hunch. The fourth account breaking that pattern is the outlier a baseline is built to surface, the same way a sign-in pattern or a file-access pattern would.</p>
+<p>Because three accounts hold exactly the same membership, you're working from a baseline rather than a hunch. The fourth account breaks that pattern, and surfacing an outlier like that is what a baseline is for, just as it would be with a sign-in or file-access pattern.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Now find exactly what the extra access is, which is the next step.</p>
+<p>Next, you'll pin down exactly what that extra access is.</p>
 </div>
 </div>
 </div>
@@ -63,7 +63,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Compliance Users is the one group all four share. Find the one group that only the outlier account has.</p>
+<p>All four accounts share Compliance Users, so look past it for the one group that only the outlier has.</p>
 <ol>
 <li>Open theo.walsh's Member Of tab again.</li>
 <li>Compare it one more time against any of the other three accounts.</li>
@@ -71,7 +71,7 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="compliance users">All four accounts share that group. It is the baseline itself, not the exception to it.</div>
+<div class="ad-miss" data-guess="compliance users">All four accounts share that group, which makes it part of the baseline rather than the exception.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -80,11 +80,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Server Admins is a Level 2 access-level group, not a department group, and nothing about reviewing client files and regulatory filings needs it. Access like this usually survives a role change because nobody ever asks whether it still belongs, not because anyone meant to grant it.</p>
+<p>Server Admins is a Level 2 access-level group rather than a department group, and nothing about reviewing client files and regulatory filings calls for it. Access like this rarely comes from someone deliberately granting it. More often, it survives a role change because nobody ever asked whether it still belonged.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Remove the membership rather than just reporting it, which is the last step.</p>
+<p>For the last step, you'll remove the membership instead of just reporting it.</p>
 </div>
 </div>
 </div>
@@ -101,7 +101,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Removing from a group and deleting an account are not the same action. theo.walsh still needs Compliance Users.</p>
+<p>Be careful to remove the membership, not the account. theo.walsh still needs Compliance Users.</p>
 <ol>
 <li>Open theo.walsh's Properties and go to the Member Of tab.</li>
 <li>Select Server Admins and click Remove.</li>
@@ -113,7 +113,7 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="compliance users">That is the group to keep, not the one to remove. Remove the access-level group instead.</div>
+<div class="ad-miss" data-guess="compliance users">That's the group to keep. Remove the access-level group instead.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -122,11 +122,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A baseline is only worth building if it actually changes something. Finding the outlier and leaving it in place is an audit finding nobody acted on, the exact gap that lets privilege creep sit for a year unnoticed.</p>
+<p>A baseline is only worth building if it changes something. If you find the outlier and leave it in place, you've produced an audit finding nobody acted on, and that's exactly how privilege creep sits unnoticed for a year.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>File it as closed. The quarterly review for this group is done.</p>
+<p>You can file this one as closed, because the quarterly review for this group is done.</p>
 </div>
 </div>
 </div>

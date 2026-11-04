@@ -12,19 +12,19 @@
 
 ### Ask the Machine, Not the Lesson
 
-Priya Nair keeps asking what else is actually running on the domain controller, and "five ports" has never been a real answer. Open PowerShell on the domain controller.
+Priya Nair keeps asking what else is running on the domain controller, and "five ports" has never been a satisfying answer. To give her a real one, open PowerShell on the domain controller.
 
 ```powershell
 Get-NetTCPConnection -State Listen | Sort-Object LocalPort | Select-Object LocalPort, OwningProcess | Format-Table -AutoSize
 ```
 
-A lesson can tell you what a domain controller is for. Only the machine itself can tell you what it is actually running, right now, on your own pod. PowerShell is not asking you to remember anything. It is reading the machine's own state back to you.
+A lesson can tell you what a domain controller is for, but only the machine can tell you what it's running right now on your own pod. Notice that PowerShell isn't asking you to remember anything. It's simply reading the machine's own state back to you.
 
-Find the five ports you just learned: 53, 88, 389, 445, 3389. Each one should be in the list, because each one is a real service running on the machine right now.
+Start by finding the five ports you just learned: 53, 88, 389, 445 and 3389. Each of them should be in the list, because each is a real service running on the machine.
 
 ### Read What the Lesson Left Out
 
-A real domain controller listens on more than five ports. Scroll the rest of the list. You will see others too, maybe 135, 464, 636, 3268, or 9389. Each one is a real Windows service with its own job.
+A real domain controller listens on more than five ports, though. As you scroll through the rest of the list, you'll see others, perhaps 135, 464, 636, 3268 or 9389, and each of them is a real Windows service with its own job.
 
 <div class="ad-mission" data-id="nm-01" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1147 · Low</span>
@@ -35,10 +35,10 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>This is one of the five ports named in the briefing above. Find it in your own LocalPort column.</p>
+<p>It's one of the five ports named in the briefing above, so look for it in your own LocalPort column.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="389|445|53|3389">That is one of the other four ports from the briefing. Kerberos specifically is the one you are after.</div>
+<div class="ad-miss" data-guess="389|445|53|3389">That's one of the other four ports from the briefing. The one you're after is Kerberos.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -47,7 +47,7 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 </div>
 <div>
 <span>Why it matters</span>
-<p>The lesson told you Kerberos was on 88. PowerShell just confirmed it from the machine's own state instead of asking you to trust the lesson.</p>
+<p>The lesson told you Kerberos was on 88, and now PowerShell has confirmed it from the machine's own state, so you no longer have to take the lesson's word for it.</p>
 </div>
 </div>
 </div>
@@ -57,7 +57,7 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 
 <div class="ad-mission" data-id="nm-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1148 · Low</span>
-<p><strong>Self-Check · Baseline Review · 11:00 AM</strong><br>One extra port you likely saw in your own output is 9389. Every <code>Get-ADUser</code>, <code>Get-ADGroupMember</code>, and other AD PowerShell command you have run all course has to reach the directory somehow.</p>
+<p><strong>Self-Check · Baseline Review · 11:00 AM</strong><br>One extra port you probably saw in your output is 9389. Think about every <code>Get-ADUser</code>, <code>Get-ADGroupMember</code> and other AD PowerShell command you've run in this course. Each of them had to reach the directory somehow.</p>
 <p><strong>Task:</strong> What service listens on 9389, and why does it matter to you specifically? Type its letter.<br><strong>A</strong> Active Directory Web Services, which is what the PowerShell AD module actually talks to behind every one of those commands.<br><strong>B</strong> A second, backup DNS resolver.<br><strong>C</strong> A game server bundled with Windows Server by default.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what service listens on 9389" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -65,11 +65,11 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Every AD PowerShell cmdlet you have run since Week 1 had to reach the directory through some service. This port is that service.</p>
+<p>Every AD PowerShell cmdlet you've run since Week 1 reached the directory through some service, and this port belongs to that service.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">DNS runs on port 53, which you already confirmed earlier in this lab. 9389 is a different service entirely.</div>
-<div class="ad-miss" data-guess="c">Nothing resembling a game server ships listening on a domain controller. Every port in this list is a real Windows service with a real job.</div>
+<div class="ad-miss" data-guess="b">DNS runs on port 53, which you confirmed earlier in this lab, so 9389 must be something else.</div>
+<div class="ad-miss" data-guess="c">A domain controller doesn't ship with anything like a game server. Every port in this list is a real Windows service with a real job.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -78,7 +78,7 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every PowerShell AD cmdlet you have run since Week 1 depended on this exact port being open, whether you ever noticed it or not. A lesson only has room to name the ports that explain the big picture. The real list shows you the ones you have been relying on the whole time.</p>
+<p>Every AD cmdlet you've run since Week 1 depended on this port being open, whether or not you noticed. A lesson only has room for the ports that explain the big picture, while the real list shows you the ones you've been relying on all along.</p>
 </div>
 </div>
 </div>
@@ -88,7 +88,7 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 
 <div class="ad-mission ad-mission--capstone" data-id="nm-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1149 · Low</span>
-<p><strong>Self-Check · Baseline Review · 11:15 AM</strong><br>Your own port list came back with entries the lesson never named.</p>
+<p><strong>Self-Check · Baseline Review · 11:15 AM</strong><br>Your port list came back with entries the lesson never named.</p>
 <p><strong>Task:</strong> What does that tell you about working from memory alone? Type its letter.<br><strong>A</strong> A lesson only has room to teach what matters most, not everything a machine actually runs.<br><strong>B</strong> Nothing. A lesson and the machine always match exactly.<br><strong>C</strong> Any port a lesson leaves out is a sign of compromise.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what the extra ports tell you" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -96,11 +96,11 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You just found 9389 yourself, a real and legitimate service the five-port summary never mentioned.</p>
+<p>Remember 9389, which you just found yourself. It's a real, legitimate service that the five-port summary never mentioned.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">You just ran the command yourself and found ports the lesson's five-port list never named. They did not match exactly.</div>
-<div class="ad-miss" data-guess="c">9389 is a real, legitimate Windows service, not a sign of compromise. An unnamed port is simply one a short lesson had no room for.</div>
+<div class="ad-miss" data-guess="b">When you ran the command, you found ports the lesson's five-port list never named, so the two didn't match exactly.</div>
+<div class="ad-miss" data-guess="c">9389 is a real, legitimate Windows service, not a sign of compromise. A port the lesson didn't name is simply one it had no room for.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -109,7 +109,7 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 </div>
 <div>
 <span>Why it matters</span>
-<p>A baseline built from memory is a starting point, not a ceiling. A real baseline comes from reading the machine, which is why the next lesson has you build one from your own pod's actual traffic instead of a list anyone memorized.</p>
+<p>A baseline built from memory is a starting point, not the whole picture. A real baseline comes from reading the machine, which is why the next lesson has you build one from your own pod's traffic rather than from a memorized list.</p>
 </div>
 </div>
 </div>
@@ -117,4 +117,4 @@ A real domain controller listens on more than five ports. Scroll the rest of the
 
 ### Why It Matters
 
-Five ports explain what a domain controller is for. The real list explains what yours is actually doing. The habit this lab teaches is smaller than any one port: open the machine and ask, instead of working from what you remember.
+Five ports explain what a domain controller is for, but the real list explains what yours is actually doing. The habit to keep from this lab matters more than any single port. Whenever you can, open the machine and ask it, rather than working from what you remember.
