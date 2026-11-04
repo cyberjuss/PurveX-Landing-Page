@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Catch the Scan With Nobody Watching</h3>
-<p class="ad-brief__ask">You can recognize a scan by eye. Can you write the rule that catches it live, with nobody watching?</p>
+<p class="ad-brief__ask">You can already recognize a scan by eye. Can you write the rule that catches one live, with nobody watching?</p>
 <p>Hosted lab required, with the Ubuntu server reachable. Suricata is installed.</p>
 </div>
 
@@ -12,7 +12,7 @@
 
 ### Write the Rule
 
-The last lab taught you what a scan looks like in a capture; an IDS is built to spot that same pattern live, with nobody sitting in Wireshark watching for it. Open the rules file on the Ubuntu server and add one line.
+The last few challenges taught you what a scan looks like in a capture. An IDS (intrusion detection system) is built to spot that same pattern live, so nobody has to sit in Wireshark watching for it. To give it that job, open the rules file on the Ubuntu server and add one line.
 
 ```bash
 nano /etc/suricata/rules/local.rules
@@ -22,23 +22,23 @@ nano /etc/suricata/rules/local.rules
 alert tcp any any -> any any (msg:"PurveX custom: possible port scan detected"; flags:S; threshold: type threshold, track by_src, count 5, seconds 10; sid:1000001; rev:1;)
 ```
 
-Each part of that line is doing real work. `alert` is the action, and `tcp any any -> any any` means any TCP traffic in either direction. `flags:S` narrows it to SYN packets only, the opening move of a handshake, not an established conversation. `threshold: type threshold, track by_src, count 5, seconds 10` is the actual detection logic: fire once a single source sends 5 or more matching packets within any 10-second window. `sid:1000001` is the rule's own ID, required on every Suricata rule and unique within your ruleset.
+Every part of that line is doing real work, so let's read it from left to right. `alert` is the action, and `tcp any any -> any any` means any TCP traffic going in either direction. Next, `flags:S` narrows that down to SYN packets only, the opening move of a handshake rather than an established conversation. After that comes the actual detection logic, `threshold: type threshold, track by_src, count 5, seconds 10`, which says to fire once a single source sends 5 or more matching packets within any 10-second window. Finally, `sid:1000001` is the rule's own ID, which every Suricata rule needs and which has to be unique within your ruleset.
 
 ### Run It and Trigger It
 
-Start Suricata against just this rule.
+With the rule written, start Suricata running against just this one rule.
 
 ```bash
 sudo suricata -c /etc/suricata/suricata.yaml -S /etc/suricata/rules/local.rules -i ens5 -l /var/log/suricata/ -D
 ```
 
-Now reproduce the scan from the last lab, either the bash loop or the Nmap command. Either one sends enough SYNs fast enough to cross your threshold.
+Now reproduce the scan from the earlier challenges, using either the bash loop or the Nmap command. Both send enough SYNs, quickly enough, to cross your threshold.
 
 ```bash
 nmap -sT -p 53,88,389,445,3389,23,8080,9999 dc01
 ```
 
-Read the alert.
+Then read the alert Suricata wrote.
 
 ```bash
 sudo cat /var/log/suricata/fast.log
@@ -53,10 +53,10 @@ sudo cat /var/log/suricata/fast.log
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The SID is the number you wrote into the rule file itself, right after <code>sid:</code>.</p>
+<p>The SID is the number you wrote into the rule file yourself, right after <code>sid:</code>.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="5|10">That is a count or a time window from the rule's threshold clause, not its SID. Look for the number right after <code>sid:</code>.</div>
+<div class="ad-miss" data-guess="5|10">That number is the count or the time window from the rule's threshold clause, not its SID. Look for the number right after <code>sid:</code> instead.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -65,7 +65,7 @@ sudo cat /var/log/suricata/fast.log
 </div>
 <div>
 <span>Why it matters</span>
-<p>That SID is how a real SOC traces an alert back to the exact rule that wrote it, out of possibly thousands running at once. The scan you read by hand last lab, this rule just caught on its own, live, with nobody watching the capture.</p>
+<p>In a real SOC, that SID is how you trace an alert back to the exact rule that wrote it, out of what could be thousands running at once. And notice what just happened: the same scan you read by hand earlier, this rule caught on its own, live, with nobody watching the capture.</p>
 </div>
 </div>
 </div>
@@ -82,7 +82,7 @@ sudo cat /var/log/suricata/fast.log
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>"seconds 10" bounds count 5 to a 10-second span, not a running total since the scan began. Five SYNs 3 seconds apart span 12 seconds start to finish, longer than the window the rule allows.</p>
+<p>The "seconds 10" part limits count 5 to a 10-second span, rather than a running total since the scan began. Now work it out: five SYNs sent 3 seconds apart span 12 seconds from first to last, which is longer than the window the rule allows.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a|c">The <code>seconds 10</code> part of the rule is not decoration. It bounds count 5 to a 10-second span, and this pacing never puts all 5 inside one.</div>
@@ -94,7 +94,7 @@ sudo cat /var/log/suricata/fast.log
 </div>
 <div>
 <span>Why it matters</span>
-<p>This is a real, well-known evasion: a slow scan paced just under a threshold's rate never trips it, even though it eventually touches every port the fast scan did. The rule is not wrong, it is just tuned for one speed, and nothing stops the same recon from happening slower.</p>
+<p>This is a real and well-known way to slip past detection. A slow scan, paced just under the threshold's rate, never trips the rule, even though it eventually touches every port the fast scan did. The rule isn't wrong. It's simply tuned for one speed, and nothing stops an attacker from doing the same scouting more slowly.</p>
 </div>
 </div>
 </div>
@@ -104,7 +104,7 @@ sudo cat /var/log/suricata/fast.log
 
 <div class="ad-mission ad-mission--capstone" data-id="wd1-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1115 · High</span>
-<p><strong>Detection Engineering Lead · Tuning Review · 4:00 PM</strong><br>PurveX Financial's detection lead is deciding how to tune the scan rule you just wrote. A tighter threshold catches a slower scan but risks firing on bursty normal traffic. A looser one stays quiet but lets a slow scan straight through.</p>
+<p><strong>Detection Engineering Lead · Tuning Review · 4:00 PM</strong><br>PurveX Financial's detection lead is deciding how to tune the scan rule you just wrote. A more sensitive threshold catches a slower scan, but it risks firing on bursts of normal traffic. A less sensitive one stays quiet, but it lets a slow scan straight through.</p>
 <p><strong>Task:</strong> What does that actually tell you about tuning a detection? Type its letter.<br><strong>A</strong> A threshold is always a trade-off between catching more and firing on things that are not attacks.<br><strong>B</strong> A threshold should always be set as low as it will technically allow.<br><strong>C</strong> Thresholds are foolproof once written correctly, so tuning does not matter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what tuning a threshold actually trades off" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -112,11 +112,11 @@ sudo cat /var/log/suricata/fast.log
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You just proved a slow-paced scan can slip under this exact rule's threshold. A looser setting would catch that scan, but at some cost.</p>
+<p>You just proved that a slow scan can slip under this exact rule's threshold. A more sensitive setting would catch that scan, but what would it cost you?</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="b">Setting it as low as technically possible is exactly what risks firing on ordinary bursty traffic, the cost side of the same trade-off.</div>
-<div class="ad-miss" data-guess="c">You just proved the opposite: the slow-paced scan in the last step slipped straight under this rule's threshold. Tuning matters.</div>
+<div class="ad-miss" data-guess="c">You just proved the opposite in the last step, when the slow scan slipped straight under this rule's threshold. That's why tuning matters.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -125,7 +125,7 @@ sudo cat /var/log/suricata/fast.log
 </div>
 <div>
 <span>Why it matters</span>
-<p>There is no setting that catches every scan and never fires on anything ordinary. A real detection engineer picks a number knowing exactly what it lets through, and writes down why, instead of trusting the default to be right.</p>
+<p>No setting catches every scan while never firing on anything ordinary. So a real detection engineer picks a number knowing exactly what it lets through, and writes down why, rather than trusting the default to be right.</p>
 </div>
 </div>
 </div>
@@ -133,4 +133,4 @@ sudo cat /var/log/suricata/fast.log
 
 ### Why It Matters
 
-Reading a capture by hand proves you understand the pattern. Writing the rule proves the environment catches it even when you are not watching, which is the entire difference between an analyst and a detection that works while everyone is asleep.
+Reading a capture by hand proves that you understand the pattern. Writing the rule goes a step further, because it proves the environment catches that pattern even when you're not watching. That's the whole difference between an analyst who spots something and a detection that keeps working while everyone is asleep.
