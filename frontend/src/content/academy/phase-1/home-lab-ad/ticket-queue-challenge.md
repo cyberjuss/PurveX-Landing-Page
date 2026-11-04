@@ -1,9 +1,9 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
-<p class="ad-brief__ask">When a request lands in your queue, can you check what is true in Active Directory and then make the change the ticket needs?</p>
-<p>This is the PurveX Financial help desk queue. Every request is a claim to verify before you change anything, and later tickets take you past Active Directory into DNS, the firewall, Group Policy and the file shares.</p>
-<p>Each ticket wants a short finding at the end. The lab has to show the change first, so your answer always reflects the directory after you act.</p>
+<p class="ad-brief__ask">When a request lands in your queue, can you check what's actually true in Active Directory, and then make the change the ticket really needs?</p>
+<p>Welcome to the PurveX Financial help desk queue. Treat every request here as a claim to verify before you change anything. The early tickets stay in Active Directory, and the later ones take you further, into DNS, the firewall, Group Policy and the file shares.</p>
+<p>Each ticket ends by asking for a short finding. Before your answer counts, though, your lab has to show the change, so your answer always reflects the directory after you've acted.</p>
 </div>
 
 <div class="ad-progress">
@@ -22,7 +22,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Company-wide mail comes from a firm-wide group, not a department group. Look in AccessLevels and read each group's Description.</p>
+<p>Company-wide mail comes from a firm-wide group rather than a department group, so look in AccessLevels and read each group's Description.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open the group whose Description mentions company-wide announcements.</li>
@@ -42,11 +42,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Jamie was missing from <code>All Employees</code>, so every company-wide notice skipped her. That includes the policy and security updates staff are expected to follow.</p>
+<p>Jamie was missing from <code>All Employees</code>, so every company-wide notice skipped her, including the policy and security updates staff are expected to follow.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Add her to <code>All Employees</code> and confirm she appears on its member list. The next company-wide email will reach her.</p>
+<p>The fix is to add her to <code>All Employees</code> and confirm she appears on its member list. Once she's there, the next company-wide email will reach her.</p>
 </div>
 </div>
 </div>
@@ -63,7 +63,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A caller describes a symptom, and the Account tab shows the cause. Locked out and disabled are separate settings with separate fixes.</p>
+<p>A caller describes a symptom, but it's the Account tab that shows you the cause. Keep in mind that locked out and disabled are separate settings, each with its own fix.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>riley.kwan</code>.</li>
@@ -87,11 +87,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Riley believed she was locked out, but the account was disabled. An unlock would not have restored sign-in, and she would have stayed blocked while the ticket showed as closed.</p>
+<p>Riley believed she was locked out, but the account was actually disabled. An unlock wouldn't have restored her sign-in, so she'd have stayed blocked while the ticket showed as closed.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Enable the account after you read the Account tab, and close the ticket on what you verified rather than on the word the caller used.</p>
+<p>That's why you read the Account tab first and then enable the account. Close the ticket on what you verified, rather than on the word the caller happened to use.</p>
 </div>
 </div>
 </div>
@@ -108,7 +108,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Create Casey in Departments → IT → Users and copy the groups of a current IT person. A leftover intern and a service account do not belong in a staff group.</p>
+<p>Create Casey in Departments → IT → Users and copy the groups of a current IT person. While you're in IT Users, remember that a leftover intern and a service account don't belong in a staff group.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>Departments</code> → <code>IT</code> → <code>Users</code> and create <code>casey.reed</code> there.</li>
@@ -132,11 +132,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>IT Users held a leftover intern account and a backup service account. Adding Casey without cleaning that up would have left unused access in place, which is exactly what attackers look for.</p>
+<p>IT Users was holding a leftover intern account and a backup service account. If you'd added Casey without cleaning that up, the unused access would have stayed in place, and unused access is exactly what attackers look for.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Create Casey with IT Users only. Remove the service account from the staff group and delete the intern account, then confirm the member list shows only current IT staff and Casey.</p>
+<p>So the complete fix has three parts: create Casey with IT Users only, remove the service account from the staff group, and delete the intern account. Then confirm the member list shows only current IT staff and Casey.</p>
 </div>
 </div>
 </div>
@@ -153,7 +153,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The account's Description says the window is not set. The approved hours are on the OU directly above the account.</p>
+<p>The account's own Description says the window isn't set, so look one level up. The approved hours are recorded on the OU directly above the account.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Use Find on the domain to locate <code>svc-backup-job</code> and note the folder that holds it.</li>
@@ -173,11 +173,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Auditors cannot rely on hours that only live on a folder. With the window on the account, a sign-in at noon stands out as a problem instead of passing unnoticed.</p>
+<p>Auditors can't rely on hours that only live on a folder. Once the window is on the account itself, a sign-in at noon stands out as a problem instead of passing unnoticed.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Copy the approved window from the ServiceAccounts folder onto the account's Description and confirm it saved.</p>
+<p>So copy the approved window from the ServiceAccounts folder onto the account's Description, and confirm it saved.</p>
 </div>
 </div>
 </div>
@@ -194,7 +194,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Group Policy follows the folder, but groups do not move with the account. You have to change them yourself. Title is a separate field on the General tab.</p>
+<p>Moving the account brings the right Group Policy with it, because policy follows the folder. Groups don't move with the account, though, so you have to change those yourself. And the title is a separate field again, on the General tab.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click <code>taylor.osei</code> and choose Move, then select Departments → Compliance → Users.</li>
@@ -215,11 +215,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Taylor still sat in Operations with Operations access, so Compliance policies did not apply and the old access stayed open. An HR notice changes nothing in the directory until someone acts on it.</p>
+<p>Taylor was still sitting in Operations with Operations access, so Compliance policies didn't apply and the old access stayed open. That's the key lesson here: an HR notice changes nothing in the directory until someone acts on it.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Move the account to Departments → Compliance → Users and swap <code>Operations Users</code> for <code>Compliance Users</code>. Confirm both before you close the ticket.</p>
+<p>To act on it, move the account to Departments → Compliance → Users and swap <code>Operations Users</code> for <code>Compliance Users</code>. Then confirm both changes before you close the ticket.</p>
 </div>
 </div>
 </div>
@@ -236,7 +236,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A leaver's account is disabled rather than deleted so its history stays available to auditors.</p>
+<p>When someone leaves, their account is disabled rather than deleted, so that its history stays available to auditors.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>kai.mendes</code>.</li>
@@ -262,11 +262,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A contractor account that stays enabled after the work ends is an unwatched way in. If its password leaks, nobody notices the sign-in because nobody expects one.</p>
+<p>A contractor account that stays enabled after the work ends is an unwatched way in. If its password ever leaks, nobody notices the sign-in, because nobody expects one.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Disable the account and remove its groups on the day the engagement ends. Keep the account itself so its history stays available for audits.</p>
+<p>So disable the account and remove its groups on the day the engagement ends, but keep the account itself, so its history is still there for the invoice review and any audit.</p>
 </div>
 </div>
 </div>
@@ -283,7 +283,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A request names the access someone wants. The group's Description tells you what that access really covers.</p>
+<p>A request names the access someone wants, but the group's Description tells you what that access really covers. Read it before you decide.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Server Admins</code>.</li>
@@ -304,11 +304,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Server Admins controls the firm's servers. An advisor with that access could be tricked into running malware with server rights, and installing one app does not need it.</p>
+<p>Server Admins controls the firm's servers. An advisor with that access could be tricked into running malware with server rights, and installing one app simply doesn't need that much power.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Deny the request and route the install to IT through a normal software ticket. Grant the access a job needs rather than the access a shortcut needs.</p>
+<p>So deny the request, and route the install to IT through a normal software ticket. The principle to remember is to grant the access a job needs, not the access a shortcut needs.</p>
 </div>
 </div>
 </div>
@@ -325,7 +325,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A search for this setting also finds <code>svc-backup-job</code>, which is allowed to keep it. The account you want belongs to a person.</p>
+<p>When you search for this setting, you'll also find <code>svc-backup-job</code>, which is allowed to keep it. The account you want belongs to a person.</p>
 <ol>
 <li>Run the search below in PowerShell on the domain controller.</li>
 <li>Skip the service account and note the person's username.</li>
@@ -349,11 +349,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A person's password that never expires stays valid forever if it leaks. It also survives every forced reset the firm uses to lock attackers out.</p>
+<p>If a person's password never expires, it stays valid forever once it leaks, and it even survives every forced reset the firm uses to lock attackers out.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Clear the setting on staff accounts and leave it only on documented service accounts. Recheck the list during each access review.</p>
+<p>That's why you clear the setting on staff accounts and leave it only on documented service accounts. It's also worth rechecking that list during each access review.</p>
 </div>
 </div>
 </div>
@@ -370,7 +370,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A computer that joins the domain without a chosen OU lands in a default container, and no OU-linked Group Policy can reach it there.</p>
+<p>Think about where a computer lands when it joins the domain without a chosen OU. It goes into a default container, and no Group Policy linked to an OU can reach it there.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> and look inside the default folders until you find <code>FIN-LT14</code>.</li>
@@ -395,11 +395,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Finance drive maps and security settings come from policy linked to the Finance OU. A laptop left in the default container misses them, including any screen-lock or hardening rules.</p>
+<p>Finance drive maps and security settings come from policy linked to the Finance OU, so a laptop left in the default container misses all of them, including any screen-lock or hardening rules.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Move new computers into their department's Workstations OU as soon as they join. Admins can also point new joins at a better default OU with the <code>redircmp</code> command.</p>
+<p>To prevent this, move new computers into their department's Workstations OU as soon as they join. Admins can also point new joins at a better default OU with the <code>redircmp</code> command.</p>
 </div>
 </div>
 </div>
@@ -416,7 +416,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Only one kind of group can grant permissions. Check the Group type on the General tab.</p>
+<p>Only one kind of group can grant permissions, so check the Group type on the General tab.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Finance Reports</code>.</li>
@@ -440,11 +440,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A distribution group is for email and cannot grant access, so every permission set on it did nothing. People blocked from files they need start looking for workarounds that skip security.</p>
+<p>A distribution group is for email and can't grant access, so every permission set on it did nothing. That matters beyond the inconvenience, because people blocked from files they need start looking for workarounds that skip security.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Convert the group to a Security group and keep its members. Then confirm the share permission names the group.</p>
+<p>The fix is to convert the group to a Security group, keeping its members, and then confirm the share permission names the group.</p>
 </div>
 </div>
 </div>
@@ -461,7 +461,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>When an IP address works but the name does not, the network is fine and name resolution is the problem.</p>
+<p>When the IP address works but the name doesn't, the network itself is fine, which tells you the problem is name resolution.</p>
 <ol>
 <li>On the domain controller run <code>Resolve-DnsName files</code> and note the address it returns.</li>
 <li>Run <code>ipconfig</code> to see the domain controller's own IPv4 address.</li>
@@ -485,11 +485,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every device that asked for <code>files</code> was sent to an address where no server exists. One wrong record took the shared drive away from the whole firm even though the server never went down.</p>
+<p>Every device that asked for <code>files</code> was sent to an address where no server exists. So one wrong record took the shared drive away from the whole firm, even though the server itself never went down.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Point the record back at the server that hosts the shares and confirm the name resolves. Then find out who changed the record and why.</p>
+<p>Point the record back at the server that hosts the shares and confirm the name resolves. Once it does, find out who changed the record and why.</p>
 </div>
 </div>
 </div>
@@ -506,7 +506,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A name with two A records is handed out in turn, which DNS calls round robin. If one address belongs to a server that no longer exists, every other lookup fails.</p>
+<p>When a name has two A records, DNS hands them out in turn, which is called round robin. So if one of those addresses belongs to a server that no longer exists, every other lookup fails.</p>
 <ol>
 <li>On the domain controller run <code>Resolve-DnsName payroll</code> and look at how many addresses come back.</li>
 <li>Run <code>ipconfig</code> to find the domain controller's own address, then test the other one with <code>Test-NetConnection</code>.</li>
@@ -530,11 +530,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The old server's record survived the migration, so roughly every other lookup sent people to a machine that no longer exists. Intermittent failures like this burn hours because the fault never shows up when someone tests it once.</p>
+<p>The old server's record survived the migration, so roughly every other lookup sent people to a machine that no longer exists. Intermittent failures like this burn hours, because the fault doesn't show up when someone tests it just once.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Delete the stale record and flush the cache on any client that still fails. Removing old records is part of every server migration, and DNS scavenging can catch the ones people forget.</p>
+<p>So delete the stale record, and flush the cache on any client that still fails. Going forward, removing old records should be part of every server migration, and DNS scavenging can catch the ones people forget.</p>
 </div>
 </div>
 </div>
@@ -551,7 +551,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Temporary rules usually carry a name or description that mentions the vendor. Check who the rule allows as well as which port it opens.</p>
+<p>Temporary rules usually carry a name or description that mentions the vendor. Once you've found it, check who the rule allows in, as well as which port it opens.</p>
 <ol>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Inbound Rules and sort by Name or Group to find the vendor rule.</li>
@@ -575,11 +575,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The rule let any address on the internet try Remote Desktop against the domain controller. Exposed RDP is one of the most common ways ransomware crews get in.</p>
+<p>The rule let any address on the internet try Remote Desktop against the domain controller, and exposed RDP is one of the most common ways ransomware crews get in.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Disable the rule and keep it as a record of the change. Temporary access should come with an end date that someone checks.</p>
+<p>So disable the rule, and keep it as a record of the change. The lasting lesson is that temporary access should always come with an end date that someone actually checks.</p>
 </div>
 </div>
 </div>
@@ -596,7 +596,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A GPO only applies where it is linked. The Scope tab of a GPO lists every place it is linked.</p>
+<p>A GPO only applies where it's linked, and its Scope tab lists every one of those places.</p>
 <ol>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
 <li>Expand Group Policy Objects, select the screen lock GPO and read its Scope tab.</li>
@@ -621,11 +621,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An unlocked Finance screen lets anyone walking past reach payroll and client records. The control existed on paper but never applied to the people it was written for.</p>
+<p>An unlocked Finance screen lets anyone walking past reach payroll and client records. In other words, the control existed on paper but never applied to the people it was written for.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Link the GPO where the Finance accounts live and remove the stray link. Then test one Finance workstation before you tell Audit it is fixed.</p>
+<p>To fix it, link the GPO where the Finance accounts live and remove the stray link. Then test one Finance workstation yourself before you tell Audit it's fixed.</p>
 </div>
 </div>
 </div>
@@ -642,7 +642,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Windows hides known file extensions by default, so a program can pass for a document. The Type column and the modified time are worth a look too.</p>
+<p>Windows hides known file extensions by default, which lets a program pass for a document. So as well as the name, look at the Type column and the modified time.</p>
 <ol>
 <li>Open File Explorer and go to <code>C:\PurveX\Shares\Finance</code>.</li>
 <li>On the View menu, turn on File name extensions and compare the files.</li>
@@ -666,11 +666,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A program named to look like a PDF is a classic way malware gets opened. Jordan already double-clicked it, so the laptop Jordan used needs checking as well.</p>
+<p>A program named to look like a PDF is a classic way to get malware opened. Since Jordan already double-clicked it, the laptop Jordan used needs checking as well.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Quarantine the file without opening it and keep it as evidence. Then escalate with the file name, its timestamp and who opened it. Thank Jordan for reporting it quickly, because people who fear blame stop reporting.</p>
+<p>So quarantine the file without opening it, keep it as evidence, and escalate with the file name, its timestamp and who opened it. And thank Jordan for reporting it quickly, because people who fear blame stop reporting.</p>
 </div>
 </div>
 </div>
@@ -687,7 +687,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Account lockout lives in the Default Domain Policy, not on individual accounts.</p>
+<p>Account lockout is set in the Default Domain Policy, rather than on individual accounts.</p>
 <ol>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
 <li>Expand the domain, right-click <code>Default Domain Policy</code> and choose Edit.</li>
@@ -695,7 +695,7 @@
 <li>Set the threshold to 10 or fewer, and both the duration and the reset counter to 15 minutes or more.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>Get-ADDefaultDomainPasswordPolicy</code>.</li>
 </ol>
-<p>A duration of 0 means an administrator must unlock the account by hand. That is stricter, but this ticket wants a number of minutes, so use 15 or more.</p>
+<p>A duration of 0 means an administrator has to unlock the account by hand. That's actually stricter, but this ticket wants a number of minutes, so use 15 or more.</p>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Set-ADDefaultDomainPasswordPolicy -Identity purvexfinancial.local -LockoutThreshold 10 -LockoutDuration 00:15:00 -LockoutObservationWindow 00:15:00</code></li>
@@ -712,11 +712,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Without a lockout an attacker can try passwords against one account forever, and nothing stops them or says it happened. Most accounts broken into this way had passwords that fall in a few thousand guesses, which takes minutes.</p>
+<p>Without a lockout, an attacker can try passwords against one account forever, and nothing stops them or even records that it happened. Most accounts broken into this way had passwords that fall within a few thousand guesses, which only takes minutes.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Set a threshold that stops guessing without locking out real people on a bad morning. Ten tries with a fifteen minute lock is the usual balance. Then watch for 4740 so a lockout storm is visible as it starts.</p>
+<p>So set a threshold that stops guessing without locking out real people on a bad morning. Ten tries with a fifteen-minute lock is the usual balance. Then watch for event 4740, so a wave of lockouts is visible as soon as it starts.</p>
 </div>
 </div>
 </div>
@@ -733,7 +733,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>This is an advanced audit subcategory, not one of the nine basic categories.</p>
+<p>You'll find this under the advanced audit subcategories, rather than among the nine basic categories.</p>
 <ol>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>, then edit <code>Default Domain Controllers Policy</code>.</li>
 <li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Advanced Audit Policy Configuration, Audit Policies, Detailed Tracking.</li>
@@ -753,11 +753,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Without process auditing an investigation can see that someone signed in but not what they then ran, which is the half that says whether anything bad happened. Turning it on after the incident does not recover the week you needed.</p>
+<p>Without process auditing, an investigation can see that someone signed in but not what they ran afterwards, and that second half is what tells you whether anything bad happened. Turning it on after an incident won't recover the week you needed.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Turn on Process Creation for success and keep it on. Adding the command line to the event is a second setting worth asking about, because a process name without its arguments often hides what actually ran.</p>
+<p>So turn on Process Creation for success, and keep it on. It's also worth asking about a second setting that adds the command line to the event, because a process name without its arguments often hides what actually ran.</p>
 </div>
 </div>
 </div>
@@ -774,7 +774,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Read the old size before you change it. Once it is raised the original is gone.</p>
+<p>Read the old size before you change it, because once it's raised, the original value is gone.</p>
 <ol>
 <li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>.</li>
 <li>Expand Windows Logs, right-click <strong>Security</strong> and choose Properties.</li>
@@ -798,11 +798,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A busy domain controller fills 128 MB in a day or two, so the log quietly destroys its own oldest evidence. Most intrusions are found weeks after they start, by which point the record of the first day has already been overwritten.</p>
+<p>A busy domain controller fills 128 MB in a day or two, so the log quietly destroys its own oldest evidence. That's a real problem, because most intrusions are found weeks after they start, by which point the record of the first day has already been overwritten.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Raise the size, and treat that as a stopgap. The real answer is shipping events off the machine as they happen, because a log that lives only on the host is also a log an attacker can clear.</p>
+<p>So raise the size, but treat it as a stopgap. The real answer is to send events off the machine as they happen, because a log that lives only on the host is also a log an attacker can clear.</p>
 </div>
 </div>
 </div>
@@ -819,7 +819,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The domain password policy applies to everyone. A second, stricter policy for one group is a Password Settings Object.</p>
+<p>The domain password policy applies to everyone, so a second, stricter policy for one group needs a Password Settings Object.</p>
 <ol>
 <li>Open Active Directory Administrative Center with Win+R and <code>dsac.exe</code>.</li>
 <li>Go to System, then Password Settings Container, then New, then Password Settings.</li>
@@ -844,11 +844,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An administrator account that falls to a guessed password hands over the whole domain rather than one mailbox. Holding those accounts to the same rules as everyone else prices the most valuable accounts at the same cost to break.</p>
+<p>An administrator account that falls to a guessed password hands over the whole domain, not just one mailbox. Holding those accounts to the same rules as everyone else makes the most valuable accounts just as cheap to break as the rest.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Apply a stricter policy to the admin group, then check it took effect by reading the resultant policy on one of those accounts. A policy that exists but applies to nobody is the common mistake here.</p>
+<p>So apply a stricter policy to the admin group, then check that it took effect by reading the resultant policy on one of those accounts. A policy that exists but applies to nobody is the common mistake here.</p>
 </div>
 </div>
 </div>
@@ -865,7 +865,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Computers live in OUs the way users do. This one is in the Operations department Workstations folder.</p>
+<p>Computers live in OUs just as users do, and this one is in the Operations department's Workstations folder.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand Departments, Operations, Workstations.</li>
@@ -889,11 +889,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A computer object nobody uses keeps its place in the domain, and a machine that left the building still has an account that can authenticate. Old objects are also how an attacker hides: a name on the list nobody questions because it has always been there.</p>
+<p>A computer object that nobody uses keeps its place in the domain, so a machine that left the building still has an account that can authenticate. Old objects are also a good place for an attacker to hide: a name on the list that nobody questions, because it's always been there.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Disable it rather than deleting it, so the record survives if someone later asks what happened to the asset. Delete only after a waiting period, once you are sure nothing depended on it.</p>
+<p>So disable it rather than deleting it, which keeps the record in case someone later asks what happened to the asset. Only delete it after a waiting period, once you're sure nothing depended on it.</p>
 </div>
 </div>
 </div>
