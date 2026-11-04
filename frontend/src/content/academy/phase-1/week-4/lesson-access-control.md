@@ -1,10 +1,10 @@
 ### Broken Access Control
 
-Access control is the enforcement half of authorization. Deciding that a particular role may read a particular record achieves nothing on its own. Something still has to apply that decision on every request, before any data is returned. **Broken access control** is the name for what happens when the server skips that check, so a user reaches data or performs actions beyond their permissions. It has been the number one risk on the OWASP Top 10 since 2021, which tells you how routinely the check gets missed.
+If authorization is the decision, access control is the enforcement. Deciding that a particular role may read a particular record achieves nothing on its own, because something still has to apply that decision on every single request, before any data goes back. **Broken access control** is what we call it when the server skips that check, letting a user reach data or take actions beyond their permissions. As you saw in the overview, it has been the number one risk on the OWASP Top 10 since 2021, which tells you how often that check gets missed.
 
 ### The rule: never trust the client
 
-The single rule underneath every fix in this section is that **nothing arriving from the browser can be trusted.** Everything it sends is under the control of whoever is using it:
+Every fix in this section rests on one rule: **nothing arriving from the browser can be trusted.** That's because everything the browser sends is under the control of whoever is using it:
 
 - the address
 - form fields
@@ -12,17 +12,19 @@ The single rule underneath every fix in this section is that **nothing arriving 
 - cookies
 - the body of the request
 
-This is not an exotic capability requiring special skill. Browser developer tools are sufficient, and intercepting proxies such as Burp Suite or OWASP ZAP make editing a request on its way out entirely routine.
+Changing those values doesn't take special skill, either. The developer tools built into every browser are enough, and intercepting proxies such as Burp Suite or OWASP ZAP make editing a request on its way out completely routine.
 
-The consequence is that the server can take nothing about identity or permission from the request itself. On every request it has to establish three things from its own records:
+So the server can't take anything about identity or permission from the request itself. Instead, on every request, it has to establish three things from its own records:
 
 1. Who this session belongs to.
 2. What role that person has.
 3. Whether that role may perform this action on this item.
 
-This is why hiding a button is not access control, and the mistake is common enough to state bluntly. Removing a link from a menu changes what one user is invited to do. It changes nothing whatsoever about what the server will do if somebody types the address directly.
+That's also why hiding a button is not access control, and the mistake is common enough that it's worth saying bluntly. Removing a link from a menu changes what a user is invited to do, but it changes nothing at all about what the server will do if someone types the address directly.
 
 ### Common forms
+
+Broken access control tends to show up in three recognizable forms:
 
 - **Insecure direct object reference (IDOR):** changing an ID in a request returns someone else's record. First American Financial exposed about 885 million documents this way in 2019.
 - **Forced browsing:** requesting a page the user was never shown, such as `/admin`.
@@ -37,7 +39,7 @@ Parameter tampering: Sending a role the server should set itself
 
 ### Fixes
 
-The fixes all follow from that rule:
+Every one of the fixes follows from that same rule of never trusting the client:
 
 - **Check on the server, every time.** Take identity and role from the session rather than the request, and confirm ownership of each item before returning it.
 - **Deny by default.** An action stays closed unless a rule explicitly opens it for this role, so a newly added feature is safe until somebody decides otherwise rather than exposed until somebody notices.
@@ -47,9 +49,11 @@ The fixes all follow from that rule:
 
 ### Testing
 
-A word of caution before the lab. Changing identifiers on a system you do not have written permission to test is unauthorized access. That remains true even if you only looked and even if the flaw was obvious. Good intentions are not a reliable defense, and finding a genuine vulnerability does not make the access authorized. Practice instead on the PortSwigger Web Security Academy labs, which exist for exactly this purpose. On the job, this kind of testing requires a signed scope agreed in advance.
+Before the lab, a word of caution. Changing identifiers on a system you don't have written permission to test counts as unauthorized access, even if you only looked and even if the flaw was obvious. Good intentions aren't a reliable defense, and finding a real vulnerability doesn't make the access authorized. So practice on the PortSwigger Web Security Academy labs instead, which exist for exactly this purpose. On the job, this kind of testing always needs a signed scope, agreed in advance.
 
 ### When a user reports it
+
+Sometimes the flaw finds you, when a user reports seeing someone else's data. When that happens:
 
 1. Ask them not to try any more addresses.
 2. Record what they saw: the address, the time, their account and whose data appeared.
@@ -67,4 +71,4 @@ Signs of access control probing in web and application logs:
 
 ### Check yourself
 
-A developer says the admin link is safe because it only appears in the menu for admins. What question do you ask them, and how would you prove the answer in the lab?
+Here's one to think through before the challenges. A developer tells you the admin link is safe because it only appears in the menu for admins. What question would you ask them, and how would you prove the answer in the lab?
