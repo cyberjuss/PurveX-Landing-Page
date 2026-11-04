@@ -1149,6 +1149,76 @@ function Get-PurvexInfra {
 # when it is missing, so a rerun never touches an account, group or file the
 # student has already changed. Shared by the first-boot build and the repair
 # path that heals a lab built before a ticket shipped.
+# Tickets 1-5 of the Ticket Queue (INC-1041 to INC-1045): All Employees,
+# Riley's sign-in, the leftover intern, the backup window and Taylor's transfer.
+# They used to be planted only by a full -IncludeCTF build, so a lab whose
+# tickets came from -RepairOnly had every later ticket and none of these five.
+# Planted once: a lab that already has the All Employees group got them from an
+# earlier build, and re-planting would undo a student's work (re-disable Riley,
+# bring back a deleted intern account).
+function Ensure-StarterTickets {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param(
+        [hashtable]$DeptOUPaths,
+        [string]$AccessLevelsOU,
+        [string]$ServiceAccountsOU
+    )
+
+    $marked = Test-PurvexTicketMark "INC-1041"
+    $planted = $marked -or [bool](Get-ADGroup -Filter "Name -eq 'All Employees'" -ErrorAction SilentlyContinue)
+    if (-not $planted) {
+        Write-Host "`n== Ticket Queue: first five tickets ==" -ForegroundColor Cyan
+        Ensure-Group -Name "All Employees" -OUPath $AccessLevelsOU -Scope "Universal" -Description "Firm-wide distribution group for company-wide announcements."
+
+        foreach ($sam in @("alex.rivera", "priya.nair", "devon.brooks", "morgan.lee", "sam.whitfield", "taylor.osei", "riley.kwan", "jordan.ellis")) {
+            $isMember = Get-ADGroupMember -Identity "All Employees" -ErrorAction SilentlyContinue |
+                Where-Object { $_.SamAccountName -eq $sam }
+            if (-not $isMember -and $PSCmdlet.ShouldProcess("$sam -&gt; All Employees", "Add group membership")) {
+                Add-ADGroupMember -Identity "All Employees" -Members $sam
+                Write-Host "    + $sam added to All Employees" -ForegroundColor Green
+            }
+        }
+
+        Ensure-User `
+            -First "Old" -Last "Intern" -SamAccountName "old.intern" `
+            -Title "Intern" -Department "IT" `
+            -OUPath $DeptOUPaths["IT"].UsersOU `
+            -Groups @("IT Users")
+        Ensure-UserDescription -SamAccountName "old.intern" -Description "CTF-TICKET-1043: Leftover intern account. Remove this account when you onboard the new hire."
+
+        Ensure-User `
+            -First "Service" -Last "Backup" -SamAccountName "svc-backup-job" `
+            -Title "Nightly Backup Service Account" -Department "IT" `
+            -OUPath $serviceAccountsOU `
+            -Groups @("IT Users")
+        if ($PSCmdlet.ShouldProcess("svc-backup-job", "Apply service-account flags")) {
+            $svc = Get-ADUser -Identity "svc-backup-job" -Properties Description
+            $svcArgs = @{
+                Identity              = "svc-backup-job"
+                PasswordNeverExpires  = $true
+                ChangePasswordAtLogon = $false
+            }
+            if (-not $svc.Description -or $svc.Description -eq "Window not set") {
+                $svcArgs.Description = "Window not set"
+            }
+            Set-ADUser @svcArgs
+            Write-Host "    ~ svc-backup-job service-account flags applied" -ForegroundColor Green
+        }
+
+        if ($PSCmdlet.ShouldProcess("riley.kwan", "Disable account for lockout ticket")) {
+            Disable-ADAccount -Identity "riley.kwan"
+            Write-Host "    ~ riley.kwan disabled" -ForegroundColor Green
+        }
+
+        Ensure-UserDescription -SamAccountName "jamie.torres" -Description "CTF-TICKET-1041: New Wealth Management hire. Should receive firm-wide announcements but is missing All Employees."
+        Ensure-UserDescription -SamAccountName "taylor.osei" -Description "CTF-TICKET-1045: HR transfer notice says Compliance. Account still lives in Operations until someone moves it."
+        Ensure-UserDescription -SamAccountName "riley.kwan" -Description "CTF-TICKET-1042: User reports lockout. Check the Account tab before you take the action they named."
+    }
+    if (-not $marked -and -not $WhatIfPreference) {
+        foreach ($id in @("INC-1041", "INC-1042", "INC-1043", "INC-1044", "INC-1045")) { Add-PurvexTicketMark $id }
+    }
+}
+
 function Ensure-PurvexTicketObjects {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
@@ -1157,6 +1227,8 @@ function Ensure-PurvexTicketObjects {
         [string]$AccessLevelsOU,
         [string]$ServiceAccountsOU
     )
+
+    Ensure-StarterTickets -DeptOUPaths $DeptOUPaths -AccessLevelsOU $AccessLevelsOU -ServiceAccountsOU $ServiceAccountsOU
 
     $wmWorkstationsOU = Ensure-OU -Name "Workstations" -ParentDN $DeptOUPaths["Wealth Management"].DeptOU -Description "Wealth Management department workstation computer objects."
     Ensure-Computer -Name "WM-WKS07" -OUPath $wmWorkstationsOU -Description "CTF-TICKET-301: Wealth Management workstation named in a 02:00 successful-login alert for alex.rivera."
@@ -1294,51 +1366,6 @@ function Ensure-CTFChallengeData {
     Write-Host "`n== Optional CTF ticket queue data ==" -ForegroundColor Cyan
 
     $serviceAccountsOU = Ensure-OU -Name "ServiceAccounts" -ParentDN $DomainDN -Description "Service accounts, kept separate from real user accounts. CTF-TICKET-1044: Approved nightly backup window 01:00-03:00."
-    Ensure-Group -Name "All Employees" -OUPath $AccessLevelsOU -Scope "Universal" -Description "Firm-wide distribution group for company-wide announcements."
-
-    foreach ($sam in @("alex.rivera", "priya.nair", "devon.brooks", "morgan.lee", "sam.whitfield", "taylor.osei", "riley.kwan", "jordan.ellis")) {
-        $isMember = Get-ADGroupMember -Identity "All Employees" -ErrorAction SilentlyContinue |
-            Where-Object { $_.SamAccountName -eq $sam }
-        if (-not $isMember -and $PSCmdlet.ShouldProcess("$sam -&gt; All Employees", "Add group membership")) {
-            Add-ADGroupMember -Identity "All Employees" -Members $sam
-            Write-Host "    + $sam added to All Employees" -ForegroundColor Green
-        }
-    }
-
-    Ensure-User `
-        -First "Old" -Last "Intern" -SamAccountName "old.intern" `
-        -Title "Intern" -Department "IT" `
-        -OUPath $DeptOUPaths["IT"].UsersOU `
-        -Groups @("IT Users")
-    Ensure-UserDescription -SamAccountName "old.intern" -Description "CTF-TICKET-1043: Leftover intern account. Remove this account when you onboard the new hire."
-
-    Ensure-User `
-        -First "Service" -Last "Backup" -SamAccountName "svc-backup-job" `
-        -Title "Nightly Backup Service Account" -Department "IT" `
-        -OUPath $serviceAccountsOU `
-        -Groups @("IT Users")
-    if ($PSCmdlet.ShouldProcess("svc-backup-job", "Apply service-account flags")) {
-        $svc = Get-ADUser -Identity "svc-backup-job" -Properties Description
-        $svcArgs = @{
-            Identity              = "svc-backup-job"
-            PasswordNeverExpires  = $true
-            ChangePasswordAtLogon = $false
-        }
-        if (-not $svc.Description -or $svc.Description -eq "Window not set") {
-            $svcArgs.Description = "Window not set"
-        }
-        Set-ADUser @svcArgs
-        Write-Host "    ~ svc-backup-job service-account flags applied" -ForegroundColor Green
-    }
-
-    if ($PSCmdlet.ShouldProcess("riley.kwan", "Disable account for lockout ticket")) {
-        Disable-ADAccount -Identity "riley.kwan"
-        Write-Host "    ~ riley.kwan disabled" -ForegroundColor Green
-    }
-
-    Ensure-UserDescription -SamAccountName "jamie.torres" -Description "CTF-TICKET-1041: New Wealth Management hire. Should receive firm-wide announcements but is missing All Employees."
-    Ensure-UserDescription -SamAccountName "taylor.osei" -Description "CTF-TICKET-1045: HR transfer notice says Compliance. Account still lives in Operations until someone moves it."
-    Ensure-UserDescription -SamAccountName "riley.kwan" -Description "CTF-TICKET-1042: User reports lockout. Check the Account tab before you take the action they named."
 
     Ensure-PurvexTicketObjects -DeptOUPaths $DeptOUPaths -DomainDN $DomainDN -AccessLevelsOU $AccessLevelsOU -ServiceAccountsOU $serviceAccountsOU
 }
@@ -1940,7 +1967,9 @@ if ($RepairOnly) {
         $paths[$name] = @{ DeptOU = $deptOU; UsersOU = "OU=Users,$deptOU" }
     }
     $accessLevelsOU = "OU=AccessLevels,$domainDN"
-    $serviceAccountsOU = Ensure-OU -Name "ServiceAccounts" -ParentDN $domainDN -Description "Service accounts, kept separate from real user accounts."
+    # Same description the full build writes. A plain one here overwrote the
+    # backup window ticket 4 asks the student to find.
+    $serviceAccountsOU = Ensure-OU -Name "ServiceAccounts" -ParentDN $domainDN -Description "Service accounts, kept separate from real user accounts. CTF-TICKET-1044: Approved nightly backup window 01:00-03:00."
     # New accounts the repair might create need a starting password. It is rolled
     # here and kept nowhere: every such account must change it at next logon.
     $InitialPassword = ConvertTo-SecureString ("Pvx-" + (-join ((48..57) + (65..90) + (97..122) | Get-Random -Count 16 | ForEach-Object { [char]$_ })) + "-9k") -AsPlainText -Force

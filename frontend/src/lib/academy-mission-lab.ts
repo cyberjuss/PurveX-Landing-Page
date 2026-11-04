@@ -6,12 +6,24 @@ import type { LabSnapshot } from "@/lib/academy-lab";
 // the answer until their own lab shows the change.
 
 /** Objects a ticket needs in the snapshot. A lab built before the ticket existed lacks them. */
-type Needs = { users?: string[]; groups?: string[]; ous?: string[]; computers?: string[]; tickets?: string[] };
+/** What must already be in the lab for a ticket to be workable. Missing any of it asks a hosted lab to replant. */
+type Needs = {
+  users?: string[];
+  groups?: string[];
+  ous?: string[];
+  computers?: string[];
+  tickets?: string[];
+  /** Text a folder's Description must carry, for a ticket whose clue lives there. */
+  ouNotes?: { ou: string; text: string }[];
+};
 
 const G = (checks: { c: Check; label: string }[], needs?: Needs) => ({ checks, needs });
 
 const MISSION_LAB = {
-  "tq-01": G([{ c: { t: "member", sam: "jamie.torres", group: "All Employees", want: true }, label: "Jamie Torres is a member of All Employees" }]),
+  // Tickets 1-5 declare what they need too. A lab whose tickets came from a
+  // repair used to have every later ticket and none of these, and with no needs
+  // listed nothing ever asked for them to be planted.
+  "tq-01": G([{ c: { t: "member", sam: "jamie.torres", group: "All Employees", want: true }, label: "Jamie Torres is a member of All Employees" }], { groups: ["All Employees"] }),
   "tq-02": G([
     { c: { t: "enabled", sam: "riley.kwan", want: true }, label: "riley.kwan is enabled" },
     { c: { t: "flag", sam: "riley.kwan", flag: "lockedOut", want: false }, label: "riley.kwan is not locked out" },
@@ -25,8 +37,11 @@ const MISSION_LAB = {
     // as well, which still means it is out of the staff folders.
     { c: { t: "gone", sam: "old.intern" }, label: "The leftover intern account is gone" },
     { c: { t: "member", sam: "svc-backup-job", group: "IT Users", want: false }, label: "svc-backup-job is no longer in IT Users" },
-  ]),
-  "tq-04": G([{ c: { t: "desc", sam: "svc-backup-job", text: "01:00-03:00" }, label: "svc-backup-job Description has the approved run window" }]),
+  ], { users: ["svc-backup-job"] }),
+  "tq-04": G([{ c: { t: "desc", sam: "svc-backup-job", text: "01:00-03:00" }, label: "svc-backup-job Description has the approved run window" }], {
+    users: ["svc-backup-job"],
+    ouNotes: [{ ou: "OU=ServiceAccounts", text: "01:00-03:00" }],
+  }),
   "tq-05": G([
     { c: { t: "container", sam: "taylor.osei", ou: "OU=Users,OU=Compliance,OU=Departments" }, label: "taylor.osei is in the Compliance Users folder" },
     { c: { t: "member", sam: "taylor.osei", group: "Compliance Users", want: true }, label: "taylor.osei is in Compliance Users" },
@@ -220,7 +235,8 @@ export function hasMissionObjects(id: string, s: LabSnapshot) {
     has(needs.groups, s.groups.map((g) => g.name.toLowerCase())) &&
     has(needs.ous, s.ous.map((o) => o.path.toLowerCase())) &&
     has(needs.computers, s.computers.map((c) => c.name.toLowerCase())) &&
-    has(needs.tickets, (s.infra?.planted ?? []).map((t) => t.toLowerCase()))
+    has(needs.tickets, (s.infra?.planted ?? []).map((t) => t.toLowerCase())) &&
+    (needs.ouNotes ?? []).every((n) => s.ous.some((o) => o.path.toLowerCase() === n.ou.toLowerCase() && (o.description ?? "").includes(n.text)))
   );
 }
 
