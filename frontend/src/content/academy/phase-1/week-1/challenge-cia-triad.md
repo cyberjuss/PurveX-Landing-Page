@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Name It, Then Fix What You Broke</h3>
-<p class="ad-brief__ask">You broke all three properties on purpose. Can you name which one failed in two new tickets, fix the one you can still undo, and say what a backup can't touch?</p>
+<p class="ad-brief__ask">You've broken all three properties on purpose. Now can you read two new tickets and name which property failed in each, fix the one you can still undo, and explain what a backup can't bring back?</p>
 <p>Hosted lab required. Builds on the Confidentiality, Integrity, and Availability challenges above.</p>
 </div>
 
@@ -22,10 +22,10 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The number on screen is correct and the portal is up. Nothing about the data itself is wrong; it only reached a person it should not have.</p>
+<p>Ask yourself two questions. Is the number on screen correct? Yes. Is the portal up? Also yes. So nothing is wrong with the data itself. What's wrong is who got to see it.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">The balance itself is accurate for whoever it actually belongs to. Nothing was altered; it just reached the wrong client.</div>
+<div class="ad-miss" data-guess="b">Look again at the balance. It's accurate for the client it really belongs to, so nothing was altered. It simply reached the wrong client.</div>
 <div class="ad-miss" data-guess="c">The portal is up and serving data just fine. The failure is about who can see what, not whether the service responds.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The data is correct and available. It just reached the wrong person, which is a confidentiality failure.</p>
+<p>The data is correct, and the portal is available. The only thing that went wrong is that the data reached the wrong person, and that's a confidentiality failure.</p>
 </div>
 </div>
 </div>
@@ -53,7 +53,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Two separate things happened here: the files got locked, and a copy left the building before that. Name what each one breaks on its own.</p>
+<p>Two separate things happened here. First, a copy of the files left the building. Then the files got locked. Take each one on its own and ask which property it breaks.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Encryption is not the only thing that happened. A copy also left the building before the files were locked.</div>
@@ -66,7 +66,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encryption is an availability failure you can usually recover from with a clean backup. A stolen copy already in an attacker's hands is a confidentiality failure a backup cannot undo, which is why modern ransomware steals data before it encrypts anything at all.</p>
+<p>The encryption is an availability failure, and you can usually recover from it with a clean backup. The stolen copy is different. It's a confidentiality failure, and no backup can undo it once the data is in an attacker's hands. That's exactly why modern ransomware gangs steal data before they encrypt anything: it gives them leverage even if you restore from backup.</p>
 </div>
 </div>
 </div>
@@ -74,9 +74,9 @@
 
 ### Fix What You Broke
 
-Naming a failure and closing it are two different jobs. You still have one confidentiality failure sitting open on your own machine: <code>ledger.txt</code> at <code>chmod 600</code>, unreadable by jamie.torres.
+Naming a failure and fixing it are two different jobs, and now it's time for the second one. You still have a confidentiality failure sitting open on your own machine: <code>ledger.txt</code> is set to <code>chmod 600</code>, so jamie.torres can't read it.
 
-If you jumped straight to this challenge and skipped Confidentiality above, recreate that state first; otherwise skip ahead.
+If you jumped straight to this challenge without doing the Confidentiality one first, recreate that state with the commands below. Otherwise, skip ahead.
 
 ```bash
 sudo mkdir -p /srv/cia
@@ -96,7 +96,7 @@ sudo useradd -m jamie.torres 2>/dev/null
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You set this file to <code>644</code> yourself right after creating it, before breaking confidentiality on purpose.</p>
+<p>Think back to when you first created this file. You set it to <code>644</code> before you broke confidentiality on purpose. What would put it back?</p>
 <ol>
 <li><code>chmod 644 /srv/cia/ledger.txt</code> restores group and other read access.</li>
 <li><code>sudo -u jamie.torres cat /srv/cia/ledger.txt</code> confirms the read works again, the same command that failed before.</li>
@@ -104,7 +104,7 @@ sudo useradd -m jamie.torres 2>/dev/null
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="-rw-------">That is the broken state from <code>chmod 600</code>, the one you are fixing, not the one you are restoring to.</div>
+<div class="ad-miss" data-guess="-rw-------">Close, but that's the broken state from <code>chmod 600</code>, the one you're fixing. List the file again after your fix and report what it shows then.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -113,7 +113,7 @@ sudo useradd -m jamie.torres 2>/dev/null
 </div>
 <div>
 <span>Why it matters</span>
-<p>Confidentiality is the one property in this whole lab you can actually put back the way it was. A hash can prove integrity broke but never un-happen the change itself, and the minutes nginx was down are gone either way. A wrong permission is just a wrong permission, fixed with the same tool that broke it, which is why access reviews exist: the fix is this cheap, every time, if anyone ever checks.</p>
+<p>Of everything you broke in this lab, confidentiality is the one you could put back exactly the way it was. A hash can prove that integrity broke, but it can't undo the change, and the minutes nginx was down are gone for good. A wrong permission, though, is just a wrong permission, and you fix it with the same tool that broke it. That's the whole reason access reviews exist: the fix is this cheap every time, as long as someone actually checks.</p>
 </div>
 </div>
 </div>
@@ -121,7 +121,7 @@ sudo useradd -m jamie.torres 2>/dev/null
 
 ### Take It Further
 
-The company restores the ransomware-hit share from a clean backup made the night before the attack.
+Let's go back to the ransomware incident. The company restores the encrypted share from a clean backup taken the night before the attack.
 
 <div class="ad-mission ad-mission--capstone" data-id="w1e-c7" data-attempts="0">
 <span class="ad-mission__num">Ticket 06 · INC-1162 · Medium</span>
@@ -133,11 +133,11 @@ The company restores the ransomware-hit share from a clean backup made the night
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A backup is a copy of what the data should look like. It can replace a locked or corrupted file. It cannot reach into an attacker's machine and delete the copy they already took.</p>
+<p>A backup is a copy of what the data should look like, so it can replace a file that's been locked or corrupted. What it can't do is reach into an attacker's machine and delete the copy they already took.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">The restore does more than fix integrity. The files are reachable again too, which is an availability fix, not just a correctness one.</div>
-<div class="ad-miss" data-guess="c">A backup made the night before the attack has no idea a copy left the building. It can restore the data; it cannot undo who already has a copy of it.</div>
+<div class="ad-miss" data-guess="c">A backup taken the night before the attack knows nothing about the copy that left the building. It can bring your data back, but it can't change who already has a copy.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -146,7 +146,7 @@ The company restores the ransomware-hit share from a clean backup made the night
 </div>
 <div>
 <span>Why it matters</span>
-<p>A clean backup is a complete fix for a locked or corrupted share: the data comes back correct and reachable. It is no fix at all for a copy that already left the building, which is exactly why INC-1086 is not closed the moment the restore finishes. The backup answers "is the data back." It never answers "who else has it now."</p>
+<p>A clean backup completely fixes a locked or corrupted share, because the data comes back correct and reachable. But it does nothing at all about a copy that's already left the building, which is why INC-1086 isn't closed just because the restore finished. The backup answers the question "is our data back?" It can never answer "who else has it now?"</p>
 </div>
 </div>
 </div>
@@ -154,4 +154,4 @@ The company restores the ransomware-hit share from a clean backup made the night
 
 ### Why It Matters
 
-Tickets rarely say which property failed. They say a report is wrong, a share will not open or a client saw another client's statement. Naming the property is what turns a vague complaint into the right fix, and the wrong name sends the work to the wrong team.
+Real tickets almost never tell you which property failed. They say a report looks wrong, a share won't open, or a client saw someone else's statement. Naming the property yourself is what turns a vague complaint into the right fix, and naming the wrong one sends the work to the wrong team.

@@ -6,18 +6,41 @@ explicitly listed in `academy-content.ts`, so this is safe to keep here.
 
 ## Voice
 
-Write as a cybersecurity instructor explaining the material to a new hire or
-junior analyst. Direct, practical, instructor-led. Professional but
-conversational. Confident and grounded.
+Write the way a good instructor talks to a student sitting next to them at the
+desk: someone who has done this job, wants the student to get it, and
+respects their time. The student should feel taught, not lectured at and not
+handed a reference manual.
 
-The learner should leave thinking: I understand this environment, I know what
+Three things carry that voice.
+
+1. **It flows.** Each sentence picks up where the last one left off, so the
+   student is led from one idea to the next and never dropped into a new
+   subject cold. Sentences are complete thoughts of ordinary length, joined
+   where the ideas join. No stacks of short fragments, and no sentences so
+   long the student loses the thread.
+2. **It talks to a person.** Use "you" and "we". Anticipate the question the
+   student is about to ask and answer it. Name the part people usually get
+   wrong before they get it wrong. Say why a step matters to them on the job,
+   in the words a colleague would use, and acknowledge when something is
+   genuinely tricky.
+3. **It sounds like an instructor.** Set up what you are about to do, walk
+   through it, then say what it showed. Point things out ("notice that...",
+   "here is the part that matters"). Give a clear instruction when the
+   student has to act, and tell them what they should see when they do.
+
+Plain words beat impressive ones. Every technical term is explained in plain
+English the first time it appears, then used consistently. If a simpler word
+says the same thing, use it. No fluff: every sentence either teaches,
+connects, or tells the student what to do. Encouragement is welcome when it is
+specific ("that is exactly the check an analyst runs first"), never as
+padding.
+
+The student should leave thinking: I understand this environment, I know what
 normal looks like, and I can recognize when something does not fit.
 
 Explain the why behind the task, not just what to do. Use concrete examples
 from the source only. Treat the environment, systems, users, tickets, and
-procedures as a real workplace. Emphasize verification, context, normal
-behavior, and investigation. Make clear what the learner is responsible for
-understanding or deciding.
+procedures as a real workplace.
 
 ## Instructional order
 
@@ -34,18 +57,13 @@ support a claim, leave it out.
 
 ## Tone and paragraph shape
 
-Write in continuous textbook prose, the way a professional reference book
-explains a subject to a practitioner. This replaces the clipped one-sentence
-style the lessons used to carry, and the old 240-character paragraph ceiling
-no longer applies.
+Lessons are taught, not recited. A paragraph is usually three to five
+sentences built around one idea: what it is, why the student should care,
+what it looks like on the job, and what to do about it. A paragraph that
+states a fact and stops is too short. A paragraph carrying two ideas should
+be two paragraphs.
 
-A paragraph is three to six sentences. It opens with a topic sentence and then
-develops that one idea: what the thing is, why it matters, what it costs when
-it goes wrong, and what the reader will be able to do about it. A paragraph
-that states a fact and stops is too short. A paragraph carrying two ideas
-should be two paragraphs.
-
-Address the reader as "you" and keep the register even and measured. Explain
+Address the reader as "you" and keep the register warm and steady. Explain
 consequences rather than asserting importance. "It would be costly to build
 the wrong thing" teaches. "This is critical" does not.
 
@@ -103,6 +121,20 @@ conjunctions, a colon, or a phrase that refers back.
 
 Reference material such as event-ID tables and command explanations is
 exempt. Terse is correct there.
+
+## Challenge pages
+
+Challenges get the same voice. The briefing sets the scene the way a lead
+would hand you a ticket. Steps say what to do and what you should see. Hints
+nudge without giving the answer away, and the explanation that appears after
+an answer talks the student through why, including why the tempting wrong
+answer is wrong. A miss note is a colleague pointing at where to look again,
+never a scolding.
+
+Only the words change when a page is rewritten. Every data attribute, answer,
+accepted answer, question id, command, code block and interactive block stays
+exactly as it was, and headings stay as they are because they name the slide
+and pick its drawing.
 
 ### Do not pay for flow with commas
 

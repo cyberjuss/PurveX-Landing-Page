@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Check Yourself: What Actually Changed the Score</h3>
-<p class="ad-brief__ask">You just produced three honest scores for one flaw. Can you say exactly which input moved, and which one never does?</p>
+<p class="ad-brief__ask">You just produced three honest scores for one flaw. Can you say exactly which inputs moved the number, and which part never moves at all?</p>
 <p>Hosted lab required. Builds on the Score the Same Flaw on Two Machines challenge above.</p>
 </div>
 
@@ -12,7 +12,7 @@
 
 ### Check Yourself
 
-Answer from what the calculator actually showed you, not from what you remember reading.
+Answer based on what the calculator actually showed you, rather than on what you remember reading.
 
 <div class="ad-mission" data-id="w1m-c1" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1087 · Low</span>
@@ -23,7 +23,7 @@ Answer from what the calculator actually showed you, not from what you remember 
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You entered the same vector string for Finding A every time. Only the Environmental group's inputs changed between runs.</p>
+<p>Think about what you typed each time. You used the same vector string for Finding A on every run, and the only settings you changed were in the Environmental group.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">The vector string for each finding never changed between runs. Only the Environmental Score group's inputs did.</div>
@@ -35,7 +35,7 @@ Answer from what the calculator actually showed you, not from what you remember 
 </div>
 <div>
 <span>Why it matters</span>
-<p>The Base Score describes the flaw itself, which never changed. Only the Environmental Score moved, because only the machine changed.</p>
+<p>The Base Score describes the flaw itself, and the flaw never changed. The Environmental Score is the one that moved, because the machine is the only thing that changed.</p>
 </div>
 </div>
 </div>
@@ -52,7 +52,7 @@ Answer from what the calculator actually showed you, not from what you remember 
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Compare the Security Requirements you set for each run: Low, Low, Low versus High, High, High.</p>
+<p>Compare the Security Requirements you set on each run. One machine got Low, Low, Low, and the other got High, High, High.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">That machine's Security Requirements were set to Low across the board, which pulls the Environmental Score down, not up.</div>
@@ -64,7 +64,7 @@ Answer from what the calculator actually showed you, not from what you remember 
 </div>
 <div>
 <span>Why it matters</span>
-<p>Same flaw, same base, but the machine that holds the accounts scores higher because the data at risk is worth more.</p>
+<p>It's the same flaw with the same Base Score, but the machine that holds every account scores higher, because the data at risk on it is worth far more.</p>
 </div>
 </div>
 </div>
@@ -81,7 +81,7 @@ Answer from what the calculator actually showed you, not from what you remember 
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Confidentiality Requirement, Integrity Requirement, Availability Requirement. The first word of each name is the giveaway.</p>
+<p>Say the three names out loud: Confidentiality Requirement, Integrity Requirement, Availability Requirement. The first word of each one gives it away.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="b">AAA is Authentication, Authorization and Accounting, a different model from a later week. These three requirements spell out something else.</div>
@@ -94,7 +94,7 @@ Answer from what the calculator actually showed you, not from what you remember 
 </div>
 <div>
 <span>Why it matters</span>
-<p>Confidentiality, Integrity and Availability Requirement. The triad is an input to the score, not a separate topic.</p>
+<p>Confidentiality, Integrity and Availability Requirement. So the CIA triad isn't a separate topic from scoring. It's one of the inputs that goes into the score.</p>
 </div>
 </div>
 </div>
@@ -111,7 +111,7 @@ Answer from what the calculator actually showed you, not from what you remember 
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The Base Score was identical across every machine you tested. Whatever made the practice server and the domain controller score differently lives somewhere else.</p>
+<p>The Base Score was identical on every machine you tested, so it can't be what made the practice server and the domain controller score differently. Look at what you changed instead.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="b">The Base Score never changed between the two machines you scored. It cannot be the input that told them apart.</div>
@@ -124,7 +124,7 @@ Answer from what the calculator actually showed you, not from what you remember 
 </div>
 <div>
 <span>Why it matters</span>
-<p>The three requirements are where you tell the score how much this machine's data is worth, which is the whole reason two machines differ.</p>
+<p>The three requirements are where you tell the calculator how much this machine's data is worth, and that's the whole reason two machines with the same flaw end up with different scores.</p>
 </div>
 </div>
 </div>
@@ -132,4 +132,4 @@ Answer from what the calculator actually showed you, not from what you remember 
 
 ### Why It Matters
 
-Four quick checks, and the same answer underneath every one: the flaw never changes, only what it would cost you does. The next challenge in this set is putting that argument in front of someone who only saw the word Critical.
+Those were four quick checks, but they all had the same idea underneath: the flaw itself never changes, only what it would cost you does. In the next challenge, you'll make that argument to a manager who has only seen the word "Critical".

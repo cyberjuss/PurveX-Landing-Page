@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Predict It, Then Break Confidentiality</h3>
-<p class="ad-brief__ask">Can you lock a coworker out of a file on purpose, and prove the file itself never changed?</p>
+<p class="ad-brief__ask">Can you lock a coworker out of a file on purpose, and then prove the file itself never changed?</p>
 <p>Hosted lab required, with the Ubuntu desktop open.</p>
 </div>
 
@@ -12,18 +12,18 @@
 
 ### Before You Start
 
-Commit to an answer before you type anything. Being wrong here is useful, so pick one rather than skipping ahead. Nothing is marked right or wrong yet. You confirm it by doing the lab below.
+Before you type anything, make a prediction. It's fine to get it wrong, because a wrong guess is exactly what makes the lab stick, so do pick one rather than skipping ahead. Nothing gets marked here. You'll find out whether you were right by doing the lab below.
 
 <div class="ad-check ad-check--predict" data-check="w1e-p1">
 <p class="ad-check__q">If you remove another user's permission to read a file, does the file change?</p>
 <button type="button" class="ad-check__opt" data-i="0">Yes, its contents change</button>
 <button type="button" class="ad-check__opt" data-i="1">No, only who can read it changes</button>
-<p class="ad-check__note">Locked in. You prove this when you run <code>chmod</code> below.</p>
+<p class="ad-check__note">Got it. You'll find out for sure when you run <code>chmod</code> below.</p>
 </div>
 
 ### Set Up One File
 
-Open a terminal on the Ubuntu desktop. These commands make a working folder and a file that stands in for a document the business cares about.
+Start by opening a terminal on the Ubuntu desktop. The commands below create a working folder and a small file that stands in for a document the business cares about.
 
 ```bash
 sudo mkdir -p /srv/cia
@@ -34,14 +34,14 @@ printf 'Q3 advisory fees: 412500\n' > ledger.txt
 chmod 644 ledger.txt
 ```
 
-Now make a second account, standing in for a coworker on the Wealth Management team this ledger belongs to.
+Next, create a second account. This one plays the part of a coworker on the Wealth Management team, the team this ledger belongs to.
 
 ```bash
 sudo useradd -m jamie.torres
 sudo -u jamie.torres cat /srv/cia/ledger.txt
 ```
 
-The second command prints the line. jamie.torres can read the file, which is the state you are about to change.
+The second command prints the line from the file, which tells you jamie.torres can read it right now. That's the starting point you're about to change.
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -52,7 +52,7 @@ The second command prints the line. jamie.torres can read the file, which is the
 
 ### Break Confidentiality
 
-Confidentiality means only the people who should see something can see it. Take jamie.torres's access away and prove it is gone.
+Remember that confidentiality means only the people who should see something can see it. So let's take jamie.torres's access away and then prove it's really gone.
 
 ```bash
 chmod 600 ledger.txt
@@ -60,7 +60,7 @@ ls -l ledger.txt
 sudo -u jamie.torres cat /srv/cia/ledger.txt
 ```
 
-The last command fails with "Permission denied". Record the exact message. Then read the file yourself to confirm it is still there and still correct.
+This time, the last command fails with "Permission denied". Make a note of that exact message. Then read the file as yourself, to confirm it's still there and still says what it said before.
 
 ```bash
 cat ledger.txt
@@ -75,7 +75,7 @@ cat ledger.txt
 
 ### Check Yourself
 
-Answer from what you saw, not from what you remember reading.
+Answer based on what you actually saw in your terminal, not on what you remember reading.
 
 <div class="ad-mission" data-id="w1e-c1" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1082 · Low</span>
@@ -86,10 +86,10 @@ Answer from what you saw, not from what you remember reading.
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Look at the two commands you ran right after <code>chmod 600</code>: one as jamie.torres, one as yourself. Only one of them could even open the file.</p>
+<p>Look back at the two commands you ran right after <code>chmod 600</code>, one as jamie.torres and one as yourself. Only one of them could open the file at all, so what did that one show you?</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Run <code>cat ledger.txt</code> again as yourself. The line is exactly what you wrote with <code>printf</code>.</div>
+<div class="ad-miss" data-guess="a">Try running <code>cat ledger.txt</code> again as yourself. You'll see the line is exactly what you wrote with <code>printf</code>.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -98,7 +98,7 @@ Answer from what you saw, not from what you remember reading.
 </div>
 <div>
 <span>Why it matters</span>
-<p>Permissions decide who may read a file, never what it holds. Confidentiality failed while integrity stayed intact.</p>
+<p>Permissions decide who's allowed to read a file. They never change what's inside it. So here confidentiality changed while integrity stayed exactly as it was.</p>
 </div>
 </div>
 </div>
@@ -106,4 +106,4 @@ Answer from what you saw, not from what you remember reading.
 
 ### Why It Matters
 
-A share open to the wrong people is one of the most common findings in a real access review, and it is cheap to prove: one command to break it, one to confirm it, one to undo it. The next challenge in this set breaks a different property on the same file.
+A file share that's open to the wrong people is one of the most common things you'll find in a real access review. As you just saw, it's also quick to prove: one command to break it, one to confirm it, and one to undo it. In the next challenge, you'll break a different property on this same file.

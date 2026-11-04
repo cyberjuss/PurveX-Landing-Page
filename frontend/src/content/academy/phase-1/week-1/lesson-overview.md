@@ -5,23 +5,25 @@
 
 ### Overview
 
-Calling a system "secure" tells nobody anything they can act on, because security isn't one property a system either has or lacks. It's three separate jobs running at once, and when something goes wrong, it's always exactly one of the three that failed. Before you write a ticket or close an alert, your first task is naming which.
+People call systems "secure" all the time, but the word on its own doesn't tell you what to check or what to fix. That's because security isn't a single property a system has or lacks. It's three separate jobs running at the same time, and when something goes wrong, it's one of those three that failed. So before you write up a ticket or close an alert, the first thing you'll learn to do is name which job broke.
 
-- **Confidentiality** fails as a **leak**: the data sits untouched, but the wrong person now holds a copy.
-- **Integrity** fails as a **lie**: the data still looks ordinary, but it can no longer be trusted.
-- **Availability** fails as a **lockout**: nothing leaked and nothing changed, but the work stopped.
+Each of the three fails in its own recognizable way:
 
-Together these three are the CIA triad. Telling them apart matters because the response to each is different: a leaked password, a payroll figure that changed overnight, and a site that won't load are three distinct problems, escalated to different people and contained in different ways. Classify one wrongly and you spend your time chasing the wrong failure while the real one carries on.
+- **Confidentiality** fails as a **leak**: the data hasn't moved, but someone who shouldn't have a copy now has one.
+- **Integrity** fails as a **lie**: the data still looks normal, but you can no longer trust what it says.
+- **Availability** fails as a **lockout**: nothing leaked and nothing changed, yet people can't get their work done.
+
+Together these are called the CIA triad. The reason it's worth telling them apart is that each one gets handled differently. A leaked password, a payroll figure that quietly changed overnight, and a website that won't load are three different problems. They go to different people and get contained in different ways, so if you label one wrong, you'll spend your time chasing the wrong failure while the real one keeps going.
 
 ### Naming Danger Before It Does Damage
 
-This week also pins down three words the alert queue uses loosely, because an analyst who can't tell them apart ends up ranking work by how alarming it sounds instead of what it would actually cost the business:
+This week also gives you three words that get used loosely in every alert queue. It's worth pinning them down now, because an analyst who mixes them up ends up ranking work by how scary it sounds rather than by what it would actually cost the business:
 
 - A **vulnerability** is a weakness.
-- A **threat** is something or someone that could use it.
-- **Risk** is the chance the two meet, and what it would cost.
+- A **threat** is something or someone that could take advantage of it.
+- **Risk** is the chance the two meet, and what it would cost if they did.
 
-By the end of the week you should be able to look at a failure and say which of the three jobs broke, and look at a danger and say whether it's a weakness, an actor, or the risk where the two meet.
+By the end of the week, you should be able to look at any failure and say which of the three jobs broke. You should also be able to look at any danger and say whether it's a weakness, an actor, or the risk where the two come together.
 
 ```connect
 prompt: Connect each word to what it means.

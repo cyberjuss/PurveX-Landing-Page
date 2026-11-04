@@ -1,8 +1,8 @@
 ### Confidentiality
 
-Confidentiality means that only the people authorized to see a piece of information are able to see it. When it fails, the data itself usually still sits exactly where it always did, but a copy of it now rests with somebody who was never meant to hold one. That is why the failure is a **leak** rather than a loss. Nothing has gone missing, so the systems carry on reporting themselves healthy and the failure can run a long time before anyone notices.
+Confidentiality means that only the people who are allowed to see a piece of information can see it. Here's the part that catches people out: when confidentiality fails, the data usually hasn't gone anywhere. It's still sitting exactly where it always was. What's changed is that someone who was never supposed to have a copy now has one. That's why we call this failure a **leak** rather than a loss. Because nothing is missing, every system keeps reporting that it's healthy, and a leak can go on for a long time before anyone notices.
 
-It matters most where simply seeing the data is the harm:
+Confidentiality matters most for information where simply seeing it does the damage, such as:
 
 - passwords
 - salaries
@@ -10,7 +10,7 @@ It matters most where simply seeing the data is the harm:
 - medical records
 - unreleased deals
 
-In each of these the damage is done the moment the data is read, and nothing afterwards can undo it. That is what separates a confidentiality failure from the other two. An unavailable system can be brought back and altered data can be corrected, but a secret that has been read stays read.
+With each of these, the harm happens the moment someone reads the data, and nothing you do afterwards can take that back. That's what sets confidentiality apart from the other two jobs. You can bring a crashed system back online, and you can correct data that was altered, but once a secret has been read, it stays read.
 
 **Controls:** authentication, access control and encryption.
 
@@ -18,7 +18,7 @@ In each of these the damage is done the moment the data is read, and nothing aft
 - **Access control** decides what that person is allowed to reach.
 - **Encryption** makes the data unreadable to anyone who gets hold of it by another route.
 
-Each one covers a gap the others leave open, which is why they are used together rather than chosen between. Of the three, encryption is the one people most often assume is in place when it is not. Data sent without it can be read by anyone sitting on the network path between the two ends, and that path involves far more equipment than most people picture. So when somebody asks whether a system is safe to send something through, the question underneath is usually whether the traffic is encrypted in transit.
+Each of these covers a gap the other two leave open, so in practice you use all three together rather than picking one. Of the three, encryption is the one people most often assume is switched on when it isn't. Data sent without encryption can be read by anyone sitting on the network path between the two ends, and that path runs through far more equipment than most people imagine. So when a colleague asks you whether it's safe to send something through a particular system, the real question you're answering is usually: is that traffic encrypted while it travels?
 
 ```match
 prompt: Match each control to the gap it covers.

@@ -1,6 +1,6 @@
 ### Threats
 
-A threat is something or someone that could exploit a vulnerability:
+A threat is something or someone that could take advantage of a vulnerability. That includes:
 
 - attackers
 - malware
@@ -8,18 +8,18 @@ A threat is something or someone that could exploit a vulnerability:
 - natural disasters
 - nation-state groups
 
-The category is broader than it first appears, because it covers anything capable of causing the harm, whether or not there is any intent behind it. A flood that takes out a data center is a threat in exactly the same sense that a criminal group is, even though only one of them chose to be there.
+This category is wider than most people expect, because it covers anything that could cause the harm, whether or not there's any intent behind it. A flood that knocks out a data center is a threat in exactly the same sense as a criminal group is, even though only one of them meant to be there.
 
-What matters most about that list is how little of it you control. You cannot patch a criminal organization out of existence, you cannot decommission a storm, and you cannot reliably remove the possibility that somebody already inside the business does something they should not. Threats are therefore a largely fixed feature of the environment you work in. Plan around them, because they will not go away.
+The most important thing to notice about that list is how little of it you control. You can't patch a criminal organization out of existence, you can't switch off a storm, and you can't completely rule out someone inside the business doing something they shouldn't. Threats are mostly a fixed part of the environment you work in, so you plan around them rather than expecting them to go away.
 
 What you can control is:
 
 - **the weakness they would have to use**
 - **the damage they could do if they succeeded**
 
-That is why a threat and a weakness matter in combination rather than separately. The same threat meets a well-patched system and a neglected one with entirely different results. What changes the outcome is the weakness, and that is the part you control.
+That's why threats and weaknesses matter together rather than on their own. The same threat will get very different results against a well-patched system than against a neglected one. The thing that changes the outcome is the weakness, and the weakness is the part you can do something about.
 
-Knowing which threats are realistic for your own organization also keeps the work proportionate. A regional accounting firm and a defense contractor face genuinely different sets of actors. Treating every organization as though a nation-state group were about to arrive spends effort better aimed at what is far more likely to turn up.
+It also helps to know which threats are realistic for your own organization, because that keeps your effort in proportion. A regional accounting firm and a defense contractor face genuinely different attackers. If you treat every organization as though a nation-state group is about to show up, you'll spend effort that would be far better aimed at what's actually likely to happen.
 
 ```sort
 prompt: Weakness or actor? Sort each one.

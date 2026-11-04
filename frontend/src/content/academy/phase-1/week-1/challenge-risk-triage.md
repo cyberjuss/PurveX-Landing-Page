@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Monday Morning Risk Triage</h3>
-<p class="ad-brief__ask">Four reports, one fix today. Can you rank them right, then go fix the winner yourself?</p>
+<p class="ad-brief__ask">It's Monday morning. Four reports are waiting, and there's time to fix one today. Can you rank them correctly, and then go and fix the top one yourself?</p>
 <ul>
 <li><strong>A.</strong> Lobby printer offline since Friday.</li>
 <li><strong>B.</strong> Finance's nightly backup has failed silently for three weeks.</li>
@@ -95,7 +95,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Two tickets touch a critical department: B (Finance and Accounting) and C (Wealth Management). One of them is a live, active exposure happening right now. The other is a risk that hasn't materialized yet.</p>
+<p>Two tickets touch a critical department: B (Finance and Accounting) and C (Wealth Management). The difference between them is timing. One is an exposure that's live right now, while the other is a risk that hasn't turned into damage yet.</p>
 <ol>
 <li>B is a backup that's been failing for three weeks with no damage yet.</li>
 <li>C is a confidentiality breach that is open and exploitable right now, on the firm's most client-sensitive department.</li>
@@ -130,7 +130,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Volume of complaints is not the same input as business risk. Go back to the org chart's own critical/not-critical column.</p>
+<p>How loudly people complain isn't the same thing as business risk. Go back to the org chart and look at the column that marks each department critical or not.</p>
 <ol>
 <li>A sits in the Operations wing.</li>
 <li>Operations is marked "Critical: No" on the org chart, the same as IT.</li>
@@ -154,7 +154,7 @@
 
 <div class="ad-mission ad-mission--capstone" data-id="rt-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · INC-1081 · Medium</span>
-<p><strong>IT · Monday triage · 8:20 AM</strong><br>Ranking ticket C first was the easy part. Nobody's balance is any safer until the permission itself is fixed.</p>
+<p><strong>IT · Monday triage · 8:20 AM</strong><br>Ranking ticket C first was the easy part. Nobody's balance is any safer until someone actually fixes the permission, and that someone is you.</p>
 <p><strong>Task:</strong> On the domain controller, lock <code>C:\PurveX\Shares\WealthManagement</code> down to Wealth Management Users only, then report the group name that now shows Modify access on it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the group now granted access on the Wealth Management share" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -162,7 +162,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The folder inherits the whole <code>Shares</code> drive's broad permission right now. Breaking that inheritance and granting the one group that should actually have it is the fix, not just naming the problem.</p>
+<p>Right now the folder inherits the broad permission set on the whole <code>Shares</code> drive. The fix is to stop that inheritance and then grant access only to the one group that should have it.</p>
 <ol>
 <li>Open PowerShell on the domain controller.</li>
 <li><code>icacls "C:\PurveX\Shares\WealthManagement"</code> shows what the folder currently inherits.</li>
@@ -173,7 +173,7 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="domain users|domain admins|everyone">That is either the broad access you just removed or a group you granted for IT management, not the department this folder actually belongs to.</div>
+<div class="ad-miss" data-guess="domain users|domain admins|everyone">That's either the broad access you just removed or the group you kept for IT management. Report the department this folder actually belongs to.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -182,7 +182,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Naming a ticket's priority and closing it are two different jobs. <code>/inheritance:r</code> is what actually breaks the folder away from the wider share's permission, which is the one step a report alone never does. An audit finding that only gets written down, never fixed, protects nobody's balance by Tuesday.</p>
+<p>Deciding a ticket's priority and closing it are two different jobs, and you've now done both. The <code>/inheritance:r</code> step is what actually separates the folder from the wider share's permission, which is something a written report alone never does. An audit finding that gets written down but never fixed won't protect anyone's balance by Tuesday.</p>
 </div>
 </div>
 </div>

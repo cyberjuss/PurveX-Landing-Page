@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Break Availability Without Touching the File</h3>
-<p class="ad-brief__ask">Can you take a service down and prove the page itself never moved?</p>
+<p class="ad-brief__ask">Can you take a service down, and then prove the page it serves never went anywhere?</p>
 <p>Hosted lab required, with the Ubuntu desktop open. Uses the web server already running on this box, not the ledger file.</p>
 </div>
 
@@ -12,18 +12,18 @@
 
 ### Before You Start
 
-Commit to an answer before you type anything. Nothing is marked right or wrong yet. You confirm it by doing the lab below.
+Make a prediction before you type anything. Nothing gets marked here, and the lab below will show you whether you were right.
 
 <div class="ad-check ad-check--predict" data-check="w1e-p3">
 <p class="ad-check__q">If a web server is stopped, is the page it served still on the disk?</p>
 <button type="button" class="ad-check__opt" data-i="0">Yes, the file stays put</button>
 <button type="button" class="ad-check__opt" data-i="1">No, stopping it removes the page</button>
-<p class="ad-check__note">Locked in. You check with <code>ls</code> below.</p>
+<p class="ad-check__note">Got it. You'll check for yourself with <code>ls</code> below.</p>
 </div>
 
 ### Break Availability
 
-Availability means the thing is there when it is needed. Your server already runs a web server, so use that.
+Availability means a system is there when people need it. Your Ubuntu server is already running a web server, so that's what we'll use.
 
 ```bash
 curl -I http://localhost
@@ -31,7 +31,7 @@ sudo systemctl stop nginx
 curl -I http://localhost
 ```
 
-The first request returns a status line. The second fails to connect. Confirm the page itself never moved.
+The first request comes back with a status line, which tells you the site is up. The second one fails to connect, because the service is now stopped. Before moving on, confirm that the page file itself is still sitting where it was.
 
 ```bash
 ls -l /var/www/html/index.html
@@ -57,7 +57,7 @@ curl -I http://localhost
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You ran <code>ls -l /var/www/html/index.html</code> while the service was down. Read what that command actually reported.</p>
+<p>You ran <code>ls -l /var/www/html/index.html</code> while the service was down. Go back and read what that command actually reported.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="b">The <code>ls -l</code> command you ran while nginx was stopped still listed the file. Stopping a service does not delete anything.</div>
@@ -69,7 +69,7 @@ curl -I http://localhost
 </div>
 <div>
 <span>Why it matters</span>
-<p>Availability failed while the file sat untouched. The page was there the whole time, just not being served.</p>
+<p>Availability failed, but the file was never touched. The page sat on the disk the whole time. Nobody could reach it, because nothing was serving it.</p>
 </div>
 </div>
 </div>
@@ -77,4 +77,4 @@ curl -I http://localhost
 
 ### Why It Matters
 
-You have now broken all three properties on purpose, each one leaving a different kind of evidence behind. The next challenge in this set is naming which one failed from a ticket alone, and fixing the one you still can.
+You've now broken all three properties on purpose, and each one left a different kind of evidence behind. In the next challenge, you'll work the other way round: read a ticket, name which property failed, and fix the one you still can.

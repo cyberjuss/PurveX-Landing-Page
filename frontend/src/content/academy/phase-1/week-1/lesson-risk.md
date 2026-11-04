@@ -1,33 +1,33 @@
 ### Risk
 
-Risk is the likelihood that a threat exploits a vulnerability, combined with the impact if it does. It is the idea that lets you compare two problems with nothing else in common, which is the whole reason it exists. Without it you rank work by how alarming each item sounds, and the items that sound most alarming are very often not the ones that would cost the business most.
+Risk is how likely it is that a threat exploits a vulnerability, combined with how much damage it would do if it did. The whole reason the idea exists is to let you compare two problems that otherwise have nothing in common. Without it, you end up ranking your work by how alarming each item sounds, and the scariest-sounding items are very often not the ones that would cost the business the most.
 
 **Risk = Threat × Vulnerability × Impact**
 
-Writing it as a product makes one property obvious: **if any factor is zero, the risk is zero.**
+Writing it as a multiplication makes one thing obvious straight away: **if any part is zero, the risk is zero.**
 
 - A threat with no weakness to exploit produces no risk.
-- A weakness nothing can reach produces no risk, however serious it would be in other circumstances.
-- A flaw on a machine that holds nothing and connects to nothing produces no risk, because there is nothing to lose.
+- A weakness that nothing can reach produces no risk, however serious it would be somewhere else.
+- A flaw on a machine that holds nothing and connects to nothing produces no risk, because there's nothing to lose.
 
-That is why a finding cannot be assessed on its own. You need all three parts before the number means anything.
+So you can't judge a finding on its own. You need all three parts before the answer means anything.
 
-In practice teams rarely score the three separately, because threat and vulnerability together are really describing one thing: how likely this is to happen at all. Most teams therefore collapse the two and score risk as **likelihood × impact**, which is how the Week 1 lab scores it and how you will see it done almost everywhere else. Both versions are worth keeping. The three-part form is the better way to understand what you are measuring, and the two-part form is the practical way to measure it.
+In practice, teams rarely score those three parts separately, because threat and vulnerability together are really describing one thing: how likely this is to happen at all. Most teams combine them and score risk as **likelihood × impact**. That's how the Week 1 lab scores it, and it's how you'll see it done almost everywhere else. Both versions are worth knowing. The three-part version is the better way to understand what you're measuring, and the two-part version is the practical way to measure it.
 
-This also explains what a security program actually does. Threats are seldom removable, so a program works on the other two factors:
+This also explains what a security program actually spends its time on. Since you can rarely remove the threat, the work goes into the other two parts:
 
 - It **closes vulnerabilities**, so the likelihood falls.
 - It **reduces impact**, so the cost is lower when something does get through.
 
-Backups and segmentation are impact controls rather than likelihood controls, which is why they stay valuable even against an attack you failed to prevent.
+Backups and network segmentation are good examples of the second kind. They don't make an attack less likely, but they shrink the damage, which is why they're still worth having even against an attack you didn't manage to stop.
 
-Before you escalate anything, name all three parts:
+So before you escalate anything, get in the habit of naming all three parts:
 
 - the vulnerability
 - the threat
 - the impact
 
-An escalation that supplies all three gives the person receiving it everything they need to decide. One that says only that something looks bad sends them back to do the work you have already done.
+An escalation that includes all three gives the person receiving it everything they need to make a decision. One that just says "this looks bad" sends them off to redo the work you've already done.
 
 ```sort
 prompt: Does each control lower the likelihood, or the impact when something gets through?

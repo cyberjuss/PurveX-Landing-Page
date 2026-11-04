@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Justify the Fix, Then Take It Further</h3>
-<p class="ad-brief__ask">A manager sees the word Critical on two tickets. Can you say which one actually needs fixing first, and why a hostname alone can't score a third machine?</p>
+<p class="ad-brief__ask">A manager sees the word "Critical" on two tickets. Can you explain which one actually needs fixing first, and why you can't score a third machine from its hostname alone?</p>
 <p>Hosted lab required. Builds on the two CVSS challenges above.</p>
 </div>
 
@@ -22,10 +22,10 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The same finding carries the same Base Score on both machines. Name the input built specifically to say what each machine is actually worth.</p>
+<p>Remember that the same finding has the same Base Score on both machines. Which input was built specifically to describe what each machine is actually worth?</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">The Base Score is identical on both machines by definition, since it describes the flaw itself, not either server.</div>
+<div class="ad-miss" data-guess="a">The Base Score is the same on both machines by definition, because it describes the flaw itself rather than either server.</div>
 <div class="ad-miss" data-guess="c">Attack Complexity is also part of the Base Score and does not vary by machine. It cannot be what separates these two tickets.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -35,7 +35,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The Base Score is identical on both machines, so it cannot justify treating them differently. The Security Requirements are the one input built specifically to say what each machine actually holds, which is exactly the argument a manager needs when the scanner's report says the same word on both tickets.</p>
+<p>The Base Score is identical on both machines, so it can't justify treating them differently. The Security Requirements are the one input designed to say what each machine actually holds. That's exactly the argument a manager needs when the scanner has put the same word on both tickets.</p>
 </div>
 </div>
 </div>
@@ -43,7 +43,7 @@
 
 ### Take It Further
 
-A third machine in the same building runs the identical flaw, but nobody has ever documented what it actually stores.
+Now there's a twist. A third machine in the same building has the identical flaw, but nobody has ever written down what it actually stores.
 
 <div class="ad-mission ad-mission--capstone" data-id="w1m-c6" data-attempts="0">
 <span class="ad-mission__num">Ticket 06 · INC-1155 · Medium</span>
@@ -55,7 +55,7 @@ A third machine in the same building runs the identical flaw, but nobody has eve
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Earlier in this set, you ran <code>ls -la /var/www/html</code> instead of assuming what the practice server held. The same rule applies here.</p>
+<p>Earlier in this set, you ran <code>ls -la /var/www/html</code> rather than assuming what the practice server held. The same habit applies here.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">A hostname is not evidence of what a machine stores. You confirmed the practice server's contents with a command instead of assuming them, and this machine deserves the same check.</div>
@@ -68,7 +68,7 @@ A third machine in the same building runs the identical flaw, but nobody has eve
 </div>
 <div>
 <span>Why it matters</span>
-<p>A hostname like "WM-STMT01" is a strong hint, not evidence. The Security Requirements this lab kept coming back to only mean something when they describe what a machine actually holds, confirmed the way you confirmed <code>/var/www/html</code>, not guessed from a name that could be wrong or out of date.</p>
+<p>A hostname like "WM-STMT01" is a strong hint, but it isn't evidence. The Security Requirements you kept coming back to in this lab only mean something when they describe what a machine really holds. So confirm it, the way you confirmed <code>/var/www/html</code>, rather than guessing from a name that might be wrong or out of date.</p>
 </div>
 </div>
 </div>
@@ -76,4 +76,4 @@ A third machine in the same building runs the identical flaw, but nobody has eve
 
 ### Why It Matters
 
-Teams that patch in score order spend their week on whatever the vendor rated highest, while the quiet medium-severity flaw on the machine holding client data waits. Regulators do not ask what the scanner said. They ask what the firm knew about the data at risk, and the environmental score is where that reasoning gets written down.
+Teams that simply patch in score order spend their week on whatever the vendor rated highest, while a quiet medium-severity flaw on the machine holding client data sits and waits. When something goes wrong, regulators won't ask what the scanner said. They'll ask what the firm knew about the data at risk, and the Environmental Score is where you write that reasoning down.

@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Break Integrity and Watch the Hash Scramble</h3>
-<p class="ad-brief__ask">Can you change one character in a file and prove exactly how much that breaks?</p>
+<p class="ad-brief__ask">If you change a single character in a file, can you prove exactly how much that breaks?</p>
 <p>Hosted lab required, with the Ubuntu desktop open and <code>/srv/cia/ledger.txt</code> already created from the Confidentiality challenge.</p>
 </div>
 
@@ -12,19 +12,19 @@
 
 ### Before You Start
 
-Commit to an answer before you type anything. Nothing is marked right or wrong yet. You confirm it by doing the lab below.
+Make a prediction before you type anything. Nothing gets marked here, and you'll see whether you were right as soon as you do the lab below.
 
 <div class="ad-check ad-check--predict" data-check="w1e-p2">
 <p class="ad-check__q">If you change one character inside a file, how many characters of its SHA-256 hash change?</p>
 <button type="button" class="ad-check__opt" data-i="0">Only the part for that character</button>
 <button type="button" class="ad-check__opt" data-i="1">Roughly half of it</button>
 <button type="button" class="ad-check__opt" data-i="2">Almost all of it</button>
-<p class="ad-check__note">Locked in. You compare the two hashes below.</p>
+<p class="ad-check__note">Got it. You'll put the two hashes side by side below and see for yourself.</p>
 </div>
 
 ### Break Integrity
 
-Integrity means the data is what it is supposed to be. Record a baseline first, because integrity can only be proved against something.
+Integrity means the data is still what it's supposed to be. To prove that, you need something to compare against, so the first step is to record a baseline: a fingerprint of the file as it is right now.
 
 ```bash
 cd /srv/cia
@@ -32,14 +32,14 @@ sha256sum ledger.txt > baseline.txt
 cat baseline.txt
 ```
 
-Now change one digit inside the file and check the baseline again.
+Now change a single digit inside the file and run the check against your baseline again.
 
 ```bash
 sed -i 's/412500/412501/' ledger.txt
 sha256sum -c baseline.txt
 ```
 
-The check reports FAILED. Compare the new hash against the one in `baseline.txt` and note how much of it is different.
+This time the check reports FAILED. Put the new hash next to the one saved in `baseline.txt`, and notice how much of it has changed.
 
 ```bash
 sha256sum ledger.txt
@@ -63,10 +63,10 @@ sha256sum ledger.txt
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Put the two lines <code>sha256sum ledger.txt</code> printed, before and after the <code>sed</code> command, side by side and compare them character by character.</p>
+<p>Take the two lines that <code>sha256sum ledger.txt</code> printed, one from before the <code>sed</code> command and one from after, and compare them character by character. How many positions still match?</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a|b">Compare the full 64-character hash from before the edit against the one after. This is not a partial match, even for a one-digit change.</div>
+<div class="ad-miss" data-guess="a|b">Compare the full 64-character hash from before the edit with the one from after. You'll find it isn't a partial match, even though you only changed one digit.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -75,7 +75,7 @@ sha256sum ledger.txt
 </div>
 <div>
 <span>Why it matters</span>
-<p>A hash has no partial match. One changed character scrambles the whole digest, which is what lets it flag any change at all.</p>
+<p>There's no such thing as a partial match with a hash. Changing even one character scrambles the whole fingerprint, and that's exactly what makes a hash so good at catching any change at all, however small.</p>
 </div>
 </div>
 </div>
@@ -83,4 +83,4 @@ sha256sum ledger.txt
 
 ### Why It Matters
 
-Integrity, unlike confidentiality, can only be proved against a baseline recorded before anything changed. The next challenge in this set breaks the third property, without touching this file at all.
+Here's the key difference from the last challenge: you can only prove integrity if someone recorded a baseline before anything changed. Without that baseline, you'd have nothing to compare against. In the next challenge, you'll break the third property without touching this file at all.
