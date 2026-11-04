@@ -1,8 +1,8 @@
 ### Common Ports
 
-A port is the second half of a network destination. If the IP address gets you to the building, the port gets you to the correct door inside it. Every network service on a device listens on one. That is what lets a single machine with a single address run a web server, a mail server and a remote login service at once, without any of them interfering with the others.
+Once the handshake has connected two machines, the port decides which service on the far machine you're talking to. In other words, a port is the second half of a network destination: if the IP address gets you to the building, the port gets you to the right door inside it. Every network service on a device listens on its own port, which is what lets a single machine with one address run a web server, a mail server and a remote login service all at once, without any of them getting in each other's way.
 
-A number of ports are used so consistently that seeing the number is enough to tell you what service is almost certainly on the other end. These are the ones you will meet most often.
+Some ports are used so consistently that the number alone tells you what service is almost certainly on the other end. Here are the ones you'll meet most often.
 
 | Port | Protocol | Use |
 | :---- | :---- | :---- |
@@ -15,9 +15,9 @@ A number of ports are used so consistently that seeing the number is enough to t
 | 443 | HTTPS | Web traffic (encrypted) |
 | 3389 | RDP | Remote desktop |
 
-Two entries in that table deserve particular attention. Traffic on port 22 or port 3389 coming from somewhere you did not expect is always worth a second look, because both of those ports exist to let somebody control a machine rather than simply retrieve something from it. That is precisely why attackers reach for them once they have a foothold, and why movement on those ports between two internal machines with no business connecting is one of the more useful things to watch for.
+Two entries in that table deserve special attention. If you see traffic on port 22 or port 3389 coming from somewhere you didn't expect, it's always worth a second look, because both ports exist to let someone control a machine rather than just fetch something from it. That's exactly why attackers reach for them once they've got a foothold. It's also why traffic on those ports between two internal machines that have no business talking to each other is one of the more useful things to watch for.
 
-Be careful not to read more into a port number than it can tell you, though. A port tells you which door the traffic used, and nothing more than that. It does not tell you the conversation was legitimate, and an attacker is free to run any service they like on whichever port they choose. Before drawing a conclusion, check three things:
+At the same time, be careful not to read more into a port number than it can tell you. A port tells you which door the traffic used, and nothing more. It doesn't tell you the conversation was legitimate, because an attacker is free to run any service on any port they like. So before you draw a conclusion, check three things:
 
 - The host involved
 - The direction the connection traveled
