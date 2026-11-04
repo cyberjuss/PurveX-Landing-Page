@@ -240,6 +240,43 @@ export function hasMissionObjects(id: string, s: LabSnapshot) {
   );
 }
 
+/**
+ * Every ticket the build script marks as planted in C:\PurveX\tickets.txt.
+ * A hosted lab missing any of them was built before that ticket shipped, and
+ * gets a repair. check:range:challenges fails if this list and
+ * Build-Environment.ps1 disagree. INC-1057 is planted on hosted labs only.
+ */
+export const PLANTED_TICKETS = [
+  "DATA-SAMPLE",
+  "INC-1041",
+  "INC-1052",
+  "INC-1053",
+  "INC-1054",
+  "INC-1055",
+  "INC-1056",
+  "INC-1057",
+  "INC-1058",
+  "INC-1061",
+  "INC-1064",
+  "INC-1067",
+  "INC-1069",
+  "INC-1072",
+  "INC-1073",
+  "INC-1074",
+  "INC-1075",
+  "INC-1076",
+  "INC-1077",
+  "INC-1078",
+  "INC-1079",
+  "INC-1080",
+] as const;
+
+/** Which of these tickets the lab has not planted yet. */
+export function missingTickets(s: LabSnapshot, tickets: readonly string[] = PLANTED_TICKETS): string[] {
+  const have = new Set((s.infra?.planted ?? []).map((t) => t.toUpperCase()));
+  return tickets.filter((t) => !have.has(t.toUpperCase()));
+}
+
 /** True when the lab was built with the Ticket Queue objects. Without them there is nothing to check. */
 export function hasTicketObjects(s: LabSnapshot) {
   const users = new Set(s.users.map((u) => u.sam.toLowerCase()));

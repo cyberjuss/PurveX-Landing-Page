@@ -10,7 +10,8 @@ import { loadLesson, phases } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
 import { MISSION_SKILLS } from "@/lib/academy-score";
-import { hasMissionKey } from "@/lib/academy-answers";
+import { hasMissionKey, missionTickets } from "@/lib/academy-answers";
+import { PLANTED_TICKETS } from "@/lib/academy-mission-lab";
 
 const slug = (l: string) => l.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const out: Record<string, string[]> = {};
@@ -81,6 +82,14 @@ for (const t of tabs) {
     if (!pages.has(page)) add("I. Link to a page that doesn't exist", `${m[0]} in ${t.file}`);
   }
 }
+// J. The server's list of planted tickets matches what the build script plants,
+// so a lab missing one is repaired and a question naming one waits for it.
+const script = fs.readFileSync("public/lab-scripts/Build-Environment.ps1", "utf8");
+const scriptMarks = new Set([...script.matchAll(/Test-PurvexTicketMark "([^"]+)"/g)].map((m) => m[1]));
+for (const t of scriptMarks) if (!(PLANTED_TICKETS as readonly string[]).includes(t)) add("J. Ticket the build plants but the server does not expect", t);
+for (const t of PLANTED_TICKETS) if (!scriptMarks.has(t)) add("J. Ticket the server expects but the build never plants", t);
+const waiting = [...onPage.keys()].filter((id) => missionTickets(id).some((t) => scriptMarks.has(t)));
+
 // Screenshots not taken yet are hidden by markdown.tsx, so they are listed, not failed.
 const placeholders = tabs.flatMap((t) => [...(t.md ?? "").matchAll(/src="([^"]*PLACEHOLDER[^"]*)"/g)].map((m) => `${m[1]} (${t.file})`));
 for (const [k, v] of Object.entries(out).sort()) {
@@ -88,6 +97,7 @@ for (const [k, v] of Object.entries(out).sort()) {
   for (const x of v.slice(0, 40)) console.log("          " + x);
 }
 console.log(`\n${tabs.length} tabs, ${chTabs.length} challenge tabs, ${onPage.size} questions on pages, ${Object.keys(MISSION_CATALOG).length} in the catalog.`);
+console.log(`${waiting.length} questions wait for a planted ticket before they can be answered.`);
 if (placeholders.length) console.log(`${placeholders.length} screenshots still to add (hidden from students until they exist).`);
 const failed = Object.values(out).reduce((n, v) => n + v.length, 0);
 console.log(failed ? `\n${failed} challenge problem(s) found.` : "\nAll challenge checks passed.");

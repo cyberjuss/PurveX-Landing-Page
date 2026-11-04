@@ -12,7 +12,7 @@ import { entriesOf } from "@/lib/academy-entries";
 type Miss = { guesses: string[]; text: string };
 /** An answer read from the student's live lab, such as "members:Compliance Users". */
 type LabAnswer = { kind: "members"; group: string };
-type MissionKey = { accepts: string[]; reveal: string; misses: Miss[]; labAnswer: LabAnswer | null };
+type MissionKey = { accepts: string[]; reveal: string; misses: Miss[]; labAnswer: LabAnswer | null; tickets: string[] };
 
 /** What the answer checks may read from the student's lab snapshot. */
 export type AnswerLab = { groups: { name: string; members: string[] }[]; infra?: { dcIps: string[] } } | null;
@@ -71,6 +71,9 @@ function build() {
         reveal: flag.replace(/^<div class="ad-flag">/, "").replace(/<\/div>$/, "").trim(),
         misses,
         labAnswer: parseLabAnswer(block.match(/data-lab-answer="([^"]*)"/)?.[1]),
+        // The INC numbers the ticket names. Where the build plants that ticket,
+        // the question cannot be answered until it is in the student's lab.
+        tickets: [...new Set(block.match(/INC-\d{4}/g) ?? [])],
       });
     }
   }
@@ -78,6 +81,9 @@ function build() {
 }
 
 export const hasMissionKey = (id: string) => build().has(id);
+
+/** The ticket numbers a question's text names, such as INC-1069. */
+export const missionTickets = (id: string): string[] => build().get(id)?.tickets ?? [];
 
 /** True when this mission's answer or feedback needs the student's lab snapshot. */
 export const needsLabForAnswer = (id: string) => {

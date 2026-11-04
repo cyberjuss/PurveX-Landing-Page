@@ -2,7 +2,8 @@ import "server-only";
 import { after } from "next/server";
 import { repairHostedLab, requestLabSync } from "@/lib/academy-hosted";
 import { formatLabAge, labIsLive } from "@/lib/academy-lab";
-import { checkMission, hasMissionObjects, hasTicketObjects, missionGate } from "@/lib/academy-mission-lab";
+import { checkMission, hasMissionObjects, hasTicketObjects, missingTickets, missionGate, PLANTED_TICKETS } from "@/lib/academy-mission-lab";
+import { missionTickets } from "@/lib/academy-answers";
 import { loadLabState, loadProgress, saveProgress, touchLabLive } from "@/lib/academy-store";
 import { LIVE_MINUTES } from "@/lib/academy-verify";
 import { confirmOnLab } from "@/lib/academy-lab-pull";
@@ -48,6 +49,21 @@ export async function labGate(student: { id: string; email: string | null }, id:
     // Asks the lab script to sync every minute, so a running lab turns green soon.
     await touchLabLive(student.id, LIVE_MINUTES).catch(() => {});
     return { gated, passed: false, stale: true, syncedAgo, results: [] };
+  }
+  // A hosted lab built before some ticket shipped is missing it, and answer-only
+  // questions never asked for a repair, so a student could sit on a challenge
+  // whose objects were never in their lab. Any challenge now asks, in the
+  // background: the repair is throttled, plants only what is absent, and
+  // finds no instance (one row read) for a student without a hosted lab.
+  if (missingTickets(lab.snapshot).length) after(() => repairHostedLab(student.id).then(() => undefined).catch(() => undefined));
+  // A question whose ticket names one the build plants waits for it, rather
+  // than leaving the student to hunt for something that is not there.
+  // INC-1041 is left out: its mark is newer than the objects it stands for, so a
+  // lab built before the mark existed has everything and no mark. Ticket 1
+  // checks its own group through its needs instead.
+  const named = missionTickets(id).filter((t) => t !== "INC-1041" && (PLANTED_TICKETS as readonly string[]).includes(t));
+  if (named.length && missingTickets(lab.snapshot, named).length) {
+    return { gated, passed: false, noTicketObjects: true, results: [] };
   }
   if (!gated) return { gated: false, passed: true, syncedAgo };
 
