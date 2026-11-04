@@ -5,14 +5,14 @@
 
 ### Log Analysis Fundamentals
 
-Phase 1 taught you to check Active Directory before you work a help desk ticket. This week covers the other half of the desk. When an alert fires, you read three things:
+In Phase 1, you learned to check Active Directory before working a help desk ticket. This week turns to the other half of the desk, the alerts. When one fires, you read three things before anything else:
 
 - the host
 - the account
 - the log
 
-Then you decide whether the activity fits this environment.
+Only once you've read all three do you decide whether the activity fits this environment.
 
-Finish the Phase 1 Home Lab first, including the Range download of `Build-Environment.ps1`. The alert names objects in that same directory.
+Because the alerts this week name objects in your Phase 1 directory, finish the Phase 1 Home Lab first, including the Range download of `Build-Environment.ps1`.
 
-If you do not already know where `alex.rivera` belongs, go back and learn it before you work the queue.
+As a quick check, ask yourself where `alex.rivera` belongs. If you don't already know, go back and learn the directory before you start on the queue.

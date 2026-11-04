@@ -12,15 +12,15 @@
 
 ### Make Two Real Events
 
-An analyst who only ever reads one machine's log misses what happened on another right before or after. Sign in to your domain controller the normal way. Then, separately, open a terminal session to the Ubuntu server.
+If you only ever read one machine's log, you'll miss whatever happened on another machine just before or just after. To see why, start by making some evidence of your own. Sign in to your domain controller the normal way, and then, separately, open a terminal session to the Ubuntu server.
 
-You have just produced two real authentication events, on two different machines, within the same few minutes of each other. That is the shape of an investigation that actually spans an environment, not just one box.
+You've now produced two real authentication events on two different machines, a few minutes apart. That's what an investigation looks like once it spreads beyond a single box.
 
 ### Read Each Machine's Own Account
 
-On the domain controller, open Event Viewer and find the 4624 (successful logon) your sign-in just produced.
+Start with the domain controller. Open Event Viewer and find the 4624 (successful logon) event that your sign-in just produced.
 
-On the Ubuntu server, open a terminal and read the authentication log for your SSH session.
+Then switch to the Ubuntu server, open a terminal, and read the authentication log for your SSH session.
 
 ```bash
 sudo journalctl -u ssh -n 20
@@ -35,10 +35,10 @@ sudo journalctl -u ssh -n 20
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The journalctl line names the process that accepted your connection right at the start of the line, before the message text.</p>
+<p>Look at the start of the journalctl line. Before the message text begins, it names the process that accepted your connection.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="ssh">That is the client-side command name. The log credits the service that accepted the connection on the Ubuntu server.</div>
+<div class="ad-miss" data-guess="ssh">That's the command you ran on the client side. The log credits the service on the Ubuntu server that accepted the connection.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -47,7 +47,7 @@ sudo journalctl -u ssh -n 20
 </div>
 <div>
 <span>Why it matters</span>
-<p>The Windows side credits a logon to a Logon Type and a security subsystem. The Linux side credits it to a process name instead. Neither format is wrong, but a correlation across the two only works once you know what each side actually calls the same kind of event.</p>
+<p>Windows records a logon against a Logon Type and a security subsystem, while Linux records it against a process name. Neither format is wrong, but you can only line the two up once you know what each side calls the same kind of event.</p>
 </div>
 </div>
 </div>
@@ -57,7 +57,7 @@ sudo journalctl -u ssh -n 20
 
 <div class="ad-mission" data-id="la2-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1142 · Medium</span>
-<p><strong>SOC Queue · Baseline Review · 2:00 PM</strong><br>Your own DC sign-in and SSH session are both really you, minutes apart. Suppose the SOC instead saw the same pattern on jordan.ellis's account, which has never once shown a DC sign-in followed by an SSH session to the Ubuntu server before, not in weeks of history. Neither event alone looks unusual.</p>
+<p><strong>SOC Queue · Baseline Review · 2:00 PM</strong><br>Your DC sign-in and SSH session a few minutes later were both genuinely you. Now suppose the SOC saw that same pattern on jordan.ellis's account instead. In weeks of history, that account has never once signed in to the DC and then opened an SSH session to the Ubuntu server. Taken one at a time, neither event looks unusual.</p>
 <p><strong>Task:</strong> What does the pair together suggest? Type its letter.<br><strong>A</strong> Nothing. If each event is fine on its own, the pair is fine too.<br><strong>B</strong> The pair is more worth a second look than either event alone, since it is a pattern of movement across the pod that this account has never shown before.<br><strong>C</strong> Two separate machines' logs can never be analyzed together, only one at a time.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what an unfamiliar pattern across two machines suggests" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -65,11 +65,11 @@ sudo journalctl -u ssh -n 20
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A baseline is not just what one event looks like normally. It is what a normal sequence of events looks like for one account.</p>
+<p>Think of a baseline as more than what one event normally looks like. It also covers what a normal sequence of events looks like for a given account.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Each event looking fine alone is exactly why the pair needs a second look: neither log by itself shows the unfamiliar sequence.</div>
-<div class="ad-miss" data-guess="c">You just read both logs together in this lab and lined up the timing yourself. It is possible, just not automatic.</div>
+<div class="ad-miss" data-guess="a">Each event looking fine on its own is exactly why the pair needs a second look, because neither log by itself shows the unfamiliar sequence.</div>
+<div class="ad-miss" data-guess="c">You've just read both logs in this lab and lined up the timing yourself. So it is possible. It just doesn't happen automatically.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -78,7 +78,7 @@ sudo journalctl -u ssh -n 20
 </div>
 <div>
 <span>Why it matters</span>
-<p>A baseline is not just what one event normally looks like. It is what a normal sequence of events looks like for one account. An account suddenly moving somewhere it has never gone before is exactly the kind of outlier a single machine's log can never show you on its own, because the other half of the pattern never happened on that machine.</p>
+<p>A baseline covers more than what one event normally looks like. It also covers what a normal sequence of events looks like for one account. When an account suddenly moves somewhere it has never gone before, a single machine's log can't show you that on its own, because the other half of the pattern happened somewhere else.</p>
 </div>
 </div>
 </div>
@@ -96,11 +96,11 @@ sudo journalctl -u ssh -n 20
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You read the SSH sign-in from the Ubuntu server's own journalctl output, not from Event Viewer on the domain controller.</p>
+<p>Think back to where you found the SSH sign-in. You read it in the Ubuntu server's journalctl output, not in Event Viewer on the domain controller.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">The SSH sign-in you just read lives only in the Ubuntu server's own journalctl output. The domain controller's log never saw it.</div>
-<div class="ad-miss" data-guess="c">The domain controller's own log records its own sign-in's time directly, with no need for the Ubuntu log at all.</div>
+<div class="ad-miss" data-guess="a">The SSH sign-in you just read exists only in the Ubuntu server's journalctl output, so the domain controller's log never saw it.</div>
+<div class="ad-miss" data-guess="c">The domain controller already records the time of its own sign-ins, so it doesn't need the Ubuntu log for that.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -109,7 +109,7 @@ sudo journalctl -u ssh -n 20
 </div>
 <div>
 <span>Why it matters</span>
-<p>Nothing links the two events automatically. An analyst has to go read both logs and notice the timing themselves, which is the actual work a SIEM is built to speed up, not replace.</p>
+<p>Nothing links the two events for you. An analyst has to read both logs and notice the timing, and that's the work a SIEM is built to speed up. It doesn't replace it.</p>
 </div>
 </div>
 </div>
@@ -117,4 +117,4 @@ sudo journalctl -u ssh -n 20
 
 ### Why It Matters
 
-Two machines, two log formats, one real sequence of events. The habit this lab teaches outlasts any one tool: before you decide what happened, check whether another machine's log has the other half of the story.
+You worked with two machines and two log formats, and together they told one sequence of events. The habit to take from this lab will outlast any tool you use: before you decide what happened, check whether another machine's log holds the other half of the story.

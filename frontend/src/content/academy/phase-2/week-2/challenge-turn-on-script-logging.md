@@ -12,24 +12,24 @@
 
 ### Turn It On
 
-After the scheduled-task finding you reported, Alex Rivera wants this logging on domain-wide, starting with your own machine. This setting is off by default, the same way Process Creation auditing was until you turned it on in an earlier ticket. Open PowerShell as an administrator and enable it.
+After the scheduled-task finding you reported, Alex Rivera wants script-block logging turned on across the domain, starting with your own machine. Like Process Creation auditing before you enabled it in an earlier ticket, this setting is off by default. Open PowerShell as an administrator and switch it on.
 
 ```powershell
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Force | Out-Null
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Name "EnableScriptBlockLogging" -Value 1
 ```
 
-This is the same registry key Group Policy writes when an administrator turns this setting on through the GUI instead.
+That's the same registry key Group Policy writes when an administrator turns the setting on through the GUI, so you're making exactly the change a policy would.
 
 ### Run Something and Find It
 
-Run a short command with a line you will recognize later.
+Next, run a short command containing a line you'll recognize when you see it again.
 
 ```powershell
 Write-Host "PurveX-script-logging-check"
 ```
 
-Open Event Viewer and go to Applications and Services Logs → Microsoft → Windows → PowerShell → Operational.
+Now go looking for it. Open Event Viewer and go to Applications and Services Logs → Microsoft → Windows → PowerShell → Operational.
 
 <div class="ad-mission" data-id="la2-03" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1144 · Low</span>
@@ -40,10 +40,10 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Look at the events in the PowerShell Operational log around when you ran your command, and find the one whose Message field holds your exact line.</p>
+<p>Check the events in the PowerShell Operational log from around the time you ran your command. One of them has your exact line in its Message field.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="4624|4625">Those are logon events from a different log entirely. Look in the PowerShell Operational log, not the Security log.</div>
+<div class="ad-miss" data-guess="4624|4625">Those are logon events, and they come from the Security log. Look in the PowerShell Operational log instead.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -52,7 +52,7 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 </div>
 <div>
 <span>Why it matters</span>
-<p>Open that event and your own line is sitting right in the Message field, exactly as you typed it. A process-creation event would have shown you that powershell.exe ran. Only this event shows you what it actually did.</p>
+<p>When you open that event, your own line is sitting in the Message field exactly as you typed it. A process-creation event would only have told you that powershell.exe ran, whereas this one shows you what it actually did.</p>
 </div>
 </div>
 </div>
@@ -62,7 +62,7 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 
 <div class="ad-mission" data-id="la2-06" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1145 · Medium</span>
-<p><strong>SOC Analyst · Alert Review · 4:00 PM</strong><br>A process-creation event shows <code>powershell.exe -EncodedCommand &lt;base64&gt;</code>. That event shows only the raw, still-encoded argument.</p>
+<p><strong>SOC Analyst · Alert Review · 4:00 PM</strong><br>A process-creation event shows <code>powershell.exe -EncodedCommand &lt;base64&gt;</code>. All it records is the raw argument, still encoded.</p>
 <p><strong>Task:</strong> Which log actually shows you the decoded, readable command PowerShell is about to run? Type its letter.<br><strong>A</strong> The process-creation event is enough on its own. Nothing else is needed.<br><strong>B</strong> Script-block logging (4104), since it logs PowerShell's own interpretation of the command after decoding, not just the raw text it launched with.<br><strong>C</strong> Neither log ever shows decoded content under any circumstance.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which log shows the decoded command" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -70,11 +70,11 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Think about what PowerShell has to do to a Base64 string before it can run it as a command at all.</p>
+<p>Think about what PowerShell has to do with a Base64 string before it can run it as a command.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">The process-creation event you just described shows only the encoded, unreadable argument. It cannot be the full picture.</div>
-<div class="ad-miss" data-guess="c">PowerShell has to decode the command before it can run it, and that decoded text is exactly what gets written to the event you just read in the step above.</div>
+<div class="ad-miss" data-guess="a">The process-creation event in the alert shows only the encoded argument, which you can't read, so it can't be the full picture.</div>
+<div class="ad-miss" data-guess="c">PowerShell has to decode the command before it can run it, and that decoded text is exactly what lands in the kind of event you read in the step above.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -83,7 +83,7 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 </div>
 <div>
 <span>Why it matters</span>
-<p>A process-creation event hands you the command exactly as it was launched, obfuscation and all. Script-block logging hands you what PowerShell itself decoded that into right before running it. That difference is the entire reason this setting exists on top of process-creation auditing instead of replacing it.</p>
+<p>A process-creation event gives you the command exactly as it was launched, obfuscation and all. Script-block logging gives you what PowerShell decoded it into just before running it. That difference is why this setting sits alongside process-creation auditing rather than replacing it.</p>
 </div>
 </div>
 </div>
@@ -101,11 +101,11 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You just answered the same logic one step ago for an EncodedCommand argument. Apply the same reasoning here.</p>
+<p>You worked through this same logic one question ago with the EncodedCommand argument, so apply that reasoning here.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Encoding only disguises the command on its way in. It does not stop logging from capturing what actually gets executed.</div>
-<div class="ad-miss" data-guess="c">PowerShell runs Base64-encoded commands routinely; it is a normal feature, not something it refuses.</div>
+<div class="ad-miss" data-guess="a">Encoding only disguises the command on its way in, so it can't stop logging from capturing what actually runs.</div>
+<div class="ad-miss" data-guess="c">PowerShell runs Base64-encoded commands all the time. It's a normal feature, not something it refuses.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -114,7 +114,7 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encoding only disguises a command on its way in. Once PowerShell decodes it to actually run it, that decoded text is what script-block logging writes down, the same way la2-06 just showed you. Hiding a command behind Base64 does not make it disappear from this log, it just delays when it becomes readable until the moment it matters most.</p>
+<p>Encoding only disguises a command on its way in. Once PowerShell decodes it so it can run, script-block logging writes down the decoded text, just as the previous question showed. Hiding a command behind Base64 doesn't keep it out of this log. It only delays the moment it becomes readable, and that moment is the one that matters.</p>
 </div>
 </div>
 </div>
@@ -122,4 +122,4 @@ Open Event Viewer and go to Applications and Services Logs → Microsoft → Win
 
 ### Why It Matters
 
-Most of what matters in a real intrusion happens inside the command, not in the fact that a process launched. This is the one setting that keeps the inside of the command instead of throwing it away.
+In a real intrusion, what matters most is usually what the command did, not the bare fact that a process launched. Script-block logging is the setting that keeps that part of the record instead of throwing it away.
