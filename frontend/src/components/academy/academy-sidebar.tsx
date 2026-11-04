@@ -4,7 +4,7 @@ import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, FlaskConical, Hammer, Lock } from "lucide-react";
-import { type ContentSection, type PhaseDef } from "@/lib/academy-content";
+import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf, labLinksOf } from "@/lib/academy-entries";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
@@ -127,16 +127,37 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         // Ungrouped sections (none of today's Phase 2 entries lack a group,
         // but earlier phases' Challenges entries do) fall into one group
         // with no heading.
-        const challengeGroups: { label: string | null; items: ContentSection[] }[] = [];
+        type ChallengeLink = { key: string; label: string; href: string };
+        const challengeGroups: { label: string | null; items: ChallengeLink[] }[] = [];
+        // Each week's challenges come first, in course order, under the week
+        // they belong to. They still live as pills on the week's own page; these
+        // are links to them, so a student can see every challenge in one list.
+        // "Week 2 -- Encryption & Hashing" is cut at the dash, as the Labs list does.
+        for (const week of phase.weeks) {
+          const items = week.sections
+            .filter((s) => s.label.startsWith("Challenge:"))
+            .map((s) => {
+              const label = s.label.replace(/^Challenge:\s*/, "");
+              return { key: `${week.slug}:${s.label}`, label, href: `/range/${phase.slug}/${week.slug}#${slugify(label)}` };
+            });
+          if (items.length) challengeGroups.push({ label: week.title.split("—")[0].trim() || week.title, items });
+        }
+        const weekGroupCount = challengeGroups.length;
         if (challenges) {
           for (const s of challenges.sections) {
-            const label = s.group ?? null;
+            // With the weeks listed above it, an ungrouped Home Lab entry needs
+            // its own heading, or its rows read as part of the last week.
+            const label = s.group ?? (weekGroupCount ? "Home Lab" : null);
+            // phase-entry.tsx strips "Challenge: " before SectionTabs ever sees
+            // the label, so the hash is the slug of the stripped form.
+            const short = s.label.replace(/^Challenge:\s*/, "");
+            const item = { key: s.label, label: short, href: `/range/${phase.slug}/${challenges.slug}#${slugify(short)}` };
             const last = challengeGroups[challengeGroups.length - 1];
-            if (last && last.label === label) last.items.push(s);
+            if (challengeGroups.length > weekGroupCount && last && last.label === label) last.items.push(item);
             else {
-              const existing = label !== null ? challengeGroups.find((g) => g.label === label) : undefined;
-              if (existing) existing.items.push(s);
-              else challengeGroups.push({ label, items: [s] });
+              const existing = label !== null ? challengeGroups.slice(weekGroupCount).find((g) => g.label === label) : undefined;
+              if (existing) existing.items.push(item);
+              else challengeGroups.push({ label, items: [item] });
             }
           }
         }
@@ -213,7 +234,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
 
         const challengesKey = `${phase.slug}:challenges`;
         const challengesOpen = openOf(challengesKey, challenges !== null && pathname === `/range/${phase.slug}/${challenges.slug}`);
-        const challengesSection = challenges && (
+        const challengesSection = challengeGroups.length > 0 && (
           <div>
             <button
               type="button"
@@ -239,22 +260,13 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               <Fragment key={g.label ?? `_${i}`}>
               {g.label && <p className="ax-labweek">{g.label}</p>}
               <ul className="ax-list flex flex-col overflow-hidden">
-                {g.items.map((s) => {
-                  // The challenges all live as tabs on one page, addressed by
-                  // hash the same way SectionTabs itself resolves one. phase-entry.tsx
-                  // strips "Challenge: " before SectionTabs ever sees the label, so
-                  // indexForHash matches against the stripped form -- slugify it
-                  // the same way here, or the hash points at the wrong tab.
-                  const label = s.label.replace(/^Challenge:\s*/, "");
-                  const href = `/range/${phase.slug}/${challenges.slug}#${slugify(label)}`;
-                  return (
-                    <li key={s.label}>
-                      <Link href={href} onClick={onNavigate} className="ax-week">
-                        <span className="ax-week__name truncate">{label}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
+                {g.items.map((item) => (
+                  <li key={item.key}>
+                    <Link href={item.href} onClick={onNavigate} className="ax-week">
+                      <span className="ax-week__name truncate">{item.label}</span>
+                    </Link>
+                  </li>
+                ))}
               </ul>
               </Fragment>
               ))}
