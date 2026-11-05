@@ -49,7 +49,9 @@ export type MissionCatalogEntry = {
     | "trace-persistence"
     | "access-outlier"
     | "overnight-alert"
-    | "lockout-threshold";
+    | "lockout-threshold"
+    | "build-out-directory"
+    | "new-hire-week";
   title: string;
   prompt: string;
   skill: Skill;
@@ -683,6 +685,160 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Name what Kerberoasting and DCSync both abuse to work at all.",
     skill: "security",
   },
+  "dr-01": {
+    id: "dr-01",
+    challenge: "build-out-directory",
+    title: "Pre-Stage the Workstation",
+    prompt: "Pre-stage IT-WKS09 in IT Workstations and name the folder an unstaged computer lands in.",
+    skill: "directory",
+  },
+  "dr-02": {
+    id: "dr-02",
+    challenge: "build-out-directory",
+    title: "Point It at the Domain",
+    prompt: "Report the address a workstation must use as its preferred DNS server.",
+    skill: "troubleshooting",
+  },
+  "dr-03": {
+    id: "dr-03",
+    challenge: "build-out-directory",
+    title: "Give Compliance a Workstations Folder",
+    prompt: "Create a Workstations OU under Compliance and report its path.",
+    skill: "directory",
+  },
+  "dr-04": {
+    id: "dr-04",
+    challenge: "build-out-directory",
+    title: "Delegate Only What Helpdesk Needs",
+    prompt: "Choose where to delegate password resets for Compliance staff only.",
+    skill: "access",
+  },
+  "dr-05": {
+    id: "dr-05",
+    challenge: "build-out-directory",
+    title: "Create the New Hire",
+    prompt: "Create quinn.harper in IT Users with the right title and report the logon name.",
+    skill: "accounts",
+  },
+  "dr-06": {
+    id: "dr-06",
+    challenge: "build-out-directory",
+    title: "Person, Machine or Job?",
+    prompt: "Pick the user object that does not represent a person.",
+    skill: "accounts",
+  },
+  "dr-07": {
+    id: "dr-07",
+    challenge: "build-out-directory",
+    title: "Mirror the Right Peer",
+    prompt: "Give quinn.harper Priya's access and name the group Quinn must not get.",
+    skill: "access",
+  },
+  "dr-08": {
+    id: "dr-08",
+    challenge: "build-out-directory",
+    title: "OU or Container?",
+    prompt: "Decide whether a GPO linked to OU=IT reaches an account in the default Users folder.",
+    skill: "directory",
+  },
+  "dr-09": {
+    id: "dr-09",
+    challenge: "build-out-directory",
+    title: "Create the Service Account",
+    prompt: "Create svc-print-queue the way a service account should be built and name the setting that limits when it signs in.",
+    skill: "accounts",
+  },
+  "dr-10": {
+    id: "dr-10",
+    challenge: "build-out-directory",
+    title: "A Job Running Outside Its Window",
+    prompt: "Decide what a service account signing in outside its logon hours means.",
+    skill: "security",
+  },
+  "dr-11": {
+    id: "dr-11",
+    challenge: "build-out-directory",
+    title: "Link the Policy",
+    prompt: "Create and link a GPO to the Compliance Workstations OU and name the places a GPO can link.",
+    skill: "directory",
+  },
+  "dr-12": {
+    id: "dr-12",
+    challenge: "build-out-directory",
+    title: "The Password Rule That Will Not Apply",
+    prompt: "Choose how to give one department stricter passwords.",
+    skill: "access",
+  },
+  "dk-01": {
+    id: "dk-01",
+    challenge: "new-hire-week",
+    title: "Find the Caller",
+    prompt: "Use Find to open jordan.ellis and report the title on the account.",
+    skill: "directory",
+  },
+  "dk-02": {
+    id: "dk-02",
+    challenge: "new-hire-week",
+    title: "Reset and Force a Change",
+    prompt: "Reset maya.okafor's password with a change at next logon and say which fix the call needed.",
+    skill: "troubleshooting",
+  },
+  "dk-03": {
+    id: "dk-03",
+    challenge: "new-hire-week",
+    title: "Locked, Not Forgotten",
+    prompt: "Choose the fix for a user who remembers the password but is locked out.",
+    skill: "troubleshooting",
+  },
+  "dk-04": {
+    id: "dk-04",
+    challenge: "new-hire-week",
+    title: "Put Maya in the Right Folder",
+    prompt: "Move maya.okafor into Wealth Management Users and name the group that must come off.",
+    skill: "accounts",
+  },
+  "dk-05": {
+    id: "dk-05",
+    challenge: "new-hire-week",
+    title: "Finish the Access Half",
+    prompt: "Swap maya.okafor's department group and report the one you removed.",
+    skill: "accounts",
+  },
+  "dk-06": {
+    id: "dk-06",
+    challenge: "new-hire-week",
+    title: "Record the Ticket",
+    prompt: "Record the ticket on maya.okafor's Description and name the tab that holds Title.",
+    skill: "directory",
+  },
+  "dk-07": {
+    id: "dk-07",
+    challenge: "new-hire-week",
+    title: "Read the Raw Attribute",
+    prompt: "Report what pwdLastSet shows on maya.okafor after the forced change.",
+    skill: "troubleshooting",
+  },
+  "dk-08": {
+    id: "dk-08",
+    challenge: "new-hire-week",
+    title: "The Missing Tab",
+    prompt: "Name the tab missing when a computer is opened from Find.",
+    skill: "directory",
+  },
+  "dk-09": {
+    id: "dk-09",
+    challenge: "new-hire-week",
+    title: "Which Last Logon to Trust",
+    prompt: "Choose the logon attribute that is shared between domain controllers.",
+    skill: "troubleshooting",
+  },
+  "dk-10": {
+    id: "dk-10",
+    challenge: "new-hire-week",
+    title: "Close the Transfer",
+    prompt: "Confirm maya.okafor's transfer and name the two things that must both match.",
+    skill: "accounts",
+  },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -735,6 +891,8 @@ export const CHALLENGE_PATHS: Record<
   "access-outlier": { href: "/range/phase-2/baselines-thresholds", tab: "baseline-a-team-then-find-who-breaks-it" },
   "overnight-alert": { href: "/range/phase-2/soc-mindset", tab: "approved-overnight-or-not" },
   "lockout-threshold": { href: "/range/phase-2/baselines-thresholds", tab: "set-a-defensible-lockout-threshold" },
+  "build-out-directory": { href: "/range/phase-1/home-lab-directory", tab: "build-out-the-directory" },
+  "new-hire-week": { href: "/range/phase-1/home-lab-desk", tab: "a-new-hire-s-first-week" },
 };
 
 export function missionHref(id: string): string {
@@ -824,6 +982,8 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "access-outlier": "Baseline a Team, Then Find Who Breaks It",
   "overnight-alert": "Approved Overnight, or Not?",
   "lockout-threshold": "Set a Defensible Lockout Threshold",
+  "build-out-directory": "Build Out the Directory",
+  "new-hire-week": "A New Hire's First Week",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -863,6 +1023,8 @@ export const LAB_GATED_MISSIONS = [
   "od-02", "od-04", "od-05", "od-06", "od-07",
   "rk-01", "rk-02", "rk-04", "rk-03", "rk-05", "rk-06", "rk-07", "rk-08",
   "la2-04",
+  "dr-01", "dr-03", "dr-05", "dr-07", "dr-09", "dr-11",
+  "dk-02", "dk-04", "dk-05", "dk-06", "dk-07", "dk-10",
 ];
 
 /**

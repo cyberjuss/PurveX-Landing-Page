@@ -74,7 +74,9 @@ export type Check =
   | { t: "policy"; key: "minLength" | "complexity" | "history" | "lockoutThreshold" | "lockoutDurationMin" | "lockoutWindowMin" | "reversible"; min?: number; max?: number; bool?: boolean }
   | { t: "audit"; sub: string; need: "Success" | "Failure" | "Both" }
   | { t: "logsize"; minMB: number }
-  | { t: "sbl"; want: boolean };
+  | { t: "sbl"; want: boolean }
+  /** An OU exists at this path, relative to the domain, such as OU=Workstations,OU=Compliance,OU=Departments. */
+  | { t: "ou"; path: string };
 
 export type Task = {
   checks: { c: Check; label: string }[];
@@ -1017,6 +1019,7 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
   }
   if (c.t === "logsize") return (s.security?.securityLogMaxMB ?? 0) >= c.minMB;
   if (c.t === "sbl") return (s.security?.scriptBlockLogging ?? false) === c.want;
+  if (c.t === "ou") return s.ous.some((o) => o.path.toLowerCase() === c.path.toLowerCase());
   const user = s.users.find((u) => u.sam.toLowerCase() === c.sam.toLowerCase());
   if (c.t === "exists") return Boolean(user) && user!.container.toLowerCase() === c.ou.toLowerCase();
   // Before the missing-user line below, which would read a deleted account as a

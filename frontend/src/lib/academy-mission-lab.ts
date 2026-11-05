@@ -217,6 +217,52 @@ const MISSION_LAB = {
     ],
     { tickets: ["DATA-SAMPLE"] }
   ),
+  // Home Lab: Build Out the Directory. The student creates every object these
+  // check, under names no other challenge uses, so nothing needs planting and
+  // nothing here can change another challenge's answer.
+  "dr-01": G([{ c: { t: "computerAt", name: "IT-WKS09", ou: "OU=Workstations,OU=IT,OU=Departments" }, label: "IT-WKS09 is pre-staged in Departments, IT, Workstations" }]),
+  "dr-03": G([{ c: { t: "ou", path: "OU=Workstations,OU=Compliance,OU=Departments" }, label: "A Workstations OU exists under Compliance" }]),
+  "dr-05": G([
+    { c: { t: "exists", sam: "quinn.harper", ou: "OU=Users,OU=IT,OU=Departments" }, label: "quinn.harper is in the IT Users folder" },
+    { c: { t: "desc", sam: "quinn.harper", text: "Help Desk Technician" }, label: "quinn.harper's title is Help Desk Technician" },
+  ]),
+  "dr-07": G([
+    { c: { t: "member", sam: "quinn.harper", group: "IT Users", want: true }, label: "quinn.harper is in IT Users" },
+    { c: { t: "member", sam: "quinn.harper", group: "IT Admins", want: false }, label: "quinn.harper is not in IT Admins" },
+  ]),
+  "dr-09": G([
+    { c: { t: "exists", sam: "svc-print-queue", ou: "OU=ServiceAccounts" }, label: "svc-print-queue is in the ServiceAccounts OU" },
+    { c: { t: "noexpire", sam: "svc-print-queue", want: true }, label: "svc-print-queue's password never expires" },
+    { c: { t: "desc", sam: "svc-print-queue", text: "print" }, label: "svc-print-queue's Description says what job it runs" },
+  ]),
+  "dr-11": G([
+    { c: { t: "gpoLink", gpo: "PurveX - Compliance Workstations", ous: ["OU=Workstations,OU=Compliance,OU=Departments"], want: true }, label: "PurveX - Compliance Workstations is linked to the Compliance Workstations OU" },
+  ]),
+  // Home Lab: A New Hire's First Week. maya.okafor is staged by the block at
+  // the top of the challenge, in the wrong department on purpose, with a
+  // password she can keep, so none of these checks pass before the work.
+  // No needs listed: the build never plants her, so a missing account must
+  // not ask a hosted lab to repair itself.
+  "dk-02": G([{ c: { t: "flag", sam: "maya.okafor", flag: "passwordExpired", want: true }, label: "maya.okafor must change the password at next logon" }]),
+  "dk-07": G([{ c: { t: "flag", sam: "maya.okafor", flag: "passwordExpired", want: true }, label: "maya.okafor still has to change the password at next logon" }]),
+  "dk-04": G(
+    [{ c: { t: "container", sam: "maya.okafor", ou: "OU=Users,OU=WealthManagement,OU=Departments" }, label: "maya.okafor is in the Wealth Management Users folder" }]
+  ),
+  "dk-05": G(
+    [
+      { c: { t: "member", sam: "maya.okafor", group: "Wealth Management Users", want: true }, label: "maya.okafor is in Wealth Management Users" },
+      { c: { t: "member", sam: "maya.okafor", group: "Operations Users", want: false }, label: "maya.okafor is no longer in Operations Users" },
+    ]
+  ),
+  "dk-06": G([{ c: { t: "desc", sam: "maya.okafor", text: "DESK-2001" }, label: "maya.okafor's Description records ticket DESK-2001" }]),
+  "dk-10": G(
+    [
+      { c: { t: "container", sam: "maya.okafor", ou: "OU=Users,OU=WealthManagement,OU=Departments" }, label: "maya.okafor lives in the Wealth Management Users folder" },
+      { c: { t: "member", sam: "maya.okafor", group: "Wealth Management Users", want: true }, label: "maya.okafor is in Wealth Management Users" },
+      { c: { t: "member", sam: "maya.okafor", group: "Operations Users", want: false }, label: "maya.okafor is out of Operations Users" },
+      { c: { t: "enabled", sam: "maya.okafor", want: true }, label: "maya.okafor is enabled" },
+    ]
+  ),
 } as const;
 
 type Gate = { checks: { c: Check; label: string }[]; needs?: Needs };

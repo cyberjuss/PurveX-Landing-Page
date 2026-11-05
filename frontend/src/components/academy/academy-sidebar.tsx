@@ -143,6 +143,19 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           if (items.length) challengeGroups.push({ label: week.title.split("—")[0].trim() || week.title, items });
         }
         const weekGroupCount = challengeGroups.length;
+        // A Home Lab sitting that ends in a challenge of its own (The Directory,
+        // Working the Desk) lists it too, under the Home Lab heading, ahead of
+        // the Challenges entry's rows in course order.
+        for (const lab of labs) {
+          for (const s of lab.sections.filter((x) => x.label.startsWith("Challenge:"))) {
+            const short = s.label.replace(/^Challenge:\s*/, "");
+            const label = weekGroupCount ? "Home Lab" : null;
+            const item = { key: `${lab.slug}:${s.label}`, label: short, href: `/range/${phase.slug}/${lab.slug}#${slugify(short)}` };
+            const existing = challengeGroups.slice(weekGroupCount).find((g) => g.label === label);
+            if (existing) existing.items.push(item);
+            else challengeGroups.push({ label, items: [item] });
+          }
+        }
         if (challenges) {
           for (const s of challenges.sections) {
             // With the weeks listed above it, an ungrouped Home Lab entry needs

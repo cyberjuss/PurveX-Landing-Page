@@ -162,6 +162,7 @@ const phase1HomeLabs: HomeLabDef[] = [
       { label: "Groups", file: "phase-1/home-lab-ad/groups.md" },
       { label: "Service Accounts", file: "phase-1/home-lab-ad/service-accounts.md" },
       { label: "Group Policy", file: "phase-1/home-lab-ad/group-policy.md" },
+      { label: "Challenge: Build Out the Directory", file: "phase-1/home-lab-ad/directory-challenge.md" },
     ],
   },
   {
@@ -173,6 +174,7 @@ const phase1HomeLabs: HomeLabDef[] = [
       { label: "Unlock or Reset", file: "phase-1/home-lab-ad/unlock-or-reset.md" },
       { label: "Move an Account", file: "phase-1/home-lab-ad/move-an-account.md" },
       { label: "Read the Account", file: "phase-1/home-lab-ad/read-the-account.md" },
+      { label: "Challenge: A New Hire's First Week", file: "phase-1/home-lab-ad/desk-challenge.md" },
     ],
   },
   {

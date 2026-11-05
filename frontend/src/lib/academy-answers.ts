@@ -10,8 +10,9 @@ import { entriesOf } from "@/lib/academy-entries";
 /** A common wrong answer and the note that points the student at the right place to look.
  *  Special guesses: "#" matches any number, "@dcip" matches the domain controller's own address. */
 type Miss = { guesses: string[]; text: string };
-/** An answer read from the student's live lab, such as "members:Compliance Users". */
-type LabAnswer = { kind: "members"; group: string };
+/** An answer read from the student's live lab: "members:Compliance Users" is that group's
+ *  member count, and "dcip" is any of the domain controller's own addresses. */
+type LabAnswer = { kind: "members"; group: string } | { kind: "dcip" };
 type MissionKey = { accepts: string[]; reveal: string; misses: Miss[]; labAnswer: LabAnswer | null; tickets: string[] };
 
 /** What the answer checks may read from the student's lab snapshot. */
@@ -38,6 +39,7 @@ const MISS = /<div class="ad-miss" data-guess="([^"]*)">([\s\S]*?)<\/div>/g;
 const plain = (html: string) => html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 
 function parseLabAnswer(raw: string | undefined): LabAnswer | null {
+  if (raw?.trim() === "dcip") return { kind: "dcip" };
   const m = raw?.match(/^members:(.+)$/);
   return m ? { kind: "members", group: m[1].trim() } : null;
 }
@@ -58,7 +60,9 @@ function build() {
     for (let m = open.exec(md); m; m = open.exec(md)) {
       const block = md.slice(m.index, divEnd(md, m.index));
       const answer = block.match(/data-answer="([^"]*)"/)?.[1];
-      if (!answer) continue;
+      const labAnswer = parseLabAnswer(block.match(/data-lab-answer="([^"]*)"/)?.[1]);
+      // An answer that only the student's own lab knows, such as their DC's address, has no fixed key.
+      if (!answer && !labAnswer) continue;
       const accept = block.match(/data-accept="([^"]*)"/)?.[1] ?? "";
       const flagAt = block.search(FLAG_OPEN);
       const flag = flagAt >= 0 ? block.slice(flagAt, divEnd(block, flagAt)) : "";
@@ -67,10 +71,10 @@ function build() {
         text: plain(x[2]),
       }));
       keys.set(m[1], {
-        accepts: [answer, ...accept.split("|")].map(normalizeGuess).filter(Boolean),
+        accepts: [answer ?? "", ...accept.split("|")].map(normalizeGuess).filter(Boolean),
         reveal: flag.replace(/^<div class="ad-flag">/, "").replace(/<\/div>$/, "").trim(),
         misses,
-        labAnswer: parseLabAnswer(block.match(/data-lab-answer="([^"]*)"/)?.[1]),
+        labAnswer,
         // The INC numbers the ticket names. Where the build plants that ticket,
         // the question cannot be answered until it is in the student's lab.
         tickets: [...new Set(block.match(/INC-\d{4}/g) ?? [])],
@@ -98,8 +102,10 @@ export function checkGuess(id: string, guess: string, lab: AnswerLab = null): bo
   if (key.accepts.includes(g)) return true;
   // A count that the student's own lab can legitimately change, such as a group that
   // grows when a later ticket is worked, is also right when it matches the live lab.
+  if (key.labAnswer?.kind === "dcip") return (lab?.infra?.dcIps ?? []).map(normalizeGuess).includes(g);
   if (key.labAnswer && lab) {
-    const group = lab.groups.find((x) => x.name.toLowerCase() === key.labAnswer!.group.toLowerCase());
+    const want = key.labAnswer.group.toLowerCase();
+    const group = lab.groups.find((x) => x.name.toLowerCase() === want);
     if (group && g === String(group.members.length)) return true;
   }
   return false;
