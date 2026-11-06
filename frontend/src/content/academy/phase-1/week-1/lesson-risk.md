@@ -1,23 +1,23 @@
 ### Risk
 
-Risk ties the weakness and the threat together: how likely a threat is to exploit a vulnerability, and how much damage that would do. It lets you compare problems that otherwise have nothing in common, instead of ranking them by how alarming they sound.
+Once you know the weakness and the threat, risk is the idea that ties them together. It's how likely it is that a threat exploits a vulnerability, combined with how much damage that would do. The reason the idea exists is to let you compare problems that otherwise have nothing in common, so you aren't ranking your work by how alarming each item sounds.
 
 **Risk = Threat × Vulnerability × Impact**
 
-**If any part is zero, the risk is zero.**
+Writing risk as a multiplication makes one thing obvious straight away: **if any part is zero, the risk is zero.**
 
-- A threat with no weakness to use produces no risk.
-- A weakness nothing can reach produces no risk.
+- A threat with no weakness to exploit produces no risk.
+- A weakness that nothing can reach produces no risk.
 - A flaw on a machine that holds nothing and connects to nothing produces no risk.
 
-In practice, teams combine threat and vulnerability into one number, likelihood, and score risk as **likelihood × impact**. The three-part version explains what you're measuring. The two-part version is how you measure it.
+In practice, though, teams rarely score those three parts separately. Threat and vulnerability together describe one thing, how likely this is to happen, so most teams combine them and score risk as **likelihood × impact**. It's worth knowing both versions: the three-part one helps you understand what you're measuring, and the two-part one is how you'll see it measured almost everywhere.
 
-You can rarely remove the threat, so security work goes into the other two:
+This also explains where a security program spends its time. Since you can rarely remove the threat, the work goes into the other two parts:
 
-- **Close vulnerabilities**, so likelihood falls.
-- **Reduce impact**, so a success costs less. Backups and network segmentation do this.
+- It **closes vulnerabilities**, so the likelihood falls.
+- It **reduces impact**, so a successful attack costs less. Backups and network segmentation are good examples.
 
-Before you escalate anything, name the vulnerability, the threat and the impact. That gives the next person what they need to decide, instead of "this looks bad".
+So before you escalate anything, get in the habit of naming the vulnerability, the threat and the impact. An escalation that includes all three gives the person receiving it what they need to decide, while one that only says "this looks bad" sends them off to redo your work.
 
 ```sort
 prompt: Does each control lower the likelihood, or the impact when something gets through?

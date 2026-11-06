@@ -5,12 +5,12 @@
 
 ### Resetting and Unlocking a Password
 
-"I can't sign in" usually means a locked account or a forgotten password. Each has its own fix:
+"I can't sign in" is one of the most common calls you'll take, and it usually means one of two different problems, a locked account or a forgotten password. New technicians often mix them up, so be clear that each has its own fix:
 
-* **Account locked.** They know the password but mistyped it too often. Open **Properties → Account**, check **Unlock account** and Apply. The password stays the same.
-* **Password forgotten.** Choose **Reset Password**, set a temporary one, and check **User must change password at next logon**.
+* **Account locked.** The user knows the password but mistyped it too many times, so the directory locked the account as a precaution. Open **Properties → Account**, check **Unlock account** and click Apply, and the password stays the same.
+* **Password forgotten.** The user no longer knows the password, so choose **Reset Password**, set a temporary one, and check **User must change password at next logon**.
 
-If both, check **Unlock the user's account** in the Reset Password dialog.
+Sometimes you'll get both at once, when a forgotten password also locked the account, and then you check **Unlock the user's account** in the same Reset Password dialog.
 
 <div class="ad-decision">
 <div class="ad-decision__q">User calls in locked out.<br>Does she remember her password?</div>
@@ -32,9 +32,9 @@ If both, check **Unlock the user's account** in the Reset Password dialog.
 </div>
 </div>
 
-For Riley Kwan, locked out, the deciding question is whether she remembers her password.
+To see how that plays out, say Riley Kwan in Operations calls in, locked out after too many failed attempts. The one question that decides the fix is whether she still remembers her password. If she does, unlock the account. If she doesn't, reset it and force a change at next logon, because a temporary password should never become a long-term one.
 
-Check the Account tab first. If **Account is disabled** is ticked, neither fix restores sign-in. After your change, reopen the tab and confirm it took.
+Whichever it turns out to be, check the Account tab before you change anything. If **Account is disabled** is ticked, neither an unlock nor a reset will restore sign-in, because a disabled account needs a different fix. And once you've made your change, reopen the tab and confirm it took.
 
 <style>
 .ad-decision { margin: 1.25rem 0; }

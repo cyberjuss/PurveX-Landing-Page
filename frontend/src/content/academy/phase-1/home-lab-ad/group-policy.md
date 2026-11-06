@@ -5,23 +5,21 @@
 
 ### Group Policy Objects (GPOs)
 
-A **GPO** (Group Policy Object) is a bundle of settings applied to everything inside what it's linked to, such as:
+A **GPO**, or Group Policy Object, is a bundle of settings that the domain applies to everything inside whatever the GPO is linked to. Common settings include:
 
 - Password policy
 - Screen-lock timeout
 - Software restrictions
 
-A GPO links only to a **Site**, a **Domain** or an **OU**, never a Container or a group. A GPO linked to `OU=IT` could shorten the screen lock for IT alone.
+A GPO can only link to a **Site**, a **Domain** or an **OU**, never to a Container or directly to a group, which is the reason every account in this lab sits in an OU. For example, a GPO linked to `OU=IT` could set a shorter screen-lock timeout for IT staff while leaving every other department untouched.
 
-Password policy is the exception: for domain accounts, it only works from a GPO linked at the domain. Stricter rules for one group need a fine-grained password policy.
+Password policy is the one exception. For domain accounts, it only takes effect from a GPO linked at the domain itself, so if one group needs stricter rules, you'd use a fine-grained password policy instead. Groups still play a part elsewhere, though, because security filtering lets a group narrow down who inside an OU the GPO applies to.
 
-Security filtering lets a group narrow who inside the OU a GPO applies to.
-
-If a setting isn't applying, check where the object lives before blaming the GPO. An account in a Container gets domain-linked policy but nothing linked to an OU.
+So if a setting isn't applying, ask where the object lives before you blame the GPO. An account in a Container still gets policy linked at the domain, but it never gets anything linked to an OU.
 
 ### Putting It Together
 
-Each kind of object answers a different question:
+You've now met every kind of object in this lab, and each one answers a different question:
 
 | Object | Answers | Can hold a GPO link? | Can nest? |
 | ----- | ----- | ----- | ----- |
@@ -33,11 +31,11 @@ Each kind of object answers a different question:
 | Security Group | What can this account access? | No (can filter one) | Yes, groups can contain groups |
 | Group Policy Object | What settings apply here? | n/a | Links to Sites, Domains, or OUs |
 
-Check every object in this order:
+Use that table as a checklist on every object you open, working in this order:
 
 - Folder first
 - Person or machine second
 - Group third
 - Settings last
 
-Anything that doesn't match PurveX needs explaining.
+If any one of those doesn't match PurveX Financial, you've found something that needs explaining.

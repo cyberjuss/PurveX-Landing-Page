@@ -1,6 +1,6 @@
 ### The Environment
 
-Every user and workstation the build script creates. Learn it well enough to notice if your directory ever disagrees.
+This page lists every user account and workstation the build script creates, with the totals at the end. Try to learn the roster well enough that you'd notice if someone were missing, so that if your directory and this page ever disagree, you know to stop and find out why.
 
 ### Full User Directory
 
@@ -16,9 +16,9 @@ Every user and workstation the build script creates. Learn it well enough to not
 | Operations | Riley Kwan | Settlements Coordinator | riley.kwan | Operations Users |
 | Finance and Accounting | Jordan Ellis | Staff Accountant | jordan.ellis | Finance Accounting Users |
 
-Each user has one standard group. Alex Rivera also holds IT Admins, so odd activity on Alex's account carries more risk.
+Each of the nine users sits in one standard group, with one exception: Alex Rivera also holds IT Admins. That's worth remembering, because unusual activity on Alex's account carries more risk than the same activity on Jordan's.
 
-A title isn't a group. Priya Nair is a Help Desk Technician but sits in IT Users, not Helpdesk. Read the Member Of list, don't guess from the title.
+Notice, too, that a title isn't a group. Priya Nair is a Help Desk Technician, yet she sits in IT Users rather than Helpdesk, so when a ticket names a person, read the account's Member Of list rather than guessing their access from their title.
 
 ### The Client Workstation
 
@@ -28,7 +28,7 @@ A title isn't a group. Priya Nair is a Help Desk Technician but sits in IT Users
 | Assigned department | IT |
 | Location | Workstations folder under IT |
 
-A ticket naming a different workstation, or IT-WKS01 in another department, is already a finding.
+Because there's only one, a ticket that names a different workstation is already a finding, and so is IT-WKS01 turning up under a different department.
 
 ### What Is in This Environment
 
@@ -41,11 +41,11 @@ A ticket naming a different workstation, or IT-WKS01 in another department, is a
 | User accounts | 9 |
 | Client workstations | 1 |
 
-Only two access level groups, because Level 1 uses the built-in `Domain Admins`. If your build's counts differ, check the build before trusting any ticket answer.
+You might wonder why there are only two access level groups when there are three levels. Level 1 uses the built-in `Domain Admins` group, so the build doesn't need to create a third. Once you've built the lab, compare it with these counts, and if anything differs, check the build before you trust any ticket answer.
 
 ### Ticket Queue Objects
 
-The Range download also plants these for the Ticket Queue. They're work to do, not baseline:
+Finally, the Range download also plants the following objects for the Ticket Queue. Treat them as work to do rather than as part of the baseline:
 
 - The `All Employees` and `Finance Reports` groups in `AccessLevels`
 - `old.intern` in IT and `svc-backup-job` in `OU=ServiceAccounts`

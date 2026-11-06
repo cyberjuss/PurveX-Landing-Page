@@ -5,17 +5,17 @@
 
 ### Install the domain
 
-This script creates the domain: it installs Active Directory Domain Services and promotes the server. Skip this tab if `purvexfinancial.local` already exists.
+As you saw on the last tab, the departments and accounts have nowhere to live until a domain exists, and this script creates it for you. It installs Active Directory Domain Services and promotes the server, the same job you walked through screen by screen on The Domain Controller tab. If `purvexfinancial.local` already exists, you can skip this tab.
 
 **Before you run it.** Open an elevated PowerShell window (Run as administrator) on a fresh Windows Server that isn't a domain controller yet.
 
-It asks twice for the DSRM recovery password, used only for Directory Services Restore Mode. At least 8 characters with three of: lowercase, uppercase, numbers, symbols.
+When it runs, the script asks you to type one password twice. That's the DSRM recovery password, which is only used for Directory Services Restore Mode and never by a user. It needs at least 8 characters, using three of these: lowercase letters, uppercase letters, numbers and symbols.
 
-**At the end** the server reboots. Sign in as `PURVEXFINANCIAL\Administrator` and go to Build the Environment.
+**What you should see at the end.** The server reboots on its own. When it comes back, sign in as `PURVEXFINANCIAL\Administrator` and go to the Build the Environment tab, where the download is linked to your Range account.
 
 [Download Install-Forest.ps1](/lab-scripts/Install-Forest.ps1)
 
-Or copy it from here:
+If you'd rather not download it, you can copy it from here instead:
 
 <details class="ad-code">
 <summary>Show Install-Forest.ps1 (copy/paste)</summary>

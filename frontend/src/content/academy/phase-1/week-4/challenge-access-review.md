@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Quarterly Access Review</h3>
 <p class="ad-brief__ask">Every quarter, PurveX Financial's auditors ask one question: does everyone have exactly the access their job needs, and can we prove who did what? Can you find what fails that test in your own directory and fix it before they arrive?</p>
-<p>Each finding is a real account or setting in your lab. Auditors want evidence, not just a fix, so some of it comes from the Security log in <strong>Event Viewer</strong>.</p>
+<p>Compliance has sent IT this quarter's findings, and each one is a real account or setting in your lab. Auditors want evidence as well as a fix, so you'll pull some of it from the Security log with <strong>Event Viewer</strong>.</p>
 </div>
 
 <div class="ad-progress">

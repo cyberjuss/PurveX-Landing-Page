@@ -5,7 +5,7 @@
 
 ### Point DNS at the domain controller
 
-A workstation finds `purvexfinancial.local` through DNS. In this lab, set its DNS server to the domain controller's IP yourself. Get it wrong and the join fails even with the DC up: an availability failure, not a password problem.
+Before a workstation can join the domain, it has to find `purvexfinancial.local`, and it does that through DNS. On a production network, the right DNS address is usually handed out automatically, but in this lab you'll set the workstation's DNS server to the domain controller's IP address yourself. If that address is wrong, the join fails even though the domain controller is up, which in Week 1 terms is an availability failure rather than a password problem.
 
 1. Press Win+R and run `ncpa.cpl`. Right-click the adapter and choose Properties.
 2. Select Internet Protocol Version 4, then Properties.
@@ -51,11 +51,11 @@ A workstation finds `purvexfinancial.local` through DNS. In this lab, set its DN
 
 ### Confirm the computer object
 
-On the domain controller, open Active Directory Users and Computers. A newly joined workstation appears in Computers. One staged ahead of time, like `IT-WKS01`, appears in its OU.
+Once the workstation has restarted, check that the domain knows about it. On the domain controller, open Active Directory Users and Computers and look in Computers, where a newly joined workstation appears. A computer that was staged ahead of time shows up in its own OU instead, which is why you'll find `IT-WKS01` under IT Workstations.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/computers.png" alt="Active Directory Users and Computers with a computer object under Computers" />
 <figcaption>A joined computer shows up as a computer object. This practice domain is cyberjuss.local. Yours is purvexfinancial.local.</figcaption>
 </figure>
 
-If it's missing, the join didn't finish. Check DNS first.
+If the name is missing, the join didn't finish. Check the DNS address first, because a wrong DNS server is the most common reason a workstation can't find the domain.

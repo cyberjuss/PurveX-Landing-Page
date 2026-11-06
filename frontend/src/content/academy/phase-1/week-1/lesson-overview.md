@@ -5,25 +5,25 @@
 
 ### Overview
 
-"Secure" on its own doesn't tell you what to check or fix. Security is three separate jobs, and when something goes wrong, one of them failed. Your first skill this week is naming which one.
+People call systems "secure" all the time, but the word on its own doesn't tell you what to check or what to fix. That's because security isn't one property. It's three separate jobs running at once, and whenever something goes wrong, one of those three jobs has failed. So the first skill we'll build this week is naming which one.
 
-Each fails in its own way:
+The helpful thing is that each job fails in its own recognizable way:
 
-- **Confidentiality** fails as a **leak**: someone who shouldn't have a copy now has one.
-- **Integrity** fails as a **lie**: the data looks normal, but you can't trust it.
-- **Availability** fails as a **lockout**: nothing leaked or changed, but people can't work.
+- **Confidentiality** fails as a **leak**: someone who shouldn't have a copy of the data now has one.
+- **Integrity** fails as a **lie**: the data still looks normal, but you can no longer trust what it says.
+- **Availability** fails as a **lockout**: nothing leaked and nothing changed, yet people can't get their work done.
 
-Together, these are the CIA triad. Each failure goes to different people and gets contained differently, so a wrong label means chasing the wrong problem while the real one keeps going.
+Together, these three are known as the CIA triad. Telling them apart matters because each failure goes to different people and gets contained in a different way. If you label one wrong, you'll spend your time chasing the wrong problem while the real one keeps going.
 
 ### Naming Danger Before It Does Damage
 
-Three more words get used loosely in every alert queue:
+Alongside the triad, this week pins down three words that get used loosely in every alert queue:
 
 - A **vulnerability** is a weakness.
-- A **threat** is something or someone that could use it.
-- **Risk** is the chance the two meet, and what it would cost.
+- A **threat** is something or someone that could take advantage of it.
+- **Risk** is the chance the two meet, and what it would cost if they did.
 
-Mix them up and you'll rank work by how scary it sounds instead of what it would cost.
+You'll see why the distinction matters as soon as you start ranking work. An analyst who mixes these words up tends to rank tickets by how frightening they sound, when what really matters is what each one would cost the business.
 
 ```connect
 prompt: Connect each word to what it means.

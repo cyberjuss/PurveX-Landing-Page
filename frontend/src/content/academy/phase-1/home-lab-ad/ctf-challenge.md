@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Operation Day One</h3>
 <p class="ad-brief__ask">Can you find your way around Active Directory well enough to handle a help desk technician's first day?</p>
-<p>It's your first day on the help desk. Prove you can find any person, group or computer and read what the directory says about it.</p>
+<p>It's your first day on the PurveX Financial help desk, and nobody expects you to close incidents yet. The lead on the desk does want to see that you can find any person, group or computer and read what the directory says about it.</p>
 </div>
 
 <div class="ad-progress">

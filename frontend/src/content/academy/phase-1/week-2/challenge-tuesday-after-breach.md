@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Tuesday After the Breach</h3>
 <p class="ad-brief__ask">Last night, a training vendor that PurveX staff use announced a breach. This morning the IT desk is full of tickets that come down to one question. Is this encoded, encrypted or hashed, and what does that mean we have to do?</p>
-<p>Everything the tickets mention is in the IT share on your domain controller. Work them in order.</p>
+<p>Everything the tickets mention is waiting in the IT share on your domain controller. Work them in order, because each one leans on the one before it.</p>
 </div>
 
 <div class="ad-progress">

@@ -5,13 +5,13 @@
 
 ### Check what got built
 
-A script finishing isn't proof the lab is right. Confirm:
+A script saying it finished isn't the same as the lab being right, so don't rely on its output alone. Open Active Directory Users and Computers, or run the commands below, and confirm three things:
 
 - All 5 departments exist
 - All 9 users sit in the right department with the right title
 - `alex.rivera` is in both `IT Users` and `IT Admins`
 
-`old.intern`, `kai.mendes` and `noah.kim` are Ticket Queue objects. Leave them until you reach those tickets.
+If any of that is missing, the lab isn't ready yet. You'll also notice `old.intern`, `kai.mendes` and `noah.kim` in the user list. Those come from the Ticket Queue objects, so leave them alone until you reach those tickets.
 
 ```powershell
 Get-ADOrganizationalUnit -Filter * | Sort-Object DistinguishedName
@@ -24,7 +24,7 @@ Get-ADGroupMember -Identity "IT Admins"
 
 ### If the Script Will Not Run
 
-A few errors cover almost every case:
+If the script won't run, the good news is that a handful of errors account for almost every report, and each one is easy to fix once you know which you're looking at.
 
 <div class="ad-trouble">
 <div class="ad-trouble__item">
@@ -47,17 +47,17 @@ A few errors cover almost every case:
 
 <div class="ad-trouble__item">
 <span class="ad-trouble__label">The script says it is not linked to Range</span>
-<p>You ran a copy without your account key. Sign in and click <strong>Download Build-Environment.ps1</strong> on the Build the Environment tab (don't right-click and save), then run the new file. It only adds what's missing.</p>
+<p>This means you ran a copy that doesn't carry your account key, such as a saved or pasted copy. Sign in and click <strong>Download Build-Environment.ps1</strong> once on the Build the Environment tab, rather than right-clicking and saving, then run the new file. It only adds what's missing, so it won't disturb what you've already built.</p>
 </div>
 
 <div class="ad-trouble__item">
 <span class="ad-trouble__label">The password does not meet the requirement</span>
-<p>Use at least 8 characters with three of: lowercase, uppercase, a number, a symbol. Failed accounts are added on the next run.</p>
+<p>The domain rejected the initial password, so the script asks again. Choose at least 8 characters using three of these: lowercase, uppercase, a number and a symbol. Any account that failed is added the next time you run the script.</p>
 </div>
 
 <div class="ad-trouble__item">
 <span class="ad-trouble__label">Running scripts is disabled on this system</span>
-<p>Allow scripts for your own account:</p>
+<p>Windows client editions block unsigned scripts by default, and some servers do too. This command allows them for your own user account only:</p>
 <div class="ad-code">
 <div class="ad-code__bar">
 <span class="ad-code__label">PowerShell</span>
@@ -68,7 +68,7 @@ A few errors cover almost every case:
 </div>
 </div>
 
-If several appear together, fix them in this order:
+Three of these are about how the machine is set up, and they can all show up in the same session. When they do, fix them in this order, and once a machine is sorted you won't see them there again:
 
 1. Elevate.
 2. Unblock the file.
@@ -76,12 +76,12 @@ If several appear together, fix them in this order:
 
 ### Start Over
 
-The cleanup script deletes the `Departments`, `AccessLevels` and `ServiceAccounts` OUs and everything in them, after asking you to confirm. The domain and built-in accounts stay.
+If you ever want a fresh start, run the cleanup script on the domain controller. It asks you to confirm first, then deletes the `Departments`, `AccessLevels` and `ServiceAccounts` OUs and everything inside them, while the domain itself and its built-in accounts stay untouched.
 
 ```powershell
 ./Remove-Environment.ps1
 ```
 
-`-WhatIf` previews it. `-Force` skips the confirmation. Then run `Build-Environment.ps1` to rebuild.
+Add `-WhatIf` to preview what would be deleted, or `-Force` to skip the confirmation. Once it's done, run `Build-Environment.ps1` again to rebuild the lab.
 
 [Download Remove-Environment.ps1](/lab-scripts/Remove-Environment.ps1)

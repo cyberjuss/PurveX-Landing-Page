@@ -1,21 +1,21 @@
 ### Integrity
 
-Integrity means information stays accurate and changes only when someone with permission changes it. When it fails, the data still looks normal and every system says it's fine. You've lost the ability to trust it, which is why we call it a **lie**. People keep working from that data, and their decisions stay wrong until someone notices.
+Integrity means that information stays accurate, and changes only when someone with permission changes it on purpose. When integrity fails, the data still looks completely normal and every system says it's working fine. What you've lost is the ability to trust what you're reading, which is why we call this failure a **lie**. Since nobody is stopped from working, people keep making decisions from that data, and those decisions stay wrong until someone notices the numbers don't match reality.
 
-It matters most where a quiet change is the harm:
+Integrity matters most where a quiet change is the harm in itself, such as:
 
 - payroll amounts
 - medication doses
 - firewall rules
 - ticket status
 
-A changed firewall rule doesn't announce itself. It starts letting through traffic it used to block, and everything carries on.
+The firewall rule is a good example of how quiet this can be. A changed rule doesn't announce itself. It simply starts letting through traffic it used to block, and everything downstream carries on as if that had always been the plan.
 
 **Controls:** hashing, digital signatures and audit logs.
 
-None of these stops a change. They make it **visible afterwards**, by giving you something reliable to compare against. Preventing the change is access control's job.
+Notice that these controls work differently from the ones that protect confidentiality. None of them stops a change from happening. What they do is make the change **visible afterwards**, by giving you something reliable to compare against. Preventing the change in the first place is a separate job, and it belongs to access control.
 
-With confidentiality, you ask whether anyone could have seen the data. With integrity, you ask whether it's still what it was. You can only answer that if a control recorded the original beforehand. Memory and assumption aren't evidence.
+That difference shapes how you investigate, too. With confidentiality, you're asking whether anyone could have seen the data, while with integrity, you're asking whether the data is still what it was. You can only answer that second question if someone recorded the original beforehand, because memory and assumption don't count as evidence.
 
 ```match
 prompt: Each property asks its own question. Match them.

@@ -1,6 +1,6 @@
 ### Threats
 
-A threat is something or someone that could use a weakness:
+If a vulnerability is the weakness, a threat is something or someone that could take advantage of it. That includes:
 
 - attackers
 - malware
@@ -8,16 +8,16 @@ A threat is something or someone that could use a weakness:
 - natural disasters
 - nation-state groups
 
-Intent doesn't matter. A flood that takes out a data center is a threat just as a criminal group is.
+As that list shows, the category is wider than most people expect, because intent doesn't matter. A flood that knocks out a data center is a threat in the same sense as a criminal group, even though only one of them meant to be there.
 
-You control very little of that list. You can't patch out a criminal group or switch off a storm. What you can control is:
+What matters most about that list is how little of it you control. You can't patch a criminal group out of existence or switch off a storm. What you can control is:
 
 - **the weakness they would have to use**
 - **the damage they could do if they succeeded**
 
-The same threat gets very different results against a patched system and a neglected one. The weakness is what changes the outcome, so that's where your effort pays off.
+That's why threats and weaknesses only make sense together. The same threat gets very different results against a well-patched system than against a neglected one, and the thing that changes the outcome is the weakness, so that's where your effort pays off.
 
-Know which threats are realistic for your organization. A regional accounting firm and a defense contractor face different attackers, and planning for a nation-state everywhere wastes effort.
+It also helps to know which threats are realistic for your own organization. A regional accounting firm and a defense contractor face genuinely different attackers, and if you planned every organization's defenses as though a nation-state group were about to show up, you'd spend effort that belongs elsewhere.
 
 ```sort
 prompt: Weakness or actor? Sort each one.

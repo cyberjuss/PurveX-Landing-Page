@@ -5,9 +5,9 @@
 
 ### Overview
 
-A network capture is thousands of rows of numbers, and nothing in a packet announces itself as suspicious. A healthy network produces as many rows as a compromised one.
+The first time you open a network capture, it can feel disorienting. Thousands of rows scroll past, every one full of numbers, and nothing in a packet announces itself as suspicious. A network that's working perfectly produces just as many rows as one that's been compromised.
 
-What makes it readable is that every conversation is built from the same pieces, in the same order:
+What makes a capture readable is knowing that every conversation is built from the same small set of pieces, always in the same order:
 
 - An **address**, so the traffic knows where to go
 - A **reliable connection**, established before any data moves
@@ -15,8 +15,8 @@ What makes it readable is that every conversation is built from the same pieces,
 - A **protocol**, governing what the two sides say
 - Often **encryption**, layered on top of all of it
 
-This week takes them one at a time: addressing, the handshake, ports, protocols, then TLS.
+This week, we'll take those pieces one at a time, starting with addressing and the handshake, then moving on to ports and protocols, and finishing with how TLS wraps a connection once it's up.
 
-Then the challenge has you clean up a network change that went wrong in your lab. Nothing there is labeled "malicious". You'll spot what doesn't fit, which only works once you know what normal looks like.
+After that, the challenge puts you on the job, cleaning up after a network change that went wrong in your own lab. Nothing you find there will be labeled "malicious". Instead, you'll be looking for what doesn't fit, and that only works once you know what normal looks like at each layer.
 
-By the end of the week, ask four questions of any conversation: Where is it going? Which port? Did the handshake complete? Could anyone watching read it? The answers tell you whether it deserves a closer look.
+By the end of the week, every conversation in a capture should answer four questions for you. Where is it going? Which port did it use? Did the handshake complete? And could anybody watching the wire read what was said? Those answers tell you whether a conversation deserves more of your attention, and deciding that quickly is most of the job.

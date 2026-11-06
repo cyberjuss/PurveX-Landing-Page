@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Client Data Review</h3>
 <p class="ad-brief__ask">Before the auditor arrives, can you find what client data sits on the file shares, check that it's sound, and make sure only the right people can read it?</p>
-<p>Compliance wants the department shares on the domain controller reviewed. Every record is made up: the SSNs are in a never-issued range, the phone numbers are reserved for fiction, and the emails use example.com.</p>
+<p>Compliance has asked the desk to review the department shares on the domain controller. Before you start, one reassurance: every record here is made up. The SSNs fall in a range that's never issued, the phone numbers are reserved for fiction, and the email addresses all use example.com.</p>
 </div>
 
 <div class="ad-progress">

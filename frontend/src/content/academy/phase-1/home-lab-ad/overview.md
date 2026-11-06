@@ -5,15 +5,15 @@
 
 ### Before You Touch a Ticket, Learn the Environment
 
-You can't call something suspicious until you know what **normal** looks like. Here, normal is PurveX Financial, a mid-sized wealth management firm holding client money and records regulated under GLBA and SOX, two US financial regulations.
+You can't call something suspicious until you know what **normal** looks like, so that's where the Home Lab starts. Here, normal is PurveX Financial, a mid-sized wealth management firm whose systems hold client money and records regulated under GLBA and SOX, two US financial regulations. Keep that in mind, because it's what's at stake on every ticket you'll work.
 
-It's small enough to hold in your head: five departments, nine people and a set of groups.
+Fortunately, the firm is small enough to hold in your head, with five departments, nine people and a defined set of groups. A real desk works the same way: you learn who works where, and over time you get a feel for what normal looks like.
 
 ### A Directory Built Like a Real Firm
 
-Real environments are messy, so this lab is too: real departments, real groups, and tickets that may not tell the whole story.
+A textbook would give you `User1` inside `OU=Users` and explain everything for you. Real environments are messier than that, so this lab is too, with real departments and access groups, and tickets that may not tell you the whole story.
 
-A job title doesn't set access. Group membership follows what the job needs, approved by a ticket. And callers and tickets can be wrong, so verify before you act.
+One consequence of that messiness is that a job title doesn't set access. Group membership follows what the job needs, and a ticket has to approve it. Keep in mind, too, that callers and tickets can be wrong, which is why you verify what they tell you before you act on it.
 
 ### The Role You Play
 
@@ -31,6 +31,6 @@ A job title doesn't set access. Group membership follows what the job needs, app
 
 ### Start With the Baseline
 
-The next four tabs lay out the firm: org chart, access levels, data and user directory. Every check you make later is measured against them.
+The next four tabs lay out the firm for you: the org chart, the access levels, the data and the full user directory. It's worth learning them before you build the lab, because every check you make later is measured against them.
 
 ***Domain: purvexfinancial.local***

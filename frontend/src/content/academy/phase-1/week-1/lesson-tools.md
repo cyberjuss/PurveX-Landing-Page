@@ -1,16 +1,22 @@
 ### Tools You'll Use
 
-Run these in an admin PowerShell window on your domain controller.
+This week's challenge has you working on your own domain controller in an admin PowerShell window, so let's meet the commands before you need them.
 
-| Command | Does |
+| Command | What it does |
 | :---- | :---- |
-| `Get-NetFirewallRule` | Lists firewall rules |
-| `Get-NetFirewallPortFilter` | Shows a rule's port |
-| `Disable-NetFirewallRule` | Turns a rule off, without deleting it |
-| `Move-Item` / `Copy-Item` | Moves or copies a file |
-| `Get-FileHash` | Fingerprints a file. Same hash, same contents. |
+| `Get-NetFirewallRule` | Lists firewall rules, with their name and whether they're on |
+| `Get-NetFirewallPortFilter` | Shows which port a rule covers when you pipe a rule into it |
+| `Disable-NetFirewallRule` | Turns a rule off without deleting it, so you can turn it back on |
+| `Move-Item` / `Copy-Item` | Moves or copies a file to where it belongs |
+| `Get-FileHash` | Gives you a file's fingerprint, so you can tell whether two copies match |
 
-**Try it:** `Get-NetFirewallRule -DisplayName "PurveX*" | Select-Object DisplayName, Action, Enabled`
+`Get-FileHash` is a preview of next week, where you'll learn what a hash really is. For now, it's enough to know that two files with the same hash have the same contents.
+
+**Try it:** run this on your domain controller and read through the rules it returns.
+
+```
+Get-NetFirewallRule -DisplayName "PurveX*" | Select-Object DisplayName, Action, Enabled
+```
 
 ```match
 prompt: Match each command to its job.

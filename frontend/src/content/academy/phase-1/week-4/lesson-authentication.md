@@ -1,6 +1,6 @@
 ### Authentication
 
-Authentication proves who you are, nothing more. Every permission granted afterwards assumes it got this right, so the proof has to be hard to fake.
+Authentication is the work of proving an identity. It answers one question, who you are, and says nothing about what you're allowed to do. Everything in this section is about making that proof hard to fake, because every permission the system grants afterwards assumes this first step was right.
 
 ### Factors
 <!-- art: mfa -->
@@ -11,11 +11,9 @@ Authentication proves who you are, nothing more. Every permission granted afterw
 | Something you have | Phone with an authenticator app, security key, smart card |
 | Something you are | Fingerprint, face |
 
-**Multi-factor authentication** (MFA) needs proof from two different rows. A password plus a security question isn't MFA: both are things you know and leak together.
+**Multi-factor authentication**, or MFA, requires proof from two different rows of that table. That's why a password plus a security question isn't multi-factor at all, since both are things you know, and both tend to get lost in the same breach.
 
-Passwords leak constantly, and a leaked password protects nothing. Attackers entered Colonial Pipeline in 2021 through a VPN account with a leaked password and no second factor.
-
-MFA methods vary a lot in strength. That's ranked further down.
+The reason MFA matters is blunt: passwords leak constantly and at scale, and a leaked password offers no protection to the account it guards. That's how attackers walked into Colonial Pipeline in 2021, through a VPN account with a leaked password and no second factor. Keep in mind, too, that MFA isn't simply on or off, because the methods vary a lot in strength. We'll rank them later in this lesson.
 
 ```sort
 prompt: Which kind of factor is each one?
@@ -38,7 +36,7 @@ Search-ADAccount -LockedOut
 Unlock-ADAccount jamie.torres
 ```
 
-Don't re-enable a disabled account just because someone asks. Find out who disabled it and why.
+One rule to take from that table: don't re-enable a disabled account just because someone asks. Find out who disabled it, and why, first.
 
 ```sort
 prompt: Match each cause to the account state it produces.
@@ -49,18 +47,18 @@ Password expired: Policy requires a new password
 
 ### Resets
 
-A reset isn't a chore. For that call, you are the authentication system, and you can bypass every control for one account. That's why attackers target it. In 2023, attackers reportedly got into MGM Resorts by talking the help desk into resetting an employee's MFA.
+It's easy to think of a password or MFA reset as an administrative chore, but it's really an authentication decision. For the length of that call, you are the authentication system, able to set aside every control the organization has built, for one account. That's precisely why attackers target this call. In 2023, they reportedly got their first foothold at MGM Resorts without any technical exploit, simply by talking the help desk into resetting an employee's MFA.
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-If a user reports MFA prompts they didn't trigger, someone has their password and the second factor is all that's holding. Tell them to deny every prompt, reset the password and end their active sessions, then escalate. A reset alone leaves an attacker's open session running.
+There's one situation you should learn to recognize instantly. When a user reports MFA prompts they didn't trigger, someone already has their password and is waiting at the door for approval, so the second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and end their active sessions before you escalate. That last step matters, because a reset on its own leaves any session the attacker already opened untouched.
 
 ### Escalate
 
-Escalate straight away for:
+Some signs mean you should pass the case up straight away rather than handle it yourself:
 
 - sign-ins to an account that should be dormant
 - MFA prompts the user did not start
@@ -69,7 +67,7 @@ Escalate straight away for:
 
 ### How strong is the MFA?
 
-Weakest to strongest:
+Earlier, you saw that MFA methods differ in strength. Here they are in order, from weakest to strongest:
 
 1. **Text or voice codes.** Open to phishing and to SIM swapping, where an attacker moves the number to a new SIM.
 2. **Authenticator app codes.** A fake sign-in page can still capture the code and use it within seconds.
@@ -79,13 +77,13 @@ Weakest to strongest:
 
 ### What the system issues after sign-in
 
-After sign-in, the system issues a **session token**, usually a cookie, that stands in for the password on every request. A stolen token bypasses both the password and MFA.
+Once you've signed in, the system doesn't ask for your password on every click. It issues a **session token**, usually a cookie, which the browser sends with every request so it stands in for the password from then on. That's why a stolen token is so dangerous: it bypasses both the password and MFA.
 
-In a Windows domain, **Kerberos** does the same: the domain controller checks the password once and issues a ticket.
+In a Windows domain, **Kerberos** plays the same role. The domain controller checks the password once, then issues a ticket that the computer shows to other services instead.
 
 ### Reading sign-in events
 
-Event **4624** is a successful sign-in. Its **logon type** says how:
+All of these sign-ins leave a record you can read. Event **4624** is a successful sign-in, and its **logon type** tells you how the person signed in:
 
 | Logon type | Meaning |
 |---|---|
@@ -97,4 +95,4 @@ Its partner, event **4625**, is a failed sign-in. Two fields tell you why it fai
 
 ### Check yourself
 
-A caller says they're Jordan Ellis from Finance and needs an MFA reset before a board meeting in ten minutes, and their caller ID shows Jordan's name. What do you do, and which detail in that call should make you slow down instead of speeding up?
+Here's one to think through. A caller says they're Jordan Ellis from Finance and needs an MFA reset before a board meeting in ten minutes, and their caller ID shows Jordan's name. What do you do, and which detail in that call should make you slow down instead of speeding up?
