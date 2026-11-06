@@ -27,7 +27,7 @@
     foreach ($guess in "Reception2025!", "Frontdesk1", "Welcome1", "Reception2026", "PurveX2026!") {
       $c = New-Object System.DirectoryServices.Protocols.LdapConnection("$($env:COMPUTERNAME).$($d.DNSRoot):389")
       $c.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic
-      try { $c.Bind((New-Object Net.NetworkCredential("frontdesk.shared@$($d.DNSRoot)", $guess))) } catch {}
+      try { $c.Bind((New-Object Net.NetworkCredential("$($d.NetBIOSName)\frontdesk.shared", $guess))) } catch {}
       $c.Dispose()
     }
     Set-Content -Path $mark -Value (Get-Date -Format o)
@@ -60,7 +60,7 @@
 </ol>
 <p>In PowerShell:</p>
 <ul>
-<li><code>(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625 } | Where-Object { $_.Properties[5].Value -eq "frontdesk.shared" }).Count</code></li>
+<li><code>(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625 } | Where-Object { $_.Properties[5].Value -like "frontdesk.shared*" }).Count</code></li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>

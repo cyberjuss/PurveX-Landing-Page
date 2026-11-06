@@ -12,6 +12,8 @@
   New-Item -ItemType Directory -Force -Path $it | Out-Null
   $file = Join-Path $it "settlement-upload.ps1"
   if ((Test-Path $file) -and (Select-String -Path $file -Pattern "553256" -Quiet)) { "The morning is already set up."; return }
+  # Taylor and Jordan have signed in normally since the lab was built, so neither is due a password change yet.
+  foreach ($u in "taylor.osei", "jordan.ellis") { Set-ADUser $u -ChangePasswordAtLogon $false }
   Set-Content -Path $file -Encoding ascii -Value @(
     "# settlement-upload.ps1 - sends the nightly settlement file to the clearing vendor",
     "# Owner: Operations. The password below is encrypted (AES-256), so this is safe to share.",
@@ -104,7 +106,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>All three files looked identical by name and size. Only the hash showed that mirror B differs, and opening it shows why: it says it's an unsigned build. On a day when attackers know staff are rushing to update, a tampered installer is exactly what they'd plant.</p>
+<p>All three files looked the same at a glance. Only the hash showed that mirror B differs, and opening it shows why: it says it's an unsigned build. On a day when attackers know staff are rushing to update, a tampered installer is exactly what they'd plant.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -167,7 +169,7 @@
 </ol>
 <p>In PowerShell:</p>
 <ul>
-<li><code>$t = Import-Csv C:\PurveX\Shares\IT\exported-hashes.txt; $sha = [Security.Cryptography.SHA256]::Create(); Get-Content C:\PurveX\Shares\IT\common-passwords.txt | ForEach-Object { $h = -join ($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($_)) | ForEach-Object { $_.ToString("x2") }); $w = $_; $t | Where-Object sha256 -eq $h | ForEach-Object { "$($_.account) uses $w" } }</code></li>
+<li><code>$t = Import-Csv C:\PurveX\Shares\IT\exported-hashes.txt; $sha = [Security.Cryptography.SHA256]::Create(); Get-Content C:\PurveX\Shares\IT\common-passwords.txt | ForEach-Object { $w = $_; $h = -join ($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($w)) | ForEach-Object { $_.ToString("x2") }); $t | Where-Object sha256 -eq $h | ForEach-Object { "$($_.account) uses $w" } }</code></li>
 <li><code>"taylor.osei", "jordan.ellis" | ForEach-Object { Set-ADUser $_ -ChangePasswordAtLogon $true }</code></li>
 </ul>
 </div>

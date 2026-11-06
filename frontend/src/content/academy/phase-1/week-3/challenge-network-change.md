@@ -48,7 +48,7 @@
       'Add-Type -AssemblyName System.Security, System.DirectoryServices.Protocols',
       '$pw = [Text.Encoding]::UTF8.GetString([Security.Cryptography.ProtectedData]::Unprotect([IO.File]::ReadAllBytes("C:\PurveX\Jobs\report-sync.bin"), $null, "LocalMachine"))',
       '$dom = (Get-CimInstance Win32_ComputerSystem).Domain',
-      '$c = New-Object System.DirectoryServices.Protocols.LdapConnection("$($env:COMPUTERNAME).$($dom):389")',
+      '$c = New-Object System.DirectoryServices.Protocols.LdapConnection("127.0.0.1:389")',
       '$c.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic',
       '$c.SessionOptions.ProtocolVersion = 3',
       'try { $c.Bind((New-Object Net.NetworkCredential("svc-reportsync@$dom", $pw))) } catch {}',
@@ -101,7 +101,7 @@
 <ul>
 <li><code>Resolve-DnsName portal</code></li>
 <li><code>$zone = (Get-ADDomain).DNSRoot; Remove-DnsServerResourceRecord -ZoneName $zone -RRType A -Name portal -Force</code></li>
-<li><code>Add-DnsServerResourceRecordA -ZoneName $zone -Name portal -IPv4Address (Resolve-DnsName $env:COMPUTERNAME -Type A).IPAddress</code></li>
+<li><code>Add-DnsServerResourceRecordA -ZoneName $zone -Name portal -IPv4Address (Get-DnsServerResourceRecord -ZoneName $zone -Name $env:COMPUTERNAME -RRType A)[0].RecordData.IPv4Address</code></li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -225,7 +225,7 @@
 </ol>
 <p>In PowerShell:</p>
 <ul>
-<li><code>Get-NetFirewallRule -Direction Outbound -DisplayName "PurveX Relay*" | Get-NetFirewallPortFilter</code></li>
+<li><code>Get-NetFirewallRule -DisplayName "PurveX Relay*" | Get-NetFirewallPortFilter</code></li>
 <li><code>Disable-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail"</code></li>
 </ul>
 </div>
@@ -240,7 +240,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>SMTP carries mail outward, and a domain controller should never need to send any. An open path like this is exactly what an attacker on a compromised server uses to send phishing or to email data out, and it looks like ordinary mail traffic unless you know the host shouldn't be sending it.</p>
+<p>SMTP carries mail outward, and a domain controller has no reason to send any. An open path like this is exactly what an attacker on a compromised server uses to send phishing or to email data out, and it looks like ordinary mail traffic unless you know the host shouldn't be sending it.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -253,7 +253,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="w3-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · Protocols and TLS · Critical · Wireshark</span>
 <h4>Read the Password Off the Wire</h4>
-<p><strong>Devon Brooks · Finance · 11:30 AM</strong><br>Our old report sync signs in to the directory every minute. The vendor promised the password is "stored encrypted", so we've never worried about it. Is that the whole story?</p>
+<p><strong>Jordan Ellis · Finance · 11:30 AM</strong><br>Our old report sync signs in to the directory every minute. The vendor promised the password is "stored encrypted", so we've never worried about it. Is that the whole story?</p>
 <p><strong>Task:</strong> Capture the domain controller's own traffic with Wireshark for a couple of minutes, find the report sync signing in, and read its password. Then disable <code>svc-reportsync</code> and report the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Read the Password Off the Wire" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">

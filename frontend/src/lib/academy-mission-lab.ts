@@ -163,6 +163,9 @@ const MISSION_LAB = {
   ),
   "w2-04": G(
     [
+      // The build creates every account due a change, and the setup block clears it
+      // for these two. The script it writes proves the setup ran.
+      { c: { t: "file", path: "Shares\\IT\\settlement-upload.ps1", want: true }, label: "This morning's tickets are set up in this lab" },
       { c: { t: "flag", sam: "taylor.osei", flag: "passwordExpired", want: true }, label: "taylor.osei must change the password at next logon" },
       { c: { t: "flag", sam: "jordan.ellis", flag: "passwordExpired", want: true }, label: "jordan.ellis must change the password at next logon" },
     ],

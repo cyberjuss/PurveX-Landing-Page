@@ -16,10 +16,10 @@
   Set-Content -Path "$root\Shares\Operations\WM_Client_Export.csv" -Value $clients -Encoding ascii
   $wires = @(
     "WireID,Beneficiary,Account,Amount,ApprovedBy",
-    "WR-2201,LedgerLine,TEST-BANK-0101,18450.00,devon.brooks",
-    "WR-2202,Northwind Office Supply,TEST-BANK-0102,2310.75,devon.brooks",
-    "WR-2203,Contoso Data Feeds,TEST-BANK-0103,9800.00,devon.brooks",
-    "WR-2204,Fabrikam Payroll,TEST-BANK-0104,41200.00,devon.brooks"
+    "WR-2201,LedgerLine,TEST-BANK-0101,18450.00,jordan.ellis",
+    "WR-2202,Northwind Office Supply,TEST-BANK-0102,2310.75,jordan.ellis",
+    "WR-2203,Contoso Data Feeds,TEST-BANK-0103,9800.00,jordan.ellis",
+    "WR-2204,Fabrikam Payroll,TEST-BANK-0104,41200.00,jordan.ellis"
   )
   Set-Content -Path "$root\Archive\Wire_Approvals_Nov.csv" -Value $wires -Encoding ascii
   (Get-FileHash "$root\Archive\Wire_Approvals_Nov.csv" -Algorithm SHA256).Hash | Set-Content -Path "$root\Shares\Finance\Wire_Approvals_Nov.sha256" -Encoding ascii
@@ -83,8 +83,8 @@
 <div class="ad-mission" data-id="w1-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · Integrity · Critical</span>
 <h4>Catch the Altered Wire</h4>
-<p><strong>Devon Brooks · Finance · 8:22 AM</strong><br>I approved November's wires on Friday and saved the file's SHA-256 hash next to it, like always. This morning the file looks fine to me, but something about it feels off. The wires go out at noon. Can you check it against what I signed off?</p>
-<p><strong>Task:</strong> Prove whether <code>Wire_Approvals_Nov.csv</code> in the Finance share still matches the hash Devon saved. If it doesn't, compare it with the approved copy in <code>C:\PurveX\Archive</code>, restore the approved version, and report the Wire ID that was altered.</p>
+<p><strong>Jordan Ellis · Finance · 8:22 AM</strong><br>I approved November's wires on Friday and saved the file's SHA-256 hash next to it, like always. This morning the file looks fine to me, but something about it feels off. The wires go out at noon. Can you check it against what I signed off?</p>
+<p><strong>Task:</strong> Prove whether <code>Wire_Approvals_Nov.csv</code> in the Finance share still matches the hash Jordan saved. If it doesn't, compare it with the approved copy in <code>C:\PurveX\Archive</code>, restore the approved version, and report the Wire ID that was altered.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Wire" placeholder="a Wire ID" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{WR-2203}" data-accept="2203">Submit</button>
@@ -115,7 +115,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>WR-2203's account number was swapped, so at noon $9,800 would have gone to an account nobody approved. The file still opened, still looked tidy and still said Devon approved it. That's an integrity failure, and only the hash Devon saved on Friday could prove it.</p>
+<p>WR-2203's account number was swapped, so at noon $9,800 would have gone to an account nobody approved. The file still opened, still looked tidy and still said Jordan approved it. That's an integrity failure, and only the hash Jordan saved on Friday could prove it.</p>
 </div>
 <div>
 <span>What to do</span>
