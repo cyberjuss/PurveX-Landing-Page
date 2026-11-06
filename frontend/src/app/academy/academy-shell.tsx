@@ -806,7 +806,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         // reading it needs to ask about their own lab, and the way out was to
         // close this, find the coach and describe where they were from memory.
         '<div class="ad-hint-card__foot">' +
-        '<button type="button" class="ad-hint-card__coach">Ask Coach</button>' +
+        '<button type="button" class="ad-hint-card__coach">Still stuck? Ask Coach</button>' +
         "</div>" +
         "</aside>";
       document.body.appendChild(root);
@@ -852,8 +852,31 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       root.dataset.mission = wrap.querySelector("h4")?.textContent?.trim() || "";
       const task = [...wrap.querySelectorAll(":scope > p")].find((p) => /^Task:/.test(p.textContent?.trim() || ""));
       root.dataset.task = task?.textContent?.replace(/^Task:\s*/, "").replace(/\s+/g, " ").trim() || "";
-      // The student's last wrong answer, so Coach can aim its nudge at the mistake.
-      root.dataset.guess = wrap.getAttribute("data-last-guess") || "";
+      // What the student last got wrong, so Coach can aim its nudge at the
+      // mistake. A letter on a multiple-choice ticket is sent with the
+      // option it stands for, since "B" alone means nothing to Coach. A
+      // solved ticket has no mistake left to talk about.
+      const choice = /type its letter/i.test(root.dataset.task);
+      const attempts = parseInt(wrap.getAttribute("data-attempts") || "0", 10);
+      const typed = wrap.querySelector<HTMLInputElement>(".ad-guess__input")?.value.trim() || "";
+      const last = wrap.classList.contains("ad-mission--solved") ? "" : wrap.getAttribute("data-last-guess") || (attempts > 0 ? typed : "");
+      let said = last;
+      if (choice && /^[a-z]$/i.test(last)) {
+        const letter = [...wrap.querySelectorAll(":scope > p strong")].find((b) => b.textContent?.trim() === last.toUpperCase());
+        let text = "";
+        for (let n = letter?.nextSibling; n && n.nodeName !== "BR"; n = n.nextSibling) text += n.textContent ?? "";
+        said = text.trim() ? `${last.toUpperCase()}, "${text.replace(/\s+/g, " ").trim()}"` : last.toUpperCase();
+      }
+      root.dataset.guess = said;
+      root.dataset.choice = choice ? "1" : "";
+      // "Type its letter" tells Coach nothing. For a choice, send the
+      // situation and its options instead, which is what it needs to reason.
+      if (choice) {
+        const scene = wrap.querySelector(":scope > h4 ~ p");
+        // Line breaks separate the sender and each option, so keep them as gaps.
+        const text = scene ? [...scene.childNodes].map((n) => (n.nodeName === "BR" ? " / " : n.textContent ?? "")).join("") : "";
+        root.dataset.task = text.replace(/\s+/g, " ").trim().slice(0, 900) || root.dataset.task;
+      }
       openHintId = id;
       labelHintButton(wrap, true);
     };
@@ -1213,13 +1236,20 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         // cannot call the coach directly. AskCoachBridge is listening.
         const card = document.querySelector<HTMLElement>(".ad-hint-card");
         const title = card?.dataset.mission || "this ticket";
-        const task = card?.dataset.task ? ` The task: "${card.dataset.task}"` : "";
-        const guess = card?.dataset.guess ? ` I answered "${card.dataset.guess}" and it was wrong, so help me see where my thinking went off.` : "";
+        const task = card?.dataset.task ? ` ${card.dataset.choice === "1" ? "The situation and options" : "The task"}: "${card.dataset.task}"` : "";
+        const said = card?.dataset.guess || "";
+        const choice = card?.dataset.choice === "1";
+        const tried = said ? ` I answered ${choice ? said : `"${said}"`} and it was wrong.` : "";
+        // A judgement question has no tool to teach, so it gets reasoning
+        // instead. Either way, the answer itself stays with the student.
+        const ask = choice
+          ? `${tried ? " Help me see what's wrong with that choice." : ""} Walk me through how to reason about this kind of decision on the job, without telling me which option is right.`
+          : `${tried ? " Help me see where I went wrong." : ""} Explain which tool to use and the general steps for this kind of job, and why each one matters, without telling me the answer.`;
         closeHintCard();
         window.dispatchEvent(
           new CustomEvent("academy:ask-coach", {
             detail: {
-              question: `Teach me how to do "${title}".${task}${guess} Explain which tool to use and the general steps for this kind of job, and why each one matters, without telling me the answer.`,
+              question: `I'm working on the challenge "${title}".${task}${tried}${ask}`,
             },
           })
         );
