@@ -7,18 +7,12 @@ export type MissionCatalogEntry = {
     | "day-one"
     | "ticket-queue"
     | "wire"
-    | "crypto"
     | "client-data"
     | "access-alert"
     | "credential-campaign"
     | "phishing-chain"
     | "open-door"
     | "keys-to-the-domain"
-    | "encode-encrypt-hash"
-    | "encode-encrypt-apply"
-    | "encode-encrypt-protect"
-    | "store-a-password"
-    | "store-a-password-fix"
     | "capture-dc-traffic"
     | "capture-ports"
     | "capture-elsewhere"
@@ -44,7 +38,8 @@ export type MissionCatalogEntry = {
     | "lockout-threshold"
     | "build-out-directory"
     | "new-hire-week"
-    | "weekend-incident-report";
+    | "weekend-incident-report"
+    | "tuesday-after-breach";
   title: string;
   prompt: string;
   skill: Skill;
@@ -349,12 +344,6 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "cap-04": { id: "cap-04", challenge: "wire", title: "The File on the Wire", prompt: "Read the copied settlement file and name its first reference.", skill: "logs" },
   "cap-05": { id: "cap-05", challenge: "wire", title: "Narrowing the Capture", prompt: "Give the Wireshark display filter that isolates the directory traffic.", skill: "logs" },
   "cap-06": { id: "cap-06", challenge: "wire", title: "Containing a Burned Credential", prompt: "Disable the service account and name the protocol the job should use.", skill: "security" },
-  "cry-01": { id: "cry-01", challenge: "crypto", title: "Three Mirrors and One Checksum", prompt: "Hash three mirrors and name the one that fails the published checksum.", skill: "security" },
-  "cry-02": { id: "cry-02", challenge: "crypto", title: "What Changed Inside It", prompt: "Compare the failing mirror and name the field whose line differs.", skill: "security" },
-  "cry-03": { id: "cry-03", challenge: "crypto", title: "Naming the Algorithm", prompt: "Name the hashing algorithm from the length of the exported hashes.", skill: "security" },
-  "cry-04": { id: "cry-04", challenge: "crypto", title: "Cracking a Weak Hash", prompt: "Recover a password from its hash using the common-password list.", skill: "security" },
-  "cry-05": { id: "cry-05", challenge: "crypto", title: "The Hash That Repeats", prompt: "Name the other account that reused the same password.", skill: "security" },
-  "cry-06": { id: "cry-06", challenge: "crypto", title: "Containing the Unsigned Mirror", prompt: "Quarantine the unsigned mirror and name what a trustworthy build carries.", skill: "security" },
   "cd-01": { id: "cd-01", challenge: "client-data", title: "Where the Numbers Live", prompt: "Find the file on the shares that holds client Social Security numbers.", skill: "security" },
   "cd-02": { id: "cd-02", challenge: "client-data", title: "Counting the Book", prompt: "Count the clients in the client register.", skill: "security" },
   "cd-03": { id: "cd-03", challenge: "client-data", title: "Waiting on Paperwork", prompt: "Count the KYC reviews still awaiting documents.", skill: "security" },
@@ -362,20 +351,6 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "cd-05": { id: "cd-05", challenge: "client-data", title: "The Batch That Did Not Balance", prompt: "Find the settlement batch that did not reconcile.", skill: "security" },
   "cd-06": { id: "cd-06", challenge: "client-data", title: "Fingerprint the Register", prompt: "Take the SHA-256 hash of the client register.", skill: "security" },
   "cd-07": { id: "cd-07", challenge: "client-data", title: "Who Can Read the Register", prompt: "Build a least-privilege reader group and name the group the share lets read it today.", skill: "accounts" },
-  "w2e-c1": { id: "w2e-c1", challenge: "encode-encrypt-hash", title: "No Reverse Operation (INC-1092)", prompt: "Name which of encoding, encryption or hashing has no reverse operation.", skill: "security" },
-  "w2e-c2": { id: "w2e-c2", challenge: "encode-encrypt-hash", title: "What AES Needed That Base64 Did Not (INC-1093)", prompt: "Name what AES decryption required that Base64 decoding did not.", skill: "security" },
-  "w2e-c3": { id: "w2e-c3", challenge: "encode-encrypt-apply", title: "Match the Job to the Tool (INC-1094)", prompt: "Name which transformation fits storing a password that is only ever checked, never read back.", skill: "security" },
-  "w2e-c4": { id: "w2e-c4", challenge: "encode-encrypt-apply", title: "Read a Value Cold (INC-1095)", prompt: "Identify whether an intercepted Base64-looking value is encoded, encrypted or hashed.", skill: "security" },
-  "w2e-c5": { id: "w2e-c5", challenge: "encode-encrypt-apply", title: "Prove a Teammate Wrong (INC-1096)", prompt: "Decode a Base64 value a teammate wrongly called encrypted.", skill: "security" },
-  "w2e-c6": { id: "w2e-c6", challenge: "encode-encrypt-protect", title: "Protect a Real File (INC-1153)", prompt: "Encrypt a real file with openssl, delete the plaintext, and decrypt it back.", skill: "security" },
-  "w2e-c7": { id: "w2e-c7", challenge: "encode-encrypt-protect", title: "The One Fixed-Length Output (INC-1156)", prompt: "Name which transformation always produces a fixed-length output, and what that tells you.", skill: "security" },
-  "w2m-c1": { id: "w2m-c1", challenge: "store-a-password", title: "Did Unsalted Hashes Match? (INC-1097)", prompt: "Say whether two unsalted SHA-256 hashes of the same password matched.", skill: "security" },
-  "w2m-c2": { id: "w2m-c2", challenge: "store-a-password", title: "Count the Reused Password (INC-1098)", prompt: "Count how many of three stored values were identical.", skill: "security" },
-  "w2m-c3": { id: "w2m-c3", challenge: "store-a-password", title: "Did Salting Change the Output? (INC-1099)", prompt: "Say whether a salted hash of the same password matched on two runs.", skill: "security" },
-  "w2m-c4": { id: "w2m-c4", challenge: "store-a-password", title: "What Salting Actually Stops (INC-1100)", prompt: "Name what salting mainly stops an attacker from doing.", skill: "security" },
-  "w2m-c5": { id: "w2m-c5", challenge: "store-a-password-fix", title: "Correct a Manager's Assumption (INC-1101)", prompt: "Say what an attacker learns from an unsalted, leaked password file.", skill: "security" },
-  "w2m-c6": { id: "w2m-c6", challenge: "store-a-password-fix", title: "Create One the Right Way (INC-1152)", prompt: "Set a real account's password with chpasswd and confirm it in /etc/shadow.", skill: "security" },
-  "w2m-c7": { id: "w2m-c7", challenge: "store-a-password-fix", title: "What Salting Would and Would Not Fix (INC-1157)", prompt: "Say what salting would and would not have changed about a breach with weak passwords.", skill: "security" },
   "w3e-c1": { id: "w3e-c1", challenge: "capture-dc-traffic", title: "Could the Capture See a Third Machine? (INC-1102)", prompt: "Say whether a capture on one machine could show a third machine's traffic.", skill: "logs" },
   "w3e-c2": { id: "w3e-c2", challenge: "capture-dc-traffic", title: "Read the LDAP Handshake (INC-1103)", prompt: "Name the packet the domain controller sent to open the TCP handshake.", skill: "logs" },
   "w3e-c3": { id: "w3e-c3", challenge: "capture-dc-traffic", title: "Count the DNS Exchange (INC-1104)", prompt: "Count the packets a DNS request and reply needed.", skill: "logs" },
@@ -848,6 +823,41 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Rank the three findings by risk and choose which one the firm must deal with first.",
     skill: "risk",
   },
+  "w2-01": {
+    id: "w2-01",
+    challenge: "tuesday-after-breach",
+    title: "Decode the Settlement Script",
+    prompt: "Decode the password in the Operations settlement script that its comment calls encrypted.",
+    skill: "security",
+  },
+  "w2-02": {
+    id: "w2-02",
+    challenge: "tuesday-after-breach",
+    title: "Catch the Altered Download",
+    prompt: "Find which VPN client mirror fails the published SHA-256 and move it to quarantine.",
+    skill: "security",
+  },
+  "w2-03": {
+    id: "w2-03",
+    challenge: "tuesday-after-breach",
+    title: "The Recovery Key Call",
+    prompt: "Decide what to do before reading a BitLocker recovery key to a caller.",
+    skill: "security",
+  },
+  "w2-04": {
+    id: "w2-04",
+    challenge: "tuesday-after-breach",
+    title: "Crack the Shared Hash",
+    prompt: "Crack the password two staff share in the leaked table and force both to change it at next logon.",
+    skill: "accounts",
+  },
+  "w2-05": {
+    id: "w2-05",
+    challenge: "tuesday-after-breach",
+    title: "Fix the Script for Good",
+    prompt: "Choose the real fix for a password stored in a script.",
+    skill: "security",
+  },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -857,18 +867,12 @@ export const CHALLENGE_PATHS: Record<
   "day-one": { href: "/range/phase-1/home-lab-challenges", tab: "operation-day-one" },
   "ticket-queue": { href: "/range/phase-1/home-lab-challenges", tab: "ticket-queue" },
   "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
-  "crypto": { href: "/range/phase-1/week-2", tab: "the-mirror-that-does-not-match" },
   "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
   "access-alert": { href: "/range/phase-1/week-4", tab: "who-can-open-the-compliance-case-files" },
   "credential-campaign": { href: "/range/phase-2/capstone", tab: "the-credential-campaign" },
   "phishing-chain": { href: "/range/phase-2/capstone", tab: "the-phishing-chain" },
   "open-door": { href: "/range/phase-2/capstone", tab: "the-open-door" },
   "keys-to-the-domain": { href: "/range/phase-2/capstone", tab: "the-keys-to-the-domain" },
-  "encode-encrypt-hash": { href: "/range/phase-1/week-2", tab: "tell-encoding-hashing-and-encryption-apart" },
-  "encode-encrypt-apply": { href: "/range/phase-1/week-2", tab: "put-the-right-one-to-work" },
-  "encode-encrypt-protect": { href: "/range/phase-1/week-2", tab: "protect-a-real-file-then-take-it-further" },
-  "store-a-password": { href: "/range/phase-1/week-2", tab: "store-it-weak-then-see-why-that-leaks" },
-  "store-a-password-fix": { href: "/range/phase-1/week-2", tab: "correct-the-record-then-prove-the-system-already-fixed-it" },
   "capture-dc-traffic": { href: "/range/phase-1/week-3", tab: "capture-a-real-conversation-and-read-it" },
   "capture-ports": { href: "/range/phase-1/week-3", tab: "read-what-the-ports-tell-you-then-isolate-one-conversation" },
   "capture-elsewhere": { href: "/range/phase-1/week-3", tab: "know-where-you-d-have-to-capture-instead" },
@@ -895,6 +899,7 @@ export const CHALLENGE_PATHS: Record<
   "build-out-directory": { href: "/range/phase-1/home-lab-directory", tab: "build-out-the-directory" },
   "new-hire-week": { href: "/range/phase-1/home-lab-desk", tab: "a-new-hire-s-first-week" },
   "weekend-incident-report": { href: "/range/phase-1/week-1", tab: "the-weekend-incident-report" },
+  "tuesday-after-breach": { href: "/range/phase-1/week-2", tab: "tuesday-after-the-breach" },
 };
 
 /** The challenge a page's "Challenge: ..." tab runs, from the page and the tab's slug. */
@@ -918,7 +923,6 @@ export function challengeFromMission(id: string): MissionCatalogEntry["challenge
   if (id.startsWith("d1-")) return "day-one";
   if (/^tq-(0[1-5]|1[1-9]|20)$/.test(id)) return "ticket-queue";
   if (id.startsWith("cap-")) return "wire";
-  if (id.startsWith("cry-")) return "crypto";
   if (id.startsWith("cd-")) return "client-data";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
@@ -946,18 +950,12 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "day-one": "Operation Day One",
   "ticket-queue": "Ticket Queue",
   "wire": "The Nightly Settlement Push",
-  "crypto": "The Mirror That Does Not Match",
   "client-data": "The Client Data Review",
   "access-alert": "Who Can Open the Compliance Case Files?",
   "credential-campaign": "The Credential Campaign",
   "phishing-chain": "The Phishing Chain",
   "open-door": "The Open Door",
   "keys-to-the-domain": "The Keys to the Domain",
-  "encode-encrypt-hash": "Tell Encoding, Hashing, and Encryption Apart",
-  "encode-encrypt-apply": "Put the Right One to Work",
-  "encode-encrypt-protect": "Protect a Real File, Then Take It Further",
-  "store-a-password": "Store It Weak, Then See Why That Leaks",
-  "store-a-password-fix": "Correct the Record, Then Prove the System Already Fixed It",
   "capture-dc-traffic": "Capture a Real Conversation and Read It",
   "capture-ports": "Read What the Ports Tell You, Then Isolate One Conversation",
   "capture-elsewhere": "Know Where You'd Have to Capture Instead",
@@ -984,6 +982,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "build-out-directory": "Build Out the Directory",
   "new-hire-week": "A New Hire's First Week",
   "weekend-incident-report": "The Weekend Incident Report",
+  "tuesday-after-breach": "Tuesday After the Breach",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -1017,7 +1016,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 /** Tickets that need a real change in the student's lab before they can answer. */
 export const LAB_GATED_MISSIONS = [
   "tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25",
-  "cap-06", "cry-06", "zt-02", "cp-04", "ea-03",
+  "cap-06", "zt-02", "cp-04", "ea-03",
   "sl-01", "sl-02", "sl-03",
   "rc-01", "dl-01", "pc-03", "pi-01", "pc-05", "pi-02", "ao-01", "ao-02",
   "od-02", "od-04", "od-05", "od-06", "od-07",
@@ -1026,6 +1025,7 @@ export const LAB_GATED_MISSIONS = [
   "dr-01", "dr-03", "dr-05", "dr-07", "dr-09", "dr-11",
   "dk-02", "dk-04", "dk-05", "dk-06", "dk-07", "dk-10",
   "w1-01", "w1-02", "w1-03",
+  "w2-02", "w2-04",
 ];
 
 /**

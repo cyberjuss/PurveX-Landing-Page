@@ -94,7 +94,7 @@ const waiting = [...onPage.keys()].filter((id) => missionTickets(id).some((t) =>
 // worked on the Ubuntu box has to say it needs the hosted lab, or a home-lab
 // student goes looking for a machine they were never told to build. The
 // installer check is the exception: it shows the PowerShell route as well.
-const UBUNTU_OK = new Set(["phase-1/week-2/challenge-installer-check.md"]);
+const UBUNTU_OK = new Set<string>([]);
 for (const t of chTabs) {
   const md = t.md ?? "";
   if (!/Ubuntu/.test(md) || UBUNTU_OK.has(t.file)) continue;

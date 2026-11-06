@@ -157,10 +157,18 @@ const MISSION_LAB = {
   ),
   // The integrity capstone: the unsigned mirror is moved to Quarantine, which
   // infra.files reports by path. Same shape as tq-19.
-  "cry-06": G(
+  // Week 2: Tuesday After the Breach. Both reuse the INC-1058 files every lab plants.
+  "w2-02": G(
     [
-      { c: { t: "file", path: "Shares\\IT\\vpn-client-2.4.1-mirror-b.txt", want: false }, label: "The unsigned mirror is gone from the IT share" },
+      { c: { t: "file", path: "Shares\\IT\\vpn-client-2.4.1-mirror-b.txt", want: false }, label: "The altered mirror is gone from the IT share" },
       { c: { t: "file", path: "Quarantine\\vpn-client-2.4.1-mirror-b.txt", want: true }, label: "It is kept in C:\\PurveX\\Quarantine" },
+    ],
+    { tickets: ["INC-1058"] }
+  ),
+  "w2-04": G(
+    [
+      { c: { t: "flag", sam: "taylor.osei", flag: "passwordExpired", want: true }, label: "taylor.osei must change the password at next logon" },
+      { c: { t: "flag", sam: "jordan.ellis", flag: "passwordExpired", want: true }, label: "jordan.ellis must change the password at next logon" },
     ],
     { tickets: ["INC-1058"] }
   ),
@@ -359,7 +367,7 @@ function checkKey(c: Check): string {
 }
 
 const TICKET_KEYS: [string, Set<string>][] = Object.entries(MISSION_LAB as Record<string, Gate>)
-  .filter(([id]) => /^(tq|cap|cry)-/.test(id))
+  .filter(([id]) => /^(tq|cap)-/.test(id) || id === "w2-02")
   .map(([id, g]) => [id, new Set(g.checks.map(({ c }) => checkKey(c)))]);
 
 /** The ticket whose fix is this change, if any. A finding it covers is that ticket's work, not a separate job. */

@@ -316,7 +316,7 @@ export const PROOF_TICKETS: Record<string, { job: string; label: string }> = {
   "tq-24": { job: "admin-password-policy", label: "Service ticket INC-1062" },
   "tq-25": { job: "stale-objects", label: "Service ticket INC-1063" },
   "cap-06": { job: "contain-wire-credential", label: "Service ticket INC-1057" },
-  "cry-06": { job: "verify-build-integrity", label: "Service ticket INC-1058" },
+  "w2-02": { job: "verify-build-integrity", label: "Service ticket INC-1058" },
   "ea-03": { job: "access-audit", label: "Service ticket INC-1071" },
   "sl-03": { job: "enable-account", label: "Service ticket INC-1072" },
   "pi-02": { job: "firewall-rule", label: "Service ticket INC-1075" },

@@ -72,12 +72,7 @@ const phase1Weeks: WeekDef[] = [
       { label: "Encryption and Keys", file: "phase-1/week-2/lesson-encryption.md" },
       { label: "Storing Passwords", file: "phase-1/week-2/lesson-passwords.md" },
       { label: "Resources", file: "phase-1/week-2/resources.md" },
-      { label: "Challenge: Tell Encoding, Hashing, and Encryption Apart", file: "phase-1/week-2/challenge-encode-encrypt-hash.md" },
-      { label: "Challenge: Put the Right One to Work", file: "phase-1/week-2/challenge-encode-encrypt-apply.md" },
-      { label: "Challenge: Protect a Real File, Then Take It Further", file: "phase-1/week-2/challenge-encode-encrypt-protect.md" },
-      { label: "Challenge: Store It Weak, Then See Why That Leaks", file: "phase-1/week-2/challenge-store-a-password.md" },
-      { label: "Challenge: Correct the Record, Then Prove the System Already Fixed It", file: "phase-1/week-2/challenge-store-a-password-fix.md" },
-      { label: "Challenge: The Mirror That Does Not Match", file: "phase-1/week-2/challenge-installer-check.md" },
+      { label: "Challenge: Tuesday After the Breach", file: "phase-1/week-2/challenge-tuesday-after-breach.md" },
     ],
   },
   {

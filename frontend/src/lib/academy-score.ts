@@ -37,7 +37,12 @@ export const SKILLS: Record<Skill, { label: string; advice: string }> = {
 
 // mission id -> skill. d1 = Operation Day One, tq = Ticket Queue.
 export const MISSION_SKILLS: Record<string, Skill> = {
-  // Week 1: The Weekend Incident Report, one challenge set in the PurveX lab.
+  // Week 1: The Weekend Incident Report, and Week 2: Tuesday After the Breach.
+  "w2-01": "security",
+  "w2-02": "security",
+  "w2-03": "security",
+  "w2-04": "accounts",
+  "w2-05": "security",
   "w1-01": "security",
   "w1-02": "security",
   "w1-03": "troubleshooting",
@@ -72,19 +77,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   // ad-mission tickets so they counted toward readiness. Converted here too.
   // CVSS Vulnerability Scoring: same conversion.
   // Hashing and Encryption with CyberChef: same conversion.
-  "w2e-c1": "security",
-  "w2e-c2": "security",
-  "w2e-c3": "security",
-  "w2e-c4": "security",
-  "w2e-c5": "security",
-  "w2e-c7": "security",
   // Password Hashing and Salting: same conversion.
-  "w2m-c1": "security",
-  "w2m-c2": "security",
-  "w2m-c3": "security",
-  "w2m-c4": "security",
-  "w2m-c5": "security",
-  "w2m-c7": "security",
   // Broken Access Control (PortSwigger): had no graded check at all before,
   // relying entirely on the external platform's own completion state.
   "w4t-c1": "access",
@@ -220,12 +213,6 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "cap-04": "logs",
   "cap-05": "logs",
   "cap-06": "security",
-  "cry-01": "security",
-  "cry-02": "security",
-  "cry-03": "security",
-  "cry-04": "security",
-  "cry-05": "security",
-  "cry-06": "security",
   // The Client Data Review: same gap as above, fixed the same way.
   "cd-01": "security",
   "cd-02": "security",
@@ -280,8 +267,6 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   // map is dropped every time progress is read back (sanitizeResults), so the
   // solve vanished on reload and its challenge could never complete.
   // check:range:challenges now fails if a challenge question is left out.
-  "w2e-c6": "security",
-  "w2m-c6": "security",
   "sm-01": "security",
   "sm-02": "security",
   "bt-01": "security",

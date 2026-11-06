@@ -110,4 +110,4 @@ In use = A file open in an app, protected by access control and endpoint securit
 
 ### Check yourself
 
-Here's one to think through before the challenges. A caller says they're Morgan Lee, traveling and locked out by BitLocker, and they want the recovery key sent to a personal email address. What do you do?
+Here's one to think through before the challenge. A caller says they're Morgan Lee, traveling and locked out by BitLocker, and they want the recovery key sent to a personal email address. What do you do?
