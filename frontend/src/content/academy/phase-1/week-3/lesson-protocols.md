@@ -28,7 +28,7 @@ Email has its own protocols, and they split the work into two directions. SMTP c
 
 For an analyst, the useful question is which machines should be speaking these protocols at all, and the answer is a short list: mail servers, and the mail clients of the people who read email. So if you see SMTP coming from a host that has no reason to handle mail, follow it up. One of the most common uses of a compromised machine is sending messages from it, and that traffic looks perfectly ordinary on its own while being completely out of place on that particular host.
 
-You'll put all of this to work in a later section, where you'll open Wireshark with a real capture and use ports and protocols together to separate the ordinary traffic from the traffic that doesn't belong.
+You'll put all of this to work in this week's challenge, where you'll use ports and protocols together to find the rules in your own lab that let through traffic that doesn't belong.
 
 ```sort
 prompt: Match each job to the protocol that does it.

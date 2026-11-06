@@ -37,7 +37,17 @@ export const SKILLS: Record<Skill, { label: string; advice: string }> = {
 
 // mission id -> skill. d1 = Operation Day One, tq = Ticket Queue.
 export const MISSION_SKILLS: Record<string, Skill> = {
-  // Week 1: The Weekend Incident Report, and Week 2: Tuesday After the Breach.
+  // Weeks 1 to 4: one challenge each, set in the student's own PurveX lab.
+  "w3-01": "troubleshooting",
+  "w3-02": "troubleshooting",
+  "w3-03": "security",
+  "w3-04": "security",
+  "w3-05": "logs",
+  "w4-01": "access",
+  "w4-02": "access",
+  "w4-03": "access",
+  "w4-04": "access",
+  "w4-05": "access",
   "w2-01": "security",
   "w2-02": "security",
   "w2-03": "security",
@@ -80,22 +90,8 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   // Password Hashing and Salting: same conversion.
   // Broken Access Control (PortSwigger): had no graded check at all before,
   // relying entirely on the external platform's own completion state.
-  "w4t-c1": "access",
-  "w4t-c2": "access",
   // Authentication Log Analysis: same conversion.
-  "w4e-c1": "logs",
-  "w4e-c2": "logs",
-  "w4e-c3": "logs",
-  "w4e-c4": "logs",
-  "w4e-c5": "logs",
-  "w4e-c6": "logs",
   // Linux Privilege Management with sudo: same conversion.
-  "w4m-c1": "access",
-  "w4m-c2": "access",
-  "w4m-c3": "access",
-  "w4m-c4": "access",
-  "w4m-c5": "access",
-  "w4m-c6": "access",
   "d1-01": "accounts",
   "d1-02": "accounts",
   "d1-03": "directory",
@@ -134,24 +130,8 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   // readiness. Converted to real ad-mission/ad-guess tickets so they do.
   // No "networking" skill exists; "logs" fits closest -- reading a capture
   // to understand what happened is the same move as reading an event log.
-  "w3e-c1": "logs",
-  "w3e-c2": "logs",
-  "w3e-c3": "logs",
-  "w3e-c4": "logs",
-  "w3e-c5": "logs",
-  "w3e-c6": "logs",
-  "w3m-c1": "logs",
-  "w3m-c2": "logs",
-  "w3m-c3": "logs",
-  "w3m-c4": "logs",
-  "w3m-c5": "logs",
-  "w3m-c6": "logs",
-  "w3m-c7": "logs",
   // Write a Detection: a real Suricata rule, written and run against the
   // same scan the last lab only read by hand.
-  "wd1-01": "logs",
-  "wd1-02": "security",
-  "wd1-03": "security",
   // Confirm the Map From the Command Line: Map Your Pod's companion lab,
   // reading the domain controller's own listening ports with PowerShell
   // instead of trusting the drag-and-drop diagram alone.
@@ -200,19 +180,10 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   // Week 4's effective-access challenge, replacing the old browser-only
   // "Who Can Open This?" widget with a real audit against the lab's own
   // Compliance Users group.
-  "ea-01": "access",
-  "ea-02": "access",
-  "ea-03": "access",
   // The Nightly Settlement Push (hosted-lab Wireshark capture) and The
   // Mirror That Does Not Match (hash, crack, spot reuse). Real graded
   // challenges that were never added here, so finishing them never moved
   // readiness.
-  "cap-01": "logs",
-  "cap-02": "logs",
-  "cap-03": "security",
-  "cap-04": "logs",
-  "cap-05": "logs",
-  "cap-06": "security",
   // The Client Data Review: same gap as above, fixed the same way.
   "cd-01": "security",
   "cd-02": "security",

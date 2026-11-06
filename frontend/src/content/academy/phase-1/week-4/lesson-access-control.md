@@ -28,7 +28,7 @@ Broken access control tends to show up in three recognizable forms:
 
 - **Insecure direct object reference (IDOR):** changing an ID in a request returns someone else's record. First American Financial exposed about 885 million documents this way in 2019.
 - **Forced browsing:** requesting a page the user was never shown, such as `/admin`.
-- **Parameter tampering:** sending a value the server should set itself, such as a role or account ID. This week's lab uses this flaw.
+- **Parameter tampering:** sending a value the server should set itself, such as a role or account ID. This week's challenge ends with this flaw.
 
 ```sort
 prompt: Name the flaw.
@@ -49,7 +49,7 @@ Every one of the fixes follows from that same rule of never trusting the client:
 
 ### Testing
 
-Before the lab, a word of caution. Changing identifiers on a system you don't have written permission to test counts as unauthorized access, even if you only looked and even if the flaw was obvious. Good intentions aren't a reliable defense, and finding a real vulnerability doesn't make the access authorized. So practice on the PortSwigger Web Security Academy labs instead, which exist for exactly this purpose. On the job, this kind of testing always needs a signed scope, agreed in advance.
+Before you try this yourself, a word of caution. Changing identifiers on a system you don't have written permission to test counts as unauthorized access, even if you only looked and even if the flaw was obvious. Good intentions aren't a reliable defense, and finding a real vulnerability doesn't make the access authorized. So practice on the PortSwigger Web Security Academy labs instead, which exist for exactly this purpose. On the job, this kind of testing always needs a signed scope, agreed in advance.
 
 ### When a user reports it
 
@@ -71,4 +71,4 @@ Signs of access control probing in web and application logs:
 
 ### Check yourself
 
-Here's one to think through before the challenges. A developer tells you the admin link is safe because it only appears in the menu for admins. What question would you ask them, and how would you prove the answer in the lab?
+Here's one to think through before the challenge. A developer tells you the admin link is safe because it only appears in the menu for admins. What question would you ask them, and how would you prove the answer?

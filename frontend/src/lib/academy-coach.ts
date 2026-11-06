@@ -175,7 +175,7 @@ function handsOnLine(all: Results, lab: LabSnapshot | null): string {
       id.startsWith("zt-") ||
       id.startsWith("th-") ||
       id.startsWith("cp-") ||
-      id.startsWith("ea-") ||
+      /^(w[1-4]|dr|dk)-/.test(id) ||
       id.startsWith("sl-") ||
       id.startsWith("rc-") ||
       id.startsWith("dl-") ||

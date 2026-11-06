@@ -33,10 +33,10 @@ import {
 const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb: string }[] = [
   { key: "weekend-incident-report", label: "The Weekend Incident Report", blurb: "Find and fix a confidentiality, integrity and availability failure." },
   { key: "tuesday-after-breach", label: "Tuesday After the Breach", blurb: "Decode, hash, crack and contain on a real IT desk morning." },
+  { key: "network-change", label: "The Network Change That Went Wrong", blurb: "Clean up after a contractor's weekend network change." },
+  { key: "access-review", label: "The Quarterly Access Review", blurb: "Find and remove access that should not exist." },
   { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory." },
   { key: "ticket-queue", label: "Ticket Queue", blurb: "Help desk tickets you change in the directory." },
-  { key: "wire", label: "The Nightly Settlement Push", blurb: "Capture and read cleartext credentials off the wire." },
-  { key: "access-alert", label: "Who Can Open the Compliance Case Files?", blurb: "Audit a group against what its share actually grants." },
   { key: "client-data", label: "The Client Data Review", blurb: "Review what your own shares hold on real clients." },
   { key: "credential-campaign", label: "The Credential Campaign", blurb: "A password-spray intrusion, start to finish." },
   { key: "phishing-chain", label: "The Phishing Chain", blurb: "A phishing attachment, start to finish." },

@@ -151,10 +151,6 @@ const MISSION_LAB = {
   // The wire-capture capstone: the burned service account is contained by
   // disabling it, which the snapshot reports. Kept, not deleted, so the review
   // still has it.
-  "cap-06": G(
-    [{ c: { t: "enabled", sam: "svc-settlements", want: false }, label: "svc-settlements is disabled" }],
-    { users: ["svc-settlements"] }
-  ),
   // The integrity capstone: the unsigned mirror is moved to Quarantine, which
   // infra.files reports by path. Same shape as tq-19.
   // Week 2: Tuesday After the Breach. Both reuse the INC-1058 files every lab plants.
@@ -175,10 +171,6 @@ const MISSION_LAB = {
   // Week 4's effective-access challenge: a Help Desk account is pulled out of
   // Compliance Users, the access-level group an audit found it never needed.
   // Same member check tq-05/cp-06 already use.
-  "ea-03": G(
-    [{ c: { t: "member", sam: "noor.ahmadi", group: "Compliance Users", want: false }, label: "noor.ahmadi is not in Compliance Users" }],
-    { users: ["noor.ahmadi"] }
-  ),
   // The sign-in log challenge's capstone: the account the real lockout event
   // pointed to is unlocked, the same flag check tq-02 already uses.
   "sl-03": G(
@@ -239,6 +231,30 @@ const MISSION_LAB = {
     // The hash file proves the setup ran: with no rule at all, "off" would pass by itself.
     { c: { t: "file", path: "Shares\\Finance\\Wire_Approvals_Nov.sha256", want: true }, label: "The weekend's incidents are set up in this lab" },
     { c: { t: "fwRuleOff", name: "PurveX Maint - Block File Sharing" }, label: "The maintenance block rule is disabled or removed" },
+  ]),
+  // Week 3: The Network Change That Went Wrong. The setup block plants the
+  // stale DNS record, both leftover rules and the change log. The log proves
+  // the setup ran, since a rule that was never made would read as off.
+  "w3-01": G([{ c: { t: "dnsToDc", name: "portal" }, label: "portal resolves to the domain controller" }]),
+  "w3-03": G([
+    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is set up in this lab" },
+    { c: { t: "fwRuleOff", name: "PurveX Legacy - Vendor Telnet" }, label: "The vendor Telnet rule is disabled or removed" },
+  ]),
+  "w3-04": G([
+    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is set up in this lab" },
+    { c: { t: "fwRuleOff", name: "PurveX Relay - Outbound Mail" }, label: "The outbound mail rule is disabled or removed" },
+  ]),
+  // Week 4: The Quarterly Access Review. frontdesk.shared and priya.nair's
+  // Domain Admins membership come from the setup block. noor.ahmadi is the
+  // INC-1071 account every lab already plants.
+  "w4-01": G([{ c: { t: "enabled", sam: "frontdesk.shared", want: false }, label: "frontdesk.shared is disabled" }]),
+  "w4-03": G(
+    [{ c: { t: "member", sam: "noor.ahmadi", group: "Compliance Users", want: false }, label: "noor.ahmadi is not in Compliance Users" }],
+    { users: ["noor.ahmadi"] }
+  ),
+  "w4-04": G([
+    { c: { t: "present", sam: "frontdesk.shared" }, label: "The access review is set up in this lab" },
+    { c: { t: "member", sam: "priya.nair", group: "Domain Admins", want: false }, label: "priya.nair is not in Domain Admins" },
   ]),
   // Home Lab: Build Out the Directory. The student creates every object these
   // check, under names no other challenge uses, so nothing needs planting and
@@ -367,7 +383,7 @@ function checkKey(c: Check): string {
 }
 
 const TICKET_KEYS: [string, Set<string>][] = Object.entries(MISSION_LAB as Record<string, Gate>)
-  .filter(([id]) => /^(tq|cap)-/.test(id) || id === "w2-02")
+  .filter(([id]) => /^tq-/.test(id) || id === "w2-02")
   .map(([id, g]) => [id, new Set(g.checks.map(({ c }) => checkKey(c)))]);
 
 /** The ticket whose fix is this change, if any. A finding it covers is that ticket's work, not a separate job. */

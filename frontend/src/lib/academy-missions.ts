@@ -6,25 +6,11 @@ export type MissionCatalogEntry = {
   challenge:
     | "day-one"
     | "ticket-queue"
-    | "wire"
     | "client-data"
-    | "access-alert"
     | "credential-campaign"
     | "phishing-chain"
     | "open-door"
     | "keys-to-the-domain"
-    | "capture-dc-traffic"
-    | "capture-ports"
-    | "capture-elsewhere"
-    | "read-a-scan"
-    | "read-a-scan-nmap"
-    | "read-a-scan-detect"
-    | "write-a-detection"
-    | "one-power-audit"
-    | "login-record-report"
-    | "who-the-server-trusts"
-    | "read-the-login-record"
-    | "one-power"
     | "document-the-five-ws"
     | "default-posture"
     | "trigger-a-real-detection"
@@ -39,7 +25,9 @@ export type MissionCatalogEntry = {
     | "build-out-directory"
     | "new-hire-week"
     | "weekend-incident-report"
-    | "tuesday-after-breach";
+    | "tuesday-after-breach"
+    | "network-change"
+    | "access-review";
   title: string;
   prompt: string;
   skill: Skill;
@@ -338,12 +326,6 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Choose the best first response move.",
     skill: "security",
   },
-  "cap-01": { id: "cap-01", challenge: "wire", title: "Where the Job Signs In", prompt: "Capture the nightly job and name the port its directory sign-in uses.", skill: "logs" },
-  "cap-02": { id: "cap-02", challenge: "wire", title: "Who the Job Signs In As", prompt: "Read the directory sign-in and name the account the job uses.", skill: "logs" },
-  "cap-03": { id: "cap-03", challenge: "wire", title: "What the Sign-In Gives Away", prompt: "Read the password the job sends over the wire.", skill: "security" },
-  "cap-04": { id: "cap-04", challenge: "wire", title: "The File on the Wire", prompt: "Read the copied settlement file and name its first reference.", skill: "logs" },
-  "cap-05": { id: "cap-05", challenge: "wire", title: "Narrowing the Capture", prompt: "Give the Wireshark display filter that isolates the directory traffic.", skill: "logs" },
-  "cap-06": { id: "cap-06", challenge: "wire", title: "Containing a Burned Credential", prompt: "Disable the service account and name the protocol the job should use.", skill: "security" },
   "cd-01": { id: "cd-01", challenge: "client-data", title: "Where the Numbers Live", prompt: "Find the file on the shares that holds client Social Security numbers.", skill: "security" },
   "cd-02": { id: "cd-02", challenge: "client-data", title: "Counting the Book", prompt: "Count the clients in the client register.", skill: "security" },
   "cd-03": { id: "cd-03", challenge: "client-data", title: "Waiting on Paperwork", prompt: "Count the KYC reviews still awaiting documents.", skill: "security" },
@@ -351,36 +333,6 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "cd-05": { id: "cd-05", challenge: "client-data", title: "The Batch That Did Not Balance", prompt: "Find the settlement batch that did not reconcile.", skill: "security" },
   "cd-06": { id: "cd-06", challenge: "client-data", title: "Fingerprint the Register", prompt: "Take the SHA-256 hash of the client register.", skill: "security" },
   "cd-07": { id: "cd-07", challenge: "client-data", title: "Who Can Read the Register", prompt: "Build a least-privilege reader group and name the group the share lets read it today.", skill: "accounts" },
-  "w3e-c1": { id: "w3e-c1", challenge: "capture-dc-traffic", title: "Could the Capture See a Third Machine? (INC-1102)", prompt: "Say whether a capture on one machine could show a third machine's traffic.", skill: "logs" },
-  "w3e-c2": { id: "w3e-c2", challenge: "capture-dc-traffic", title: "Read the LDAP Handshake (INC-1103)", prompt: "Name the packet the domain controller sent to open the TCP handshake.", skill: "logs" },
-  "w3e-c3": { id: "w3e-c3", challenge: "capture-dc-traffic", title: "Count the DNS Exchange (INC-1104)", prompt: "Count the packets a DNS request and reply needed.", skill: "logs" },
-  "w3e-c5": { id: "w3e-c5", challenge: "capture-ports", title: "Which Port Changes, Which Stays Fixed (INC-1105)", prompt: "Say which port changes between LDAP connections and which stays fixed.", skill: "logs" },
-  "w3e-c4": { id: "w3e-c4", challenge: "capture-ports", title: "Isolate One Conversation (INC-1106)", prompt: "Name the Wireshark move that reads one connection's whole exchange.", skill: "logs" },
-  "w3e-c6": { id: "w3e-c6", challenge: "capture-elsewhere", title: "Where You'd Have to Capture Instead (INC-1158)", prompt: "Say why a capture on one machine can't show a conversation it was never part of, and where to capture instead.", skill: "logs" },
-  "w3m-c5": { id: "w3m-c5", challenge: "read-a-scan-nmap", title: "Confirm With Nmap (INC-1107)", prompt: "Report what Nmap reports for port 445.", skill: "logs" },
-  "w3m-c6": { id: "w3m-c6", challenge: "read-a-scan-nmap", title: "Weigh a Stealthier Scan (INC-1108)", prompt: "Explain why an attacker might prefer a SYN scan over a connect scan.", skill: "logs" },
-  "w3m-c1": { id: "w3m-c1", challenge: "read-a-scan", title: "Read an Open Port's Handshake (INC-1109)", prompt: "Name all three packets of a completed handshake on an open port.", skill: "logs" },
-  "w3m-c2": { id: "w3m-c2", challenge: "read-a-scan", title: "Read a Filtered Port (INC-1110)", prompt: "Say what a firewall-dropped port looks like in a capture.", skill: "logs" },
-  "w3m-c3": { id: "w3m-c3", challenge: "read-a-scan", title: "Tell Closed From Filtered (INC-1111)", prompt: "Name the difference between a closed port and a filtered port.", skill: "logs" },
-  "w3m-c4": { id: "w3m-c4", challenge: "read-a-scan-detect", title: "Name What Detection Rests On (INC-1112)", prompt: "Say what a port scan's detectability actually rests on.", skill: "logs" },
-  "w3m-c7": { id: "w3m-c7", challenge: "read-a-scan-detect", title: "Read a Stranger's Scan Cold (INC-1159)", prompt: "Say what a workstation was doing from the mix of open, closed, and filtered replies in its scan.", skill: "logs" },
-  "wd1-01": { id: "wd1-01", challenge: "write-a-detection", title: "Read the Alert's SID (INC-1113)", prompt: "Report the SID Suricata logs for the rule that fired.", skill: "logs" },
-  "wd1-02": { id: "wd1-02", challenge: "write-a-detection", title: "Test the Rolling Window (INC-1114)", prompt: "Say whether a slower-paced scan would still trigger a count-and-seconds threshold.", skill: "security" },
-  "wd1-03": { id: "wd1-03", challenge: "write-a-detection", title: "Name the Tuning Trade-Off (INC-1115)", prompt: "Explain what tuning a detection threshold actually trades off.", skill: "security" },
-  "w4t-c1": { id: "w4t-c1", challenge: "who-the-server-trusts", title: "Does Hiding the Field Fix It? (INC-1116)", prompt: "Say whether removing a field from API responses closes a broken access control bug.", skill: "access" },
-  "w4t-c2": { id: "w4t-c2", challenge: "who-the-server-trusts", title: "Where the Role Check Has to Happen (INC-1117)", prompt: "Name where a server actually has to check a user's role.", skill: "access" },
-  "w4e-c1": { id: "w4e-c1", challenge: "read-the-login-record", title: "Was the Failure Logged? (INC-1118)", prompt: "Say whether a failed sudo attempt was recorded in the log.", skill: "logs" },
-  "w4e-c2": { id: "w4e-c2", challenge: "read-the-login-record", title: "Name the Windows Event ID (INC-1119)", prompt: "Name the Windows Event ID for a failed logon.", skill: "logs" },
-  "w4e-c3": { id: "w4e-c3", challenge: "read-the-login-record", title: "Read a Burst of Failures (INC-1120)", prompt: "Say what forty failed logons followed by one success suggests.", skill: "logs" },
-  "w4e-c4": { id: "w4e-c4", challenge: "read-the-login-record", title: "What a Single Failure Does Not Prove (INC-1121)", prompt: "Say what a failed login for one account name actually proves.", skill: "logs" },
-  "w4e-c5": { id: "w4e-c5", challenge: "login-record-report", title: "Decide Whether a Quiet Attack Is Worth Reporting (INC-1122)", prompt: "Say whether an all-failure burst against one account is still worth reporting.", skill: "logs" },
-  "w4e-c6": { id: "w4e-c6", challenge: "login-record-report", title: "Spot the Threshold a Spray Would Miss (INC-1161)", prompt: "Say what changed when an attacker spread failures across many accounts, and what a per-account threshold would miss.", skill: "logs" },
-  "w4m-c1": { id: "w4m-c1", challenge: "one-power", title: "Was the Second Command Refused? (INC-1123)", prompt: "Say what happened when a narrowly-scoped sudo account tried a different command.", skill: "access" },
-  "w4m-c2": { id: "w4m-c2", challenge: "one-power", title: "What a Broad Rule Grants (INC-1124)", prompt: "Say what an unscoped systemctl sudo rule actually grants.", skill: "access" },
-  "w4m-c3": { id: "w4m-c3", challenge: "one-power", title: "Why Narrow Even for a Trusted Account (INC-1125)", prompt: "Explain why a sudo rule should be written narrowly even for a trusted coworker.", skill: "access" },
-  "w4m-c4": { id: "w4m-c4", challenge: "one-power", title: "Name the Audit Command (INC-1126)", prompt: "Name the command that audits a user's sudo privileges without logging in as them.", skill: "access" },
-  "w4m-c5": { id: "w4m-c5", challenge: "one-power-audit", title: "Audit an Over-Broad Rule (INC-1127)", prompt: "Judge whether a backup account's folder-scoped sudo rule follows least privilege.", skill: "access" },
-  "w4m-c6": { id: "w4m-c6", challenge: "one-power-audit", title: "Does Naming the Script Fix It? (INC-1160)", prompt: "Say whether naming one exact script in a sudo rule is the complete fix.", skill: "access" },
   "sm2-01": { id: "sm2-01", challenge: "document-the-five-ws", title: "Read the Sub Status (INC-1128)", prompt: "Report the Sub Status code a real 4625 records for a wrong password.", skill: "logs" },
   "sm2-05": { id: "sm2-05", challenge: "document-the-five-ws", title: "Read Several Events Together (INC-1129)", prompt: "Say what five 0xC0000064 failures against five account names most likely means.", skill: "security" },
   "sm2-02": { id: "sm2-02", challenge: "document-the-five-ws", title: "Name the Field (INC-1130)", prompt: "Name which of the 5 W's the Sub Status field answers.", skill: "security" },
@@ -417,27 +369,6 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "tr-06": { id: "tr-06", challenge: "trace-persistence", title: "Measure the Real Interval (INC-1150)", prompt: "Read the task's own repetition interval off the domain controller and report it in minutes.", skill: "logs" },
   "tr-07": { id: "tr-07", challenge: "trace-persistence", title: "Prove the Threshold Tells Them Apart (INC-1150)", prompt: "Say which of two device summaries the finished detection actually fires on.", skill: "logs" },
   "tr-08": { id: "tr-08", challenge: "trace-persistence", title: "Close What's Still Open (INC-1150)", prompt: "Disable the outbound firewall rule the task depended on and confirm it is off.", skill: "logs" },
-  "ea-01": {
-    id: "ea-01",
-    challenge: "access-alert",
-    title: "Find the Right Tool (INC-1071)",
-    prompt: "Name the PowerShell cmdlet that lists every group an account belongs to, including through nested membership.",
-    skill: "security",
-  },
-  "ea-02": {
-    id: "ea-02",
-    challenge: "access-alert",
-    title: "Find Who Does Not Belong (INC-1071)",
-    prompt: "A Help Desk account can open the Compliance share's case files. Name the account.",
-    skill: "security",
-  },
-  "ea-03": {
-    id: "ea-03",
-    challenge: "access-alert",
-    title: "Remove the Access (INC-1071)",
-    prompt: "Remove the account from the group that grants it, and report the group.",
-    skill: "security",
-  },
   "sl-01": {
     id: "sl-01",
     challenge: "credential-campaign",
@@ -858,6 +789,76 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Choose the real fix for a password stored in a script.",
     skill: "security",
   },
+  "w3-01": {
+    id: "w3-01",
+    challenge: "network-change",
+    title: "Fix the Portal's Address",
+    prompt: "Find why the intranet portal stopped resolving after the weekend change, point it at its new home, and report the address it was stuck on.",
+    skill: "troubleshooting",
+  },
+  "w3-02": {
+    id: "w3-02",
+    challenge: "network-change",
+    title: "Timed Out or Refused?",
+    prompt: "Tell a firewall drop from a closed port by the error each user saw.",
+    skill: "troubleshooting",
+  },
+  "w3-03": {
+    id: "w3-03",
+    challenge: "network-change",
+    title: "Close the Vendor's Door",
+    prompt: "Find the inbound rule the contractor left open, switch it off, and report its port.",
+    skill: "security",
+  },
+  "w3-04": {
+    id: "w3-04",
+    challenge: "network-change",
+    title: "Why Is the DC Sending Mail?",
+    prompt: "Find the outbound rule that lets the domain controller send mail, switch it off, and name the protocol.",
+    skill: "security",
+  },
+  "w3-05": {
+    id: "w3-05",
+    challenge: "network-change",
+    title: "What HTTPS Still Shows",
+    prompt: "Decide what a capture of an HTTPS upload can and cannot prove.",
+    skill: "logs",
+  },
+  "w4-01": {
+    id: "w4-01",
+    challenge: "access-review",
+    title: "Retire the Shared Login",
+    prompt: "Find the account several people sign in with, disable it, and report its username.",
+    skill: "access",
+  },
+  "w4-02": {
+    id: "w4-02",
+    challenge: "access-review",
+    title: "The MFA Exemption Request",
+    prompt: "Decide how to answer an executive who wants to skip MFA.",
+    skill: "access",
+  },
+  "w4-03": {
+    id: "w4-03",
+    challenge: "access-review",
+    title: "Access That Outlived the Audit",
+    prompt: "Remove the Compliance access a help desk technician kept after an audit and name the group.",
+    skill: "access",
+  },
+  "w4-04": {
+    id: "w4-04",
+    challenge: "access-review",
+    title: "The Temporary Domain Admin",
+    prompt: "Find the staff account left in Domain Admins after the migration and remove it.",
+    skill: "access",
+  },
+  "w4-05": {
+    id: "w4-05",
+    challenge: "access-review",
+    title: "Change One Number in the URL",
+    prompt: "Name the failure and the fix when changing a client number shows another client's statement.",
+    skill: "access",
+  },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -866,25 +867,11 @@ export const CHALLENGE_PATHS: Record<
 > = {
   "day-one": { href: "/range/phase-1/home-lab-challenges", tab: "operation-day-one" },
   "ticket-queue": { href: "/range/phase-1/home-lab-challenges", tab: "ticket-queue" },
-  "wire": { href: "/range/phase-1/week-3", tab: "the-nightly-settlement-push" },
   "client-data": { href: "/range/phase-1/home-lab-challenges", tab: "the-client-data-review" },
-  "access-alert": { href: "/range/phase-1/week-4", tab: "who-can-open-the-compliance-case-files" },
   "credential-campaign": { href: "/range/phase-2/capstone", tab: "the-credential-campaign" },
   "phishing-chain": { href: "/range/phase-2/capstone", tab: "the-phishing-chain" },
   "open-door": { href: "/range/phase-2/capstone", tab: "the-open-door" },
   "keys-to-the-domain": { href: "/range/phase-2/capstone", tab: "the-keys-to-the-domain" },
-  "capture-dc-traffic": { href: "/range/phase-1/week-3", tab: "capture-a-real-conversation-and-read-it" },
-  "capture-ports": { href: "/range/phase-1/week-3", tab: "read-what-the-ports-tell-you-then-isolate-one-conversation" },
-  "capture-elsewhere": { href: "/range/phase-1/week-3", tab: "know-where-you-d-have-to-capture-instead" },
-  "read-a-scan": { href: "/range/phase-1/week-3", tab: "scan-it-by-hand-then-read-the-three-answers" },
-  "read-a-scan-nmap": { href: "/range/phase-1/week-3", tab: "confirm-it-with-nmap-then-weigh-a-stealthier-scan" },
-  "read-a-scan-detect": { href: "/range/phase-1/week-3", tab: "name-what-detection-rests-on-then-take-it-further" },
-  "write-a-detection": { href: "/range/phase-1/week-3", tab: "catch-the-scan-with-nobody-watching" },
-  "who-the-server-trusts": { href: "/range/phase-1/week-4", tab: "who-the-server-actually-trusts" },
-  "read-the-login-record": { href: "/range/phase-1/week-4", tab: "produce-the-record-then-read-it" },
-  "login-record-report": { href: "/range/phase-1/week-4", tab: "decide-whether-it-s-worth-reporting-then-take-it-further" },
-  "one-power": { href: "/range/phase-1/week-4", tab: "grant-exactly-one-power-then-prove-it-stops" },
-  "one-power-audit": { href: "/range/phase-1/week-4", tab: "audit-a-real-over-broad-rule-then-take-it-further" },
   "document-the-five-ws": { href: "/range/phase-2/soc-mindset", tab: "turn-a-vague-alert-into-a-documented-account" },
   "default-posture": { href: "/range/phase-2/soc-mindset", tab: "what-the-firewall-does-with-what-you-never-mentioned" },
   "trigger-a-real-detection": { href: "/range/phase-2/week-1", tab: "prove-the-signature-match-then-find-its-limit" },
@@ -900,6 +887,8 @@ export const CHALLENGE_PATHS: Record<
   "new-hire-week": { href: "/range/phase-1/home-lab-desk", tab: "a-new-hire-s-first-week" },
   "weekend-incident-report": { href: "/range/phase-1/week-1", tab: "the-weekend-incident-report" },
   "tuesday-after-breach": { href: "/range/phase-1/week-2", tab: "tuesday-after-the-breach" },
+  "network-change": { href: "/range/phase-1/week-3", tab: "the-network-change-that-went-wrong" },
+  "access-review": { href: "/range/phase-1/week-4", tab: "the-quarterly-access-review" },
 };
 
 /** The challenge a page's "Challenge: ..." tab runs, from the page and the tab's slug. */
@@ -922,7 +911,6 @@ export function challengeTabHref(challenge: MissionCatalogEntry["challenge"]): s
 export function challengeFromMission(id: string): MissionCatalogEntry["challenge"] | null {
   if (id.startsWith("d1-")) return "day-one";
   if (/^tq-(0[1-5]|1[1-9]|20)$/.test(id)) return "ticket-queue";
-  if (id.startsWith("cap-")) return "wire";
   if (id.startsWith("cd-")) return "client-data";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
@@ -949,25 +937,11 @@ export function challengeHref(challenge: MissionCatalogEntry["challenge"], resul
 export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> = {
   "day-one": "Operation Day One",
   "ticket-queue": "Ticket Queue",
-  "wire": "The Nightly Settlement Push",
   "client-data": "The Client Data Review",
-  "access-alert": "Who Can Open the Compliance Case Files?",
   "credential-campaign": "The Credential Campaign",
   "phishing-chain": "The Phishing Chain",
   "open-door": "The Open Door",
   "keys-to-the-domain": "The Keys to the Domain",
-  "capture-dc-traffic": "Capture a Real Conversation and Read It",
-  "capture-ports": "Read What the Ports Tell You, Then Isolate One Conversation",
-  "capture-elsewhere": "Know Where You'd Have to Capture Instead",
-  "read-a-scan": "Scan It by Hand, Then Read the Three Answers",
-  "read-a-scan-nmap": "Confirm It With Nmap, Then Weigh a Stealthier Scan",
-  "read-a-scan-detect": "Name What Detection Rests On, Then Take It Further",
-  "write-a-detection": "Catch the Scan With Nobody Watching",
-  "who-the-server-trusts": "Who the Server Actually Trusts",
-  "read-the-login-record": "Produce the Record, Then Read It",
-  "login-record-report": "Decide Whether It's Worth Reporting, Then Take It Further",
-  "one-power": "Grant Exactly One Power, Then Prove It Stops",
-  "one-power-audit": "Audit a Real Over-Broad Rule, Then Take It Further",
   "document-the-five-ws": "Turn a Vague Alert Into a Documented Account",
   "default-posture": "What the Firewall Does With What You Never Mentioned",
   "trigger-a-real-detection": "Prove the Signature Match, Then Find Its Limit",
@@ -983,6 +957,8 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "new-hire-week": "A New Hire's First Week",
   "weekend-incident-report": "The Weekend Incident Report",
   "tuesday-after-breach": "Tuesday After the Breach",
+  "network-change": "The Network Change That Went Wrong",
+  "access-review": "The Quarterly Access Review",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -1016,8 +992,7 @@ export function findMissionsByQuery(query: string): MissionCatalogEntry[] {
 /** Tickets that need a real change in the student's lab before they can answer. */
 export const LAB_GATED_MISSIONS = [
   "tq-01", "tq-02", "tq-03", "tq-04", "tq-05", "tq-11", "tq-12", "tq-13", "tq-14", "tq-15", "tq-16", "tq-17", "tq-18", "tq-19", "tq-20", "tq-21", "tq-22", "tq-23", "tq-24", "tq-25",
-  "cap-06", "zt-02", "cp-04", "ea-03",
-  "sl-01", "sl-02", "sl-03",
+  "zt-02", "cp-04",   "sl-01", "sl-02", "sl-03",
   "rc-01", "dl-01", "pc-03", "pi-01", "pc-05", "pi-02", "ao-01", "ao-02",
   "od-02", "od-04", "od-05", "od-06", "od-07",
   "rk-01", "rk-02", "rk-04", "rk-03", "rk-05", "rk-06", "rk-07", "rk-08",
@@ -1026,6 +1001,8 @@ export const LAB_GATED_MISSIONS = [
   "dk-02", "dk-04", "dk-05", "dk-06", "dk-07", "dk-10",
   "w1-01", "w1-02", "w1-03",
   "w2-02", "w2-04",
+  "w3-01", "w3-03", "w3-04",
+  "w4-01", "w4-03", "w4-04",
 ];
 
 /**
