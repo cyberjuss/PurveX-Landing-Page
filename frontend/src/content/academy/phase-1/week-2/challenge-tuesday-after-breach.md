@@ -11,12 +11,12 @@
   $it = "C:\PurveX\Shares\IT"
   New-Item -ItemType Directory -Force -Path $it | Out-Null
   $file = Join-Path $it "settlement-upload.ps1"
-  if (Test-Path $file) { "The morning is already set up."; return }
+  if ((Test-Path $file) -and (Select-String -Path $file -Pattern "553256" -Quiet)) { "The morning is already set up."; return }
   Set-Content -Path $file -Encoding ascii -Value @(
     "# settlement-upload.ps1 - sends the nightly settlement file to the clearing vendor",
-    "# Owner: Operations. The password below is encrypted, so this is safe to share.",
+    "# Owner: Operations. The password below is encrypted (AES-256), so this is safe to share.",
     '$User = "purvex-settle"',
-    '$Password = "U2V0dGxlLU5vdy0yMDI2IQ=="',
+    '$Password = "553256306447786c4c553576647930794d44493249513d3d"',
     '$Server = "sftp.clearing-vendor.example"'
   )
   "Done. The IT desk queue is waiting for you."
@@ -39,18 +39,20 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A value made of letters and digits that ends in <code>=</code> or <code>==</code> is very often Base64. Base64 is encoding, which anybody can undo in one step without a key.</p>
+<p>Analysts decode values like this in CyberChef, the free tool from GCHQ that runs in the browser. A value made only of the digits 0 to 9 and the letters a to f is usually hex. Undo one layer at a time until you can read it.</p>
 <ol>
 <li>Open <code>C:\PurveX\Shares\IT\settlement-upload.ps1</code> and copy the value of <code>$Password</code>.</li>
-<li>Decode it from Base64, in PowerShell or in CyberChef with the From Base64 recipe.</li>
+<li>Open CyberChef at <code>gchq.github.io/CyberChef</code> and paste the value into Input.</li>
+<li>Drag in From Hex. If the output still isn't readable and ends in <code>=</code>, add From Base64 below it.</li>
 </ol>
-<p>In PowerShell:</p>
+<p>In PowerShell, the same two steps:</p>
 <ul>
-<li><code>[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("U2V0dGxlLU5vdy0yMDI2IQ=="))</code></li>
+<li><code>$hex = "553256306447786c4c553576647930794d44493249513d3d"; $b64 = -join ($hex -split '(..)' | Where-Object { $_ } | ForEach-Object { [char][Convert]::ToInt32($_, 16) }); [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))</code></li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="U2V0dGxlLU5vdy0yMDI2IQ==|purvex-settle">That's straight from the script. Decode the $Password value and report what it says.</div>
+<div class="ad-miss" data-guess="553256306447786c4c553576647930794d44493249513d3d|purvex-settle">That's straight from the script. Decode the $Password value and report what it says.</div>
+<div class="ad-miss" data-guess="U2V0dGxlLU5vdy0yMDI2IQ==">That's one layer down, and it's Base64. Add From Base64 after From Hex.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -59,7 +61,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The comment called it encrypted, but it was only Base64, which anyone can reverse in one step with no key. Sending the script to the vendor would have handed the settlement account's real password to a company that was breached last night.</p>
+<p>The comment called it AES encryption, but it was hex wrapped around Base64, two encodings anyone can reverse in seconds with no key. Sending the script to the vendor would have handed the settlement account's real password to a company that was breached last night.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -193,7 +195,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · Wrap-up · Report to the IT Lead</span>
 <h4>Fix the Script for Good</h4>
-<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>Back to the settlement script from this morning. Operations still needs it to run every night. What's the right fix?<br><strong>A</strong> Encode the password twice, so it takes longer to decode.<br><strong>B</strong> Take the password out of the script, store it in a secrets vault or run the job under a managed service account, and change the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so nobody can read it.</p>
+<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>Back to the settlement script from this morning. Operations still needs it to run every night. What's the right fix?<br><strong>A</strong> Encrypt the password properly with AES, and keep the key in the same script so it can decrypt it at run time.<br><strong>B</strong> Take the password out of the script, store it in a secrets vault or run the job under a managed service account, and change the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so nobody can read it.</p>
 <p><strong>Task:</strong> Choose the fix and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Fix the Script for Good" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -204,7 +206,7 @@
 <p>Think about what each of the three methods can and can't do. The script has to send the real password to the vendor every night.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Encoding twice is still encoding. Anyone can undo it in two steps instead of one, with no key at all.</div>
+<div class="ad-miss" data-guess="a">Encryption only protects data from people who don't have the key. With the key sitting in the same script, anyone who can read the script can decrypt the password.</div>
 <div class="ad-miss" data-guess="c">A hash can't be turned back into the password, so the script couldn't sign in to the vendor any more. Hashing is for checking a password, not for sending one.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -214,7 +216,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encoding hides nothing and hashing can't be reversed, so neither works for a password a script has to use. The secret has to live somewhere that's protected by access control and encryption, not in a text file in a shared folder.</p>
+<p>Encoding hides nothing, encryption with the key beside it hides nothing either, and hashing can't be reversed, so none of them works for a password a script has to use. The secret has to live somewhere that's protected by access control and encryption, not in a text file in a shared folder.</p>
 </div>
 <div>
 <span>What to do</span>

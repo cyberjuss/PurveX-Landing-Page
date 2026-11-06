@@ -39,10 +39,11 @@ export const SKILLS: Record<Skill, { label: string; advice: string }> = {
 export const MISSION_SKILLS: Record<string, Skill> = {
   // Weeks 1 to 4: one challenge each, set in the student's own PurveX lab.
   "w3-01": "troubleshooting",
-  "w3-02": "troubleshooting",
+  "w3-02": "security",
   "w3-03": "security",
   "w3-04": "security",
-  "w3-05": "logs",
+  "w3-05": "security",
+  "w4-06": "logs",
   "w4-01": "access",
   "w4-02": "access",
   "w4-03": "access",

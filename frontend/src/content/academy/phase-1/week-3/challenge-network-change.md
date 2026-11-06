@@ -3,28 +3,68 @@
 <h3>The Network Change That Went Wrong</h3>
 <p class="ad-brief__ask">A contractor ran a network change at PurveX Financial over the weekend. It's Monday, and the cleanup they promised never happened. Can you read their change log, find what they left behind, and put it right?</p>
 <p>The contractor's change log is in the IT share. Read it the way you would on the job: every line is a change that someone now has to check.</p>
-<p>First, set up the weekend. On your domain controller, open PowerShell as an administrator and run the block below once. It makes the contractor's changes and saves their change log.</p>
+<p>You'll use two tools network and security staff reach for every week: <strong>Nmap</strong>, to check what a server really exposes, and <strong>Wireshark</strong>, to see what really crosses the wire. Install both on your domain controller from their official sites, <code>nmap.org/download</code> and <code>wireshark.org/download</code>. Keep the Npcap option ticked when the installers offer it, including support for loopback traffic.</p>
+<p>Then set up the weekend. On your domain controller, open PowerShell as an administrator and run the block below. It makes the contractor's changes and saves their change log. It's safe to run again.</p>
 </div>
 
 ```powershell
 & {
-  $it = "C:\PurveX\Shares\IT"
-  New-Item -ItemType Directory -Force -Path $it | Out-Null
-  $log = Join-Path $it "Network_Change_Log_Nov.txt"
-  if (Test-Path $log) { "The weekend change is already set up."; return }
-  $zone = (Get-ADDomain).DNSRoot
+  $root = "C:\PurveX"
+  $it = "$root\Shares\IT"; $jobs = "$root\Jobs"
+  New-Item -ItemType Directory -Force -Path $it, $jobs | Out-Null
+  $d = Get-ADDomain; $zone = $d.DNSRoot
+  # CHG-3301: the portal's record still points at the retired server.
   if (-not (Get-DnsServerResourceRecord -ZoneName $zone -Name "portal" -ErrorAction SilentlyContinue)) {
     Add-DnsServerResourceRecordA -ZoneName $zone -Name "portal" -IPv4Address "10.255.255.10"
   }
-  New-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet" -Group "PurveX Lab" -Direction Inbound -Protocol TCP -LocalPort 23 -Action Allow | Out-Null
-  New-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail" -Group "PurveX Lab" -Direction Outbound -Protocol TCP -RemotePort 25 -Action Allow | Out-Null
-  Set-Content -Path $log -Encoding ascii -Value @(
+  # CHG-3302: the vendor's console, still listening on port 23, and the rule that lets it in.
+  if (-not (Get-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet" -ErrorAction SilentlyContinue)) {
+    New-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet" -Group "PurveX Lab" -Direction Inbound -Protocol TCP -LocalPort 23 -Action Allow | Out-Null
+  }
+  if (-not (Get-ScheduledTask -TaskName "NetBridge Vendor Console" -ErrorAction SilentlyContinue)) {
+    Set-Content -Path "$jobs\vendor-console.ps1" -Encoding ascii -Value @(
+      '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Any, 23); $s.Start()',
+      'while ($true) { $c = $s.AcceptTcpClient(); $w = New-Object IO.StreamWriter($c.GetStream()); $w.AutoFlush = $true; $w.WriteLine("NetBridge switch console 2.1"); $w.Write("login: "); Start-Sleep 3; $c.Close() }'
+    )
+    $a = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File $jobs\vendor-console.ps1"
+    Register-ScheduledTask -TaskName "NetBridge Vendor Console" -Action $a -Trigger (New-ScheduledTaskTrigger -AtStartup) -User "SYSTEM" -RunLevel Highest -Force | Out-Null
+    Start-ScheduledTask -TaskName "NetBridge Vendor Console"
+  }
+  # CHG-3303: outbound mail from the domain controller.
+  if (-not (Get-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail" -ErrorAction SilentlyContinue)) {
+    New-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail" -Group "PurveX Lab" -Direction Outbound -Protocol TCP -RemotePort 25 -Action Allow | Out-Null
+  }
+  # Finance's legacy report sync: signs in to the directory every minute.
+  if (-not (Get-ADUser -Filter "SamAccountName -eq 'svc-reportsync'" -ErrorAction SilentlyContinue)) {
+    New-ADUser -Name "svc-reportsync" -SamAccountName "svc-reportsync" -UserPrincipalName "svc-reportsync@$zone" -Path "OU=ServiceAccounts,$($d.DistinguishedName)" `
+      -Description "Legacy report sync for Finance. Signs in to the directory every minute." `
+      -AccountPassword (ConvertTo-SecureString "Ledger-Sync-77" -AsPlainText -Force) -Enabled $true -PasswordNeverExpires $true
+  }
+  if (-not (Get-ScheduledTask -TaskName "PurveX Legacy Report Sync" -ErrorAction SilentlyContinue)) {
+    Add-Type -AssemblyName System.Security
+    $blob = [Security.Cryptography.ProtectedData]::Protect([Text.Encoding]::UTF8.GetBytes("Ledger-Sync-77"), $null, "LocalMachine")
+    [IO.File]::WriteAllBytes("$jobs\report-sync.bin", $blob)
+    Set-Content -Path "$jobs\report-sync.ps1" -Encoding ascii -Value @(
+      'Add-Type -AssemblyName System.Security, System.DirectoryServices.Protocols',
+      '$pw = [Text.Encoding]::UTF8.GetString([Security.Cryptography.ProtectedData]::Unprotect([IO.File]::ReadAllBytes("C:\PurveX\Jobs\report-sync.bin"), $null, "LocalMachine"))',
+      '$dom = (Get-CimInstance Win32_ComputerSystem).Domain',
+      '$c = New-Object System.DirectoryServices.Protocols.LdapConnection("$($env:COMPUTERNAME).$($dom):389")',
+      '$c.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic',
+      '$c.SessionOptions.ProtocolVersion = 3',
+      'try { $c.Bind((New-Object Net.NetworkCredential("svc-reportsync@$dom", $pw))) } catch {}',
+      '$c.Dispose()'
+    )
+    $a = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File $jobs\report-sync.ps1"
+    $t = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1)
+    Register-ScheduledTask -TaskName "PurveX Legacy Report Sync" -Action $a -Trigger $t -User "SYSTEM" -RunLevel Highest -Force | Out-Null
+  }
+  Set-Content -Path "$it\Network_Change_Log_Nov.txt" -Encoding ascii -Value @(
     "PurveX Financial - network change log, weekend of Nov 8",
     "Contractor: NetBridge Services",
     "",
     "CHG-3301  Intranet portal moved off PORTAL01 (10.255.255.10). PORTAL01 retired.",
     "          The portal now runs on DC01 until the new server arrives.",
-    "CHG-3302  Opened TCP 23 inbound on DC01 for our console during the switch upgrade.",
+    "CHG-3302  Started our switch console on DC01 and opened its port inbound for the upgrade.",
     "          Remove after cutover.",
     "CHG-3303  Allowed outbound TCP 25 from DC01 to test the scanner-to-email relay.",
     "          Remove after test.",
@@ -85,65 +125,26 @@
 </div>
 
 <div class="ad-mission" data-id="w3-02" data-attempts="0">
-<span class="ad-mission__num">Ticket 02 · Three-Way Handshake · Medium</span>
-<h4>Timed Out or Refused?</h4>
-<p><strong>Priya Nair · IT · 9:05 AM</strong><br>Two more calls about apps that won't connect. Jordan's reporting tool says "connection timed out" after thirty seconds. Riley's ledger app says "connection refused" straight away. Which one is a firewall silently dropping the traffic?<br><strong>A</strong> Jordan's. A timeout means the first SYN got no reply at all, which is what a firewall drop looks like. Riley's server answered with a reset, so it's up but nothing is listening on that port.<br><strong>B</strong> Riley's. "Refused" means a firewall blocked it, and Jordan's server is just slow.<br><strong>C</strong> Both. The two messages mean the same thing.</p>
-<p><strong>Task:</strong> Choose the correct reading and type its letter.</p>
+<span class="ad-mission__num">Ticket 02 · Three-Way Handshake · High · Nmap</span>
+<h4>Scan What the Change Left Open</h4>
+<p><strong>Alex Rivera · IT · 9:05 AM</strong><br>Before we trust anything in that change log, I want to see DC01 the way an attacker on our network would. Scan it and tell me what's listening that shouldn't be.</p>
+<p><strong>Task:</strong> Scan the domain controller's own address with Nmap. Compare the open ports with what a domain controller normally runs, and report the port that doesn't belong.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Timed Out or Refused?" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>Every TCP connection starts with a SYN. Think about the two possible replies, and what it means when there is no reply at all.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">A refusal is an answer: the server sent back a reset. A firewall that drops traffic sends nothing back, so the client waits until it times out.</div>
-<div class="ad-miss" data-guess="c">They're different answers to the same SYN. One is silence, and the other is a reset from a running host.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>GTF{a}</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>The two errors send you to different people. A timeout points at the network or a firewall, so it goes to whoever owns the rules. A refusal means the host is up but the service isn't running, so it goes to whoever owns the app. Reading the error correctly saves an hour of passing the ticket around.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Test both from a workstation with <code>Test-NetConnection</code> and the port. Send Jordan's to the firewall owners with the port number, and Riley's to the ledger app's owner to check the service.</p>
-</div>
-</div>
-</div>
-</div>
-
-<div class="ad-mission" data-id="w3-03" data-attempts="0">
-<span class="ad-mission__num">Ticket 03 · Common Ports · High · CHG-3302</span>
-<h4>Close the Vendor's Door</h4>
-<p><strong>Alex Rivera · IT · 9:40 AM</strong><br>The change log says the contractor opened a port on DC01 for their console and would remove it after cutover. I'd bet it's still open. Find it and close it.</p>
-<p><strong>Task:</strong> Find the inbound rule from CHG-3302, switch it off, and report the port it opened.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Close the Vendor's Door" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<input type="text" class="ad-guess__input" aria-label="Answer for Scan What the Change Left Open" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{23}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The change log tells you what to look for. Find the inbound rule that allows it, read its port, and disable it.</p>
+<p>A connect scan, <code>-sT</code>, completes the three-way handshake with each port. A SYN-ACK back means open, a reset means closed, and silence means something filtered it. <code>-sV</code> also asks each open port what it is. Only scan systems you're authorized to scan, which on the job means a signed-off scope.</p>
 <ol>
-<li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
-<li>Open Inbound Rules and find the contractor's vendor rule.</li>
-<li>Read the port on its Protocols and Ports tab, then right-click it and choose Disable Rule.</li>
+<li>Find the domain controller's address with <code>ipconfig</code>.</li>
+<li>Run <code>nmap -sT -sV</code> followed by that address.</li>
+<li>Read the PORT, STATE and SERVICE columns. A domain controller normally shows DNS, Kerberos, LDAP, SMB, RPC and Remote Desktop. Look for the one that isn't on that list.</li>
 </ol>
-<p>In PowerShell:</p>
-<ul>
-<li><code>Get-NetFirewallRule -DisplayName "PurveX Legacy*" | Get-NetFirewallPortFilter</code></li>
-<li><code>Disable-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet"</code></li>
-</ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="22">That's SSH. Read the port the contractor's rule actually opens.</div>
-<div class="ad-miss" data-guess="#">Open the vendor rule's Protocols and Ports tab and read its local port.</div>
+<div class="ad-miss" data-guess="53|88|135|139|389|445|464|593|636|3268|3269|3389|5985|9389">That's a normal domain controller service. Look down the list for a port and service that came from the contractor.</div>
+<div class="ad-miss" data-guess="25">Port 25 is outbound in the change log, so a scan of what DC01 listens on won't show it. Look for a port that's open inbound.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -152,11 +153,55 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Port 23 is Telnet, which sends everything, passwords included, in plain text. It was open on the domain controller to anyone on the network, for a job that finished on Sunday night. A temporary rule that's never removed is how most exposed ports come about.</p>
+<p>Nmap showed port 23 open, with the vendor's console answering as Telnet. The change log told you to expect it, but the scan is what proves it's still there. Checking a server with a scan after every change is how network and security teams catch what a change log forgets to mention.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Disable the rule, confirm it in the firewall, and mark CHG-3302 closed with the time you did it. Ask the contractor to use a secure, time-limited method next time, and make removing temporary rules part of signing off a change.</p>
+<p>Save the scan output in the ticket as your before picture. Close the port in the next ticket, then scan again to show the after picture.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="w3-03" data-attempts="0">
+<span class="ad-mission__num">Ticket 03 · Common Ports · High · Change Control</span>
+<h4>Close the Vendor's Door</h4>
+<p><strong>Alex Rivera · IT · 9:40 AM</strong><br>Telnet on our domain controller, open to the whole network. Shut it down: the rule and the console behind it. And tell me which change in the log opened it, so I can raise it with the contractor.</p>
+<p><strong>Task:</strong> Disable the inbound rule that lets port 23 in, stop and disable the vendor's console task, and report the change number that opened it.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for Close the Vendor's Door" placeholder="a change number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{CHG-3302}" data-accept="3302">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Closing it properly takes two steps: the firewall rule that lets traffic in, and the program that answers. The change log names the change.</p>
+<ol>
+<li>Open <code>wf.msc</code>, find the vendor rule under Inbound Rules, and disable it.</li>
+<li>Open Task Scheduler with <code>taskschd.msc</code>, then end and disable the NetBridge console task.</li>
+<li>Read <code>C:\PurveX\Shares\IT\Network_Change_Log_Nov.txt</code> for the change that started it.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Disable-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet"</code></li>
+<li><code>Stop-ScheduledTask "NetBridge Vendor Console"; Disable-ScheduledTask "NetBridge Vendor Console"</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="chg-3301|chg-3303|3301|3303">That change is about something else. Find the one that started the console and opened its port.</div>
+<div class="ad-miss" data-guess="23">That's the port. Report the change number from the log that opened it.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{CHG-3302}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Telnet sends everything, passwords included, in plain text. It sat open on the domain controller for a job that ended on Sunday night. Tying the finding to CHG-3302 turns "someone left a port open" into a change that can be reopened, closed properly and raised with the contractor.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Scan again to confirm port 23 is no longer listening, record the before and after in CHG-3302, and close it. Make removing temporary access part of signing off every change.</p>
 </div>
 </div>
 </div>
@@ -206,34 +251,43 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="w3-05" data-attempts="0">
-<span class="ad-mission__num">Ticket 05 · SSL/TLS · Manager Request</span>
-<h4>What HTTPS Still Shows</h4>
-<p><strong>Devon Brooks · Compliance · 11:30 AM</strong><br>We think someone uploaded client files to a personal cloud account on Friday. IT has a packet capture of that laptop's traffic. Everything was HTTPS. What can the capture tell us?<br><strong>A</strong> The names and contents of every file that was uploaded.<br><strong>B</strong> That the laptop connected to the cloud service, which site it named, when, and how much data it sent. It can't show which files or what was in them.<br><strong>C</strong> Nothing at all, because HTTPS hides everything.</p>
-<p><strong>Task:</strong> Choose what the capture can show and type its letter.</p>
+<span class="ad-mission__num">Ticket 05 · Protocols and TLS · Critical · Wireshark</span>
+<h4>Read the Password Off the Wire</h4>
+<p><strong>Devon Brooks · Finance · 11:30 AM</strong><br>Our old report sync signs in to the directory every minute. The vendor promised the password is "stored encrypted", so we've never worried about it. Is that the whole story?</p>
+<p><strong>Task:</strong> Capture the domain controller's own traffic with Wireshark for a couple of minutes, find the report sync signing in, and read its password. Then disable <code>svc-reportsync</code> and report the password.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for What HTTPS Still Shows" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for Read the Password Off the Wire" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{Ledger-Sync-77}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>TLS encrypts the content of the conversation. Think about what has to stay visible for the traffic to reach the right place at all.</p>
+<p>The job runs on the domain controller and signs in to the domain controller, so its traffic never leaves the machine. Capture on the loopback adapter. Directory sign-ins use LDAP on port 389, and a "simple" bind carries the password exactly as typed.</p>
+<ol>
+<li>Open Wireshark and start a capture on <strong>Adapter for loopback traffic capture</strong>.</li>
+<li>Wait a minute or two for the job to run, then type <code>ldap</code> in the display filter.</li>
+<li>Open a <strong>bindRequest</strong> packet, expand the LDAP section, and read the name and the <strong>simple</strong> field.</li>
+<li>Disable <code>svc-reportsync</code> in Active Directory Users and Computers, and disable the job in Task Scheduler.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Disable-ADAccount svc-reportsync; Disable-ScheduledTask "PurveX Legacy Report Sync"</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">The content is encrypted, so file names and contents aren't readable in the capture.</div>
-<div class="ad-miss" data-guess="c">Encryption hides the content, not the conversation. The addresses, the timing, the amount of data and usually the site name are all still visible.</div>
+<div class="ad-miss" data-guess="svc-reportsync|svc-reportsync@purvexfinancial.local">That's the account name in the bind. Report the value in its simple field.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>GTF{b}</code></p>
+<p class="ad-flag__code"><code>GTF{Ledger-Sync-77}</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>A capture won't prove which files left, but a large upload to a personal cloud service, from a laptop that holds client data, at a time you can name, is strong evidence on its own. Analysts work from this kind of outside information far more often than they read content.</p>
+<p>The vendor was telling the truth: on disk, the password is encrypted. But every minute the job sends it across the network in plain text, where anyone who can capture traffic reads it in seconds. Protecting data at rest says nothing about data in transit, and that's the gap TLS exists to close.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Tell Devon what the capture can and can't show, and point them to where the file names live: the laptop itself and the cloud service's own activity log. Keep the capture as evidence either way.</p>
+<p>Treat the password as burned. Disable the account now, then rebuild the job on LDAPS, LDAP over TLS on port 636, with a new password. Capture again afterwards to prove the bind is no longer readable.</p>
 </div>
 </div>
 </div>

@@ -758,7 +758,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     id: "w2-01",
     challenge: "tuesday-after-breach",
     title: "Decode the Settlement Script",
-    prompt: "Decode the password in the Operations settlement script that its comment calls encrypted.",
+    prompt: "Decode, in CyberChef, the password the Operations settlement script calls encrypted.",
     skill: "security",
   },
   "w2-02": {
@@ -799,15 +799,15 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "w3-02": {
     id: "w3-02",
     challenge: "network-change",
-    title: "Timed Out or Refused?",
-    prompt: "Tell a firewall drop from a closed port by the error each user saw.",
-    skill: "troubleshooting",
+    title: "Scan What the Change Left Open",
+    prompt: "Scan the domain controller with Nmap and report the open port that doesn't belong on it.",
+    skill: "security",
   },
   "w3-03": {
     id: "w3-03",
     challenge: "network-change",
     title: "Close the Vendor's Door",
-    prompt: "Find the inbound rule the contractor left open, switch it off, and report its port.",
+    prompt: "Close the vendor's Telnet rule and console, and name the change that opened them.",
     skill: "security",
   },
   "w3-04": {
@@ -820,8 +820,15 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "w3-05": {
     id: "w3-05",
     challenge: "network-change",
-    title: "What HTTPS Still Shows",
-    prompt: "Decide what a capture of an HTTPS upload can and cannot prove.",
+    title: "Read the Password Off the Wire",
+    prompt: "Capture the legacy report sync with Wireshark, read its password from the LDAP bind, and disable the account.",
+    skill: "security",
+  },
+  "w4-06": {
+    id: "w4-06",
+    challenge: "access-review",
+    title: "Has Someone Been Guessing?",
+    prompt: "Count the failed sign-ins for the shared reception login in the Security log with Event Viewer.",
     skill: "logs",
   },
   "w4-01": {
@@ -1001,7 +1008,7 @@ export const LAB_GATED_MISSIONS = [
   "dk-02", "dk-04", "dk-05", "dk-06", "dk-07", "dk-10",
   "w1-01", "w1-02", "w1-03",
   "w2-02", "w2-04",
-  "w3-01", "w3-03", "w3-04",
+  "w3-01", "w3-03", "w3-04", "w3-05",
   "w4-01", "w4-03", "w4-04",
 ];
 

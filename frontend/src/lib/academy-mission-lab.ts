@@ -244,6 +244,8 @@ const MISSION_LAB = {
     { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is set up in this lab" },
     { c: { t: "fwRuleOff", name: "PurveX Relay - Outbound Mail" }, label: "The outbound mail rule is disabled or removed" },
   ]),
+  // The report sync's password was read off the wire, so the account is burned.
+  "w3-05": G([{ c: { t: "enabled", sam: "svc-reportsync", want: false }, label: "svc-reportsync is disabled" }]),
   // Week 4: The Quarterly Access Review. frontdesk.shared and priya.nair's
   // Domain Admins membership come from the setup block. noor.ahmadi is the
   // INC-1071 account every lab already plants.
