@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { useRouter } from "next/navigation";
 import { Check, ChevronLeft, ChevronRight, Flag, Wrench } from "lucide-react";
 import { Markdown } from "@/lib/markdown";
-import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
+import { CHALLENGE_PATHS, MISSION_CATALOG, challengeAt } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
 import { MissionPager } from "./mission-pager";
 import { ResourcesView } from "./resources-view";
@@ -457,6 +457,11 @@ export function SectionTabs({
           nextSection={nextTrail}
           actionHost={current.kind === "challenge" ? challengeFoot : undefined}
           recordLabel={current.kind === "challenge" ? current.label.replace(/^Challenge:\s*/, "") : undefined}
+          recordChallenge={
+            current.kind === "challenge"
+              ? challengeAt(`/range/${phaseSlug}/${entrySlug}`, slugify(current.label.replace(/^Challenge:\s*/, "")))
+              : null
+          }
         >
           {current.kind === "section" && current.label === "Resources" ? (
             <ResourcesView markdown={current.markdown} fallback={<Markdown content={current.markdown} />} />

@@ -23,6 +23,7 @@ export function MissionPager({
   nextSection,
   actionHost,
   recordLabel,
+  recordChallenge,
 }: {
   children: ReactNode;
   prevSection?: Neighbor | null;
@@ -30,6 +31,8 @@ export function MissionPager({
   actionHost?: HTMLElement | null;
   /** Set only for challenge content. Shows the Record Your Challenge control, named for the download. */
   recordLabel?: string;
+  /** The challenge being recorded, so a finished recording can go on the student's profile. */
+  recordChallenge?: string | null;
 }) {
   const router = useRouter();
   const root = useRef<HTMLDivElement>(null);
@@ -296,7 +299,7 @@ export function MissionPager({
               Reset challenge
             </button>
           ) : null}
-          {recordLabel ? <ChallengeRecorder label={recordLabel} /> : null}
+          {recordLabel ? <ChallengeRecorder label={recordLabel} challenge={recordChallenge ?? null} /> : null}
         </div>
       ) : null}
     </div>

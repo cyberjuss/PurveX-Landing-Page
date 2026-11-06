@@ -43,6 +43,8 @@ type Data = {
   settings: Settings;
   saved: boolean;
   shots: Shot[];
+  /** Verified challenge clips already on the profile. */
+  clips?: { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null }[];
   blockers: string[];
   /** On Explore: the draft is readable, but publishing it is what Pro buys. */
   locked?: boolean;
@@ -129,6 +131,29 @@ export function ProofEditor() {
   useEffect(() => {
     fetchData().then((b) => apply(b, true));
   }, [apply, fetchData]);
+
+  // Clips stream from a short-lived link the server signs for the owner.
+  const [clipUrls, setClipUrls] = useState<Record<string, string>>({});
+  const clipUrlsRef = useRef(clipUrls);
+  useEffect(() => {
+    clipUrlsRef.current = clipUrls;
+  }, [clipUrls]);
+  useEffect(() => {
+    if (!data?.clips?.length) return;
+    let stop = false;
+    for (const c of data.clips) {
+      if (clipUrlsRef.current[c.id]) continue;
+      academyFetch(`/academy/api/proof/clip?id=${encodeURIComponent(c.id)}`)
+        .then((r) => (r.ok ? (r.json() as Promise<{ url?: string }>) : null))
+        .then((b) => {
+          if (b?.url && !stop) setClipUrls((u) => ({ ...u, [c.id]: b.url! }));
+        })
+        .catch(() => {});
+    }
+    return () => {
+      stop = true;
+    };
+  }, [data]);
 
   // Screenshots need the Bearer token, so each one is fetched into a blob URL.
   useEffect(() => {
@@ -258,6 +283,14 @@ export function ProofEditor() {
     await load();
   }
 
+  async function removeClip(id: string) {
+    setBusy(true);
+    const res = await academyFetch(`/academy/api/proof/clip?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    setBusy(false);
+    if (!res.ok) say("Unable to remove that clip. Try again.", true);
+    await load();
+  }
+
   async function remove(id: string) {
     setBusy(true);
     const res = await academyFetch(`/academy/api/proof?id=${encodeURIComponent(id)}`, { method: "DELETE" });
@@ -362,8 +395,9 @@ export function ProofEditor() {
               clearance: contact.clearance || null,
               updatedAt: "",
             }}
-            data={{ items, skills: data.skills, roleName: data.roleName, roleNames: data.roleNames, certs: data.certs, lastLabCheck: data.lastLabCheck, shots: data.shots }}
+            data={{ items, skills: data.skills, roleName: data.roleName, roleNames: data.roleNames, certs: data.certs, lastLabCheck: data.lastLabCheck, shots: data.shots, clips: data.clips ?? [] }}
             shotSrc={(id) => urls[id] ?? ""}
+            clipSrc={(id) => clipUrls[id] ?? null}
             printable={false}
             avatarSrc={avatar}
             resumeHref={resumeUrl}
@@ -752,6 +786,29 @@ export function ProofEditor() {
                 );
               })}
             </ul>
+          </section>
+          <section className="pf-sec">
+            <h2>Challenge clips</h2>
+            <p>
+              Record a challenge, and once every question in it is solved, choose <strong>Add to my profile</strong> when you stop recording. The clip shows here with a Verified solve stamp.
+            </p>
+            {(data.clips ?? []).length > 0 && (
+              <ul className="pf-shots">
+                {(data.clips ?? []).map((c) => (
+                  <li key={c.id}>
+                    <div className="pf-shots__head">
+                      <span>
+                        {c.title}
+                        <small className="is-done">Verified solve{c.solvedAt ? ` · ${new Date(c.solvedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}` : ""}</small>
+                      </span>
+                      <button type="button" className="pf-btn" disabled={busy} onClick={() => removeClip(c.id)}>
+                        Remove
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
           {todoSection}
         </>

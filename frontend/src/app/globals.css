@@ -4455,6 +4455,20 @@ html:active-view-transition .ax-page { animation: none }
 .academy-bg[data-academy-theme="dark"] .ad-record__guide { border-color: rgba(148, 163, 184, 0.35); background: rgba(252, 165, 165, 0.05); color: #cbd5e1; }
 .academy-bg[data-academy-theme="dark"] .ad-record__guide-title { color: #f1f5f9; }
 .academy-bg[data-academy-theme="dark"] .ad-record__guide-note { color: #94a3b8; }
+/* After a recording stops: put it on the Proof Profile as a verified solve. */
+.ad-record__clip { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 0.8125rem; color: #475569; }
+.ad-record__add {
+  display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px;
+  border: 1px solid #0f7a55; background: #0f7a55; color: #fff; font-size: 0.8125rem; font-weight: 650; cursor: pointer;
+}
+.ad-record__add:hover { background: #0b6345; border-color: #0b6345; }
+.ad-record__add:disabled { opacity: 0.7; cursor: progress; }
+.ad-record__clip-ok { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #0f7a55; }
+.ad-record__clip-ok a, .ad-record__clip-bad a { font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+.ad-record__clip-bad { color: #b42318; }
+.academy-bg[data-academy-theme="dark"] .ad-record__clip { color: #cbd5e1; }
+.academy-bg[data-academy-theme="dark"] .ad-record__clip-ok { color: #4ade80; }
+.academy-bg[data-academy-theme="dark"] .ad-record__clip-bad { color: #fca5a5; }
 
 /* Readiness report and the Academy's report-style design system */
 /* Light theme. The muted ink and the status colours are measured against white:

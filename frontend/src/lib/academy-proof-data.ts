@@ -1,6 +1,8 @@
 import "server-only";
 import { CERT_IDS, CERTS, roleLabel, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import { buildSkills, buildWorkItems, TRACK_FOR_ROLE, type Track, type WorkItem } from "@/lib/academy-proof";
+import { listClips } from "@/lib/academy-clips";
+import { CHALLENGE_LABELS } from "@/lib/academy-missions";
 import { listShots, loadProofSettings, type ProofSettings, type ProofShot } from "@/lib/academy-proof-store";
 import { loadDrills, loadLabState, loadProfile, loadProgress } from "@/lib/academy-store";
 
@@ -17,17 +19,22 @@ export type ProofData = {
   lastLabCheck: string | null;
   settings: ProofSettings | null;
   shots: ProofShot[];
+  /** Verified challenge recordings, live on the profile. No storage paths: the page links through /p/<slug>/clip/<id>. */
+  clips: ProofClip[];
 };
+
+export type ProofClip = { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null };
 
 /** Everything the profile shows, read fresh from the student's own records. */
 export async function loadProofData(userId: string): Promise<ProofData> {
-  const [results, drills, lab, profile, settings, shots] = await Promise.all([
+  const [results, drills, lab, profile, settings, shots, clips] = await Promise.all([
     loadProgress(userId),
     loadDrills(userId),
     loadLabState(userId),
     loadProfile(userId),
     loadProofSettings(userId),
     listShots(userId),
+    listClips(userId, true),
   ]);
   const items = buildWorkItems(results, drills);
   const role = profile?.roles[0] ?? null;
@@ -42,6 +49,7 @@ export async function loadProofData(userId: string): Promise<ProofData> {
     lastLabCheck: lab?.uploadedAt ?? null,
     settings,
     shots,
+    clips: clips.map((c) => ({ id: c.id, title: CHALLENGE_LABELS[c.challenge], durationSec: c.durationSec, solvedAt: c.solvedAt, recordedAt: c.recordedAt })),
   };
 }
 

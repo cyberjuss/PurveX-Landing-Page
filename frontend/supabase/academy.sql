@@ -236,6 +236,42 @@ insert into storage.buckets (id, name, public)
 values ('proof-screenshots', 'proof-screenshots', false)
 on conflict (id) do nothing;
 
+-- Verified challenge clips: a screen recording a student made of a challenge,
+-- shown on their Proof Profile. The server only issues an upload once every
+-- question in that challenge is solved (solves are recorded by the server
+-- alone), and stamps the solve time on the row. One live clip per challenge.
+-- The browser uploads straight to the private proof-clips bucket through a
+-- signed URL, because a video is far over Vercel's 4.5 MB request limit.
+-- status is 'pending' until the server confirms the file arrived.
+create table if not exists public.academy_challenge_clips (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  challenge text not null,
+  path text not null,
+  size_bytes bigint not null,
+  duration_sec integer not null default 0,
+  recorded_at timestamptz,
+  solved_at timestamptz,
+  status text not null default 'pending' check (status in ('pending', 'ready')),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists academy_challenge_clips_user
+  on public.academy_challenge_clips (user_id, challenge);
+
+alter table public.academy_challenge_clips enable row level security;
+
+drop policy if exists "Students read their own challenge clips" on public.academy_challenge_clips;
+create policy "Students read their own challenge clips"
+  on public.academy_challenge_clips for select
+  using (auth.uid() = user_id);
+
+-- 100 MB per clip, WebM only. The project's own storage upload limit
+-- (Dashboard, Storage, Settings) must be at least this for the cap to apply.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('proof-clips', 'proof-clips', false, 104857600, array['video/webm'])
+on conflict (id) do update set file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+
 -- Optional, self-reported work eligibility shown to employers.
 alter table public.academy_public_profiles add column if not exists work_auth text;
 alter table public.academy_public_profiles add column if not exists clearance text;

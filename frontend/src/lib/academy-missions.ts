@@ -895,6 +895,12 @@ export const CHALLENGE_PATHS: Record<
   "new-hire-week": { href: "/range/phase-1/home-lab-desk", tab: "a-new-hire-s-first-week" },
 };
 
+/** The challenge a page's "Challenge: ..." tab runs, from the page and the tab's slug. */
+export function challengeAt(href: string, tab: string): MissionCatalogEntry["challenge"] | null {
+  const hit = (Object.entries(CHALLENGE_PATHS) as [MissionCatalogEntry["challenge"], { href: string; tab: string }][]).find(([, p]) => p.href === href && p.tab === tab);
+  return hit ? hit[0] : null;
+}
+
 export function missionHref(id: string): string {
   const mission = MISSION_CATALOG[id];
   if (!mission) return "/range";

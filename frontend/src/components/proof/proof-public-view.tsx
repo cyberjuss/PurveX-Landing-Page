@@ -65,14 +65,17 @@ export function ProofPublicView({
   settings,
   data,
   shotSrc = (id) => `/p/${settings.slug}/shot/${id}`,
+  clipSrc = (id) => `/p/${settings.slug}/clip/${id}`,
   avatarSrc = null,
   resumeHref = settings.resumePath ? `/p/${settings.slug}/resume` : null,
   printable = true,
 }: {
   settings: ProofSettings;
-  data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & Partial<Pick<ProofData, "roleNames" | "certs">> & { shots: Shot[] };
+  data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & Partial<Pick<ProofData, "roleNames" | "certs" | "clips">> & { shots: Shot[] };
   /** Where each screenshot loads from. The student's own preview uses blob URLs. */
   shotSrc?: (id: string) => string;
+  /** Where each challenge clip streams from. Null shows the card without a player. */
+  clipSrc?: (id: string) => string | null;
   /** The student's profile photo, when they added one. */
   avatarSrc?: string | null;
   /** Where the resume downloads from, when the student added one. */
@@ -201,6 +204,49 @@ export function ProofPublicView({
           </ul>
         </section>
 
+        {(data.clips ?? []).length > 0 && (
+          <section className="pp-sec">
+            <h2>Recorded challenges</h2>
+            <p className="pp-note">
+              {first} recorded these challenges while working them. Range adds a clip to this page only after recording every question in the challenge as solved, and stamps the solve date on it.
+            </p>
+            <ul className="pp-clips">
+              {(data.clips ?? []).map((c) => {
+                const src = clipSrc(c.id);
+                return (
+                  <li key={c.id} className="pp-clip">
+                    <div className="pp-clip__frame">
+                      {src ? (
+                        <video className="pp-clip__video" src={src} controls preload="metadata" playsInline aria-label={`${first} working ${c.title}`} />
+                      ) : (
+                        <div className="pp-clip__video pp-clip__video--off">Loading the clip</div>
+                      )}
+                      <span className="pp-clip__badge">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" />
+                          <path d="M8.5 12l2.5 2.5 4.5-5" />
+                        </svg>
+                        Verified solve
+                      </span>
+                    </div>
+                    <div className="pp-clip__stamp">
+                      <b>{c.title}</b>
+                      <span>
+                        {[c.solvedAt ? `Solved ${day(c.solvedAt)}` : "", c.durationSec ? clipLength(c.durationSec) : ""].filter(Boolean).join(" · ")}
+                      </span>
+                      {settings.credentialId && (
+                        <span className="pp-clip__cred">
+                          <code>{settings.credentialId}</code> · <a href={`/verify/${settings.credentialId}`}>Verify</a>
+                        </span>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
         {settings.showSkills && data.skills.length > 0 && (
           <section className="pp-sec">
             <h2>Skills</h2>
@@ -239,4 +285,9 @@ export function ProofPublicView({
       </div>
     </main>
   );
+}
+
+/** 754 seconds reads as "12:34 long". */
+function clipLength(sec: number) {
+  return `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")} long`;
 }

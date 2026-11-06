@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { Circle, HelpCircle, Square } from "lucide-react";
+import Link from "next/link";
+import { BadgeCheck, Circle, HelpCircle, Loader2, Square } from "lucide-react";
+import { academyFetch } from "@/lib/academy-client";
+import { CLIP_AUDIO_BPS, CLIP_MAX_BYTES, CLIP_MAX_SECONDS, CLIP_VIDEO_BPS } from "@/lib/academy-clip-limits";
 
 function slugify(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -12,15 +15,23 @@ function pickMimeType() {
   return candidates.find((t) => typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(t)) ?? "";
 }
 
-// Local-only: the recording never leaves the browser. getDisplayMedia asks
-// the student to share a tab/window/screen, MediaRecorder captures it, and
-// on stop the blob downloads straight to disk. No upload, no server, no
-// backend -- the whole point is a portfolio clip they already own.
-export function ChallengeRecorder({ label }: { label: string }) {
+// getDisplayMedia asks the student to share a tab, window or screen,
+// MediaRecorder captures it, and on stop the file downloads straight to
+// disk. Nothing leaves the browser unless the student then chooses "Add to
+// my profile": the server checks the challenge is fully solved, hands back a
+// signed upload link, and the clip goes on their Proof Profile with a
+// Verified solve stamp.
+type Take = { blob: Blob; seconds: number; recordedAt: string };
+type ClipState = { kind: "idle" } | { kind: "busy" } | { kind: "done" } | { kind: "error"; text: string; upgrade?: boolean };
+
+export function ChallengeRecorder({ label, challenge = null }: { label: string; challenge?: string | null }) {
   const [supported, setSupported] = useState(false);
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [take, setTake] = useState<Take | null>(null);
+  const [clip, setClip] = useState<ClipState>({ kind: "idle" });
+  const startedAtRef = useRef<{ iso: string; ms: number } | null>(null);
   const helpId = useId();
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -59,6 +70,11 @@ export function ChallengeRecorder({ label }: { label: string }) {
     chunksRef.current = [];
     if (!parts.length) return;
     const blob = new Blob(parts, { type: parts[0].type || "video/webm" });
+    const began = startedAtRef.current;
+    if (began) {
+      setTake({ blob, seconds: Math.round((Date.now() - began.ms) / 1000), recordedAt: began.iso });
+      setClip({ kind: "idle" });
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -85,7 +101,8 @@ export function ChallengeRecorder({ label }: { label: string }) {
     streamRef.current = stream;
     chunksRef.current = [];
     const mimeType = pickMimeType();
-    const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    // A modest bitrate keeps screen text readable and a 15-minute clip under the profile's size cap.
+    const recorder = new MediaRecorder(stream, { ...(mimeType ? { mimeType } : {}), videoBitsPerSecond: CLIP_VIDEO_BPS, audioBitsPerSecond: CLIP_AUDIO_BPS });
     recorder.ondataavailable = (e) => {
       if (e.data.size > 0) chunksRef.current.push(e.data);
     };
@@ -96,6 +113,9 @@ export function ChallengeRecorder({ label }: { label: string }) {
     // Covers stopping from the browser's own "Stop sharing" bar, not just our button.
     stream.getVideoTracks()[0]?.addEventListener("ended", stop);
     recorder.start();
+    startedAtRef.current = { iso: new Date().toISOString(), ms: Date.now() };
+    setTake(null);
+    setClip({ kind: "idle" });
     recorderRef.current = recorder;
     setRecording(true);
     setSeconds(0);
@@ -110,7 +130,38 @@ export function ChallengeRecorder({ label }: { label: string }) {
     stopTimer();
   }, [stopTimer]);
 
+  const addToProfile = useCallback(async () => {
+    if (!take || !challenge) return;
+    setClip({ kind: "busy" });
+    const fail = (text: string, upgrade = false) => setClip({ kind: "error", text, upgrade });
+    try {
+      const res = await academyFetch("/academy/api/proof/clip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ challenge, sizeBytes: take.blob.size, durationSec: take.seconds, recordedAt: take.recordedAt }),
+      });
+      const body = (await res.json().catch(() => ({}))) as { id?: string; uploadUrl?: string; error?: string; upgrade?: string };
+      if (!res.ok || !body.id || !body.uploadUrl) return fail(body.error ?? "Couldn't add the clip. Try again.", res.status === 403);
+      const put = await fetch(body.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": "video/webm", "x-upsert": "false" },
+        body: take.blob,
+      });
+      if (!put.ok) return fail("The upload didn't finish. Check your connection and try again.");
+      const done = await academyFetch(`/academy/api/proof/clip?id=${encodeURIComponent(body.id)}`, { method: "PATCH" });
+      if (!done.ok) {
+        const b = (await done.json().catch(() => ({}))) as { error?: string };
+        return fail(b.error ?? "Couldn't add the clip. Try again.");
+      }
+      setClip({ kind: "done" });
+    } catch {
+      fail("Couldn't add the clip. Try again.");
+    }
+  }, [take, challenge]);
+
   if (!supported) return null;
+
+  const tooBig = take ? take.blob.size > CLIP_MAX_BYTES || take.seconds > CLIP_MAX_SECONDS : false;
 
   const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
   const ss = String(seconds % 60).padStart(2, "0");
@@ -137,6 +188,31 @@ export function ChallengeRecorder({ label }: { label: string }) {
           <HelpCircle className="h-3.5 w-3.5" aria-hidden /> How to record
         </button>
       </div>
+      {take && challenge && !recording ? (
+        <div className="ad-record__clip" role="status">
+          {clip.kind === "done" ? (
+            <span className="ad-record__clip-ok">
+              <BadgeCheck className="h-4 w-4" aria-hidden /> Added to your profile. <Link href="/range/portfolio">View portfolio</Link>
+            </span>
+          ) : tooBig ? (
+            <span>This recording is over 15 minutes, so it can&apos;t go on your profile. It&apos;s still saved in Downloads.</span>
+          ) : (
+            <>
+              <button type="button" className="ad-record__add" onClick={addToProfile} disabled={clip.kind === "busy"}>
+                {clip.kind === "busy" ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : <BadgeCheck className="h-3.5 w-3.5" aria-hidden />}
+                {clip.kind === "busy" ? "Adding…" : "Add to my profile"}
+              </button>
+              {clip.kind === "error" ? (
+                <span className="ad-record__clip-bad">
+                  {clip.text} {clip.upgrade ? <Link href="/range/upgrade">Upgrade</Link> : null}
+                </span>
+              ) : (
+                <span>Saved to Downloads. Add it to your portfolio as a verified solve.</span>
+              )}
+            </>
+          )}
+        </div>
+      ) : null}
       {helpOpen ? (
         <div id={helpId} className="ad-record__guide" role="region" aria-label="How to record a challenge">
           <p className="ad-record__guide-title">How to record a challenge</p>
@@ -146,8 +222,11 @@ export function ChallengeRecorder({ label }: { label: string }) {
             <li>
               Click <strong>Stop recording</strong>. The video saves to your Downloads folder.
             </li>
+            <li>
+              Once the challenge is solved, click <strong>Add to my profile</strong> to show it on your portfolio as a verified solve.
+            </li>
           </ol>
-          <p className="ad-record__guide-note">It stays on your computer. Nothing is uploaded.</p>
+          <p className="ad-record__guide-note">Nothing is uploaded unless you add it to your profile.</p>
         </div>
       ) : null}
     </>
