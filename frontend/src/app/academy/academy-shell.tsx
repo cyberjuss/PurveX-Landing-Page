@@ -416,18 +416,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       feedback.style.setProperty("display", "none", "important");
     };
 
-    // After a wrong answer, offer Coach. It is asked for a nudge, not the
-    // answer, and is told what the student tried so the hint fits the mistake.
-    const offerCoach = (wrap: Element) => {
-      if (wrap.classList.contains("ad-mission--solved") || wrap.querySelector(".ad-miss__coach")) return;
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "ad-miss__coach";
-      btn.textContent = "Stuck? Ask Coach";
-      const anchor = wrap.querySelector(".ad-guess__feedback") ?? wrap.querySelector(".ad-guess");
-      anchor?.after(btn);
-    };
-
     const flashMiss = (guess: HTMLElement, input: HTMLElement, feedback: HTMLElement) => {
       hideLine(feedback);
       guess.querySelector(".ad-guess__miss")?.remove();
@@ -502,7 +490,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
 
     const markClosed = (wrap: Element, feedback: HTMLElement, animate = false) => {
       wrap.classList.add("ad-mission--solved");
-      wrap.querySelector(".ad-miss__coach")?.remove();
       const reveal = wrap.querySelector<HTMLElement>(".ad-flag");
       let box = wrap.querySelector<HTMLElement>(".ad-close");
       if (!box) {
@@ -556,9 +543,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         const feedback = wrap.querySelector<HTMLElement>(".ad-guess__feedback");
         if (feedback) markClosed(wrap, feedback);
         else wrap.classList.add("ad-mission--solved");
-      } else {
-        if (r.wrong >= 3) reveal?.classList.add("ad-flag--shown");
-        if (r.wrong > 0) offerCoach(wrap);
+      } else if (r.wrong >= 3) {
+        reveal?.classList.add("ad-flag--shown");
       }
     };
 
@@ -767,7 +753,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       // A known mistake gets a pointer to where the right answer is found.
       else if (reply.feedback) showTip(wrap, feedback, reply.feedback);
       wrap.setAttribute("data-last-guess", input.value.trim().slice(0, 120));
-      offerCoach(wrap);
     };
 
     const showTip = (wrap: Element, feedback: HTMLElement, text: string) => {
@@ -821,7 +806,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         // reading it needs to ask about their own lab, and the way out was to
         // close this, find the coach and describe where they were from memory.
         '<div class="ad-hint-card__foot">' +
-        '<button type="button" class="ad-hint-card__coach">Learn how with the coach</button>' +
+        '<button type="button" class="ad-hint-card__coach">Ask Coach</button>' +
         "</div>" +
         "</aside>";
       document.body.appendChild(root);
@@ -867,6 +852,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       root.dataset.mission = wrap.querySelector("h4")?.textContent?.trim() || "";
       const task = [...wrap.querySelectorAll(":scope > p")].find((p) => /^Task:/.test(p.textContent?.trim() || ""));
       root.dataset.task = task?.textContent?.replace(/^Task:\s*/, "").replace(/\s+/g, " ").trim() || "";
+      // The student's last wrong answer, so Coach can aim its nudge at the mistake.
+      root.dataset.guess = wrap.getAttribute("data-last-guess") || "";
       openHintId = id;
       labelHintButton(wrap, true);
     };
@@ -1227,11 +1214,12 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         const card = document.querySelector<HTMLElement>(".ad-hint-card");
         const title = card?.dataset.mission || "this ticket";
         const task = card?.dataset.task ? ` The task: "${card.dataset.task}"` : "";
+        const guess = card?.dataset.guess ? ` I answered "${card.dataset.guess}" and it was wrong, so help me see where my thinking went off.` : "";
         closeHintCard();
         window.dispatchEvent(
           new CustomEvent("academy:ask-coach", {
             detail: {
-              question: `Teach me how to do "${title}".${task} Explain which tool to use and the general steps for this kind of job, and why each one matters, without telling me the answer.`,
+              question: `Teach me how to do "${title}".${task}${guess} Explain which tool to use and the general steps for this kind of job, and why each one matters, without telling me the answer.`,
             },
           })
         );
@@ -1239,26 +1227,6 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       }
       if (target.closest(".ad-hint-card__close") || target.closest(".ad-hint-card__scrim")) {
         return closeHintCard();
-      }
-      const missCoach = target.closest<HTMLButtonElement>(".ad-miss__coach");
-      if (missCoach) {
-        const wrap = missCoach.closest(".ad-mission");
-        const title = wrap?.querySelector("h4")?.textContent?.trim() || "this ticket";
-        const task = wrap ? [...wrap.querySelectorAll(":scope > p")].find((p) => /^Task:/.test(p.textContent?.trim() || "")) : null;
-        const taskText = task?.textContent?.replace(/^Task:\s*/, "").replace(/\s+/g, " ").trim() || "";
-        const guess = wrap?.getAttribute("data-last-guess") || wrap?.querySelector<HTMLInputElement>(".ad-guess__input")?.value.trim() || "";
-        window.dispatchEvent(
-          new CustomEvent("academy:ask-coach", {
-            detail: {
-              question:
-                `I'm stuck on the challenge question "${title}".` +
-                (taskText ? ` The task: "${taskText}"` : "") +
-                (guess ? ` I answered "${guess}" and it was wrong.` : " My answer was wrong.") +
-                " Don't tell me the answer. Help me see where my thinking went wrong, and point me to what to check next in my lab.",
-            },
-          })
-        );
-        return;
       }
       const coachBtn = target.closest<HTMLButtonElement>(".ad-flag__coach");
       if (coachBtn) {
