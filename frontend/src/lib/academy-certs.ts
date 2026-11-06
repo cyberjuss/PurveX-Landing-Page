@@ -339,15 +339,18 @@ export type StudentProfile = {
 
 const clip = (v: unknown, n: number) => (typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, n) : "");
 
-/** Validates a profile from the browser or the database. Null when it is not complete. */
-export function sanitizeProfile(raw: unknown): StudentProfile | null {
+/** Validates a profile from the browser or the database. Null when it is not complete.
+ *  fillNewCerts: a saved profile from before a certification was added to the
+ *  list counts that one as "not at this time" rather than as incomplete, so
+ *  adding a cert never sends every student back through the questions. */
+export function sanitizeProfile(raw: unknown, { fillNewCerts = false }: { fillNewCerts?: boolean } = {}): StudentProfile | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const certsIn = (r.certs && typeof r.certs === "object" ? r.certs : {}) as Record<string, unknown>;
   const certs = {} as Record<CertId, CertGoal>;
   for (const id of CERT_IDS) {
     const row = (certsIn[id] && typeof certsIn[id] === "object" ? certsIn[id] : {}) as Record<string, unknown>;
-    const status = CERT_STATUSES.some((s) => s.id === row.status) ? (row.status as CertStatus) : null;
+    const status = CERT_STATUSES.some((s) => s.id === row.status) ? (row.status as CertStatus) : fillNewCerts && !(id in certsIn) ? "none" : null;
     if (!status) return null;
     const date = typeof row.examDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(row.examDate) ? row.examDate : undefined;
     const earned = typeof row.earnedDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(row.earnedDate) ? row.earnedDate : undefined;

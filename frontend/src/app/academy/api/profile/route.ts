@@ -2,7 +2,7 @@ import { after, NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { sanitizeProfile } from "@/lib/academy-certs";
 import { ensureRoleBrief } from "@/lib/academy-role-research";
-import { loadProfile, saveProfile } from "@/lib/academy-store";
+import { readProfile, saveProfile } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -19,7 +19,10 @@ async function auth(request: Request) {
 export async function GET(request: Request) {
   const a = await auth(request);
   if (a.error) return a.error;
-  return NextResponse.json({ profile: await loadProfile(a.student.id) });
+  const { profile, failed } = await readProfile(a.student.id);
+  // A failed read is "try again", never "no answers yet": the page would ask the questions all over.
+  if (failed) return NextResponse.json({ error: "Couldn't load your goals. Try again." }, { status: 503 });
+  return NextResponse.json({ profile });
 }
 
 export async function PUT(request: Request) {

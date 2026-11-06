@@ -1010,26 +1010,40 @@ export async function saveDailyDrill(userId: string, day: string, token: string,
 
 // The student's goals from the intake: certifications, target roles, and
 // where they are starting from.
-export async function loadProfile(userId: string): Promise<StudentProfile | null> {
+/** The saved profile, or null when the student has never answered. failed is
+ *  true when the database could not be read, which is not the same as "never
+ *  answered": the page must not ask the questions again over a hiccup. */
+export async function readProfile(userId: string): Promise<{ profile: StudentProfile | null; failed: boolean }> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin
       .from("academy_profiles")
       .select("certs, other_certs, roles, start_level, background, updated_at")
       .eq("user_id", userId)
       .maybeSingle();
-    if (!error && data) {
-      return sanitizeProfile({
-        certs: data.certs,
-        otherCerts: data.other_certs,
-        roles: data.roles,
-        start: data.start_level,
-        background: data.background,
-        updatedAt: data.updated_at,
-      });
+    if (!error) {
+      if (!data) return { profile: memoryProfiles.get(userId) ?? null, failed: false };
+      const profile = sanitizeProfile(
+        {
+          certs: data.certs,
+          otherCerts: data.other_certs,
+          roles: data.roles,
+          start: data.start_level,
+          background: data.background,
+          updatedAt: data.updated_at,
+        },
+        { fillNewCerts: true }
+      );
+      return { profile, failed: false };
     }
-    if (error) console.error("academy_profiles read failed", error.message);
+    console.error("academy_profiles read failed", error.message);
+    const cached = memoryProfiles.get(userId) ?? null;
+    return { profile: cached, failed: !cached };
   }
-  return memoryProfiles.get(userId) ?? null;
+  return { profile: memoryProfiles.get(userId) ?? null, failed: false };
+}
+
+export async function loadProfile(userId: string): Promise<StudentProfile | null> {
+  return (await readProfile(userId)).profile;
 }
 
 export async function saveProfile(userId: string, profile: StudentProfile): Promise<boolean> {

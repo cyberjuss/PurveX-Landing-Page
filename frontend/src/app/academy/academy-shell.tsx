@@ -169,35 +169,54 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
 
   // The intake is required. The server copy wins; a local copy covers a slow or
   // failing server and is pushed back up so Coach and the drills see it too.
+  // Only the server saying "no answers yet" shows the questions. A request that
+  // fails (a new device, a cold start, a dropped connection) is retried, so a
+  // student who already answered is never asked again over a hiccup.
   useEffect(() => {
     if (!studentId) return;
     let cancelled = false;
+    let timer: number | undefined;
     const cached = loadCachedProfile(studentId);
     setProfile(cached ?? undefined);
-    academyFetch("/academy/api/profile")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((data: { profile?: unknown }) => {
-        if (cancelled) return;
-        const server = sanitizeProfile(data.profile);
-        if (server) {
-          saveCachedProfile(studentId, server);
-          setProfile(server);
-          return;
-        }
-        setProfile(cached);
-        if (cached) {
-          academyFetch("/academy/api/profile", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ profile: cached }),
-          }).catch(() => {});
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setProfile(cached);
-      });
+    const attempt = (n: number) => {
+      academyFetch("/academy/api/profile")
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+        .then((data: { profile?: unknown }) => {
+          if (cancelled) return;
+          const server = sanitizeProfile(data.profile);
+          if (server) {
+            saveCachedProfile(studentId, server);
+            setProfile(server);
+            return;
+          }
+          setProfile(cached);
+          if (cached) {
+            academyFetch("/academy/api/profile", {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ profile: cached }),
+            }).catch(() => {});
+          }
+        })
+        .catch(() => {
+          if (cancelled) return;
+          if (cached) {
+            setProfile(cached);
+            return;
+          }
+          // Keep waiting rather than asking: 1s, 2s, 4s, 8s, 15s. Only a server
+          // that stays down for all of that falls back to the questions.
+          if (n >= 5) {
+            setProfile(null);
+            return;
+          }
+          timer = window.setTimeout(() => attempt(n + 1), Math.min(15000, 1000 * 2 ** n));
+        });
+    };
+    attempt(0);
     return () => {
       cancelled = true;
+      if (timer) window.clearTimeout(timer);
     };
   }, [studentId]);
 
