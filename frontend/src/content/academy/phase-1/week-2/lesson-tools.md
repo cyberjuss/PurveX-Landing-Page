@@ -1,23 +1,21 @@
 ### Tools You'll Use
 
-The challenge this week uses two tools to tell encoded, encrypted and hashed values apart.
+**CyberChef** (gchq.github.io/CyberChef): paste into Input, drag steps into Recipe, read Output.
 
-**CyberChef** is a free tool from GCHQ that runs in your browser at gchq.github.io/CyberChef. You paste a value into **Input**, drag steps into the **Recipe**, and read the **Output**. The three steps you'll need:
+| Step | Use it on |
+| :---- | :---- |
+| From Hex | Only 0 to 9 and a to f |
+| From Base64 | Letters, digits, `+` `/`, often ends in `=` |
+| SHA2 (256) | Anything you need to hash |
 
-- **From Hex** turns hex (only 0 to 9 and a to f) back into text.
-- **From Base64** decodes Base64 (letters, digits, `+` `/`, often ending in `=`).
-- **SHA2** with size 256 hashes whatever is in Input.
+**PowerShell:**
 
-**PowerShell** covers the rest:
-
-| Command | What it does |
+| Command | Does |
 | :---- | :---- |
 | `Get-FileHash` | Hashes a file with SHA-256 |
-| `Set-ADUser <name> -ChangePasswordAtLogon $true` | Makes a user pick a new password at their next sign-in |
+| `Set-ADUser <name> -ChangePasswordAtLogon $true` | Forces a new password at next sign-in |
 
-### Try it
-
-Paste `SGVsbG8gUHVydmVY` into CyberChef and add **From Base64**. If the output reads as a greeting, you've decoded your first value.
+**Try it:** decode `SGVsbG8gUHVydmVY` with From Base64.
 
 ```match
 prompt: Match each CyberChef step to the value it handles.

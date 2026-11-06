@@ -1,26 +1,24 @@
 ### Tools You'll Use
 
-The challenge this week is an access review. You'll gather evidence from the Security log and change group membership in Active Directory.
+**Event Viewer:** Win+R, `eventvwr.msc`, then **Windows Logs → Security → Filter Current Log**.
 
-**Event Viewer** reads the Windows logs. Open it with Win+R and `eventvwr.msc`, then go to **Windows Logs → Security**. Choose **Filter Current Log**, type an event ID and click OK:
-
-- **4624** is a successful sign-in.
-- **4625** is a failed one. Its **Account Name** and **Sub Status** fields tell you who and why.
-
-`Get-WinEvent` does the same search in PowerShell, which is handy when you need a count.
-
-**Active Directory PowerShell** covers the fixes:
-
-| Command | What it does |
+| Event ID | Means |
 | :---- | :---- |
-| `Get-ADGroupMember "<group>"` | Lists who is in a group |
-| `Get-ADPrincipalGroupMembership <user>` | Lists every group a user is in |
-| `Remove-ADGroupMember` | Takes a user out of a group |
-| `Disable-ADAccount <user>` | Stops an account signing in, but keeps it for the record |
+| 4624 | Successful sign-in |
+| 4625 | Failed sign-in. Read Account Name and Sub Status. |
 
-### Try it
+`Get-WinEvent` runs the same search in PowerShell when you need a count.
 
-Filter the Security log for **4624** and find the sign-in from when you logged on to your domain controller today.
+**Active Directory PowerShell:**
+
+| Command | Does |
+| :---- | :---- |
+| `Get-ADGroupMember "<group>"` | Lists a group's members |
+| `Get-ADPrincipalGroupMembership <user>` | Lists a user's groups |
+| `Remove-ADGroupMember` | Removes a user from a group |
+| `Disable-ADAccount <user>` | Blocks sign-in, keeps the account |
+
+**Try it:** filter for 4624 and find your own sign-in today.
 
 ```match
 prompt: Match each tool to the review question it answers.

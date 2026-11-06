@@ -1,30 +1,28 @@
 ### Tools You'll Use
 
-The challenge this week uses the two tools network and security teams reach for most. Install both on your domain controller from their official sites, nmap.org and wireshark.org.
+Install both on your domain controller from nmap.org and wireshark.org. Only scan machines you own or are allowed to test.
 
-**Nmap** asks a machine which ports are open. `nmap -sT -sV <IP address>` connects to each port and asks what's listening. Each port comes back as one of three states:
+**Nmap:** `nmap -sT -sV <IP address>` lists ports and what answers on them.
 
-- **open** means a service answered.
-- **closed** means the machine answered but nothing is listening.
-- **filtered** means no answer came, usually because a firewall dropped it.
+| State | Means |
+| :---- | :---- |
+| open | A service answered |
+| closed | Nothing is listening |
+| filtered | No answer, usually a firewall |
 
-Only scan machines you own or have written permission to test.
-
-**Wireshark** records the traffic on a network adapter. Pick an adapter to start a capture, then type a **display filter** to narrow it down:
+**Wireshark:** pick an adapter, capture, then filter.
 
 | Filter | Shows |
 | :---- | :---- |
 | `dns` | Name lookups |
 | `http` | Unencrypted web traffic |
-| `tcp.port == 23` | Anything on port 23 |
+| `tcp.port == 23` | Port 23 only |
 
-Traffic between programs on the same machine never touches the network card. To see it, capture on **Adapter for loopback traffic capture**.
+For traffic between programs on the same machine, capture on **Adapter for loopback traffic capture**.
 
-`Resolve-DnsName <name>` in PowerShell shows which address a name points to.
+**PowerShell:** `Resolve-DnsName <name>` shows the address a name points to.
 
-### Try it
-
-Run `Resolve-DnsName $env:COMPUTERNAME` and check the address matches your domain controller.
+**Try it:** `Resolve-DnsName $env:COMPUTERNAME`
 
 ```match
 prompt: Match each tool to the question it answers.
