@@ -1269,6 +1269,11 @@ function Ensure-PhaseOneChallengeTickets {
                         -LocalPort 445 -RemoteAddress "10.250.40.0/24" -Action Block | Out-Null
                 }
             }
+            # A lab that ran the old challenge-page block has this rule unscoped, which
+            # blocks SMB from every address. Narrow it, leaving it on or off as it is.
+            if (Get-NetFirewallRule -DisplayName "PurveX Maint - Block File Sharing" -ErrorAction SilentlyContinue) {
+                Set-NetFirewallRule -DisplayName "PurveX Maint - Block File Sharing" -RemoteAddress "10.250.40.0/24"
+            }
             Add-PurvexTicketMark "INC-1090"
             Write-Host "  Planted INC-1090: a client export, an altered wire file and a file-sharing block" -ForegroundColor Green
         }
@@ -1364,6 +1369,7 @@ function Ensure-PhaseOneChallengeTickets {
                     if ($t.Start) { Start-ScheduledTask -TaskName $t.Name }
                 }
             }
+            New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Shares\IT") -Force | Out-Null
             Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\Network_Change_Log_Nov.txt") -Encoding ASCII -Value @(
                 "PurveX Financial - network change log, weekend of Nov 8",
                 "Contractor: NetBridge Services",
