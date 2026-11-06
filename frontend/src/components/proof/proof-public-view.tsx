@@ -97,12 +97,6 @@ export function ProofPublicView({
   const tags = [settings.location, settings.availability, settings.workAuth, settings.clearance].filter((t): t is string => Boolean(t));
   const certsInHead = certs.length > 0 && certs.length <= 2;
   const clips = data.clips ?? [];
-  const verifiedCount = data.items.filter((it) => it.verified).length;
-  const stats = [
-    { n: data.items.length, label: data.items.length === 1 ? "lab task" : "lab tasks" },
-    { n: verifiedCount, label: "verified by Range" },
-    { n: clips.length, label: clips.length === 1 ? "recorded solve" : "recorded solves" },
-  ].filter((x, i) => i === 0 || x.n > 0);
   const mailto = settings.contactEmail ? `mailto:${settings.contactEmail}?subject=${encodeURIComponent("Your PurveX portfolio")}` : null;
   const socials = [
     { key: "linkedin", href: settings.linkedinUrl, label: "LinkedIn" },
@@ -160,16 +154,6 @@ export function ProofPublicView({
               )}
             </div>
           </div>
-          {stats[0].n > 0 && (
-            <dl className="pp-stats">
-              {stats.map((x) => (
-                <div key={x.label}>
-                  <dt>{x.n}</dt>
-                  <dd>{x.label}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
           {(canReach || printable) && (
             <div className="pp-reach">
               {actions}

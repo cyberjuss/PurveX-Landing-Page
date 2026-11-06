@@ -51,12 +51,6 @@
 .pp-tags li { padding: 3px 9px; border: 1px solid #d1d5db; border-radius: 2px; background: var(--pp-bg); font-size: var(--ty-note); color: var(--pp-ink-2); }
 .pp-tags li.pp-tag--cert { border-color: rgba(85, 70, 224, 0.35); color: var(--pp-accent-2); font-weight: 600; }
 .pp-tags li.pp-tag--cert.is-done { border-color: var(--pp-good-line); background: var(--pp-good-bg); color: var(--pp-good); }
-/* The page in numbers, for the employer who reads nothing else. */
-.pp-stats { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: 24px 0 0; border: 1px solid var(--pp-line); }
-.pp-stats > div { display: grid; gap: 4px; padding: 12px 16px; }
-.pp-stats > div + div { border-left: 1px solid var(--pp-line); }
-.pp-stats dt { order: 2; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--pp-ink); }
-.pp-stats dd { order: 1; margin: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pp-ink-3); }
 
 /* Contact row under the name. */
 .pp-reach { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
@@ -146,8 +140,6 @@
 
 @media (max-width: 720px) {
   .pp-head { grid-template-columns: 1fr; gap: 22px; }
-  .pp-stats { grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .pp-stats > div { padding: 10px 12px; }
   .pp-jobs > li.has-shots { grid-template-columns: 1fr; gap: 14px; }
   .pp-skills > div { grid-template-columns: 1fr; gap: 4px; }
 }
@@ -156,8 +148,6 @@
   /* Saving as PDF is a desk job. On a phone it only pushes the useful buttons down. */
   .pp .pp-print { display: none; }
   .pp-job h3 .pp-verified { display: flex; width: fit-content; margin: 6px 0 0; }
-  .pp-stats dt { font-size: 22px; }
-  .pp-stats dd { font-size: 10px; }
   .pp-avatar { width: 92px; height: 92px; }
   .pp-cta__btns, .pp-cta__btns .pp-btn { width: 100%; }
   .pp-reach .pp-btn { flex: 1 1 100%; }  .pp-viewer__stage { padding: 10px; }
