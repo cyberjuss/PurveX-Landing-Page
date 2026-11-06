@@ -3,14 +3,8 @@
 <h3>A New Hire's First Week</h3>
 <p class="ad-brief__ask">Maya Okafor joined Wealth Management on Monday, and nothing about the account has gone right since. Can you work every call from the first week and leave the account the way it should have started?</p>
 <p>These calls follow the four tabs you just read: finding an account, unlocking or resetting it, moving it, and reading it. Where a call asks you to change something, your lab has to show the change before your answer counts.</p>
-<p>First, set up the week. On your domain controller, open PowerShell as an administrator and run the block below. It creates Maya's account exactly as HR's import left it, in the wrong department. When it asks for a password, choose one that meets your domain's rules.</p>
+<p>Maya's account is already in your directory, exactly as HR's import left it: in the wrong department.</p>
 </div>
-
-```powershell
-$d = Get-ADDomain
-New-ADUser -Name "Maya Okafor" -GivenName Maya -Surname Okafor -SamAccountName maya.okafor -UserPrincipalName "maya.okafor@$($d.DNSRoot)" -Title "Client Advisor" -Department "Wealth Management" -Path "OU=Users,OU=Operations,OU=Departments,$($d.DistinguishedName)" -AccountPassword (Read-Host -AsSecureString "Password for maya.okafor") -Enabled $true
-Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
-```
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
@@ -18,7 +12,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission" data-id="dk-01" data-attempts="0">
-<span class="ad-mission__num">Call 01 · Find an Account · Monday</span>
+<span class="ad-mission__num">Call 01 · Find an Account · Monday · INC-1094</span>
 <h4>Find the Caller</h4>
 <p><strong>Front Desk · Monday · 8:40 AM</strong><br>Before Maya's calls start coming in, warm up on a quick one. A caller says, "This is Jordan from Finance," and asks what title the directory shows for them, because a new expense system reads it from there.</p>
 <p><strong>Task:</strong> Use Find to open <code>jordan.ellis</code> without browsing the folders, and report the title on the account.</p>
@@ -60,7 +54,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission" data-id="dk-02" data-attempts="0">
-<span class="ad-mission__num">Call 02 · Unlock or Reset · Monday</span>
+<span class="ad-mission__num">Call 02 · Unlock or Reset · Monday · INC-1094</span>
 <h4>Reset and Force a Change</h4>
 <p><strong>Maya Okafor · Wealth Management · Monday · 9:05 AM</strong><br>Hi, it's my first day. HR read me a temporary password over the phone, but I wrote it down wrong and I really don't know what it is.</p>
 <p><strong>Task:</strong> Give Maya a new temporary password and make sure it has to be changed at the next sign-in. Then type <code>unlock</code> or <code>reset</code> for the fix this call needed.</p>
@@ -104,7 +98,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission" data-id="dk-03" data-attempts="0">
-<span class="ad-mission__num">Call 03 · Unlock or Reset · Tuesday</span>
+<span class="ad-mission__num">Call 03 · Unlock or Reset · Tuesday · INC-1094</span>
 <h4>Locked, Not Forgotten</h4>
 <p><strong>Maya Okafor · Wealth Management · Tuesday · 8:52 AM</strong><br>I know my new password, I promise. Caps Lock was on and I typed it wrong a few times, and now it says my account is locked.<br><strong>A</strong> Reset the password and force another change.<br><strong>B</strong> Unlock the account and leave the password alone.<br><strong>C</strong> Enable the account.</p>
 <p><strong>Task:</strong> Choose the fix that matches this call and type its letter.</p>
@@ -138,7 +132,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission" data-id="dk-04" data-attempts="0">
-<span class="ad-mission__num">Call 04 · Move an Account · Wednesday</span>
+<span class="ad-mission__num">Call 04 · Move an Account · Wednesday · INC-1094</span>
 <h4>Put Maya in the Right Folder</h4>
 <p><strong>Sam Whitfield · Wealth Management · Wednesday · 10:15 AM</strong><br>Maya can't see any of our team's settings, and the screen lock is behaving like it does for Operations. HR says Maya was hired into Wealth Management. Can you check where the account actually lives?</p>
 <p><strong>Task:</strong> Move <code>maya.okafor</code> into Departments, WealthManagement, Users. Then report the department OU the account was in before you moved it.</p>
@@ -181,7 +175,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission" data-id="dk-05" data-attempts="0">
-<span class="ad-mission__num">Call 05 · Move an Account · Wednesday</span>
+<span class="ad-mission__num">Call 05 · Move an Account · Wednesday · INC-1094</span>
 <h4>Finish the Access Half</h4>
 <p><strong>Sam Whitfield · Wealth Management · Wednesday · 10:40 AM</strong><br>Thanks for moving Maya. The screen lock is right now, but Maya still can't open our team's shared files, and somehow can still open Operations' files.</p>
 <p><strong>Task:</strong> Add maya.okafor to the Wealth Management department group and take Maya out of the Operations one. Then report the group you added.</p>
@@ -226,7 +220,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission" data-id="dk-06" data-attempts="0">
-<span class="ad-mission__num">Call 06 · Move an Account · Wednesday</span>
+<span class="ad-mission__num">Call 06 · Move an Account · Wednesday · INC-1094</span>
 <h4>Record the Ticket</h4>
 <p><strong>Alex Rivera · IT · Wednesday · 11:00 AM</strong><br>Please note on Maya's account what was fixed and under which ticket, DESK-2001, so nobody has to rediscover all this later. While you're in there, check that the title is right.</p>
 <p><strong>Task:</strong> Write a Description on maya.okafor that includes <code>DESK-2001</code>. Then report the name of the Properties tab that holds the Title field.</p>
@@ -269,7 +263,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission" data-id="dk-07" data-attempts="0">
-<span class="ad-mission__num">Call 07 · Read the Account · Thursday</span>
+<span class="ad-mission__num">Call 07 · Read the Account · Thursday · INC-1094</span>
 <h4>Read the Raw Attribute</h4>
 <p><strong>Alex Rivera · IT · Thursday · 9:30 AM</strong><br>I'd like proof that Monday's forced password change is still waiting, not just a memory of ticking the box. The friendly tabs won't show it, but the raw attribute will.</p>
 <p><strong>Task:</strong> Turn on Advanced Features, open maya.okafor from the tree, and report what the Attribute Editor shows for <code>pwdLastSet</code>.</p>
@@ -311,7 +305,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission" data-id="dk-08" data-attempts="0">
-<span class="ad-mission__num">Call 08 · Read the Account · Thursday</span>
+<span class="ad-mission__num">Call 08 · Read the Account · Thursday · INC-1094</span>
 <h4>The Missing Tab</h4>
 <p><strong>Quinn Harper · IT · Thursday · 10:10 AM</strong><br>I'm trying to read IT-WKS01's last logon. I found it with Find and opened it, but the tab everyone keeps mentioning just isn't there.</p>
 <p><strong>Task:</strong> Open IT-WKS01 once from Find and once from the tree. Report the name of the tab that only appears when you open it from the tree.</p>
@@ -349,7 +343,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission" data-id="dk-09" data-attempts="0">
-<span class="ad-mission__num">Call 09 · Read the Account · Friday</span>
+<span class="ad-mission__num">Call 09 · Read the Account · Friday · INC-1094</span>
 <h4>Which Last Logon to Trust</h4>
 <p><strong>Alex Rivera · IT · Friday · 9:00 AM</strong><br>Next year we're adding a second domain controller. After that, which attribute should Quinn read to see when an account last signed in anywhere in the domain, accepting that it can lag a little?<br><strong>A</strong> <code>lastLogon</code><br><strong>B</strong> <code>lastLogonTimestamp</code><br><strong>C</strong> <code>whenCreated</code></p>
 <p><strong>Task:</strong> Choose the attribute that's shared between domain controllers and type its letter.</p>
@@ -383,7 +377,7 @@ Add-ADGroupMember -Identity "Operations Users" -Members maya.okafor
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="dk-10" data-attempts="0">
-<span class="ad-mission__num">Call 10 · Close the Week · Friday</span>
+<span class="ad-mission__num">Call 10 · Close the Week · Friday · INC-1094</span>
 <h4>Close the Transfer</h4>
 <p><strong>Sam Whitfield · Wealth Management · Friday · 4:30 PM</strong><br>Maya says everything works now. Before you close the ticket, can you say what had to be true for the account to count as fixed?<br><strong>A</strong> The Title and the Description match the new role.<br><strong>B</strong> The folder above the account and its Member Of both match the new department.<br><strong>C</strong> The password was reset and the account is unlocked.</p>
 <p><strong>Task:</strong> Confirm Maya's account is in Wealth Management's Users folder, in Wealth Management Users, out of Operations Users and enabled. Then choose what a finished transfer needs and type its letter.</p>

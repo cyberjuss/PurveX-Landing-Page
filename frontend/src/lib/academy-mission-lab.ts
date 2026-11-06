@@ -163,13 +163,13 @@ const MISSION_LAB = {
   ),
   "w2-04": G(
     [
-      // The build creates every account due a change, and the setup block clears it
-      // for these two. The script it writes proves the setup ran.
-      { c: { t: "file", path: "Shares\\IT\\settlement-upload.ps1", want: true }, label: "This morning's tickets are set up in this lab" },
+      // The build creates every account due a change, and INC-1091 clears it
+      // for these two. The script it plants proves the plant landed.
+      { c: { t: "file", path: "Shares\\IT\\settlement-upload.ps1", want: true }, label: "This morning's tickets are in this lab" },
       { c: { t: "flag", sam: "taylor.osei", flag: "passwordExpired", want: true }, label: "taylor.osei must change the password at next logon" },
       { c: { t: "flag", sam: "jordan.ellis", flag: "passwordExpired", want: true }, label: "jordan.ellis must change the password at next logon" },
     ],
-    { tickets: ["INC-1058"] }
+    { tickets: ["INC-1058", "INC-1091"] }
   ),
   // Week 4's effective-access challenge: a Help Desk account is pulled out of
   // Compliance Users, the access-level group an audit found it never needed.
@@ -220,47 +220,47 @@ const MISSION_LAB = {
     ],
     { tickets: ["DATA-SAMPLE"] }
   ),
-  // Week 1: The Weekend Incident Report. The setup block at the top of the
-  // challenge plants all three incidents. Each fix is read back from the lab.
+  // Week 1: The Weekend Incident Report. The build plants all three incidents
+  // (INC-1090). Each fix is read back from the lab.
   "w1-01": G([
     { c: { t: "file", path: "Shares\\Operations\\WM_Client_Export.csv", want: false }, label: "The client export is gone from the Operations share" },
     { c: { t: "file", path: "Shares\\WealthManagement\\WM_Client_Export.csv", want: true }, label: "The client export is in the Wealth Management share" },
-  ]),
+  ], { tickets: ["INC-1090"] }),
   // The approved file is 299 bytes. Notepad may drop the last line break or
   // add a byte-order mark, so those sizes count too. The altered file is
   // four bytes longer and none of its variants land on these.
-  "w1-02": G([{ c: { t: "fileSize", path: "Shares\\Finance\\Wire_Approvals_Nov.csv", sizes: [299, 297, 302, 300] }, label: "Wire_Approvals_Nov.csv matches the approved copy again" }]),
+  "w1-02": G([{ c: { t: "fileSize", path: "Shares\\Finance\\Wire_Approvals_Nov.csv", sizes: [299, 297, 302, 300] }, label: "Wire_Approvals_Nov.csv matches the approved copy again" }], { tickets: ["INC-1090"] }),
   "w1-03": G([
     // The hash file proves the setup ran: with no rule at all, "off" would pass by itself.
-    { c: { t: "file", path: "Shares\\Finance\\Wire_Approvals_Nov.sha256", want: true }, label: "The weekend's incidents are set up in this lab" },
+    { c: { t: "file", path: "Shares\\Finance\\Wire_Approvals_Nov.sha256", want: true }, label: "The weekend's incidents are in this lab" },
     { c: { t: "fwRuleOff", name: "PurveX Maint - Block File Sharing" }, label: "The maintenance block rule is disabled or removed" },
-  ]),
-  // Week 3: The Network Change That Went Wrong. The setup block plants the
-  // stale DNS record, both leftover rules and the change log. The log proves
-  // the setup ran, since a rule that was never made would read as off.
-  "w3-01": G([{ c: { t: "dnsToDc", name: "portal" }, label: "portal resolves to the domain controller" }]),
+  ], { tickets: ["INC-1090"] }),
+  // Week 3: The Network Change That Went Wrong. The build plants the stale DNS
+  // record, both leftover rules, the report sync and the change log (INC-1092).
+  // The log proves the plant landed, since a rule never made would read as off.
+  "w3-01": G([{ c: { t: "dnsToDc", name: "portal" }, label: "portal resolves to the domain controller" }], { tickets: ["INC-1092"] }),
   "w3-03": G([
-    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is set up in this lab" },
+    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is in this lab" },
     { c: { t: "fwRuleOff", name: "PurveX Legacy - Vendor Telnet" }, label: "The vendor Telnet rule is disabled or removed" },
-  ]),
+  ], { tickets: ["INC-1092"] }),
   "w3-04": G([
-    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is set up in this lab" },
+    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is in this lab" },
     { c: { t: "fwRuleOff", name: "PurveX Relay - Outbound Mail" }, label: "The outbound mail rule is disabled or removed" },
-  ]),
+  ], { tickets: ["INC-1092"] }),
   // The report sync's password was read off the wire, so the account is burned.
-  "w3-05": G([{ c: { t: "enabled", sam: "svc-reportsync", want: false }, label: "svc-reportsync is disabled" }]),
+  "w3-05": G([{ c: { t: "enabled", sam: "svc-reportsync", want: false }, label: "svc-reportsync is disabled" }], { tickets: ["INC-1092"] }),
   // Week 4: The Quarterly Access Review. frontdesk.shared and priya.nair's
-  // Domain Admins membership come from the setup block. noor.ahmadi is the
+  // Domain Admins membership come from the build (INC-1093). noor.ahmadi is the
   // INC-1071 account every lab already plants.
-  "w4-01": G([{ c: { t: "enabled", sam: "frontdesk.shared", want: false }, label: "frontdesk.shared is disabled" }]),
+  "w4-01": G([{ c: { t: "enabled", sam: "frontdesk.shared", want: false }, label: "frontdesk.shared is disabled" }], { tickets: ["INC-1093"] }),
   "w4-03": G(
     [{ c: { t: "member", sam: "noor.ahmadi", group: "Compliance Users", want: false }, label: "noor.ahmadi is not in Compliance Users" }],
-    { users: ["noor.ahmadi"] }
+    { users: ["noor.ahmadi"], tickets: ["INC-1093"] }
   ),
   "w4-04": G([
-    { c: { t: "present", sam: "frontdesk.shared" }, label: "The access review is set up in this lab" },
+    { c: { t: "present", sam: "frontdesk.shared" }, label: "The access review is in this lab" },
     { c: { t: "member", sam: "priya.nair", group: "Domain Admins", want: false }, label: "priya.nair is not in Domain Admins" },
-  ]),
+  ], { tickets: ["INC-1093"] }),
   // Home Lab: Build Out the Directory. The student creates every object these
   // check, under names no other challenge uses, so nothing needs planting and
   // nothing here can change another challenge's answer.
@@ -282,31 +282,26 @@ const MISSION_LAB = {
   "dr-11": G([
     { c: { t: "gpoLink", gpo: "PurveX - Compliance Workstations", ous: ["OU=Workstations,OU=Compliance,OU=Departments"], want: true }, label: "PurveX - Compliance Workstations is linked to the Compliance Workstations OU" },
   ]),
-  // Home Lab: A New Hire's First Week. maya.okafor is staged by the block at
-  // the top of the challenge, in the wrong department on purpose, with a
-  // password she can keep, so none of these checks pass before the work.
-  // No needs listed: the build never plants her, so a missing account must
-  // not ask a hosted lab to repair itself.
-  "dk-02": G([{ c: { t: "flag", sam: "maya.okafor", flag: "passwordExpired", want: true }, label: "maya.okafor must change the password at next logon" }]),
-  "dk-07": G([{ c: { t: "flag", sam: "maya.okafor", flag: "passwordExpired", want: true }, label: "maya.okafor still has to change the password at next logon" }]),
+  // Home Lab: A New Hire's First Week. The build plants maya.okafor (INC-1094)
+  // in the wrong department on purpose, with a password that is not due a
+  // change, so none of these checks pass before the work.
+  "dk-02": G([{ c: { t: "flag", sam: "maya.okafor", flag: "passwordExpired", want: true }, label: "maya.okafor must change the password at next logon" }], { tickets: ["INC-1094"] }),
+  "dk-07": G([{ c: { t: "flag", sam: "maya.okafor", flag: "passwordExpired", want: true }, label: "maya.okafor still has to change the password at next logon" }], { tickets: ["INC-1094"] }),
   "dk-04": G(
-    [{ c: { t: "container", sam: "maya.okafor", ou: "OU=Users,OU=WealthManagement,OU=Departments" }, label: "maya.okafor is in the Wealth Management Users folder" }]
-  ),
+    [{ c: { t: "container", sam: "maya.okafor", ou: "OU=Users,OU=WealthManagement,OU=Departments" }, label: "maya.okafor is in the Wealth Management Users folder" }], { tickets: ["INC-1094"] }),
   "dk-05": G(
     [
       { c: { t: "member", sam: "maya.okafor", group: "Wealth Management Users", want: true }, label: "maya.okafor is in Wealth Management Users" },
       { c: { t: "member", sam: "maya.okafor", group: "Operations Users", want: false }, label: "maya.okafor is no longer in Operations Users" },
-    ]
-  ),
-  "dk-06": G([{ c: { t: "desc", sam: "maya.okafor", text: "DESK-2001" }, label: "maya.okafor's Description records ticket DESK-2001" }]),
+    ], { tickets: ["INC-1094"] }),
+  "dk-06": G([{ c: { t: "desc", sam: "maya.okafor", text: "DESK-2001" }, label: "maya.okafor's Description records ticket DESK-2001" }], { tickets: ["INC-1094"] }),
   "dk-10": G(
     [
       { c: { t: "container", sam: "maya.okafor", ou: "OU=Users,OU=WealthManagement,OU=Departments" }, label: "maya.okafor lives in the Wealth Management Users folder" },
       { c: { t: "member", sam: "maya.okafor", group: "Wealth Management Users", want: true }, label: "maya.okafor is in Wealth Management Users" },
       { c: { t: "member", sam: "maya.okafor", group: "Operations Users", want: false }, label: "maya.okafor is out of Operations Users" },
       { c: { t: "enabled", sam: "maya.okafor", want: true }, label: "maya.okafor is enabled" },
-    ]
-  ),
+    ], { tickets: ["INC-1094"] }),
 } as const;
 
 type Gate = { checks: { c: Check; label: string }[]; needs?: Needs };
@@ -359,6 +354,11 @@ export const PLANTED_TICKETS = [
   "INC-1078",
   "INC-1079",
   "INC-1080",
+  "INC-1090",
+  "INC-1091",
+  "INC-1092",
+  "INC-1093",
+  "INC-1094",
 ] as const;
 
 /** Which of these tickets the lab has not planted yet. */

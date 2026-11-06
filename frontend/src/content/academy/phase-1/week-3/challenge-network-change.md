@@ -4,76 +4,8 @@
 <p class="ad-brief__ask">A contractor ran a network change at PurveX Financial over the weekend. It's Monday, and the cleanup they promised never happened. Can you read their change log, find what they left behind, and put it right?</p>
 <p>The contractor's change log is in the IT share. Read it the way you would on the job: every line is a change that someone now has to check.</p>
 <p>You'll use two tools network and security staff reach for every week: <strong>Nmap</strong>, to check what a server really exposes, and <strong>Wireshark</strong>, to see what really crosses the wire. Install both on your domain controller from their official sites, <code>nmap.org/download</code> and <code>wireshark.org/download</code>. Keep the Npcap option ticked when the installers offer it, including support for loopback traffic.</p>
-<p>Then set up the weekend. On your domain controller, open PowerShell as an administrator and run the block below. It makes the contractor's changes and saves their change log. It's safe to run again.</p>
+<p>The contractor's changes are already in your lab, and their change log is in the IT share.</p>
 </div>
-
-```powershell
-& {
-  $root = "C:\PurveX"
-  $it = "$root\Shares\IT"; $jobs = "$root\Jobs"
-  New-Item -ItemType Directory -Force -Path $it, $jobs | Out-Null
-  $d = Get-ADDomain; $zone = $d.DNSRoot
-  # CHG-3301: the portal's record still points at the retired server.
-  if (-not (Get-DnsServerResourceRecord -ZoneName $zone -Name "portal" -ErrorAction SilentlyContinue)) {
-    Add-DnsServerResourceRecordA -ZoneName $zone -Name "portal" -IPv4Address "10.255.255.10"
-  }
-  # CHG-3302: the vendor's console, still listening on port 23, and the rule that lets it in.
-  if (-not (Get-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet" -ErrorAction SilentlyContinue)) {
-    New-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet" -Group "PurveX Lab" -Direction Inbound -Protocol TCP -LocalPort 23 -Action Allow | Out-Null
-  }
-  if (-not (Get-ScheduledTask -TaskName "NetBridge Vendor Console" -ErrorAction SilentlyContinue)) {
-    Set-Content -Path "$jobs\vendor-console.ps1" -Encoding ascii -Value @(
-      '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Any, 23); $s.Start()',
-      'while ($true) { $c = $s.AcceptTcpClient(); $w = New-Object IO.StreamWriter($c.GetStream()); $w.AutoFlush = $true; $w.WriteLine("NetBridge switch console 2.1"); $w.Write("login: "); Start-Sleep 3; $c.Close() }'
-    )
-    $a = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File $jobs\vendor-console.ps1"
-    Register-ScheduledTask -TaskName "NetBridge Vendor Console" -Action $a -Trigger (New-ScheduledTaskTrigger -AtStartup) -User "SYSTEM" -RunLevel Highest -Force | Out-Null
-    Start-ScheduledTask -TaskName "NetBridge Vendor Console"
-  }
-  # CHG-3303: outbound mail from the domain controller.
-  if (-not (Get-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail" -ErrorAction SilentlyContinue)) {
-    New-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail" -Group "PurveX Lab" -Direction Outbound -Protocol TCP -RemotePort 25 -Action Allow | Out-Null
-  }
-  # Finance's legacy report sync: signs in to the directory every minute.
-  if (-not (Get-ADUser -Filter "SamAccountName -eq 'svc-reportsync'" -ErrorAction SilentlyContinue)) {
-    New-ADUser -Name "svc-reportsync" -SamAccountName "svc-reportsync" -UserPrincipalName "svc-reportsync@$zone" -Path "OU=ServiceAccounts,$($d.DistinguishedName)" `
-      -Description "Legacy report sync for Finance. Signs in to the directory every minute." `
-      -AccountPassword (ConvertTo-SecureString "Ledger-Sync-77" -AsPlainText -Force) -Enabled $true -PasswordNeverExpires $true
-  }
-  if (-not (Get-ScheduledTask -TaskName "PurveX Legacy Report Sync" -ErrorAction SilentlyContinue)) {
-    Add-Type -AssemblyName System.Security
-    $blob = [Security.Cryptography.ProtectedData]::Protect([Text.Encoding]::UTF8.GetBytes("Ledger-Sync-77"), $null, "LocalMachine")
-    [IO.File]::WriteAllBytes("$jobs\report-sync.bin", $blob)
-    Set-Content -Path "$jobs\report-sync.ps1" -Encoding ascii -Value @(
-      'Add-Type -AssemblyName System.Security, System.DirectoryServices.Protocols',
-      '$pw = [Text.Encoding]::UTF8.GetString([Security.Cryptography.ProtectedData]::Unprotect([IO.File]::ReadAllBytes("C:\PurveX\Jobs\report-sync.bin"), $null, "LocalMachine"))',
-      '$dom = (Get-CimInstance Win32_ComputerSystem).Domain',
-      '$c = New-Object System.DirectoryServices.Protocols.LdapConnection("127.0.0.1:389")',
-      '$c.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic',
-      '$c.SessionOptions.ProtocolVersion = 3',
-      'try { $c.Bind((New-Object Net.NetworkCredential("svc-reportsync@$dom", $pw))) } catch {}',
-      '$c.Dispose()'
-    )
-    $a = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File $jobs\report-sync.ps1"
-    $t = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1)
-    Register-ScheduledTask -TaskName "PurveX Legacy Report Sync" -Action $a -Trigger $t -User "SYSTEM" -RunLevel Highest -Force | Out-Null
-  }
-  Set-Content -Path "$it\Network_Change_Log_Nov.txt" -Encoding ascii -Value @(
-    "PurveX Financial - network change log, weekend of Nov 8",
-    "Contractor: NetBridge Services",
-    "",
-    "CHG-3301  Intranet portal moved off PORTAL01 (10.255.255.10). PORTAL01 retired.",
-    "          The portal now runs on DC01 until the new server arrives.",
-    "CHG-3302  Started our switch console on DC01 and opened its port inbound for the upgrade.",
-    "          Remove after cutover.",
-    "CHG-3303  Allowed outbound TCP 25 from DC01 to test the scanner-to-email relay.",
-    "          Remove after test.",
-    "",
-    "Status: cutover complete Sunday 22:40. Cleanup items not confirmed."
-  )
-  "Done. The contractor's change log is in the IT share."
-}
-```
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
@@ -81,7 +13,7 @@
 </div>
 
 <div class="ad-mission" data-id="w3-01" data-attempts="0">
-<span class="ad-mission__num">Ticket 01 · TCP/IP · High · CHG-3301</span>
+<span class="ad-mission__num">Ticket 01 · TCP/IP · High · CHG-3301 · INC-1092</span>
 <h4>Fix the Portal's Address</h4>
 <p><strong>Jordan Ellis · Finance · 8:20 AM</strong><br>The intranet portal won't load for anyone in Finance this morning. It worked on Friday. The browser just spins and gives up.</p>
 <p><strong>Task:</strong> Find out what address <code>portal</code> resolves to, compare it with the change log, and point the record at the portal's new home. Then report the address it was stuck on.</p>
@@ -125,7 +57,7 @@
 </div>
 
 <div class="ad-mission" data-id="w3-02" data-attempts="0">
-<span class="ad-mission__num">Ticket 02 · Three-Way Handshake · High · Nmap</span>
+<span class="ad-mission__num">Ticket 02 · Three-Way Handshake · High · Nmap · INC-1092</span>
 <h4>Scan What the Change Left Open</h4>
 <p><strong>Alex Rivera · IT · 9:05 AM</strong><br>Before we trust anything in that change log, I want to see DC01 the way an attacker on our network would. Scan it and tell me what's listening that shouldn't be.</p>
 <p><strong>Task:</strong> Scan the domain controller's own address with Nmap. Compare the open ports with what a domain controller normally runs, and report the port that doesn't belong.</p>
@@ -164,7 +96,7 @@
 </div>
 
 <div class="ad-mission" data-id="w3-03" data-attempts="0">
-<span class="ad-mission__num">Ticket 03 · Common Ports · High · Change Control</span>
+<span class="ad-mission__num">Ticket 03 · Common Ports · High · Change Control · INC-1092</span>
 <h4>Close the Vendor's Door</h4>
 <p><strong>Alex Rivera · IT · 9:40 AM</strong><br>Telnet on our domain controller, open to the whole network. Shut it down: the rule and the console behind it. And tell me which change in the log opened it, so I can raise it with the contractor.</p>
 <p><strong>Task:</strong> Disable the inbound rule that lets port 23 in, stop and disable the vendor's console task, and report the change number that opened it.</p>
@@ -208,7 +140,7 @@
 </div>
 
 <div class="ad-mission" data-id="w3-04" data-attempts="0">
-<span class="ad-mission__num">Ticket 04 · Protocols · High · CHG-3303</span>
+<span class="ad-mission__num">Ticket 04 · Protocols · High · CHG-3303 · INC-1092</span>
 <h4>Why Is the DC Sending Mail?</h4>
 <p><strong>Alex Rivera · IT · 10:10 AM</strong><br>A domain controller has no business sending email. The last line of the change log says they opened something outbound for a test. Find it and shut it.</p>
 <p><strong>Task:</strong> Find the outbound rule from CHG-3303, switch it off, and name the protocol it let out.</p>
@@ -251,21 +183,21 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="w3-05" data-attempts="0">
-<span class="ad-mission__num">Ticket 05 · Protocols and TLS · Critical · Wireshark</span>
+<span class="ad-mission__num">Ticket 05 · Protocols and TLS · Critical · Wireshark · INC-1092</span>
 <h4>Read the Password Off the Wire</h4>
-<p><strong>Jordan Ellis · Finance · 11:30 AM</strong><br>Our old report sync signs in to the directory every minute. The vendor promised the password is "stored encrypted", so we've never worried about it. Is that the whole story?</p>
-<p><strong>Task:</strong> Capture the domain controller's own traffic with Wireshark for a couple of minutes, find the report sync signing in, and read its password. Then disable <code>svc-reportsync</code> and report the password.</p>
+<p><strong>Jordan Ellis · Finance · 11:30 AM</strong><br>Our old report sync sends the daily ledger report to the reporting service every minute, signing in with its service account. The vendor promised the password is "stored encrypted", so we've never worried about it. Is that the whole story?</p>
+<p><strong>Task:</strong> Capture the domain controller's own traffic with Wireshark for a couple of minutes, find the report sync's upload, and read the password it signs in with. Then disable <code>svc-reportsync</code> and report the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Read the Password Off the Wire" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Ledger-Sync-77}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The job runs on the domain controller and signs in to the domain controller, so its traffic never leaves the machine. Capture on the loopback adapter. Directory sign-ins use LDAP on port 389, and a "simple" bind carries the password exactly as typed.</p>
+<p>The job and the reporting service both run on the domain controller, so the traffic never leaves the machine. Capture on the loopback adapter. The job uses plain HTTP with Basic authentication, which only Base64-encodes the name and password, and Wireshark decodes it for you.</p>
 <ol>
 <li>Open Wireshark and start a capture on <strong>Adapter for loopback traffic capture</strong>.</li>
-<li>Wait a minute or two for the job to run, then type <code>ldap</code> in the display filter.</li>
-<li>Open a <strong>bindRequest</strong> packet, expand the LDAP section, and read the name and the <strong>simple</strong> field.</li>
+<li>Wait a minute or two for the job to run, then type <code>http</code> in the display filter.</li>
+<li>Open the <strong>POST /reports/upload</strong> request, expand Hypertext Transfer Protocol, then the <strong>Authorization</strong> line, and read the <strong>Credentials</strong> field.</li>
 <li>Disable <code>svc-reportsync</code> in Active Directory Users and Computers, and disable the job in Task Scheduler.</li>
 </ol>
 <p>In PowerShell:</p>
@@ -274,7 +206,8 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="svc-reportsync|svc-reportsync@purvexfinancial.local">That's the account name in the bind. Report the value in its simple field.</div>
+<div class="ad-miss" data-guess="svc-reportsync|svc-reportsync@purvexfinancial.local">That's the account name. Report the password after the colon in the Credentials field.</div>
+<div class="ad-miss" data-guess="c3ZjLXJlcG9ydHN5bmM6TGVkZ2VyLVN5bmMtNzc=">That's the Authorization header still Base64-encoded. Decode it, or read Wireshark's Credentials line under it.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -283,11 +216,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The vendor was telling the truth: on disk, the password is encrypted. But every minute the job sends it across the network in plain text, where anyone who can capture traffic reads it in seconds. Protecting data at rest says nothing about data in transit, and that's the gap TLS exists to close.</p>
+<p>The vendor was telling the truth: on disk, the password is encrypted. But every minute the job sends it over plain HTTP, where Basic authentication is only Base64, so anyone who can capture traffic reads it in seconds. Protecting data at rest says nothing about data in transit, and that's the gap TLS exists to close.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Treat the password as burned. Disable the account now, then rebuild the job on LDAPS, LDAP over TLS on port 636, with a new password. Capture again afterwards to prove the bind is no longer readable.</p>
+<p>Treat the password as burned. Disable the account now, then move the job to HTTPS with a new password. Capture again afterwards to prove the upload is no longer readable.</p>
 </div>
 </div>
 </div>

@@ -1219,6 +1219,219 @@ function Ensure-StarterTickets {
     }
 }
 
+# Phase 1's week challenges, one ticket each, and the new hire in A New Hire's
+# First Week. Each object is created only when it is missing, so a student's
+# fixes survive a repair. A lab whose student already ran the old setup block
+# from the challenge page keeps what that block made: nothing is planted twice.
+#   INC-1090  Week 1, The Weekend Incident Report
+#   INC-1091  Week 2, Tuesday After the Breach
+#   INC-1092  Week 3, The Network Change That Went Wrong
+#   INC-1093  Week 4, The Quarterly Access Review
+#   INC-1094  Home Lab, A New Hire's First Week
+function Ensure-PhaseOneChallengeTickets {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param([hashtable]$DeptOUPaths, [string]$ServiceAccountsOU)
+
+    Write-Host "`n== Phase 1 challenge tickets ==" -ForegroundColor Cyan
+    $zone = $domain.DNSRoot
+    $archive = Join-Path $PurvexLabRoot "Archive"
+    $jobs = Join-Path $PurvexLabRoot "Jobs"
+    New-Item -ItemType Directory -Path $archive, $jobs -Force | Out-Null
+
+    # INC-1090: a client export in the wrong share, an altered wire file with its
+    # approved copy and hash, and a maintenance rule that blocks file sharing for
+    # one office floor. The rule only covers 10.250.40.0/24, so the lab's own
+    # machines keep SMB and a home lab's workstation can still join the domain.
+    if (-not (Test-PurvexTicketMark "INC-1090") -and $PSCmdlet.ShouldProcess("$PurvexLabRoot\Shares", "Plant the Week 1 incidents")) {
+        try {
+            if (-not (Test-Path -LiteralPath (Join-Path $archive "week1-staged.txt"))) {
+                foreach ($sub in "Shares\Operations", "Shares\Finance", "Shares\WealthManagement") {
+                    New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot $sub) -Force | Out-Null
+                }
+                $clients = @("ClientID,Name,Advisor,AccountNumber,Balance") + (1..12 | ForEach-Object { "C-20{0:D2},SAMPLE Client {0},jamie.torres,TEST-ACCT-{1},{2}.00" -f $_, (4400 + $_), (25000 * $_) })
+                Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\Operations\WM_Client_Export.csv") -Value $clients -Encoding ASCII
+                # 299 bytes approved. The altered copy is four bytes longer, which the
+                # lab check relies on to tell a restored file from the altered one.
+                $wires = @(
+                    "WireID,Beneficiary,Account,Amount,ApprovedBy",
+                    "WR-2201,LedgerLine,TEST-BANK-0101,18450.00,jordan.ellis",
+                    "WR-2202,Northwind Office Supply,TEST-BANK-0102,2310.75,jordan.ellis",
+                    "WR-2203,Contoso Data Feeds,TEST-BANK-0103,9800.00,jordan.ellis",
+                    "WR-2204,Fabrikam Payroll,TEST-BANK-0104,41200.00,jordan.ellis"
+                )
+                $approved = Join-Path $archive "Wire_Approvals_Nov.csv"
+                Set-Content -LiteralPath $approved -Value $wires -Encoding ASCII
+                (Get-FileHash -LiteralPath $approved -Algorithm SHA256).Hash | Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\Finance\Wire_Approvals_Nov.sha256") -Encoding ASCII
+                $wires[3] = $wires[3].Replace("TEST-BANK-0103", "TEST-BANK-77140103")
+                Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\Finance\Wire_Approvals_Nov.csv") -Value $wires -Encoding ASCII
+                if (-not (Get-NetFirewallRule -DisplayName "PurveX Maint - Block File Sharing" -ErrorAction SilentlyContinue)) {
+                    New-NetFirewallRule -DisplayName "PurveX Maint - Block File Sharing" -Group "PurveX Lab" -Direction Inbound -Protocol TCP `
+                        -LocalPort 445 -RemoteAddress "10.250.40.0/24" -Action Block | Out-Null
+                }
+            }
+            Add-PurvexTicketMark "INC-1090"
+            Write-Host "  Planted INC-1090: a client export, an altered wire file and a file-sharing block" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1090: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1091: an Operations script whose "encrypted" password is hex around
+    # Base64. The VPN mirrors and the leaked hash table are INC-1058's. The build
+    # creates every staff account due a password change, so Taylor's and Jordan's
+    # are cleared here, or ticket 4's check would pass before any work.
+    if (-not (Test-PurvexTicketMark "INC-1091") -and $PSCmdlet.ShouldProcess("$PurvexLabRoot\Shares\IT", "Plant the Week 2 script")) {
+        try {
+            $it = Join-Path $PurvexLabRoot "Shares\IT"
+            New-Item -ItemType Directory -Path $it -Force | Out-Null
+            $script = Join-Path $it "settlement-upload.ps1"
+            $fresh = -not (Test-Path -LiteralPath $script)
+            Set-Content -LiteralPath $script -Encoding ASCII -Value @(
+                "# settlement-upload.ps1 - sends the nightly settlement file to the clearing vendor",
+                "# Owner: Operations. The password below is encrypted (AES-256), so this is safe to share.",
+                '$User = "purvex-settle"',
+                '$Password = "553256306447786c4c553576647930794d44493249513d3d"',
+                '$Server = "sftp.clearing-vendor.example"'
+            )
+            if ($fresh) {
+                foreach ($u in "taylor.osei", "jordan.ellis") {
+                    if (Get-ADUser -Filter "SamAccountName -eq '$u'" -ErrorAction SilentlyContinue) { Set-ADUser -Identity $u -ChangePasswordAtLogon $false }
+                }
+            }
+            Add-PurvexTicketMark "INC-1091"
+            Write-Host "  Planted INC-1091: the settlement upload script" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1091: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1092: what a contractor's network change left behind. A stale DNS record,
+    # a console answering on port 23 with a rule letting it in, an outbound SMTP
+    # rule, and a report sync that posts its password with HTTP Basic auth to a
+    # local service every minute. HTTP rather than a directory sign-in, so the
+    # Security log stays clean for the sign-in challenges that read it.
+    if (-not (Test-PurvexTicketMark "INC-1092") -and $PSCmdlet.ShouldProcess("DC01", "Plant the Week 3 network change")) {
+        try {
+            if (-not (Get-DnsServerResourceRecord -ZoneName $zone -Name "portal" -ErrorAction SilentlyContinue)) {
+                Add-DnsServerResourceRecordA -ZoneName $zone -Name "portal" -IPv4Address "10.255.255.10"
+            }
+            if (-not (Get-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet" -ErrorAction SilentlyContinue)) {
+                New-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet" -Group "PurveX Lab" -Direction Inbound -Protocol TCP -LocalPort 23 -Action Allow | Out-Null
+            }
+            if (-not (Get-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail" -ErrorAction SilentlyContinue)) {
+                New-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail" -Group "PurveX Lab" -Direction Outbound -Protocol TCP -RemotePort 25 -Action Allow | Out-Null
+            }
+            Set-Content -LiteralPath (Join-Path $jobs "vendor-console.ps1") -Encoding ASCII -Value @(
+                '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Any, 23); $s.Start()',
+                'while ($true) { $c = $s.AcceptTcpClient(); $w = New-Object IO.StreamWriter($c.GetStream()); $w.AutoFlush = $true; $w.WriteLine("NetBridge switch console 2.1"); $w.Write("login: "); Start-Sleep 3; $c.Close() }'
+            )
+            # The reporting service only listens on loopback, so a scan of the DC's
+            # address never shows it and ticket 2 has one odd port, not two.
+            Set-Content -LiteralPath (Join-Path $jobs "report-service.ps1") -Encoding ASCII -Value @(
+                '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback, 8080); $s.Start()',
+                'while ($true) {',
+                '  $c = $s.AcceptTcpClient()',
+                '  try {',
+                '    $st = $c.GetStream(); $st.ReadTimeout = 5000; $r = New-Object IO.StreamReader($st); $len = 0',
+                '    while ($null -ne ($line = $r.ReadLine()) -and $line -ne "") { if ($line -match "^Content-Length:\s*(\d+)") { $len = [int]$Matches[1] } }',
+                '    if ($len -gt 0) { $buf = New-Object char[] $len; [void]$r.Read($buf, 0, $len) }',
+                '    $w = New-Object IO.StreamWriter($st); $w.Write("HTTP/1.1 200 OK`r`nContent-Type: text/plain`r`nContent-Length: 2`r`nConnection: close`r`n`r`nOK"); $w.Flush()',
+                '  } catch {} finally { $c.Close() }',
+                '}'
+            )
+            if (-not (Get-ADUser -Filter "SamAccountName -eq 'svc-reportsync'" -ErrorAction SilentlyContinue)) {
+                New-ADUser -Name "svc-reportsync" -SamAccountName "svc-reportsync" -UserPrincipalName "svc-reportsync@$zone" -Path $ServiceAccountsOU `
+                    -Description "Legacy report sync for Finance. Posts the daily ledger report every minute." `
+                    -AccountPassword (ConvertTo-SecureString "Ledger-Sync-77" -AsPlainText -Force) -Enabled $true -PasswordNeverExpires $true
+            }
+            # Encrypted at rest with the machine's key, sent in the clear on the wire.
+            Add-Type -AssemblyName System.Security
+            $blob = [Security.Cryptography.ProtectedData]::Protect([Text.Encoding]::UTF8.GetBytes("Ledger-Sync-77"), $null, "LocalMachine")
+            [IO.File]::WriteAllBytes((Join-Path $jobs "report-sync.bin"), $blob)
+            Set-Content -LiteralPath (Join-Path $jobs "report-sync.ps1") -Encoding ASCII -Value @(
+                'Add-Type -AssemblyName System.Security',
+                '$pw = [Text.Encoding]::UTF8.GetString([Security.Cryptography.ProtectedData]::Unprotect([IO.File]::ReadAllBytes("C:\PurveX\Jobs\report-sync.bin"), $null, "LocalMachine"))',
+                '$auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("svc-reportsync:$pw"))',
+                'try { Invoke-WebRequest -Uri "http://127.0.0.1:8080/reports/upload" -Method Post -Body "report=daily-ledger" -Headers @{ Authorization = "Basic $auth" } -UseBasicParsing -TimeoutSec 10 | Out-Null } catch {}'
+            )
+            $ps = "-NoProfile -ExecutionPolicy Bypass -File"
+            foreach ($t in @(
+                @{ Name = "NetBridge Vendor Console"; File = "vendor-console.ps1"; Trigger = (New-ScheduledTaskTrigger -AtStartup); Start = $true },
+                @{ Name = "PurveX Report Service"; File = "report-service.ps1"; Trigger = (New-ScheduledTaskTrigger -AtStartup); Start = $true },
+                @{ Name = "PurveX Legacy Report Sync"; File = "report-sync.ps1"; Trigger = (New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1)); Start = $false }
+            )) {
+                if (-not (Get-ScheduledTask -TaskName $t.Name -ErrorAction SilentlyContinue)) {
+                    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "$ps $(Join-Path $jobs $t.File)"
+                    Register-ScheduledTask -TaskName $t.Name -Action $action -Trigger $t.Trigger -User "SYSTEM" -RunLevel Highest -Force | Out-Null
+                    if ($t.Start) { Start-ScheduledTask -TaskName $t.Name }
+                }
+            }
+            Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\Network_Change_Log_Nov.txt") -Encoding ASCII -Value @(
+                "PurveX Financial - network change log, weekend of Nov 8",
+                "Contractor: NetBridge Services",
+                "",
+                "CHG-3301  Intranet portal moved off PORTAL01 (10.255.255.10). PORTAL01 retired.",
+                "          The portal now runs on DC01 until the new server arrives.",
+                "CHG-3302  Started our switch console on DC01 and opened its port inbound for the upgrade.",
+                "          Remove after cutover.",
+                "CHG-3303  Allowed outbound TCP 25 from DC01 to test the scanner-to-email relay.",
+                "          Remove after test.",
+                "",
+                "Status: cutover complete Sunday 22:40. Cleanup items not confirmed."
+            )
+            Add-PurvexTicketMark "INC-1092"
+            Write-Host "  Planted INC-1092: the contractor's network change" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1092: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1093: a shared reception login with five failed guesses in the Security
+    # log (one account, so it never reads as the six-account spray INC-1072
+    # plants), and a "temporary" Domain Admin. Priya is added only when the shared
+    # login is new, so a repair never undoes a student's fix.
+    if (-not (Test-PurvexTicketMark "INC-1093") -and $PSCmdlet.ShouldProcess("frontdesk.shared", "Plant the Week 4 access review")) {
+        try {
+            if (-not (Get-ADUser -Filter "SamAccountName -eq 'frontdesk.shared'" -ErrorAction SilentlyContinue)) {
+                New-ADUser -Name "Front Desk (shared)" -SamAccountName "frontdesk.shared" -UserPrincipalName "frontdesk.shared@$zone" `
+                    -Path $DeptOUPaths["Operations"].UsersOU `
+                    -Description "Shared reception login used by all three receptionists. Password is on a note on the front desk monitor." `
+                    -AccountPassword (ConvertTo-SecureString "Reception2026!" -AsPlainText -Force) -Enabled $true -PasswordNeverExpires $true
+                Add-ADGroupMember -Identity "Operations Users" -Members "frontdesk.shared"
+                Add-ADGroupMember -Identity "Domain Admins" -Members "priya.nair"
+            }
+            if (-not (Test-Path -LiteralPath (Join-Path $archive "week4-signins.txt"))) {
+                auditpol /set /subcategory:"Logon" /success:enable /failure:enable | Out-Null
+                Add-Type -AssemblyName System.DirectoryServices.Protocols
+                foreach ($guess in "Reception2025!", "Frontdesk1", "Welcome1", "Reception2026", "PurveX2026!") {
+                    $c = New-Object System.DirectoryServices.Protocols.LdapConnection("127.0.0.1:389")
+                    $c.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic
+                    try { $c.Bind((New-Object Net.NetworkCredential("$($domain.NetBIOSName)\frontdesk.shared", $guess))) } catch {}
+                    $c.Dispose()
+                }
+                Set-Content -LiteralPath (Join-Path $archive "week4-signins.txt") -Value (Get-Date -Format o)
+            }
+            Add-PurvexTicketMark "INC-1093"
+            Write-Host "  Planted INC-1093: a shared login and a leftover Domain Admin" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1093: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1094: Maya Okafor, hired into Wealth Management but imported into
+    # Operations. Created with a password she can keep, so the forced change the
+    # first call asks for is not already set.
+    if (-not (Test-PurvexTicketMark "INC-1094") -and $PSCmdlet.ShouldProcess("maya.okafor", "Plant the new hire")) {
+        try {
+            if (-not (Get-ADUser -Filter "SamAccountName -eq 'maya.okafor'" -ErrorAction SilentlyContinue)) {
+                New-ADUser -Name "Maya Okafor" -GivenName "Maya" -Surname "Okafor" -SamAccountName "maya.okafor" -UserPrincipalName "maya.okafor@$zone" `
+                    -Title "Client Advisor" -Department "Wealth Management" -Path $DeptOUPaths["Operations"].UsersOU `
+                    -AccountPassword $InitialPassword -ChangePasswordAtLogon $false -Enabled $true
+                Add-ADGroupMember -Identity "Operations Users" -Members "maya.okafor"
+            }
+            Add-PurvexTicketMark "INC-1094"
+            Write-Host "  Planted INC-1094: Maya Okafor in the wrong department" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1094: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+}
+
 function Ensure-PurvexTicketObjects {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param(
@@ -1352,6 +1565,7 @@ function Ensure-PurvexTicketObjects {
     Ensure-OpenDoorTickets
     Ensure-Sysmon
     Ensure-KerberoastingTickets -DeptOUPaths $DeptOUPaths -ServiceAccountsOU $ServiceAccountsOU
+    Ensure-PhaseOneChallengeTickets -DeptOUPaths $DeptOUPaths -ServiceAccountsOU $ServiceAccountsOU
 }
 
 function Ensure-CTFChallengeData {

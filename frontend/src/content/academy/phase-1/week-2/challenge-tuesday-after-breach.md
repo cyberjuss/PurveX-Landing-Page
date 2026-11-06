@@ -3,27 +3,8 @@
 <h3>Tuesday After the Breach</h3>
 <p class="ad-brief__ask">Last night, a training vendor that PurveX staff use announced a breach. This morning the IT desk is full of tickets that all come down to one question: is this encoded, encrypted or hashed, and what does that mean we have to do?</p>
 <p>You're on the PurveX Financial IT desk. Each ticket below is a real file or account in your lab. Work them in order, because each one leans on the lesson before it.</p>
-<p>First, set up the morning. On your domain controller, open PowerShell as an administrator and run the block below once. It adds the Operations script from the first ticket. Everything else is already in your lab.</p>
+<p>Everything the tickets mention is already in your lab, in the IT share on your domain controller.</p>
 </div>
-
-```powershell
-& {
-  $it = "C:\PurveX\Shares\IT"
-  New-Item -ItemType Directory -Force -Path $it | Out-Null
-  $file = Join-Path $it "settlement-upload.ps1"
-  if ((Test-Path $file) -and (Select-String -Path $file -Pattern "553256" -Quiet)) { "The morning is already set up."; return }
-  # Taylor and Jordan have signed in normally since the lab was built, so neither is due a password change yet.
-  foreach ($u in "taylor.osei", "jordan.ellis") { Set-ADUser $u -ChangePasswordAtLogon $false }
-  Set-Content -Path $file -Encoding ascii -Value @(
-    "# settlement-upload.ps1 - sends the nightly settlement file to the clearing vendor",
-    "# Owner: Operations. The password below is encrypted (AES-256), so this is safe to share.",
-    '$User = "purvex-settle"',
-    '$Password = "553256306447786c4c553576647930794d44493249513d3d"',
-    '$Server = "sftp.clearing-vendor.example"'
-  )
-  "Done. The IT desk queue is waiting for you."
-}
-```
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
@@ -31,7 +12,7 @@
 </div>
 
 <div class="ad-mission" data-id="w2-01" data-attempts="0">
-<span class="ad-mission__num">Ticket 01 · Encoding · High</span>
+<span class="ad-mission__num">Ticket 01 · Encoding · High · INC-1091</span>
 <h4>Decode the Settlement Script</h4>
 <p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I can just send it, right? It's in the IT share.</p>
 <p><strong>Task:</strong> Open <code>settlement-upload.ps1</code> in the IT share, find out what the "encrypted" password really is, and report it.</p>
@@ -74,7 +55,7 @@
 </div>
 
 <div class="ad-mission" data-id="w2-02" data-attempts="0">
-<span class="ad-mission__num">Ticket 02 · Hashing · High · INC-1058</span>
+<span class="ad-mission__num">Ticket 02 · Hashing · High · INC-1058 · INC-1091</span>
 <h4>Catch the Altered Download</h4>
 <p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>The breach notice says to update the VPN client today. I found three download mirrors of version 2.4.1 in the IT share. IT published a checksum next to them. Which one is safe to install?</p>
 <p><strong>Task:</strong> Hash the three mirrors in the IT share and compare each with <code>checksums.txt</code>. Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>, and report its file name.</p>
@@ -117,7 +98,7 @@
 </div>
 
 <div class="ad-mission" data-id="w2-03" data-attempts="0">
-<span class="ad-mission__num">Ticket 03 · Encryption · Medium</span>
+<span class="ad-mission__num">Ticket 03 · Encryption · Medium · INC-1091</span>
 <h4>The Recovery Key Call</h4>
 <p><strong>Phone call · 9:40 AM</strong><br>"Hi, it's Sam Whitfield from Wealth Management. My laptop rebooted for an update and now there's a blue BitLocker screen asking for a 48-digit key. I'm calling from my personal phone and I have a client in ten minutes. Can you just read me the key?"<br><strong>A</strong> Read the key out straight away. The client meeting can't wait.<br><strong>B</strong> Confirm it's really Sam first, for example by calling back on the number in the directory or checking with Sam's manager, then give the key.<br><strong>C</strong> Tell Sam the data can't be recovered and the laptop has to be wiped.</p>
 <p><strong>Task:</strong> Choose what you do and type its letter.</p>
@@ -151,7 +132,7 @@
 </div>
 
 <div class="ad-mission" data-id="w2-04" data-attempts="0">
-<span class="ad-mission__num">Ticket 04 · Storing Passwords · Critical · INC-1058</span>
+<span class="ad-mission__num">Ticket 04 · Storing Passwords · Critical · INC-1058 · INC-1091</span>
 <h4>Crack the Shared Hash</h4>
 <p><strong>Alex Rivera · IT · 10:15 AM</strong><br>The breached vendor stored passwords as plain SHA-256, with no salt. The slice of its user table with PurveX accounts is in the IT share as <code>exported-hashes.txt</code>. Two of our staff have the same hash, which means the same password. Find out what it is, and make sure neither of them keeps using it.</p>
 <p><strong>Task:</strong> Find the two accounts that share a hash and crack it with <code>common-passwords.txt</code>. Then force both accounts to change their password at next logon, and report the password.</p>
@@ -195,7 +176,7 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0">
-<span class="ad-mission__num">Ticket 05 · Wrap-up · Report to the IT Lead</span>
+<span class="ad-mission__num">Ticket 05 · Wrap-up · Report to the IT Lead · INC-1091</span>
 <h4>Fix the Script for Good</h4>
 <p><strong>Alex Rivera · IT · 11:00 AM</strong><br>Back to the settlement script from this morning. Operations still needs it to run every night. What's the right fix?<br><strong>A</strong> Encrypt the password properly with AES, and keep the key in the same script so it can decrypt it at run time.<br><strong>B</strong> Take the password out of the script, store it in a secrets vault or run the job under a managed service account, and change the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so nobody can read it.</p>
 <p><strong>Task:</strong> Choose the fix and type its letter.</p>

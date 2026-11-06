@@ -4,37 +4,8 @@
 <p class="ad-brief__ask">Every quarter, PurveX Financial's auditors ask one question: does everyone have exactly the access their job needs, and can we prove who did what? Can you find what fails that test in your own directory and fix it before they arrive?</p>
 <p>Compliance has sent IT the findings from this quarter's review. Each ticket is a real account or setting in your lab.</p>
 <p>Auditors want evidence, not just a fix, so you'll pull some of it from the Windows Security log with <strong>Event Viewer</strong>. The event IDs you read there are the same ones a SOC analyst searches for in a SIEM every day.</p>
-<p>First, set up the review. On your domain controller, open PowerShell as an administrator and run the block below. It adds this quarter's findings to your directory. It's safe to run again.</p>
+<p>This quarter's findings are already in your directory. Work them on your domain controller.</p>
 </div>
-
-```powershell
-& {
-  $d = Get-ADDomain
-  if (-not (Get-ADUser -Filter "SamAccountName -eq 'frontdesk.shared'" -ErrorAction SilentlyContinue)) {
-    New-ADUser -Name "Front Desk (shared)" -SamAccountName "frontdesk.shared" -UserPrincipalName "frontdesk.shared@$($d.DNSRoot)" `
-      -Path "OU=Users,OU=Operations,OU=Departments,$($d.DistinguishedName)" `
-      -Description "Shared reception login used by all three receptionists. Password is on a note on the front desk monitor." `
-      -AccountPassword (ConvertTo-SecureString "Reception2026!" -AsPlainText -Force) -Enabled $true -PasswordNeverExpires $true
-    Add-ADGroupMember -Identity "Operations Users" -Members "frontdesk.shared"
-    Add-ADGroupMember -Identity "Domain Admins" -Members "priya.nair"
-  }
-  # Someone has been guessing the shared password: five failed sign-ins in the Security log.
-  $mark = "C:\PurveX\Archive\week4-signins.txt"
-  if (-not (Test-Path $mark)) {
-    New-Item -ItemType Directory -Force -Path "C:\PurveX\Archive" | Out-Null
-    auditpol /set /subcategory:"Logon" /success:enable /failure:enable | Out-Null
-    Add-Type -AssemblyName System.DirectoryServices.Protocols
-    foreach ($guess in "Reception2025!", "Frontdesk1", "Welcome1", "Reception2026", "PurveX2026!") {
-      $c = New-Object System.DirectoryServices.Protocols.LdapConnection("$($env:COMPUTERNAME).$($d.DNSRoot):389")
-      $c.AuthType = [System.DirectoryServices.Protocols.AuthType]::Basic
-      try { $c.Bind((New-Object Net.NetworkCredential("$($d.NetBIOSName)\frontdesk.shared", $guess))) } catch {}
-      $c.Dispose()
-    }
-    Set-Content -Path $mark -Value (Get-Date -Format o)
-  }
-  "Done. This quarter's findings are in your directory."
-}
-```
 
 <div class="ad-progress">
 <div class="ad-progress__track"><div id="ad-progress-bar" class="ad-progress__bar"></div></div>
@@ -42,7 +13,7 @@
 </div>
 
 <div class="ad-mission" data-id="w4-06" data-attempts="0">
-<span class="ad-mission__num">Finding 01 · Authentication · Evidence · Event Viewer</span>
+<span class="ad-mission__num">Finding 01 · Authentication · Evidence · Event Viewer · INC-1093</span>
 <h4>Has Someone Been Guessing?</h4>
 <p><strong>Devon Brooks · Compliance · 8:45 AM</strong><br>Before we shut the shared reception login down, the auditors want to know one thing: has anyone been trying to guess its password? The Security log on the domain controller will say.</p>
 <p><strong>Task:</strong> Find the failed sign-ins for <code>frontdesk.shared</code> in the Security log and report how many there are.</p>
@@ -85,7 +56,7 @@
 </div>
 
 <div class="ad-mission" data-id="w4-01" data-attempts="0">
-<span class="ad-mission__num">Finding 02 · Authentication · High</span>
+<span class="ad-mission__num">Finding 02 · Authentication · High · INC-1093</span>
 <h4>Retire the Shared Login</h4>
 <p><strong>Devon Brooks · Compliance · 9:00 AM</strong><br>The auditors found a login at reception that three people use, and the password is on a sticky note on the monitor. When something goes wrong at the front desk, we can't say which of them did it. Find the account and shut it down.</p>
 <p><strong>Task:</strong> Find the account in the Operations users folder that more than one person signs in with, disable it, and report its username.</p>
@@ -128,7 +99,7 @@
 </div>
 
 <div class="ad-mission" data-id="w4-02" data-attempts="0">
-<span class="ad-mission__num">Finding 03 · Authentication · Executive Request</span>
+<span class="ad-mission__num">Finding 03 · Authentication · Executive Request · INC-1093</span>
 <h4>The MFA Exemption Request</h4>
 <p><strong>CFO · 9:45 AM</strong><br>The MFA prompts slow me down when I'm approving payments between meetings. Can IT turn MFA off for the executive team? We're careful with our passwords.<br><strong>A</strong> Agree. Executives are busy, and their passwords are long.<br><strong>B</strong> Keep MFA on, and offer a faster method, such as number matching on the phone app or a hardware key. Executives who approve payments are exactly who attackers phish.<br><strong>C</strong> Turn MFA off, but make executives change their password every month instead.</p>
 <p><strong>Task:</strong> Choose how IT should answer and type its letter.</p>
@@ -162,7 +133,7 @@
 </div>
 
 <div class="ad-mission" data-id="w4-03" data-attempts="0">
-<span class="ad-mission__num">Finding 04 · Authorization · High · INC-1071</span>
+<span class="ad-mission__num">Finding 04 · Authorization · High · INC-1071 · INC-1093</span>
 <h4>Access That Outlived the Audit</h4>
 <p><strong>Devon Brooks · Compliance · 10:30 AM</strong><br>Noor Ahmadi on the help desk can still open our case files. Noor was given access in March to export data for one audit, and nobody took it away. Please remove it today.</p>
 <p><strong>Task:</strong> Open <code>noor.ahmadi</code>, find the group that gives Compliance access, remove Noor from it, and report the group's name.</p>
@@ -204,7 +175,7 @@
 </div>
 
 <div class="ad-mission" data-id="w4-04" data-attempts="0">
-<span class="ad-mission__num">Finding 05 · Authorization · Critical</span>
+<span class="ad-mission__num">Finding 05 · Authorization · Critical · INC-1093</span>
 <h4>The Temporary Domain Admin</h4>
 <p><strong>Alex Rivera · IT · 11:15 AM</strong><br>During the server migration, someone added a member of staff to Domain Admins "just for the weekend". The migration finished weeks ago. The auditors want to know who it is, and that it's been fixed.</p>
 <p><strong>Task:</strong> Find the staff account in Domain Admins that shouldn't be there, remove it, and report its username.</p>
@@ -247,7 +218,7 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="w4-05" data-attempts="0">
-<span class="ad-mission__num">Finding 06 · Broken Access Control · Client Portal</span>
+<span class="ad-mission__num">Finding 06 · Broken Access Control · Client Portal · INC-1093</span>
 <h4>Change One Number in the URL</h4>
 <p><strong>Client complaint · 2:00 PM</strong><br>A client signed in to the PurveX client portal and viewed their statement at <code>/statements?client=1042</code>. Out of curiosity they changed it to <code>1043</code> and saw another client's statement. What failed, and what's the fix?<br><strong>A</strong> Authentication failed, so the fix is to add MFA to the portal.<br><strong>B</strong> Broken access control. The server must check, on every request, that the signed-in client owns the statement being asked for.<br><strong>C</strong> Encryption failed, so the fix is to turn on HTTPS.</p>
 <p><strong>Task:</strong> Choose the failure and the fix and type its letter.</p>

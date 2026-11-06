@@ -821,7 +821,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     id: "w3-05",
     challenge: "network-change",
     title: "Read the Password Off the Wire",
-    prompt: "Capture the legacy report sync with Wireshark, read its password from the LDAP bind, and disable the account.",
+    prompt: "Capture the legacy report sync with Wireshark, read its password from the HTTP Basic sign-in, and disable the account.",
     skill: "security",
   },
   "w4-06": {
