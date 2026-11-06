@@ -6,7 +6,7 @@
 
 ### Sources for this week's facts
 
-- **LinkedIn, 2012, unsalted hashes:** [TechCrunch: 117 million LinkedIn emails and passwords from a 2012 hack](https://techcrunch.com/2016/05/18/117-million-linkedin-emails-and-passwords-from-a-2012-hack-just-got-posted-online)
+- **LinkedIn, 2012, unsalted hashes (about 6.5 million posted in 2012, the full set of 117 million in 2016):** [TechCrunch: 117 million LinkedIn emails and passwords from a 2012 hack](https://techcrunch.com/2016/05/18/117-million-linkedin-emails-and-passwords-from-a-2012-hack-just-got-posted-online)
 - **LinkedIn, more than 60% cracked within about a week:** [Sonatype: Hackers crack more than 60% of breached LinkedIn passwords](https://blog.sonatype.com/2012/06/hackers-crack-more-than-60-of-breached-linkedin-passwords/)
 - **Guessing speed on one high-end graphics card:** [hashcat forum: NVIDIA RTX 4090 benchmark](https://hashcat.net/forum/thread-13338.html)
 - **bcrypt minimum work factor of 10:** [OWASP: Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)

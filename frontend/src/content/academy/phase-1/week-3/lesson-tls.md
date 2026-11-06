@@ -14,7 +14,7 @@ The clearest way to keep the two apart is by what each one produces:
 - **TCP's handshake** sets up the **connection**.
 - **TLS's handshake** sets up the **privacy**.
 
-Because they run back to back on the same conversation, a capture shows them one after the other, and mistaking one for the other is a common slip on a new desk.
+They run back to back on the same conversation, so a capture shows them one after the other. Mistaking one for the other is a common slip on a new desk.
 
 All of this changes what you can expect to get out of a capture, and it's better to adjust that expectation now than to spend an afternoon fighting it. If a conversation is HTTPS, you won't be able to read the payload, and no amount of work in Wireshark will change that.
 

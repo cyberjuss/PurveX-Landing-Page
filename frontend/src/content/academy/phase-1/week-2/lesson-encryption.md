@@ -2,7 +2,7 @@
 
 **The ticket:** Sam Whitfield's laptop restarted for an update overnight. Now a blue screen says **BitLocker recovery** and asks for a 48-digit key. "Is my laptop broken?"
 
-The first thing to tell Sam is that the laptop is fine, and saying so early will reassure them for the rest of the call. BitLocker encrypts the entire drive, so the screen Sam is looking at simply means BitLocker won't hand over the drive's contents until it's given the right key. Nothing has been damaged, and nothing has been lost. To work the call properly, though, you need to understand what encryption is doing here, and why the key matters more than the algorithm.
+The first thing to tell Sam is that the laptop is fine, and saying so early will reassure them for the rest of the call. BitLocker encrypts the entire drive, so the screen Sam is looking at means BitLocker won't hand over the drive's contents until it's given the right key. Nothing has been damaged, and nothing has been lost. To work the call properly, though, you need to understand what encryption is doing here, and why the key matters more than the algorithm.
 
 ### What encryption does
 
@@ -16,7 +16,7 @@ The key itself is a secret value, often derived from a passphrase such as `Tide-
 | `U2FsdGVkX1+q3…` | `Tide-Lamp-41` | Nothing. Decryption fails. |
 | `U2FsdGVkX1+q3…` | No key | Nothing |
 
-That table captures the whole difference between encryption and the other two methods this week. Anybody can reverse encoding, and nobody at all can reverse a hash. Encryption sits between the two: the data comes back in full, but only for whoever holds the key. It follows that anything encrypted is really only as safe as its key, which is why an attacker who wants your data will almost always go after the key rather than the mathematics.
+That table captures the whole difference between encryption and the other two methods this week. Anybody can reverse encoding, and nobody at all can reverse a hash. Encryption sits between the two: the data comes back in full, but only for whoever holds the key. So anything encrypted is only as safe as its key. That's why an attacker who wants your data will almost always go after the key rather than the mathematics.
 
 ### Two kinds of keys
 
@@ -32,7 +32,7 @@ The second, **asymmetric encryption**, uses a pair of keys instead.
 - Anything locked with one of the pair opens only with the other.
 - Pairs are much slower, so they are not used for bulk data. Their job is establishing trust between parties who have never met, and signing files to prove who published them.
 
-HTTPS is a good example of the two working together rather than competing. When you visit a site, your browser and the website use their key pairs to agree on a fresh shared key for that one session, usually AES, and everything sent afterwards is protected by that shared key. In other words, the slow method solves the problem of agreeing on a secret in public, and then the fast method does the actual work.
+HTTPS is a good example of the two working together rather than competing. When you visit a site, your browser and the website use key pairs to agree on a fresh shared key for that session, usually AES. Everything sent afterwards is protected by that shared key. In other words, the slow method solves the problem of agreeing on a secret in public, and then the fast method does the actual work.
 
 ```match
 prompt: Match each kind of encryption to how it works.

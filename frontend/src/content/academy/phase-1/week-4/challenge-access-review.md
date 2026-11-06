@@ -88,7 +88,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Authentication is meant to prove who someone is. A login three people share proves nothing about which of them acted, and a password on a sticky note means anyone walking past can sign in as all three of them.</p>
+<p>Authentication is meant to prove who someone is. A login three people share proves nothing about which of them acted. A password on a sticky note means anyone walking past can sign in as all three.</p>
 </div>
 <div>
 <span>What to do</span>

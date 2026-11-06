@@ -12,6 +12,6 @@ To get you there, this week covers four things:
 - The main types of malware and how each behaves
 - How malware gets onto a machine in the first place
 - What to do when a malware alert fires on an endpoint
-- The tools you will actually use to verify, contain and investigate
+- The tools you will use to verify, contain and investigate
 
-Don't worry if malware sounds intimidating. You don't need to take malware apart to work a Tier 1 alert. What you do need is to recognize what you're looking at, contain it, and then escalate with the right evidence, and that's exactly what this week builds.
+Don't worry if malware sounds intimidating. You don't need to take malware apart to work a Tier 1 alert. What you do need is to recognize what you're looking at, contain it, and then escalate with the right evidence, and that's what this week builds.

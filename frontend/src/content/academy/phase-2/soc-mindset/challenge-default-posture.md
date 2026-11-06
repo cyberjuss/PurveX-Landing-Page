@@ -62,7 +62,7 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 <p>You've just read this machine's actual outbound default, so apply the same logic you used in the previous question, only with the opposite setting.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="b">The default you just read is exactly what decides whether unapproved outbound traffic leaves at all. It is not automatic.</div>
+<div class="ad-miss" data-guess="b">The default you just read is what decides whether unapproved outbound traffic leaves at all. It is not automatic.</div>
 <div class="ad-miss" data-guess="c">A task's own permissions govern what it can do on the machine, not whether its network traffic is allowed to leave. The firewall default decides that.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -72,7 +72,7 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 </div>
 <div>
 <span>Why it matters</span>
-<p>Nothing about the task's own permissions decides whether its traffic leaves the machine. The firewall's default does. So an outbound allowlist would have stopped it cold, without anyone writing a rule specifically against it, simply by trusting nothing it hadn't already approved.</p>
+<p>Nothing about the task's own permissions decides whether its traffic leaves the machine. The firewall's default does. So an outbound allowlist would have stopped it cold, without anyone writing a rule specifically against it, by trusting nothing it hadn't already approved.</p>
 </div>
 </div>
 </div>
@@ -82,19 +82,19 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 
 <div class="ad-mission ad-mission--capstone" data-id="sm2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1133 · Medium</span>
-<p><strong>Security Architecture Review · Policy Question · 3:30 PM</strong><br>Alex Rivera is presenting your audit finding to the architecture review board, and needs you to explain, in plain terms, why the domain controller trusts outbound traffic by default while it refuses inbound traffic by default.</p>
-<p><strong>Task:</strong> What does that difference actually trade off? Type its letter.<br><strong>A</strong> Nothing, the two defaults are functionally identical.<br><strong>B</strong> Blocking inbound by default stops strangers from reaching in, while allowing outbound by default trusts the machine's own software not to call out to somewhere it should not.<br><strong>C</strong> Outbound is allowed by default because outbound traffic can never carry anything malicious.</p>
+<p><strong>Security Architecture Review · Policy Question · 3:30 PM</strong><br>Alex Rivera is presenting your audit finding to the architecture review board. Explain to Alex, in plain terms, why the domain controller allows outbound traffic by default but refuses inbound traffic by default.</p>
+<p><strong>Task:</strong> What does that difference trade off? Type its letter.<br><strong>A</strong> Nothing, the two defaults are functionally identical.<br><strong>B</strong> Blocking inbound by default stops strangers from reaching in, while allowing outbound by default trusts the machine's own software not to call out to somewhere it should not.<br><strong>C</strong> Outbound is allowed by default because outbound traffic can never carry anything malicious.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what the two defaults trade off" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>You've just reasoned through exactly this with the beacon: a Block default would have stopped it. That's the cost of trusting outbound traffic by default.</p>
+<p>You've just reasoned through this with the beacon: a Block default would have stopped it. That's the cost of trusting outbound traffic by default.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">You just read the two settings directly from the machine: Block for inbound, Allow for outbound. They are not the same value.</div>
-<div class="ad-miss" data-guess="c">The scheduled task's beacon was outbound traffic, and it was not harmless. Outbound traffic can carry exactly the kind of thing that question was about.</div>
+<div class="ad-miss" data-guess="c">The scheduled task's beacon was outbound traffic, and it was not harmless. Outbound traffic can carry the kind of thing that question was about.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -103,7 +103,7 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 </div>
 <div>
 <span>Why it matters</span>
-<p>That trust is exactly what a beacon abuses. A scheduled task calling out to an address nobody approved still gets through, because outbound traffic is allowed unless something blocks it by name. Flipping that default to an allowlist is stricter, but it breaks things less often than people assume, which is why some environments do it anyway.</p>
+<p>That trust is what a beacon abuses. A scheduled task calling out to an address nobody approved still gets through, because outbound traffic is allowed unless something blocks it by name. Flipping that default to an allowlist is stricter, but it breaks things less often than people assume, which is why some environments do it anyway.</p>
 </div>
 </div>
 </div>
@@ -111,4 +111,4 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 
 ### Why It Matters
 
-A default is a decision that nobody has to remember to make again, so it quietly shapes everything that follows. Reading it straight from the machine, rather than assuming it, is how you know what you're actually defending before the first alert ever fires.
+A default is a decision that nobody has to remember to make again, so it quietly shapes everything that follows. Reading it straight from the machine, rather than assuming it, is how you know what you're defending before the first alert ever fires.

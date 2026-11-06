@@ -1,7 +1,7 @@
 ### Delivery
 <!-- art: mail -->
 
-Delivery is the stage where the weapon built in the previous step reaches the target, most often through a phishing email, a malicious link or a compromised website. Everything before this happened out of view, so Delivery is usually a defender's first real chance to see the attack at all.
+Delivery is the stage where the weapon reaches the target. Most often it arrives as a phishing email, a malicious link or a compromised website. Everything before this happened out of view, so Delivery is usually a defender's first real chance to see the attack.
 
 In MITRE ATT&CK, this ground is covered by the [Initial Access (TA0001)](https://attack.mitre.org/tactics/TA0001/) tactic. Its best-known technique is [Phishing (T1566)](https://attack.mitre.org/techniques/T1566/), an email carrying a malicious attachment or link. Phishing is aimed at a person rather than a system, because a person's judgment is easier to exploit than a patched server's code.
 

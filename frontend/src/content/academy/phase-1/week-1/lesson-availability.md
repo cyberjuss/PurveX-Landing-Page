@@ -1,6 +1,6 @@
 ### Availability
 
-Availability means that systems and data are there when the people who need them go to use them. When it fails, nothing has leaked and nothing has been changed, so the data is still intact and still private. What's stopped instead is the work itself, which is why we call this failure a **lockout**. It's also the most visible of the three failures, and usually the first to land in your queue, because the people affected notice straight away and can't carry on until it's fixed.
+Availability means that systems and data are there when the people who need them go to use them. When it fails, nothing has leaked and nothing has been changed, so the data is still intact and still private. What's stopped instead is the work itself, which is why we call this failure a **lockout**. It's also the most visible of the three failures, and usually the first to land in your queue. The people affected notice straight away and can't carry on until it's fixed.
 
 So availability matters most where being unreachable is the harm in itself, such as:
 
@@ -9,7 +9,7 @@ So availability matters most where being unreachable is the harm in itself, such
 - the VPN
 - a payment page at checkout
 
-To see why, think about what each outage actually costs. A payment page that won't load loses money for every minute it stays down. In the same way, a time clock that's unreachable at shift change creates a payroll mess that someone will have to sort out by hand later.
+To see why, think about what each outage costs. A payment page that won't load loses money for every minute it stays down. In the same way, a time clock that's unreachable at shift change creates a payroll mess that someone will have to sort out by hand later.
 
 **Controls:** backups, redundancy and patching.
 

@@ -33,7 +33,7 @@ Container: Windows builds it and you cannot make your own | CN=Computers | CN=Us
 
 ### Security Groups
 
-Now for groups themselves. A **Security Group** is a list of accounts, and you use it to grant permissions or apply Group Policy to exactly the people who need them, whatever OU they happen to live in.
+Now for groups themselves. A **Security Group** is a list of accounts. You use it to grant permissions or apply Group Policy to the people who need them, whatever OU they live in.
 
 That's the big difference from a folder: a group can cross departments. While an account has exactly one OU, it can sit in any number of groups.
 

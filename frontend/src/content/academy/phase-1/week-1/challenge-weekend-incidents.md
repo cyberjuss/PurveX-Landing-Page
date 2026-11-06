@@ -126,7 +126,7 @@
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="3389">That's Remote Desktop, which is still working. File shares use a different port.</div>
-<div class="ad-miss" data-guess="139|137|138">That's the older NetBIOS route. Read the port the maintenance rule actually blocks.</div>
+<div class="ad-miss" data-guess="139|137|138">That's the older NetBIOS route. Read the port the maintenance rule blocks.</div>
 <div class="ad-miss" data-guess="#">Open the maintenance rule's Protocols and Ports tab and read its local port.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -170,7 +170,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Getting the two apart tells you what you can actually fix. You can't remove every curious colleague or every stolen password, but you can remove the weakness by keeping client data where only its own department can reach it.</p>
+<p>Getting the two apart tells you what you can fix. You can't remove every curious colleague or every stolen password, but you can remove the weakness by keeping client data where only its own department can reach it.</p>
 </div>
 <div>
 <span>What to do</span>

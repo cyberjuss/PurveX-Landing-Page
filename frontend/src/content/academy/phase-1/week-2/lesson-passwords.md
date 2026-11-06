@@ -7,7 +7,7 @@ To answer Alex, start with how passwords should be stored in the first place. A 
 On its own, though, that isn't enough. There are two further requirements, and they're where most real systems fall short:
 
 - Two users who chose the same password must still end up with **different stored values**, or the table itself reveals which accounts share a password.
-- The calculation has to be **slow enough that bulk guessing is impractical**, because an attacker holding a copy of the table can try as many guesses as they like without the system ever knowing.
+- The calculation has to be **slow enough that bulk guessing is impractical**, because an attacker with a copy of the table can guess as often as they like and the system never knows.
 
 ### Good storage in one line
 <!-- art: salt -->
@@ -29,7 +29,7 @@ Slow hash = Argon2id or bcrypt, so each guess costs far more time
 
 You might wonder why another company's breach ends up on your desk. The answer is that people reuse passwords across services, and they do it in large numbers no matter what any policy says. Attackers know this, so they take a leaked list of emails and passwords and immediately try the same pairs on other sign-in pages to see where else they work. That's called **credential stuffing**, and it takes no skill and no knowledge of your organization at all.
 
-The defense that really holds up against it is **MFA**, because it changes what a stolen password is worth. With MFA turned on, a correct password alone isn't enough to get in anymore, so the attacker needs something they couldn't have taken from the vendor's database.
+The defense that holds up against it is **MFA**, because it changes what a stolen password is worth. With MFA turned on, a correct password alone isn't enough to get in anymore, so the attacker needs something they couldn't have taken from the vendor's database.
 
 ### What to do first after a vendor breach
 
@@ -59,7 +59,7 @@ $ openssl passwd -6 -salt N4tQ2x 'Harbor2026'
 $6$N4tQ2x$YkiZ5pKGVV3yPjoKhMV4oWEqyPJNVynJGzKwvp37hoCLb//X7KoVHJyXe8KXcZ2U7axpFTZFxABOn4py32W0v.
 ```
 
-It helps to know how to read one of these stored values. The `$6$` at the start names the algorithm, and then the salt and the hash follow it. Notice that the salt isn't hidden, because it doesn't need to be secret. Its job is simply to make every hash unique.
+It helps to know how to read one of these stored values. The `$6$` at the start names the algorithm, and then the salt and the hash follow it. Notice that the salt isn't hidden, because it doesn't need to be secret. Its job is to make every hash unique.
 
 A bcrypt hash follows the same idea: `$2b$12$1.A448CMPszJoJNh8XDqPeL1ZvsWBt7AjjvYj57Rfr1M4tDk/7Oye`. Here, the `12` is the cost setting, and you raise it over time as computers get faster.
 
@@ -91,4 +91,4 @@ The pattern of those events tells you which attack you're seeing. Many 4625s on 
 
 ### Check yourself
 
-Here's one to think through. A leaked table shows two users with exactly the same value in the password column. What does that tell you, and would a salt have changed it?
+Here's one to think through. A leaked table shows two users with the same value in the password column. What does that tell you, and would a salt have changed it?

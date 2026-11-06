@@ -20,7 +20,7 @@ Source: [Microsoft Learn: Last-Logon-Timestamp attribute](https://learn.microsof
 
 To save yourself some scrolling, filter the Attribute Editor to **Show only attributes that have values**, so you aren't wading through blank fields.
 
-One quirk to know about: open the object from the tree rather than from the Find dialog, because an object opened from the Find results doesn't show the Attribute Editor tab.
+One quirk to know: open the object from the tree, not the Find dialog. An object opened from the Find results doesn't show the Attribute Editor tab.
 
 ### Managing Computer Objects
 

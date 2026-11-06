@@ -13,7 +13,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="rc-01" data-attempts="0">
 <span class="ad-mission__num">Stage 1 · Reconnaissance · T1589.003 Employee Names · INC-1073 · Low</span>
 <h4>Four Names That Were Never Real</h4>
-<p><strong>IT Lead · Routine log review · 9:00 AM</strong><br>A handful of failed sign-ins have turned up in the Security log recently, and none of the account names match anyone who actually works here.</p>
+<p><strong>IT Lead · Routine log review · 9:00 AM</strong><br>A handful of failed sign-ins have turned up in the Security log recently, and none of the account names match anyone who works here.</p>
 <p><strong>Task:</strong> Find the failed sign-ins (event 4625) whose status code says the account itself does not exist, not that the password was wrong, and count the distinct fake usernames tried.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Four Names That Were Never Real" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -105,7 +105,7 @@
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="128|160">Those bit lengths belong to MD5 and SHA-1, but this command used SHA-256. Check the algorithm you actually ran.</div>
+<div class="ad-miss" data-guess="128|160">Those bit lengths belong to MD5 and SHA-1, but this command used SHA-256. Check the algorithm you ran.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -131,7 +131,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A task built to blend in will have a name that sounds like routine Office activity, so read what it actually runs, not just what it's called.</p>
+<p>A task built to blend in will have a name that sounds like routine Office activity, so read what it runs, not just what it's called.</p>
 <ol>
 <li>Open Task Scheduler with Win+R and <code>taskschd.msc</code>.</li>
 <li>Open Task Scheduler Library and sort by Name.</li>
@@ -186,7 +186,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>You don't need someone else's packet capture to find a beacon. As long as it's running, it's generating real traffic you can see for yourself. Command and Control over a non-standard port, dressed up as ordinary application traffic, is exactly what T1071 (Application Layer Protocol) describes. Since 203.0.113.0/24 routes nowhere, the connection will time out, but you can still watch the attempt happen.</p>
+<p>You don't need someone else's packet capture to find a beacon. As long as it's running, it's generating real traffic you can see for yourself. Command and Control over a non-standard port, dressed up as ordinary application traffic, is what T1071 (Application Layer Protocol) describes. Since 203.0.113.0/24 routes nowhere, the connection will time out, but you can still watch the attempt happen.</p>
 </div>
 </div>
 </div>
@@ -244,7 +244,7 @@
 <ol>
 <li>Open <code>C:\PurveX\Shares\IT</code> in File Explorer.</li>
 <li>Read every file name. IT's own files are about mirrors, checksums and hashes from earlier work.</li>
-<li>Find the one named like an archive, not like anything IT actually produces.</li>
+<li>Find the one named like an archive, not like anything IT produces.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
@@ -260,7 +260,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Collected data has to sit somewhere before it leaves the network, and that place is rarely where the data belongs. That's exactly what T1074.001 (Local Data Staging) describes, and here it looks like an archive-style file on a share with no reason to hold client data.</p>
+<p>Collected data has to sit somewhere before it leaves the network, and that place is rarely where the data belongs. That's what T1074.001 (Local Data Staging) describes, and here it looks like an archive-style file on a share with no reason to hold client data.</p>
 </div>
 </div>
 </div>
@@ -321,7 +321,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Two different ways in, credential guessing and a phishing attachment, ended at exactly the same chokepoint: a firewall rule that let a task reach outside the firm. This campaign got one stage further than the first, far enough to stage a file for exfiltration. But once that rule was disabled, neither attacker could get anything they touched out of the network. Delivery and Exploitation differed, yet both chains lost their exit in the same place. When a domain controller can't talk freely to the internet, every attacker's last step has to pass through the same narrow, closely watched door.</p>
+<p>Two different ways in, credential guessing and a phishing attachment, ended at the same chokepoint: a firewall rule that let a task reach outside the firm. This campaign got one stage further than the first, far enough to stage a file for exfiltration. But once that rule was disabled, neither attacker could get anything they touched out of the network. Delivery and Exploitation differed, yet both chains lost their exit in the same place. When a domain controller can't talk freely to the internet, every attacker's last step has to pass through the same narrow, closely watched door.</p>
 </div>
 </div>
 </div>

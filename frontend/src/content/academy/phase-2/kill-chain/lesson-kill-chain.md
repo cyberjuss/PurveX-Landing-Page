@@ -8,12 +8,12 @@ Here are the seven stages. Each one gets its own lesson after this one:
 1. **Reconnaissance.** The attacker researches the target.
 2. **Weaponization.** The attacker builds or obtains the tool that will exploit a weakness.
 3. **Delivery.** The weapon reaches the target.
-4. **Exploitation.** A vulnerability actually gets used.
+4. **Exploitation.** A weakness gets used.
 5. **Installation.** The attacker sets up a way to keep the foothold.
 6. **Command and Control.** The compromised system reaches back out to attacker-controlled infrastructure.
-7. **Actions on Objectives.** The attacker does what they actually came for.
+7. **Actions on Objectives.** The attacker does what they came for.
 
-Each technique you learned in this phase's ATT&CK lesson sits at one of these stages, and the lesson for that stage will name it. Keep in mind that a chain of incidents is more dangerous than any single one read on its own. Disable Windows Event Logging (T1562.002), for example, gains the attacker nothing by itself. Its purpose is to make every other stage harder to see.
+Each technique from this phase's ATT&CK lesson sits at one of these stages, and that stage's lesson names it. Keep in mind that a chain of incidents is more dangerous than any one of them read alone. Disable Windows Event Logging (T1562.002), for example, gains the attacker nothing by itself. Its purpose is to make every other stage harder to see.
 
 ```order
 prompt: Put the seven Cyber Kill Chain stages in order.

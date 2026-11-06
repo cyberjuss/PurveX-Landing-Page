@@ -12,9 +12,9 @@ The difference between the two is encryption. HTTPS is the encrypted form of HTT
 
 #### DNS
 
-Before any of that web traffic can happen, though, a device has to find the server, and that's DNS's job. DNS translates names into IP addresses. Since the network itself only routes on addresses and knows nothing about names, a device that wants to connect to a name such as google.com first has to do a DNS lookup to find the matching address.
+Before any of that web traffic can happen, though, a device has to find the server, and that's DNS's job. DNS translates names into IP addresses. The network routes on addresses and knows nothing about names. So a device that wants to connect to a name such as google.com first does a DNS lookup to find the matching address.
 
-That ordering is what makes DNS so valuable to an analyst. Because almost every connection a machine makes starts with a name lookup, the DNS record is one of the best lists you'll get of what a machine was trying to reach, including the attempts that never succeeded. It isn't complete, admittedly. Cached answers, connections made straight to an IP address, and lookups sent over encrypted DNS (DoH) never reach your DNS logs. Even so, a device looking up a name it has no business wanting is often the earliest visible sign that something is wrong, and it shows up in DNS whether or not the connection that followed ever completed.
+That ordering is what makes DNS so valuable to an analyst. Almost every connection starts with a name lookup. That makes the DNS record one of the best lists you'll get of what a machine was trying to reach, including attempts that never succeeded. It isn't complete, admittedly. Cached answers, connections made straight to an IP address, and lookups sent over encrypted DNS (DoH) never reach your DNS logs. A device looking up a name it has no business wanting is often the earliest visible sign that something is wrong. It shows up in DNS whether or not the connection that followed ever completed.
 
 #### DHCP
 
@@ -26,9 +26,9 @@ The alternative would be an administrator typing an address into every device by
 
 Email has its own protocols, and they split the work into two directions. SMTP carries mail outward, from a client or a server toward its destination. POP3 and IMAP work the other way, letting a mail client pull messages down from a server so someone can read them.
 
-For an analyst, the useful question is which machines should be speaking these protocols at all, and the answer is a short list: mail servers, and the mail clients of the people who read email. So if you see SMTP coming from a host that has no reason to handle mail, follow it up. One of the most common uses of a compromised machine is sending messages from it, and that traffic looks perfectly ordinary on its own while being completely out of place on that particular host.
+For an analyst, the useful question is which machines should speak these protocols at all. The answer is a short list: mail servers, and the mail clients of the people who read email. So if you see SMTP coming from a host that has no reason to handle mail, follow it up. One of the most common uses of a compromised machine is sending messages from it. That traffic looks ordinary on its own, yet it's out of place on that host.
 
-You'll put all of this to work in this week's challenge, where you'll use ports and protocols together to find the rules in your own lab that let through traffic that doesn't belong.
+You'll put all of this to work in this week's challenge. You'll use ports and protocols together to find the rules in your own lab that let through traffic that doesn't belong.
 
 ```sort
 prompt: Match each job to the protocol that does it.

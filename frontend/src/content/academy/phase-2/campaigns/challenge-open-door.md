@@ -59,7 +59,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>On a hosted lab, the other machine in your pod connects to this share on its own schedule, and that's exactly the traffic this rule lets through.</p>
+<p>On a hosted lab, the other machine in your pod connects to this share on its own schedule, and that's the traffic this rule lets through.</p>
 <ol>
 <li>Open Event Viewer, Windows Logs → Security, and filter for Event ID 4624.</li>
 <li>Read the Logon Type field in the General tab. Type 3 is Network: a connection from somewhere else, not an interactive sign-in at the keyboard.</li>
@@ -122,7 +122,7 @@
 <div class="ad-mission" data-id="od-04" data-attempts="0">
 <span class="ad-mission__num">Stage 2 · Installation · T1053.005 Scheduled Task · INC-1077 · High</span>
 <h4>What They Left Behind</h4>
-<p><strong>IT Lead · Follow-up · 11:15 AM</strong><br>Now that the door is shut, check whether anyone actually came through it. Start by finding the scheduled task on the domain controller that nobody on the team created.</p>
+<p><strong>IT Lead · Follow-up · 11:15 AM</strong><br>Now that the door is shut, check whether anyone came through it. Start by finding the scheduled task on the domain controller that nobody on the team created.</p>
 <p><strong>Task:</strong> Report its exact name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for What They Left Behind" placeholder="task name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -130,7 +130,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A task built to blend in will have a name that sounds like real AD infrastructure work, so read what it actually runs, not just what it's called.</p>
+<p>A task built to blend in will have a name that sounds like real AD infrastructure work, so read what it runs, not just what it's called.</p>
 <ol>
 <li>Open Task Scheduler with Win+R and <code>taskschd.msc</code>.</li>
 <li>Open Task Scheduler Library and sort by Name.</li>
@@ -151,7 +151,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A name that sounds like real AD infrastructure work is chosen to survive a quick glance at the task list. The only way to catch it is to read what it actually runs.</p>
+<p>A name that sounds like real AD infrastructure work is chosen to survive a quick glance at the task list. The only way to catch it is to read what it runs.</p>
 </div>
 </div>
 </div>
@@ -225,7 +225,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Staging data on a share where it doesn't belong is a deliberate choice. Nobody reviews a department's files looking for data that isn't theirs, so it sits unnoticed until someone checks every file against what the share is actually for.</p>
+<p>Staging data on a share where it doesn't belong is a deliberate choice. Nobody reviews a department's files looking for data that isn't theirs, so it sits unnoticed until someone checks every file against what the share is for.</p>
 </div>
 </div>
 </div>
@@ -277,7 +277,7 @@
 <p>Each stage of the model describes something that happens in a typical intrusion, not something that has to happen in every one.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">The model still applies. This campaign just compresses some of its stages, in the same way a credential-only attack folds Delivery into Exploitation.</div>
+<div class="ad-miss" data-guess="a">The model still applies. This campaign compresses some of its stages, in the same way a credential-only attack folds Delivery into Exploitation.</div>
 <div class="ad-miss" data-guess="c">An intrusion with real planted persistence and a real exfiltration attempt isn't a false positive just because one stage looks different.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -297,7 +297,7 @@
 <span class="ad-mission__num">Stage 6 · Write-Up · Medium</span>
 <h4>Three Campaigns and One Rule That Would Have Stopped Them All</h4>
 <p><strong>SOC Lead · Quarterly summary · 2:00 PM</strong><br>This phase's three campaigns used three different ways in: a wide password spray, a phishing attachment and a forgotten firewall rule. Yet all three ended up planting a scheduled task that needed to phone home.</p>
-<p><strong>Task:</strong> Name the single control that, if it had been in place from the start, would have stopped every one of the three beacons from ever reaching out, regardless of how each attacker got in.</p>
+<p><strong>Task:</strong> Name the single control that would have stopped all three beacons from reaching out, had it been in place from the start, however each attacker got in.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Three Campaigns and One Rule That Would Have Stopped Them All" placeholder="a few words" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{outbound firewall restriction}" data-accept="restrict outbound traffic|egress filtering|outbound allowlist|default deny outbound">Submit</button>

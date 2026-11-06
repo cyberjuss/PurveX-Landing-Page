@@ -21,7 +21,7 @@ Active Directory mirrors this chart, giving every department its own folder and 
 - Folder in the directory
 - Group in the directory
 
-If those three disagree, stop before you change anything. The chart tells you how things should be, while the directory shows you how they actually are right now, and a mismatch between the two is worth understanding first.
+If those three disagree, stop before you change anything. The chart tells you how things should be, while the directory shows you how they are right now, and a mismatch between the two is worth understanding first.
 
 ```sort
 prompt: Which departments are marked critical?

@@ -35,6 +35,6 @@ One consequence of that messiness is that a job title doesn't set access. Someon
 
 The next four tabs lay out the firm for you: the org chart, the access levels, the data, and the full user directory. It's worth learning them before you build the lab, because every check you make later will be measured against them.
 
-Without that baseline, any answer you give on a ticket would just be a guess.
+Without that baseline, any answer you give on a ticket would be a guess.
 
 ***Domain: purvexfinancial.local***

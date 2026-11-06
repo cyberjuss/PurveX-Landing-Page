@@ -69,7 +69,7 @@ sudo journalctl -u ssh -n 20
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Each event looking fine on its own is exactly why the pair needs a second look, because neither log by itself shows the unfamiliar sequence.</div>
-<div class="ad-miss" data-guess="c">You've just read both logs in this lab and lined up the timing yourself. So it is possible. It just doesn't happen automatically.</div>
+<div class="ad-miss" data-guess="c">You've just read both logs in this lab and lined up the timing yourself. So it is possible. It doesn't happen automatically.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -78,7 +78,7 @@ sudo journalctl -u ssh -n 20
 </div>
 <div>
 <span>Why it matters</span>
-<p>A baseline covers more than what one event normally looks like. It also covers what a normal sequence of events looks like for one account. When an account suddenly moves somewhere it has never gone before, a single machine's log can't show you that on its own, because the other half of the pattern happened somewhere else.</p>
+<p>A baseline covers more than what one event normally looks like. It also covers what a normal sequence of events looks like for one account. When an account suddenly goes somewhere it has never gone before, one machine's log can't show you that. The other half of the pattern happened somewhere else.</p>
 </div>
 </div>
 </div>
@@ -89,7 +89,7 @@ sudo journalctl -u ssh -n 20
 <div class="ad-mission ad-mission--capstone" data-id="la2-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1143 · Medium</span>
 <p><strong>SOC Lead · Process Review · 2:30 PM</strong><br>A newer analyst asks why the team bothers checking both machines' logs at all when the domain controller already logs the sign-in.</p>
-<p><strong>Task:</strong> You now have two real events, a few minutes apart, on two machines that trust each other. If an analyst only ever read the domain controller's log, what would they miss? Type its letter.<br><strong>A</strong> Nothing. The domain controller's log already contains everything that happens anywhere in the pod.<br><strong>B</strong> Whether the same person who signed in to the domain controller also reached the Ubuntu server around the same time, since that activity only exists in the Ubuntu server's own log.<br><strong>C</strong> The exact time of the domain controller sign-in, which only the Ubuntu log actually records.</p>
+<p><strong>Task:</strong> You now have two real events, a few minutes apart, on two machines that trust each other. If an analyst only ever read the domain controller's log, what would they miss? Type its letter.<br><strong>A</strong> Nothing. The domain controller's log already contains everything that happens anywhere in the pod.<br><strong>B</strong> Whether the same person who signed in to the domain controller also reached the Ubuntu server around the same time, since that activity only exists in the Ubuntu server's own log.<br><strong>C</strong> The exact time of the domain controller sign-in, which only the Ubuntu log records.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what reading only one machine's log would miss" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

@@ -33,7 +33,7 @@ Trojans are common precisely because they rely on trust rather than a technical 
 
 #### Ransomware
 
-Ransomware encrypts files and demands payment for the key. What makes it so damaging is that attackers often reach file shares and delete backups before they start encrypting, so the damage is already widespread by the time anyone sees the ransom note.
+Ransomware encrypts files and demands payment for the key. What makes it so damaging is that attackers often reach file shares and delete backups before encrypting. By the time anyone sees the ransom note, the damage is already widespread.
 
 For that reason, ransomware is always a top-severity incident, and speed matters. Isolate affected hosts from the network immediately to stop the encryption spreading, and escalate at once.
 
@@ -73,7 +73,7 @@ Spyware = Treat the account's credentials and sessions as compromised
 In practice, a real alert rarely tells you its own type. It shows up as a symptom instead, so working out the type is the first thing you have to do.
 
 ```sort
-prompt: Read what was reported. Sort each one by what it actually is.
+prompt: Read what was reported. Sort each one by what it is.
 Virus: A user in Operations says a single attachment she opened this morning is now attached to every document she saves, and Defender flags that one file on her machine only
 Worm: Twelve workstations in the Finance pod alert within the same two minutes, and none of the affected users remember opening anything
 Trojan: A help desk ticket says a "PDF converter" the user downloaded last week is still listed in Startup Apps, and Task Manager shows it talking to an address nobody recognizes

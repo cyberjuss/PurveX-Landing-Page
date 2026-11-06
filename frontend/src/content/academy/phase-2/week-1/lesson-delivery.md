@@ -9,7 +9,7 @@ These are the paths you'll see most:
 - Removable media
 - Exploited software
 
-Notice that most of these depend on a person or an unpatched weakness, which is exactly what a SOC watches for.
+Notice that most of these depend on a person or an unpatched weakness, which is what a SOC watches for.
 
 #### Phishing
 
@@ -25,7 +25,7 @@ To trace one, look at the browser history and downloads folder, which show what 
 
 #### Removable media
 
-A USB drive can also carry malware onto a machine, even one with no internet access. Windows no longer runs files from a USB drive automatically, so the drive usually needs someone to open a file on it, which is why attackers name that file to look worth opening.
+A USB drive can also carry malware onto a machine, even one with no internet access. Windows no longer runs files from a USB drive automatically, so someone usually has to open a file on it. That's why attackers name the file to look worth opening.
 
 In an environment that shouldn't allow unknown USB devices at all, an infection like this is a policy finding as well as a cleanup job.
 

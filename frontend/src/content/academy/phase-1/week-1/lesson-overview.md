@@ -13,11 +13,11 @@ Fortunately, each of the three fails in its own recognizable way:
 - **Integrity** fails as a **lie**: the data still looks normal, but you can no longer trust what it says.
 - **Availability** fails as a **lockout**: nothing leaked and nothing changed, yet people can't get their work done.
 
-Together, these three are known as the CIA triad. Telling them apart matters because each one gets handled differently. For example, a leaked password, a payroll figure that quietly changed overnight, and a website that won't load are three different problems, and each goes to different people and gets contained in a different way. That's why labeling one wrong costs you so much: you end up chasing the wrong failure while the real one keeps going.
+Together, these three are known as the CIA triad. Telling them apart matters because each one gets handled differently. A leaked password, a payroll figure that quietly changed overnight and a website that won't load are three different problems. Each goes to different people and gets contained in a different way. That's why labeling one wrong costs you so much: you end up chasing the wrong failure while the real one keeps going.
 
 ### Naming Danger Before It Does Damage
 
-Alongside the triad, this week gives you three words that get used loosely in every alert queue. It's worth pinning them down now, because an analyst who mixes them up ends up ranking work by how scary it sounds rather than by what it would actually cost the business:
+Alongside the triad, this week gives you three words that get used loosely in every alert queue. It's worth pinning them down now, because an analyst who mixes them up ends up ranking work by how scary it sounds rather than by what it would cost the business:
 
 - A **vulnerability** is a weakness.
 - A **threat** is something or someone that could take advantage of it.

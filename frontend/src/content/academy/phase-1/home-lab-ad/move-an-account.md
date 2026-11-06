@@ -20,7 +20,7 @@ You also add someone to a group from that same dialog:
 - Type the group name
 - Confirm
 
-Say, for example, that Jamie Torres in Wealth Management needs to receive firm-wide announcements. You'd add her to the all-employees group in exactly the same way you'd add anyone to `Wealth Management Users`.
+Say, for example, that Jamie Torres in Wealth Management needs to receive firm-wide announcements. You'd add her to the all-employees group in the same way you'd add anyone to `Wealth Management Users`.
 
 After you click OK, read Member Of again. If the new group isn't on Jamie's list, the ticket isn't done yet.
 
@@ -38,4 +38,4 @@ Picture Taylor Osei transferring from Operations into Compliance. You'd choose *
 
 A common mistake here is updating the job title without moving the account itself, which leaves the old department's policies in effect.
 
-Even moving the account is only half of a transfer, though, because the OU sets location and policy, not access. Taylor also needs `Compliance Users` added and `Operations Users` removed in the same change, or the old department's access comes along for the ride. That answers this tab's question: the transfer is only finished when both the folders above the account and its Member Of match the new job, so confirm both before you close the ticket.
+Even moving the account is only half of a transfer, though, because the OU sets location and policy, not access. Taylor also needs `Compliance Users` added and `Operations Users` removed in the same change, or the old department's access comes along for the ride. That answers this tab's question. The transfer is only finished when both the folders above the account and its Member Of match the new job, so confirm both before you close the ticket.

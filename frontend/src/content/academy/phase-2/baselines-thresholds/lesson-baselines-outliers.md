@@ -1,7 +1,7 @@
 ### Baselines and Outliers
 <!-- art: search -->
 
-A baseline is simply what normal looks like for a specific account, host or process. You only get that picture by watching it long enough to see its real range, and anything that falls outside that range is an outlier. Keep in mind that neither half of the definition is fixed. A login time that's an outlier for a help desk account might be completely routine for a night-shift administrator. That's why last week's investigation mindset asks you to check the baseline for the specific thing in front of you, rather than some company-wide idea of what "normal" means.
+A baseline is what normal looks like for a specific account, host or process. You only get that picture by watching it long enough to see its real range, and anything that falls outside that range is an outlier. Keep in mind that neither half of the definition is fixed. A login time that's an outlier for a help desk account might be completely routine for a night-shift administrator. That's why the investigation mindset from SOC Mindset asks you to check the baseline for the thing in front of you. A company-wide idea of "normal" isn't enough.
 
 Spotting an outlier isn't a single trick, either. The method changes with the kind of data, because sign-ins, file access and process launches each have their own shape of normal. So we'll practice on all three, which is what lets the skill carry over to data you haven't seen before.
 

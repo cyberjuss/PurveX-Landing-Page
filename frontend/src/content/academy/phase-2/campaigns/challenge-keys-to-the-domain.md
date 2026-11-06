@@ -51,7 +51,7 @@
 <div class="ad-mission" data-id="rk-02" data-attempts="0">
 <span class="ad-mission__num">Stage 1 · Exploitation · T1558.003 Kerberoasting · INC-1079 · High</span>
 <h4>Find the Account Behind It</h4>
-<p><strong>IT Lead · Follow-up · 9:05 AM</strong><br>svc-reports has a Service Principal Name registered, and that's exactly what allowed anyone to request a ticket for it in the first place.</p>
+<p><strong>IT Lead · Follow-up · 9:05 AM</strong><br>svc-reports has a Service Principal Name registered, and that's what allowed anyone to request a ticket for it in the first place.</p>
 <p><strong>Task:</strong> Find the SPN registered on <code>svc-reports</code> and report it exactly as Active Directory stores it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Find the Account Behind It" placeholder="an SPN" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -123,7 +123,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="rk-03" data-attempts="0">
 <span class="ad-mission__num">Stage 1 · Exploitation · T1558.003 Kerberoasting · INC-1079 · High</span>
 <h4>Close the Attack Surface</h4>
-<p><strong>IT Lead · Follow-up · 9:10 AM</strong><br>Nobody can confirm that this SPN still points at a service that actually runs. In fact, the reporting job it was built for was retired months ago.</p>
+<p><strong>IT Lead · Follow-up · 9:10 AM</strong><br>Nobody can confirm that this SPN still points at a service that runs. In fact, the reporting job it was built for was retired months ago.</p>
 <p><strong>Task:</strong> Remove the SPN from <code>svc-reports</code>, then report how many SPNs the account has left.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Close the Attack Surface" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -154,10 +154,10 @@
 </div>
 
 <div class="ad-mission" data-id="rk-05" data-attempts="0">
-<span class="ad-mission__num">Stage 2 · Installation · T1003.006 DCSync · INC-1080 · High</span>
+<span class="ad-mission__num">Stage 2 · Actions on Objectives · T1003.006 DCSync · INC-1080 · High</span>
 <h4>Turn On the Audit That Would Catch It</h4>
-<p><strong>IT Lead · Hardening review · 2:00 PM</strong><br>DCSync lets an account with the right replication rights ask a domain controller for every password hash in the directory, just as one real domain controller asks another during normal replication. Right now, nothing is watching to see who asks.</p>
-<p><strong>Task:</strong> Enable Directory Service Access auditing on the domain controller, then report the event ID a domain controller writes when that access actually happens.</p>
+<p><strong>IT Lead · Hardening review · 2:00 PM</strong><br>DCSync lets an account with replication rights ask a domain controller for every password hash in the directory. It's the same request one real domain controller makes of another during normal replication. Right now, nothing is watching to see who asks.</p>
+<p><strong>Task:</strong> Enable Directory Service Access auditing on the domain controller, then report the event ID a domain controller writes when that access happens.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Turn On the Audit That Would Catch It" placeholder="an event ID" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4662}">Submit</button>
@@ -189,10 +189,10 @@
 </div>
 
 <div class="ad-mission" data-id="rk-06" data-attempts="0">
-<span class="ad-mission__num">Stage 2 · Installation · T1003.006 DCSync · INC-1080 · High</span>
+<span class="ad-mission__num">Stage 2 · Actions on Objectives · T1003.006 DCSync · INC-1080 · High</span>
 <h4>Know What You Are Looking For</h4>
 <p><strong>IT Lead · Hardening review · 2:05 PM</strong><br>Auditing is on, so now you need the one detail that separates a real DCSync request from a domain controller's own replication traffic.<br><strong>A</strong> The account name, since only administrators ever appear in event 4662.<br><strong>B</strong> The access mask, Control Access (0x100), combined with the account not being a known domain controller.<br><strong>C</strong> The time of day, since replication only happens overnight.</p>
-<p><strong>Task:</strong> Choose the detail that actually distinguishes the two, and type its letter.</p>
+<p><strong>Task:</strong> Choose the detail that distinguishes the two, and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Know What You Are Looking For" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -219,7 +219,7 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="rk-07" data-attempts="0">
-<span class="ad-mission__num">Stage 2 · Installation · T1003.006 DCSync · INC-1080 · High</span>
+<span class="ad-mission__num">Stage 2 · Actions on Objectives · T1003.006 DCSync · INC-1080 · High</span>
 <h4>Rule Out the Legitimate Case First</h4>
 <p><strong>IT Lead · Hardening review · 2:10 PM</strong><br>Before this becomes an incident, rule out the one account in your lab that's actually supposed to carry this right.</p>
 <p><strong>Task:</strong> Name the one account in your lab that legitimately has replication rights by default, in the form it would appear as the requester in event 4662.</p>
@@ -245,7 +245,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Your lab has only one domain controller, so it has no real replication partner. In your environment, then, event 4662 carrying this access from anything other than <code>DC01$</code> has no innocent explanation. On a real network with several DCs, you'd add a step and check the requester against a known list of replication partners, but this lab lets you skip straight to the finding.</p>
+<p>Your lab has only one domain controller, so it has no real replication partner. In your environment, then, event 4662 carrying this access from anything other than <code>DC01$</code> has no innocent explanation. On a real network with several DCs, you'd also check the requester against a known list of replication partners. This lab lets you skip straight to the finding.</p>
 </div>
 </div>
 </div>

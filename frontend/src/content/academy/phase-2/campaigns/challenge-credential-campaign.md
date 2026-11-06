@@ -111,7 +111,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A string of failures that ends in a real lockout is the clearest signal in the whole log, and unlocking the account is the fix for right now. The next question is which account actually got in quietly.</p>
+<p>A string of failures that ends in a real lockout is the clearest signal in the whole log, and unlocking the account is the fix for right now. The next question is which account got in quietly.</p>
 </div>
 </div>
 </div>
@@ -309,7 +309,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A task built to blend in will have a name that sounds like routine maintenance, so read what it actually runs, not just what it's called.</p>
+<p>A task built to blend in will have a name that sounds like routine maintenance, so read what it runs, not just what it's called.</p>
 <ol>
 <li>Open Task Scheduler with Win+R and <code>taskschd.msc</code>.</li>
 <li>Open Task Scheduler Library and sort by Name.</li>
@@ -329,7 +329,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A task that runs on a timer keeps acting without anyone signed in, and it doesn't need the stolen credential again to keep working. That's exactly what makes this kind of Installation (T1053.005, Scheduled Task) dangerous. It survives the very containment step that just locked the account out.</p>
+<p>A task that runs on a timer keeps acting without anyone signed in, and it doesn't need the stolen credential again to keep working. That's what makes this kind of Installation (T1053.005, Scheduled Task) dangerous. It survives the very containment step that just locked the account out.</p>
 </div>
 </div>
 </div>
@@ -366,7 +366,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Nothing on the domain controller is supposed to use port 8080 outbound. A beacon reaching out on a non-standard port, instead of blending into ordinary web traffic on 443, is exactly what T1571 (Non-Standard Port) describes under the Command and Control tactic. Disabling the rule stops the beacon, even while the task itself is still sitting there.</p>
+<p>Nothing on the domain controller is supposed to use port 8080 outbound. A beacon reaching out on a non-standard port, instead of blending into web traffic on 443, is what T1571 (Non-Standard Port) describes. It sits under the Command and Control tactic. Disabling the rule stops the beacon, even while the task itself is still sitting there.</p>
 </div>
 </div>
 </div>

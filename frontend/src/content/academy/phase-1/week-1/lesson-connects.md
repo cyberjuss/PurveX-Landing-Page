@@ -1,6 +1,6 @@
 ### How It All Connects
 
-By now you've met every piece of this week, and they fit together as a chain that runs in one direction. First, a vulnerability gives a threat a way in. Then, if that threat succeeds, one or more parts of the CIA triad fail. Risk sits over the whole chain as your estimate, made before any of it happens, of how likely the chain is to run all the way through and what it would cost if it did.
+By now you've met every piece of this week, and they fit together as a chain that runs in one direction. First, a vulnerability gives a threat a way in. Then, if that threat succeeds, one or more parts of the CIA triad fail. Risk sits over the whole chain. It's your estimate, made in advance, of how likely the chain is to run all the way through and what it would cost if it did.
 
 Because the chain runs in that order, it's also the order to work through when something lands in front of you:
 

@@ -32,7 +32,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Naming the technique before you write any KQL keeps the detection from becoming a fishing expedition. Once you know you're hunting Scheduled Task persistence, you already know the shape of the evidence: a process with a flag that hides its window, launching again and again on the same machine.</p>
+<p>Naming the technique before you write any KQL keeps the detection from becoming a fishing expedition. Once you know you're hunting Scheduled Task persistence, you know the shape of the evidence. It's a process with a flag that hides its window, launching again and again on the same machine.</p>
 </div>
 </div>
 </div>
@@ -181,8 +181,8 @@
 
 <div class="ad-mission ad-mission--capstone" data-id="tr-07" data-attempts="0">
 <span class="ad-mission__num">Prove It · INC-1150 · High</span>
-<p><strong>Detection Review · Theo Walsh · 11:00 AM</strong><br>Theo Walsh hands you two device summaries from the finished query's output and asks which one this detection actually fires on.<br><strong>WM-WKS07:</strong> 94 hidden-window <code>powershell.exe</code> launches today.<br><strong>IT-WKS02:</strong> 6 hidden-window <code>powershell.exe</code> launches today, all during a scripted patch run Alex Rivera kicked off by hand.</p>
-<p><strong>Task:</strong> Which device does the finished query, threshold 20, actually fire on? Type its letter.<br><strong>A</strong> WM-WKS07 only.<br><strong>B</strong> IT-WKS02 only.<br><strong>C</strong> Both.<br><strong>D</strong> Neither.</p>
+<p><strong>Detection Review · Theo Walsh · 11:00 AM</strong><br>Theo Walsh hands you two device summaries from the finished query's output and asks which one this detection fires on.<br><strong>WM-WKS07:</strong> 94 hidden-window <code>powershell.exe</code> launches today.<br><strong>IT-WKS02:</strong> 6 hidden-window <code>powershell.exe</code> launches today, all during a scripted patch run Alex Rivera kicked off by hand.</p>
+<p><strong>Task:</strong> Which device does the finished query, threshold 20, fire on? Type its letter.<br><strong>A</strong> WM-WKS07 only.<br><strong>B</strong> IT-WKS02 only.<br><strong>C</strong> Both.<br><strong>D</strong> Neither.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which device the detection fires on" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
@@ -235,7 +235,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A standing KQL detection and a disabled task both leave the door itself unlocked. The rule that let <code>WindowsDiagnosticsSync</code> reach out was never part of the Week 1 fix, so it stayed open through every mission in this challenge until you closed it just now. Writing the detection was the engineering half of this ticket, and closing the rule is what actually ends it.</p>
+<p>A standing KQL detection and a disabled task both leave the door itself unlocked. The rule that let <code>WindowsDiagnosticsSync</code> reach out was never part of the Week 1 fix, so it stayed open through every mission in this challenge until you closed it just now. Writing the detection was the engineering half of this ticket, and closing the rule is what ends it.</p>
 </div>
 </div>
 </div>
@@ -243,4 +243,4 @@
 
 ### Why It Matters
 
-In the lesson, you watched one detection get built from start to finish for Password Spraying. Here you built a second one yourself, for a technique your own lab had already given you real evidence of. That's what turns TRACE from something you've read into something you can do the next time a vague alert needs a standing answer instead of another hour of manual hunting. And because you pulled the real 15-minute interval from your own task and closed the rule it depended on, this was real detection work, not just a KQL exercise with a story around it.
+In the lesson, you watched one detection get built from start to finish for Password Spraying. Here you built a second one yourself, for a technique your own lab had already given you real evidence of. That's what turns TRACE from something you've read into something you can do the next time a vague alert needs a standing answer instead of another hour of manual hunting. You pulled the real 15-minute interval from your own task and closed the rule it depended on. That makes this real detection work, not a KQL exercise with a story around it.

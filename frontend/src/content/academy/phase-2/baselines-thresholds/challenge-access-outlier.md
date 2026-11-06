@@ -21,7 +21,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Don't guess at what the role should have. A baseline is what the peers actually share, so read it off every one of them.</p>
+<p>Don't guess at what the role should have. A baseline is what the peers share, so read it off every one of them.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Find each of the four accounts and open its Member Of tab.</li>
@@ -42,7 +42,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Because three accounts hold exactly the same membership, you're working from a baseline rather than a hunch. The fourth account breaks that pattern, and surfacing an outlier like that is what a baseline is for, just as it would be with a sign-in or file-access pattern.</p>
+<p>Because three accounts hold the same membership, you're working from a baseline rather than a hunch. The fourth account breaks that pattern. Surfacing an outlier like that is what a baseline is for, just as it would be with a sign-in or file-access pattern.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -122,7 +122,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A baseline is only worth building if it changes something. If you find the outlier and leave it in place, you've produced an audit finding nobody acted on, and that's exactly how privilege creep sits unnoticed for a year.</p>
+<p>A baseline is only worth building if it changes something. If you find the outlier and leave it in place, you've produced an audit finding nobody acted on, and that's how privilege creep sits unnoticed for a year.</p>
 </div>
 <div>
 <span>What to do</span>

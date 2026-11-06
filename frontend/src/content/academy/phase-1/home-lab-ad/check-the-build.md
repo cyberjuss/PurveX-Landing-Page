@@ -70,7 +70,7 @@ If the script won't run, the good news is that a handful of errors account for a
 </div>
 </div>
 
-Notice that three of these are about how the machine is set up, rather than about your account or what you typed, and they can all show up together in the same session. When they do, fix them in this order:
+Notice that three of these are about how the machine is set up, not your account or what you typed. They can all show up together in the same session. When they do, fix them in this order:
 
 1. Elevate.
 2. Unblock the file.

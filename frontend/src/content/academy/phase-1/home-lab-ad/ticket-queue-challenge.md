@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
-<p class="ad-brief__ask">When a request lands in your queue, can you check what's actually true in Active Directory, and then make the change the ticket really needs?</p>
+<p class="ad-brief__ask">When a request lands in your queue, can you check what's actually true in Active Directory, and then make the change the ticket needs?</p>
 <p>Welcome to the PurveX Financial help desk queue. Treat every request here as a claim to verify before you change anything. The early tickets stay in Active Directory, and the later ones take you further, into DNS, the firewall, Group Policy and the file shares.</p>
 <p>Each ticket ends by asking for a short finding. Before your answer counts, though, your lab has to show the change, so your answer always reflects the directory after you've acted.</p>
 </div>
@@ -132,7 +132,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>IT Users was holding a leftover intern account and a backup service account. If you'd added Casey without cleaning that up, the unused access would have stayed in place, and unused access is exactly what attackers look for.</p>
+<p>IT Users was holding a leftover intern account and a backup service account. If you'd added Casey without cleaning that up, the unused access would have stayed in place, and unused access is what attackers look for.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -266,7 +266,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So disable the account and remove its groups on the day the engagement ends, but keep the account itself, so its history is still there for the invoice review and any audit.</p>
+<p>So disable the account and remove its groups on the day the engagement ends. Keep the account itself, so its history is still there for the invoice review and any audit.</p>
 </div>
 </div>
 </div>
@@ -304,7 +304,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Server Admins controls the firm's servers. An advisor with that access could be tricked into running malware with server rights, and installing one app simply doesn't need that much power.</p>
+<p>Server Admins controls the firm's servers. An advisor with that access could be tricked into running malware with server rights, and installing one app doesn't need that much power.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -395,7 +395,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Finance drive maps and security settings come from policy linked to the Finance OU, so a laptop left in the default container misses all of them, including any screen-lock or hardening rules.</p>
+<p>Finance drive maps and security settings come from policy linked to the Finance OU. A laptop left in the default container misses all of them, including any screen-lock or hardening rules.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -453,7 +453,7 @@
 <div class="ad-mission" data-id="tq-16" data-attempts="0">
 <span class="ad-mission__num">Ticket 11 · INC-1052 · High</span>
 <h4>Share Will Not Open by Name</h4>
-<p><strong>Riley Kwan · Operations · 8:05 AM</strong><br>None of us can open the shared drive at \\files this morning. Typing the server's IP address works, but the name just times out.</p>
+<p><strong>Riley Kwan · Operations · 8:05 AM</strong><br>None of us can open the shared drive at \\files this morning. Typing the server's IP address works, but the name times out.</p>
 <p><strong>Task:</strong> Find what the name <code>files</code> resolves to and correct its DNS record so it points at the domain controller, which hosts the shares. Then report the wrong address the record held.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Share Will Not Open by Name" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -579,7 +579,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So disable the rule, and keep it as a record of the change. The lasting lesson is that temporary access should always come with an end date that someone actually checks.</p>
+<p>So disable the rule, and keep it as a record of the change. The lasting lesson is that temporary access should always come with an end date that someone checks.</p>
 </div>
 </div>
 </div>
@@ -757,7 +757,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So turn on Process Creation for success, and keep it on. It's also worth asking about a second setting that adds the command line to the event, because a process name without its arguments often hides what actually ran.</p>
+<p>So turn on Process Creation for success, and keep it on. It's also worth asking about a second setting that adds the command line to the event, because a process name without its arguments often hides what ran.</p>
 </div>
 </div>
 </div>

@@ -52,7 +52,7 @@ Now go looking for it. Open Event Viewer and go to Applications and Services Log
 </div>
 <div>
 <span>Why it matters</span>
-<p>When you open that event, your own line is sitting in the Message field exactly as you typed it. A process-creation event would only have told you that powershell.exe ran, whereas this one shows you what it actually did.</p>
+<p>When you open that event, your own line is sitting in the Message field exactly as you typed it. A process-creation event would only have told you that powershell.exe ran, whereas this one shows you what it did.</p>
 </div>
 </div>
 </div>
@@ -63,7 +63,7 @@ Now go looking for it. Open Event Viewer and go to Applications and Services Log
 <div class="ad-mission" data-id="la2-06" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1145 · Medium</span>
 <p><strong>SOC Analyst · Alert Review · 4:00 PM</strong><br>A process-creation event shows <code>powershell.exe -EncodedCommand &lt;base64&gt;</code>. All it records is the raw argument, still encoded.</p>
-<p><strong>Task:</strong> Which log actually shows you the decoded, readable command PowerShell is about to run? Type its letter.<br><strong>A</strong> The process-creation event is enough on its own. Nothing else is needed.<br><strong>B</strong> Script-block logging (4104), since it logs PowerShell's own interpretation of the command after decoding, not just the raw text it launched with.<br><strong>C</strong> Neither log ever shows decoded content under any circumstance.</p>
+<p><strong>Task:</strong> Which log shows you the decoded, readable command PowerShell is about to run? Type its letter.<br><strong>A</strong> The process-creation event is enough on its own. Nothing else is needed.<br><strong>B</strong> Script-block logging (4104), since it logs PowerShell's own interpretation of the command after decoding, not just the raw text it launched with.<br><strong>C</strong> Neither log ever shows decoded content under any circumstance.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which log shows the decoded command" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -74,7 +74,7 @@ Now go looking for it. Open Event Viewer and go to Applications and Services Log
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">The process-creation event in the alert shows only the encoded argument, which you can't read, so it can't be the full picture.</div>
-<div class="ad-miss" data-guess="c">PowerShell has to decode the command before it can run it, and that decoded text is exactly what lands in the kind of event you read in the step above.</div>
+<div class="ad-miss" data-guess="c">PowerShell has to decode the command before it can run it, and that decoded text is what lands in the kind of event you read in the step above.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -94,7 +94,7 @@ Now go looking for it. Open Event Viewer and go to Applications and Services Log
 <div class="ad-mission ad-mission--capstone" data-id="la2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1146 · High</span>
 <p><strong>Detection Engineering · Design Question · 4:15 PM</strong><br>An attacker who knows this logging exists Base64-encodes a command before running it, hoping to keep it unreadable.</p>
-<p><strong>Task:</strong> What does script-block logging actually capture once PowerShell runs that command? Type its letter.<br><strong>A</strong> Nothing useful, an encoded command defeats this logging completely.<br><strong>B</strong> The decoded, plain-text command, since PowerShell has to decode it before it can run, and script-block logging captures what the engine actually executes.<br><strong>C</strong> PowerShell refuses to run a command that is encoded.</p>
+<p><strong>Task:</strong> What does script-block logging capture once PowerShell runs that command? Type its letter.<br><strong>A</strong> Nothing useful, an encoded command defeats this logging completely.<br><strong>B</strong> The decoded, plain-text command, since PowerShell has to decode it before it can run, and script-block logging captures what the engine executes.<br><strong>C</strong> PowerShell refuses to run a command that is encoded.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what script-block logging captures when a command is encoded" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -104,7 +104,7 @@ Now go looking for it. Open Event Viewer and go to Applications and Services Log
 <p>You worked through this same logic one question ago with the EncodedCommand argument, so apply that reasoning here.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Encoding only disguises the command on its way in, so it can't stop logging from capturing what actually runs.</div>
+<div class="ad-miss" data-guess="a">Encoding only disguises the command on its way in, so it can't stop logging from capturing what runs.</div>
 <div class="ad-miss" data-guess="c">PowerShell runs Base64-encoded commands all the time. It's a normal feature, not something it refuses.</div>
 <div class="ad-flag">
 <div class="ad-break">

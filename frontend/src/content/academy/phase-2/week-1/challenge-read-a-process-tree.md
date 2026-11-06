@@ -12,7 +12,7 @@
 
 ### Build the Hunt Query
 
-Theo Walsh escalated this one from Tier 2 with a reminder worth keeping: a process name on its own rarely tells you much, but its parent and its command line usually do. Sysmon records every new process as a Process Create event (Event ID 1) in its own log, and PowerShell can filter and read those events directly.
+Theo Walsh escalated this one from Tier 2 with a reminder worth keeping. A process name on its own rarely tells you much, but its parent and its command line usually do. Sysmon records every new process as a Process Create event (Event ID 1) in its own log, and PowerShell can filter and read those events directly.
 
 ```powershell
 $hits = Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -FilterHashtable @{ Id = 1 } |
@@ -94,7 +94,7 @@ Get-ScheduledTask | Where-Object {
 } | Select-Object TaskName, State
 ```
 
-Expect more than one result here. This lab's own background sync task also runs PowerShell with a hidden window, and that one is legitimate, so you'll need to tell the two apart by reading what each task's Arguments say.
+Expect more than one result here. This lab's own background sync task also runs PowerShell with a hidden window, and that one is legitimate. Tell the two apart by reading each task's Arguments.
 
 ```powershell
 (Get-ScheduledTask -TaskName "<each name the filter returned>").Actions.Arguments
@@ -113,7 +113,7 @@ Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True |
 <div class="ad-mission" data-id="mw2-07" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1139 · High</span>
 <p><strong>SOC Analyst · Persistence Hunt · 10:35 AM</strong><br>The same command relaunches every 15 minutes with nobody typing it. Something on this box is scheduling it.</p>
-<p><strong>Task:</strong> Run the scheduled-task query above and tell the two hidden-PowerShell tasks apart by their Arguments. Report the name of the one with no file and no owner, the one actually relaunching the command from the first step.</p>
+<p><strong>Task:</strong> Run the scheduled-task query above and tell the two hidden-PowerShell tasks apart by their Arguments. Report the name of the one with no file and no owner, the one relaunching the command from the first step.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the suspicious scheduled task's name" placeholder="Task name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{WindowsDiagnosticsSync}">Submit</button>
@@ -132,7 +132,7 @@ Get-NetFirewallRule -Direction Outbound -Action Allow -Enabled True |
 </div>
 <div>
 <span>Why it matters</span>
-<p>A scheduled task that relaunches the same hardcoded command every 15 minutes, with no file and no owner behind it, is how an attacker holds on to a machine after it restarts. The firewall rule you found is what lets that traffic leave. Next to the lab's real sync task, neither one looks suspicious at a glance, which is why reading the arguments is what separates them.</p>
+<p>A scheduled task that relaunches the same hardcoded command every 15 minutes, with no file and no owner behind it, is persistence. It's how an attacker holds on to a machine after a restart. The firewall rule you found is what lets that traffic leave. Next to the lab's real sync task, neither one looks suspicious at a glance, which is why reading the arguments is what separates them.</p>
 </div>
 </div>
 </div>

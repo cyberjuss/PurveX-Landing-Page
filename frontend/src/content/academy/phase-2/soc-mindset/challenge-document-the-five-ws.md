@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Turn a Vague Alert Into a Documented Account</h3>
-<p class="ad-brief__ask">A vague alert says a sign-in failed. Can you document it in a way Tier 2 can actually act on?</p>
+<p class="ad-brief__ask">A vague alert says a sign-in failed. Can you document it in a way Tier 2 can act on?</p>
 <p>Hosted lab required, with the domain controller reachable.</p>
 </div>
 
@@ -12,7 +12,7 @@
 
 ### Make a Real Event
 
-Theo Walsh on Tier 2 only ever acts on what a handoff actually records, never on a vague "a sign-in failed." So let's create a real event to document. Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
+Theo Walsh on Tier 2 only ever acts on what a handoff records, never on a vague "a sign-in failed." So let's create a real event to document. Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
 
 ```powershell
 Add-Type -AssemblyName System.DirectoryServices.AccountManagement
@@ -47,7 +47,7 @@ Now open Event Viewer and find the 4625 you just generated. You'll find that its
 </div>
 <div>
 <span>Why it matters</span>
-<p>That code means the account is real and the password was wrong. A sign-in attempt against an account that doesn't exist at all logs a different code, 0xC0000064, and that difference is why the Sub Status tells you far more than the word "failed" alone.</p>
+<p>That code means the account is real and the password was wrong. A sign-in attempt against an account that doesn't exist logs a different code, 0xC0000064. That difference is why the Sub Status tells you far more than the word "failed" alone.</p>
 </div>
 </div>
 </div>
@@ -78,7 +78,7 @@ Now open Event Viewer and find the 4625 you just generated. You'll find that its
 </div>
 <div>
 <span>Why it matters</span>
-<p>One wrong password on one real account is a typo. Five attempts against five different account names, all with the "account doesn't exist" code, is a different shape entirely: someone probing for names that work. So while the Sub Status told you why one event failed, reading several together is what tells you whether you're looking at a mistake or the opening move of something bigger.</p>
+<p>One wrong password on one real account is a typo. Five attempts against five different account names, all with the "account doesn't exist" code, is a different shape entirely: someone probing for names that work. The Sub Status told you why one event failed. Reading several together tells you whether you're looking at a mistake or the opening move of something bigger.</p>
 </div>
 </div>
 </div>
@@ -89,7 +89,7 @@ Now open Event Viewer and find the 4625 you just generated. You'll find that its
 <div class="ad-mission ad-mission--capstone" data-id="sm2-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1130 · Low</span>
 <p><strong>Tier 2 Handoff · Documentation Review · 9:00 AM</strong><br>Theo Walsh, reviewing your write-up on Tier 2, asks you to name exactly which part of the 5 W's framework the Sub Status field covers.</p>
-<p><strong>Task:</strong> The Sub Status field names the exact reason the sign-in failed. Which of the 5 W's does that field actually answer? Type its letter.<br><strong>A</strong> Who<br><strong>B</strong> When<br><strong>C</strong> Why</p>
+<p><strong>Task:</strong> The Sub Status field names the exact reason the sign-in failed. Which of the 5 W's does that field answer? Type its letter.<br><strong>A</strong> Who<br><strong>B</strong> When<br><strong>C</strong> Why</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which W the sub status field answers" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>
@@ -109,7 +109,7 @@ Now open Event Viewer and find the 4625 you just generated. You'll find that its
 </div>
 <div>
 <span>Why it matters</span>
-<p>Account Name is who, the time stamp is when, and Sub Status is why. If a write-up is missing even one of the 5 W's, the next analyst has to go and find it themselves, and that's exactly the kind of handoff this framework exists to prevent.</p>
+<p>Account Name is who, the time stamp is when, and Sub Status is why. If a write-up is missing even one of the 5 W's, the next analyst has to go and find it. That's the kind of handoff this framework exists to prevent.</p>
 </div>
 </div>
 </div>
@@ -117,4 +117,4 @@ Now open Event Viewer and find the 4625 you just generated. You'll find that its
 
 ### Why It Matters
 
-A vague alert and a documented account can describe exactly the same failed sign-in. The difference is whether the next person to read it has to go and find the who, when, and why themselves, or whether you've already done it for them.
+A vague alert and a documented account can describe the same failed sign-in. The difference is whether the next person to read it has to go and find the who, when, and why themselves, or whether you've already done it for them.

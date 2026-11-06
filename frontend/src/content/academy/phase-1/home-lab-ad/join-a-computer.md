@@ -5,9 +5,9 @@
 
 ### Point DNS at the domain controller
 
-Before a workstation can join the domain, it has to find `purvexfinancial.local`, and it does that through DNS. On a production network, the right DNS address is usually handed out automatically, but in this lab you'll set the workstation's preferred DNS server to the domain controller's IP address yourself.
+Before a workstation can join the domain, it has to find `purvexfinancial.local`, and it does that through DNS. On a production network, the right DNS address is usually handed out automatically. In this lab, you'll set the workstation's preferred DNS server to the domain controller's IP address yourself.
 
-Getting that address right matters, because if it's wrong, the join fails even though the domain controller is up. The directory exists, but the workstation simply can't reach it to sign in.
+Getting that address right matters, because if it's wrong, the join fails even though the domain controller is up. The directory exists, but the workstation can't reach it to sign in.
 
 In Week 1 terms, that's an availability failure rather than a password problem, because the domain controller never even got as far as checking the password.
 

@@ -16,11 +16,11 @@ The formal standard behind all this is NIST SP 800-61, the US federal government
 - How critical those systems are
 - How reversible the damage is
 
-That point about wording is worth sitting with, because a queue full of alerts is full of language designed to sound urgent. An analyst who ranks the queue by how frightening each alert reads is doing the opposite of what this lesson teaches. The question that really matters is what each one would cost the business if it were left unworked. So classify by impact, and let the label follow the impact, never the other way around.
+That point about wording is worth sitting with, because a queue full of alerts is full of language designed to sound urgent. An analyst who ranks the queue by how frightening each alert reads is doing the opposite of what this lesson teaches. The question that matters is what each one would cost the business if it were left unworked. So classify by impact, and let the label follow the impact, never the other way around.
 
 ```sort
 prompt: Sort each incident by the severity it would most likely get.
-P1 — Critical: Ransomware actively encrypting a file server | Confirmed domain admin account compromise
-P2 — High: A phishing email reported before anyone clicked it was clicked by one user | Malware found on a single workstation, contained before it spread
-P3 — Routine: A password reset request outside normal hours with no other red flags | A vulnerability scan flags an out-of-date but unexploited plugin
+P1 (Critical): Ransomware actively encrypting a file server | Confirmed domain admin account compromise
+P2 (High): A phishing email that one user clicked before anyone reported it | Malware found on a single workstation, contained before it spread
+P3 (Routine): A password reset request outside normal hours with no other red flags | A vulnerability scan flags an out-of-date but unexploited plugin
 ```

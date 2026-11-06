@@ -2,7 +2,7 @@
 
 A detection is how everything this phase has taught keeps working when you aren't there to watch. The investigation mindset, the baseline, the ATT&CK technique and the threshold all get written down together as a rule. That rule fires on its own at any hour, whether or not an analyst happens to be looking at that account at that moment.
 
-Without one, catching an attacker depends entirely on a person noticing in time, and nobody watches every account every second. Think of the password-spray incidents you've already worked in Shift, where dozens of accounts were hit in under a minute. That's exactly the pattern a detection exists to catch, because by the time someone happens to scroll past it, the attacker may already be inside.
+Without one, catching an attacker depends entirely on a person noticing in time, and nobody watches every account every second. Think of the password-spray incidents you've already worked in Shift, where dozens of accounts were hit in under a minute. That's the pattern a detection exists to catch, because by the time someone happens to scroll past it, the attacker may already be inside.
 
 A detection also does something a one-off manual catch never can. It catches the same pattern again, for every account and every time, without anyone having to remember to look. That's the whole economic case for detection engineering, the Tier 3 work you met in Week 1. A detection you build and tune once replaces an endless amount of manual watching, and it keeps working on the night nobody is paying close attention.
 

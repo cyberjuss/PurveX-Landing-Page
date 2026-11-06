@@ -13,7 +13,7 @@ Authentication is the work of proving an identity. In other words, it answers ju
 
 **Multi-factor authentication**, almost always shortened to MFA, requires proof from two different rows of that table. That's why a password plus a security question isn't multi-factor at all: both are things you know, so both usually get lost in the same breach.
 
-The reason MFA matters is blunt: passwords leak, constantly and at scale, and a password that has leaked offers no protection at all to the account it guards. That's exactly how attackers walked into Colonial Pipeline in 2021, through a VPN account with a leaked password and no second factor. The ransomware incident that followed interrupted fuel supply across much of the US East Coast.
+The reason MFA matters is blunt: passwords leak, constantly and at scale, and a password that has leaked offers no protection at all to the account it guards. That's how attackers walked into Colonial Pipeline in 2021, through a VPN account with a leaked password and no second factor. The ransomware incident that followed interrupted fuel supply across much of the US East Coast.
 
 Even so, it's a mistake to think of MFA as simply on or off, because the different methods vary a lot in how well they protect you:
 
@@ -52,14 +52,14 @@ Password expired: Policy requires a new password
 
 ### Resets
 
-It's easy to think of a password or MFA reset as an administrative chore, but it's really an authentication decision. For the length of that call, you are the authentication system, which means you can briefly set aside every control the organization has invested in, for one account. That's precisely why attackers target this call. In 2023, for example, attackers reportedly got their first foothold at MGM Resorts without any technical exploit at all, simply by talking the IT help desk into resetting an employee's MFA.
+It's easy to think of a password or MFA reset as an administrative chore, but it's an authentication decision. For the length of that call, you are the authentication system, which means you can briefly set aside every control the organization has invested in, for one account. That's precisely why attackers target this call. In 2023, for example, attackers reportedly got their first foothold at MGM Resorts without any technical exploit, by talking the IT help desk into resetting an employee's MFA.
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-There's one situation you should learn to recognize instantly. When a user reports MFA prompts they didn't trigger, they're telling you that someone already has their password and is waiting at the door for approval, so the second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and end their active sessions before you escalate. That last step matters, because a password reset on its own leaves any session the attacker has already opened untouched.
+There's one situation you should learn to recognize instantly. When a user reports MFA prompts they didn't trigger, someone already has their password and is waiting at the door for approval. The second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and end their active sessions before you escalate. That last step matters, because a password reset on its own leaves any session the attacker has already opened untouched.
 
 ### Escalate
 
@@ -96,7 +96,7 @@ All of these sign-ins leave a record you can read. Event **4624** is a successfu
 | 3 | Over the network, such as a file share |
 | 10 | Remote Desktop |
 
-Its partner, event **4625**, is a failed sign-in, and its status code tells you why it failed. `0xC000006A` means a wrong password for a real account, while `0xC0000064` means an account name that doesn't exist, which is a sign that someone is guessing usernames. Finally, `0xC0000234` means the account is locked.
+Its partner, event **4625**, is a failed sign-in. Two fields tell you why it failed: **Status** and **Sub Status**. For a bad password or a bad username, Status reads `0xC000006D`, a general "sign-in failed", so look at Sub Status for the reason. A Sub Status of `0xC000006A` means a wrong password for a real account. `0xC0000064` means an account name that doesn't exist, which is a sign that someone is guessing usernames. A locked account shows `0xC0000234`.
 
 ### Check yourself
 

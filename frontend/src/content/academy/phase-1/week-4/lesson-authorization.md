@@ -1,6 +1,6 @@
 ### Authorization
 
-Once authentication has settled who you are, authorization takes over and decides what you're allowed to do. It answers a single question, what you can reach, and it simply assumes the first question was answered correctly. That assumption has an important consequence: everything here applies equally to a real employee and to an attacker who has signed in as one. That's why authorization is a security control, not just an administrative convenience.
+Once authentication has settled who you are, authorization takes over and decides what you're allowed to do. It answers a single question, what you can reach, and it assumes the first question was answered correctly. That assumption has an important consequence: everything here applies equally to a real employee and to an attacker who has signed in as one. That's why authorization is a security control, not just an administrative convenience.
 
 ### Principles
 
@@ -52,7 +52,7 @@ icacls "C:\PurveX\Shares\Finance"
 
 These commands show you an account's groups and what they can reach. If you prefer the graphical tool, the **Member Of** tab on an account in Active Directory Users and Computers lists the same groups.
 
-Shared folders add one more wrinkle, because they have two sets of permissions: **share** and **NTFS**. When someone connects over the network, the more restrictive of the two wins. To cut through all of that, the folder's **Effective Access** tab shows what a named user can actually do once every group is counted.
+Shared folders add one more wrinkle, because they have two sets of permissions: **share** and **NTFS**. When someone connects over the network, the more restrictive of the two wins. To cut through all of that, the folder's **Effective Access** tab shows what a named user can do once every group is counted.
 
 ### Common failures
 

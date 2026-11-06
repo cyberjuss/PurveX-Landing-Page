@@ -2,9 +2,9 @@
 
 **The ticket:** Riley Kwan has two copies of a vendor installer, one from email and one from a download mirror. The vendor's site lists a SHA-256. "Which one is safe to run?"
 
-To answer Riley, you first need to know what that SHA-256 value actually is. A hash is a fixed-length value calculated from a file or a piece of text, and three properties make it useful. First, the same input always produces the same hash, so anybody with the same file can repeat the calculation and get the same answer. Second, changing even a single byte of the input produces a completely different hash, not a slightly different one. Third, the calculation only runs in one direction, which means nobody can rebuild the original from the hash, however much computing power they throw at it.
+To answer Riley, you first need to know what that SHA-256 value is. A hash is a fixed-length value calculated from a file or a piece of text, and three properties make it useful. First, the same input always produces the same hash, so anybody with the same file can repeat the calculation and get the same answer. Second, changing even a single byte of the input produces a completely different hash, not a slightly different one. Third, the calculation only runs in one direction, which means nobody can rebuild the original from the hash, however much computing power they throw at it.
 
-Taken together, those three properties turn a hash into a fingerprint. It's short enough to publish on a web page or paste into a ticket, and yet specific enough that no other file you're ever likely to come across will produce the same one.
+Taken together, those three properties turn a hash into a fingerprint. It's short enough to publish on a web page or paste into a ticket. Yet it's specific enough that no other file you're likely to meet will produce the same one.
 
 ### What a hash tells you
 
@@ -15,7 +15,7 @@ Harbor2026   17e80eed5cd387f397eb28c8ba59af346a8ec8c5569f83cbfebcd5e3df291a7b
 Harbor2027   4ec765fd76caad15aec3c46f8c3dc0b9e77cd65b9e4c569677ed2b99d79a0d5b
 ```
 
-The two inputs above differ by a single character, yet the hashes have nothing in common. That's exactly what makes comparing hashes meaningful. So if your file's hash matches the vendor's character for character, you don't just have a similar file or a probably-correct file. You have the exact sequence of bytes the vendor published.
+The two inputs above differ by a single character, yet the hashes have nothing in common. That's what makes comparing hashes meaningful. So if your file's hash matches the vendor's character for character, you don't just have a similar file or a probably-correct file. You have the exact sequence of bytes the vendor published.
 
 ### Verify in three steps
 
@@ -38,7 +38,7 @@ Let the tool compare the two hashes
 
 Knowing what the check proves is only half the picture, because it's just as important to know what it doesn't prove. A match tells you that your file is identical to the reference you compared it against. However, it says nothing about whether that reference was safe to begin with. After all, the hash only describes what the vendor shipped, not whether what the vendor shipped was trustworthy.
 
-This isn't just a theoretical gap, either. CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware straight out of the vendor's own build process, and every customer who verified their download found a correct hash and a valid signature. Those checks passed because the malicious code was already inside before the vendor calculated either one. So all a verified hash really tells you is that the file reached you intact. Whether the file was clean at the very start of that chain is a separate question, and it's one a hash can't answer.
+This isn't just a theoretical gap, either. CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware straight out of the vendor's own build process. Every customer who verified their download found a correct hash and a valid signature. Those checks passed because the malicious code was already inside before the vendor calculated either one. So all a verified hash tells you is that the file reached you intact. Whether the file was clean at the very start of that chain is a separate question, and it's one a hash can't answer.
 
 ### Compare automatically
 

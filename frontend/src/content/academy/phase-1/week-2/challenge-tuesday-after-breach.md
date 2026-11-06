@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Tuesday After the Breach</h3>
-<p class="ad-brief__ask">Last night, a training vendor that PurveX staff use announced a breach. This morning the IT desk is full of tickets that all come down to one question: is this encoded, encrypted or hashed, and what does that mean we have to do?</p>
+<p class="ad-brief__ask">Last night, a training vendor that PurveX staff use announced a breach. This morning the IT desk is full of tickets that come down to one question. Is this encoded, encrypted or hashed, and what does that mean we have to do?</p>
 <p>You're on the PurveX Financial IT desk. Each ticket below is a real file or account in your lab. Work them in order, because each one leans on the lesson before it.</p>
 <p>Everything the tickets mention is already in your lab, in the IT share on your domain controller.</p>
 </div>
@@ -87,7 +87,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>All three files looked the same at a glance. Only the hash showed that mirror B differs, and opening it shows why: it says it's an unsigned build. On a day when attackers know staff are rushing to update, a tampered installer is exactly what they'd plant.</p>
+<p>All three files looked the same at a glance. Only the hash showed that mirror B differs, and opening it shows why: it says it's an unsigned build. On a day when attackers know staff are rushing to update, a tampered installer is what they'd plant.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -121,7 +121,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encryption is only as strong as the way its key is handed out. A caller using an unknown number, a deadline and a request for the key is exactly how attackers talk their way past disk encryption, and the morning after a breach is when they try.</p>
+<p>Encryption is only as strong as the way its key is handed out. A caller on an unknown number, a deadline and a request for the key is how attackers talk their way past disk encryption. The morning after a breach is when they try.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -142,7 +142,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>With no salt, the same password always produces the same hash. So you can hash every word in the list and look for a match, which is exactly what an attacker holding this table would do.</p>
+<p>With no salt, the same password always produces the same hash. So you can hash every word in the list and look for a match, which is what an attacker holding this table would do.</p>
 <ol>
 <li>Open <code>exported-hashes.txt</code> and find the two accounts with the same hash.</li>
 <li>Hash each word in <code>common-passwords.txt</code> with SHA-256 and find the one that matches.</li>

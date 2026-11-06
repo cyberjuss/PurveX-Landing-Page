@@ -13,7 +13,7 @@ Three pieces share that work between them:
 - **Authorization** takes an identity the system already trusts and decides what it may reach.
 - **Access control** enforces that decision on every single request, not just once at sign-in.
 
-Notice the gap between the last two. Deciding what someone may do and actually enforcing it on every request are different steps, and that gap is where most things go wrong. You'll also hear these ideas grouped as "Triple A": authentication, authorization and accounting, where accounting is the record of who did what.
+Notice the gap between the last two. Deciding what someone may do and enforcing it on every request are different steps, and that gap is where most things go wrong. You'll also hear these ideas grouped as "Triple A": authentication, authorization and accounting, where accounting is the record of who did what.
 
 This matters because most real breaches start right here, rather than with clever malware. Someone signs in with a credential they shouldn't have had, to a system that never checked whether they belonged. The three cases below are well documented, and each one failed at a different point in that same chain.
 
@@ -43,7 +43,7 @@ First American Financial = Changing one number in a web address, with no check o
 
 Over your career, you'll probably sit in each of these seats at some point, and each one touches this week's ideas differently:
 
-- **Help desk.** Resetting passwords and MFA makes you part of the authentication system, not just an observer of it, and that's exactly why attackers call the desk.
+- **Help desk.** Resetting passwords and MFA makes you part of the authentication system, not just an observer of it, and that's why attackers call the desk.
 - **Systems administrator.** You decide who belongs to which group, and groups are what grant permissions, so every extra membership you hand out is a door someone may walk through later.
 - **SOC analyst.** You read the record the other two leave behind. Sign-in logs and group changes are often the clearest evidence that somebody isn't who they claim, or is reaching further than their job needs.
 

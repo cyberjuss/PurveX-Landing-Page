@@ -18,7 +18,7 @@ In each of these cases, the harm happens the moment someone reads the data, so n
 - **Access control** decides what that person is allowed to reach.
 - **Encryption** makes the data unreadable to anyone who gets hold of it by another route.
 
-Each of these controls covers a gap the other two leave open, which is why you use all three together rather than picking one. Of the three, encryption is the one people most often assume is switched on when it isn't. That assumption is costly, because data sent without encryption can be read by anyone sitting on the network path between the two ends, and that path runs through far more equipment than most people imagine. So when a colleague asks whether it's safe to send something through a particular system, the real question you're answering is usually this one: is that traffic encrypted while it travels?
+Each of these controls covers a gap the other two leave open, which is why you use all three together rather than picking one. Of the three, encryption is the one people most often assume is switched on when it isn't. That assumption is costly. Data sent without encryption can be read by anyone on the network path between the two ends, and that path runs through far more equipment than most people imagine. So when a colleague asks whether it's safe to send something through a system, the real question is usually this: is that traffic encrypted while it travels?
 
 ```match
 prompt: Match each control to the gap it covers.

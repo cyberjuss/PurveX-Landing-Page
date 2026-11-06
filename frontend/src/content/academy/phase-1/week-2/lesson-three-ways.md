@@ -2,13 +2,13 @@
 
 **The ticket:** Jordan Ellis finds this in a vendor script: `password: SGFyYm9yMjAyNg==`. "It's scrambled, so it's encrypted, right?"
 
-It's an easy mistake to make, because all three methods produce output that a person can't read. That surface similarity is exactly what makes the mix-up so common. What actually separates them has nothing to do with how scrambled the result looks. Instead, it comes down to one question: who can reverse it?
+It's an easy mistake to make, because all three methods produce output that a person can't read. That surface similarity is what makes the mix-up so common. What separates them has nothing to do with how scrambled the result looks. Instead, it comes down to one question: who can reverse it?
 
 - **Encoding** can be undone by anybody.
 - **Encryption** can be undone only by somebody holding the key.
 - **Hashing** cannot be undone by anybody, under any circumstances.
 
-Jordan's question matters because the answer changes what happens next. If the value were genuinely encrypted, how exposed the password is would depend on whether the key leaked too. If it's merely encoded, on the other hand, the password is already public to anyone who has read that script, which means the clock on replacing it started the moment the file was written.
+Jordan's question matters because the answer changes what happens next. If the value were genuinely encrypted, how exposed the password is would depend on whether the key leaked too. If it's only encoded, the password is already public to anyone who has read that script. The clock on replacing it started the moment the file was written.
 
 ### How to tell them apart
 

@@ -134,7 +134,7 @@
 <div class="ad-mission" data-id="dk-04" data-attempts="0">
 <span class="ad-mission__num">Call 04 · Move an Account · Wednesday · INC-1094</span>
 <h4>Put Maya in the Right Folder</h4>
-<p><strong>Sam Whitfield · Wealth Management · Wednesday · 10:15 AM</strong><br>Maya can't see any of our team's settings, and the screen lock is behaving like it does for Operations. HR says Maya was hired into Wealth Management. Can you check where the account actually lives?</p>
+<p><strong>Sam Whitfield · Wealth Management · Wednesday · 10:15 AM</strong><br>Maya can't see any of our team's settings, and the screen lock is behaving like it does for Operations. HR says Maya was hired into Wealth Management. Can you check where the account lives?</p>
 <p><strong>Task:</strong> Move <code>maya.okafor</code> into Departments, WealthManagement, Users. Then report the department OU the account was in before you moved it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Put Maya in the Right Folder" placeholder="a department OU" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -307,7 +307,7 @@
 <div class="ad-mission" data-id="dk-08" data-attempts="0">
 <span class="ad-mission__num">Call 08 · Read the Account · Thursday · INC-1094</span>
 <h4>The Missing Tab</h4>
-<p><strong>Quinn Harper · IT · Thursday · 10:10 AM</strong><br>I'm trying to read IT-WKS01's last logon. I found it with Find and opened it, but the tab everyone keeps mentioning just isn't there.</p>
+<p><strong>Quinn Harper · IT · Thursday · 10:10 AM</strong><br>I'm trying to read IT-WKS01's last logon. I found it with Find and opened it, but the tab everyone keeps mentioning isn't there.</p>
 <p><strong>Task:</strong> Open IT-WKS01 once from Find and once from the tree. Report the name of the tab that only appears when you open it from the tree.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Missing Tab" placeholder="a tab name" autocomplete="off" autocapitalize="off" spellcheck="false">

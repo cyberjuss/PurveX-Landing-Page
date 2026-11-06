@@ -12,7 +12,7 @@ The lab runs as virtual machines, or VMs, on your own computer. So before you to
 
 Both of them run inside VMware Workstation Pro. Build them first, because every tab after this one assumes they're already up and running.
 
-You may have heard that Windows 10 reached end of support in October 2025. That's fine for a lab VM that never holds real data, and if you'd rather use Windows 11 Pro, it joins a domain in exactly the same way.
+You may have heard that Windows 10 reached end of support in October 2025. That's fine for a lab VM that never holds real data, and if you'd rather use Windows 11 Pro, it joins a domain in the same way.
 
 Source: [Microsoft Learn: Windows 10 Home and Pro lifecycle](https://learn.microsoft.com/en-us/lifecycle/products/windows-10-home-and-pro)
 

@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Operation Day One</h3>
 <p class="ad-brief__ask">Can you find your way around Active Directory well enough to handle a help desk technician's first day?</p>
-<p>It's your first day on the PurveX Financial help desk. Nobody expects you to close incidents yet, but the lead on the desk does want proof that you can find any person, group or computer and read what the directory says about it.</p>
+<p>It's your first day on the PurveX Financial help desk. Nobody expects you to close incidents yet. The lead on the desk does want proof that you can find any person, group or computer and read what the directory says about it.</p>
 </div>
 
 <div class="ad-progress">
@@ -91,7 +91,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>If you don't know who holds elevated access, you can't spot an account that shouldn't be there, and that matters because a stolen admin login does far more damage than a standard one.</p>
+<p>If you don't know who holds elevated access, you can't spot an account that shouldn't be there. That matters, because a stolen admin login does far more damage than a standard one.</p>
 </div>
 <div>
 <span>What to do</span>

@@ -21,7 +21,7 @@ That quick check against context saves the team from chasing a false alarm. Afte
 
 Once you know it's real, isolate the host from the network so the malware can't spread or talk to the attacker. Most endpoint tools can quarantine a machine with a single action.
 
-This is the single most important step, especially with a worm or ransomware, because disconnecting one machine early can be the difference between losing one host and losing the whole environment.
+This is the most important step, especially with a worm or ransomware. Disconnecting one machine early can be the difference between losing one host and losing the whole environment.
 
 #### Preserve
 
@@ -62,11 +62,11 @@ Then let's walk through Verify, Contain, Preserve and Escalate for this specific
 
 #### Contain, for this ticket
 
-Since the alert shows the machine is already talking to something outside, isolate Taylor's machine from the network now. Don't power it off, though, because shutting it down can lose whatever is still sitting in memory, which is often the only record of what the trojan actually did.
+Since the alert shows the machine is already talking to something outside, isolate Taylor's machine from the network now. Don't power it off, though, because shutting it down can lose whatever is still sitting in memory, which is often the only record of what the trojan did.
 
 #### Preserve, for this ticket
 
-For the same reason, leave the machine as it is rather than running a cleanup scan. The vanished file and the live outbound connection are your evidence of what arrived and where it's talking to, and a cleanup pass could erase both before anyone else looks at them.
+For the same reason, leave the machine as it is rather than running a cleanup scan. The vanished file and the live outbound connection are your evidence of what arrived and where it's talking to. A cleanup pass could erase both before anyone else looks.
 
 #### Escalate, for this ticket
 

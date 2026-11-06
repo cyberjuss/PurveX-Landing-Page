@@ -9,7 +9,7 @@ A **user account** represents a person in this directory. Jordan Ellis is an acc
 
 That account is the object you'll open when you work a ticket. Its folder tells you where the person lives, and its Member Of tab tells you what they can reach.
 
-Their title, on the other hand, is just a field on the account, not a group. That's how Priya Nair can be a Help Desk Technician and still not be in `Helpdesk`.
+Their title, on the other hand, is a field on the account, not a group. That's how Priya Nair can be a Help Desk Technician and still not be in `Helpdesk`.
 
 Nine people live in this domain, each in exactly one department OU. Of those, remember Alex Rivera, because he's the only person with an elevated group.
 

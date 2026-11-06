@@ -14,8 +14,8 @@ As you saw in the last lesson, a query that produces a table isn't a detection y
 Here are the five parts, in the order you build them:
 
 1. **Technique.** Decide what ATT&CK technique you are hunting, before you write a line of KQL.
-2. **Reference.** Scope the query to the table and time window where that technique actually shows up.
-3. **Aggregate.** Turn raw events into the one count you actually care about.
+2. **Reference.** Scope the query to the table and time window where that technique shows up.
+3. **Aggregate.** Turn raw events into the one count you care about.
 4. **Condition.** Set the line where that count becomes worth a human's attention.
 5. **Escalation.** Decide what happens the moment the detection fires.
 

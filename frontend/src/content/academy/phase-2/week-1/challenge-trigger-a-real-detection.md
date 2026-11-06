@@ -12,7 +12,7 @@
 
 ### Create the File
 
-Noor Ahmadi wants proof that Windows Defender is actually working, not just switched on. The industry's standard way to check that safely is the EICAR test file, a harmless string that every antivirus product agrees to treat as malware. Open PowerShell on the domain controller and write it to a file.
+Noor Ahmadi wants proof that Windows Defender is working, not just switched on. The industry's standard way to check that safely is the EICAR test file, a harmless string that every antivirus product agrees to treat as malware. Open PowerShell on the domain controller and write it to a file.
 
 ```powershell
 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' | Out-File -Encoding ascii C:\Users\Public\eicar-test.com
@@ -66,7 +66,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 <div class="ad-mission" data-id="mw2-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1135 · Medium</span>
 <p><strong>SOC Analyst · Triage Question · 11:40 AM</strong><br>A hash lookup on a suspicious file would also return VirusTotal's combined verdict from more than seventy engines at once. Suppose Defender alone had said "no threat found," but a VirusTotal lookup showed 68 of 70 engines flagging the same file.</p>
-<p><strong>Task:</strong> Which verdict should an analyst trust more? Type its letter.<br><strong>A</strong> Defender alone, since it is the one actually installed on the endpoint.<br><strong>B</strong> The multi-engine result, since broad agreement across many independent engines is stronger evidence than any single engine's verdict.<br><strong>C</strong> Neither. An analyst should ignore both and reverse-engineer the file by hand.</p>
+<p><strong>Task:</strong> Which verdict should an analyst trust more? Type its letter.<br><strong>A</strong> Defender alone, since it is the one installed on the endpoint.<br><strong>B</strong> The multi-engine result, since broad agreement across many independent engines is stronger evidence than any single engine's verdict.<br><strong>C</strong> Neither. An analyst should ignore both and reverse-engineer the file by hand.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which verdict an analyst should trust more" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -117,7 +117,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 </div>
 <div>
 <span>Why it matters</span>
-<p>EICAR was caught instantly because its signature is known on purpose. A real attacker is counting on the opposite, a file nobody has catalogued yet. Closing that gap is exactly what EDR is for, because it watches what a program does rather than what it looks like.</p>
+<p>EICAR was caught instantly because its signature is known on purpose. A real attacker is counting on the opposite, a file nobody has catalogued yet. Closing that gap is what EDR is for, because it watches what a program does rather than what it looks like.</p>
 </div>
 </div>
 </div>

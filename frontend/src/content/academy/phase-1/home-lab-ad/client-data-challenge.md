@@ -217,7 +217,7 @@
 <div class="ad-mission" data-id="cd-06" data-attempts="0">
 <span class="ad-mission__num">Task 06 · Integrity · Medium</span>
 <h4>Fingerprint the Register</h4>
-<p><strong>Situation:</strong> If anyone ever edits the client register without permission, the firm needs a way to prove it, and a record of the file's hash today is exactly that proof later on.</p>
+<p><strong>Situation:</strong> If anyone edits the client register without permission, the firm needs a way to prove it. A record of the file's hash today is that proof later on.</p>
 <p><strong>Task:</strong> Take the SHA-256 hash of the client register as it sits on the share, without opening and saving it first. Type the hash.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Fingerprint the Register" placeholder="64 hex characters" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -242,7 +242,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A hash is a fingerprint of the file's exact bytes. Change one digit in one client's row and the hash changes completely, so a recorded hash lets anyone prove later whether the file is still the one the firm signed off. In fact, if your hash differs from this one, the file on your share has already been changed.</p>
+<p>A hash is a fingerprint of the file's exact bytes. Change one digit in one client's row and the hash changes completely. A recorded hash lets anyone prove later whether the file is still the one the firm signed off. In fact, if your hash differs from this one, the file on your share has already been changed.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -263,7 +263,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Least privilege means the people who need the data and nobody else. So build that group first, and then look at who the share actually lets in.</p>
+<p>Least privilege means the people who need the data and nobody else. So build that group first, and then look at who the share lets in.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click <code>AccessLevels</code>, choose New, Group, and create <code>Client Data Readers</code> as a Global Security group.</li>
@@ -282,7 +282,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every account in the domain can read every client's Social Security number, including the help desk, Operations, and any account an attacker takes over, while the four people who need it are a tiny fraction of that. This is broken access control, the same failure Week 4 opened with.</p>
+<p>Every account in the domain can read every client's Social Security number. That includes the help desk, Operations and any account an attacker takes over. Only four people need it. This is broken access control, the same failure Week 4 opened with.</p>
 </div>
 <div>
 <span>What to do</span>

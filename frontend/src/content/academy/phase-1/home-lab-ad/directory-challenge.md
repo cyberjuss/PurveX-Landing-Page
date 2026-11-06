@@ -163,7 +163,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Delegating on the Compliance Users OU gives Helpdesk exactly the reach the request describes. Granting it at the domain would also hand Helpdesk the power to reset an administrator's password, which is one of the quickest routes an attacker has to taking over a domain.</p>
+<p>Delegating on the Compliance Users OU gives Helpdesk exactly the reach the request describes. Granting it at the domain would also let Helpdesk reset an administrator's password. That's one of an attacker's quickest routes to taking over a domain.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -368,7 +368,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Set Logon Hours to cover the job's window with a little margin, and write the same window in the Description so the next person can compare the two at a glance.</p>
+<p>Set Logon Hours to cover the job's window with a little margin. Write the same window in the Description so the next person can compare the two at a glance.</p>
 </div>
 </div>
 </div>
@@ -433,7 +433,7 @@
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="group|security-group">A group can narrow who a GPO applies to through security filtering, but a GPO can't link to a group.</div>
-<div class="ad-miss" data-guess="container|cn=computers|cn=users">A GPO can't link to a Container. That's exactly why the build keeps every account in an OU.</div>
+<div class="ad-miss" data-guess="container|cn=computers|cn=users">A GPO can't link to a Container. That's why the build keeps every account in an OU.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -456,7 +456,7 @@
 <span class="ad-mission__num">Task 12 · Group Policy</span>
 <h4>The Password Rule That Will Not Apply</h4>
 <p><strong>Devon Brooks · Compliance · 2:50 PM</strong><br>The auditors want Compliance staff on 16-character passwords, while everyone else stays on the firm's standard. Someone suggested putting a password setting in a GPO linked to <code>OU=Compliance</code>. Will that work?<br><strong>A</strong> Yes. A GPO linked to the OU applies to every account in it.<br><strong>B</strong> No. Domain password policy only applies from the domain level, so use a fine-grained password policy that targets Compliance instead.<br><strong>C</strong> Only if security filtering limits the GPO to Compliance Users.</p>
-<p><strong>Task:</strong> Choose the approach that will actually work and type its letter.</p>
+<p><strong>Task:</strong> Choose the approach that will work and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Password Rule That Will Not Apply" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

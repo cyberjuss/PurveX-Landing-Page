@@ -12,11 +12,11 @@ What makes a capture readable, then, is knowing that every conversation is built
 - An **address**, so the traffic knows where to go
 - A **reliable connection**, established before any data moves
 - A **port**, selecting a particular service on the other machine
-- A **protocol**, governing what the two sides actually say
+- A **protocol**, governing what the two sides say
 - Often **encryption**, layered on top of all of it
 
-This week, we'll take those pieces one at a time: TCP/IP addressing, the TCP three-way handshake, the ports and protocols you'll meet most often, and finally how TLS wraps a connection once TCP has brought it up. Each piece is simple on its own. The real difficulty is taking them all in at once, which is why we'll build them up step by step.
+This week, we'll take those pieces one at a time. First comes TCP/IP addressing, then the TCP three-way handshake, then the ports and protocols you'll meet most often. Last is how TLS wraps a connection once TCP has brought it up. Each piece is simple on its own. The real difficulty is taking them all in at once, which is why we'll build them up step by step.
 
-After that, the challenge puts you on the job, cleaning up after a network change that went wrong in your own lab, with Nmap and Wireshark, the two tools network and security teams use to check what a server exposes and what crosses the wire. Nothing you find there will be labeled "malicious". Instead, you'll be looking for something that doesn't fit a pattern you've already learned, and that's why the learning has to come first. Once you know what normal looks like at each layer, the exception jumps out at you. Without that, you could stare at a perfectly healthy network for an hour.
+After that, the challenge puts you on the job, cleaning up after a network change that went wrong in your own lab. You'll use Nmap and Wireshark, the two tools network and security teams use to check what a server exposes and what crosses the wire. Nothing you find there will be labeled "malicious". Instead, you'll be looking for something that doesn't fit a pattern you've already learned, and that's why the learning has to come first. Once you know what normal looks like at each layer, the exception jumps out at you. Without that, you could stare at a perfectly healthy network for an hour.
 
 By the end of the week, every conversation in a capture should answer four questions for you. Where is it going? Which port did it use? Did the handshake complete? And could anybody watching the wire read what was said? Those four answers tell you whether a conversation deserves more of your attention, and deciding that quickly is most of the job.
