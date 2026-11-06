@@ -27,6 +27,7 @@ Notice that none of them needed sophisticated tools. Two were a valid credential
 
 ```connect
 prompt: Connect each word to its job.
+level: 1
 Authentication = Proves somebody is who they claim to be
 Authorization = Decides what an established identity may reach
 Access control = Enforces that decision on every single request
@@ -34,6 +35,7 @@ Access control = Enforces that decision on every single request
 
 ```match
 prompt: Match each breach to the way in.
+level: 1
 Colonial Pipeline = A VPN account with a leaked password and no MFA
 MGM Resorts = A caller talked the help desk into resetting an employee's MFA
 First American Financial = Changing one number in a web address, with no check on the visitor

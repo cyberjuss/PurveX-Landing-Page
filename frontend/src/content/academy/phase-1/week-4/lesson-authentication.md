@@ -17,6 +17,7 @@ The reason MFA matters is blunt: passwords leak constantly and at scale, and a l
 
 ```sort
 prompt: Which kind of factor is each one?
+level: 1
 Something you know: A password | A PIN
 Something you have: A phone with an authenticator app | A security key | A smart card
 Something you are: A fingerprint | Your face
@@ -39,10 +40,11 @@ Unlock-ADAccount jamie.torres
 One rule to take from that table: don't re-enable a disabled account just because someone asks. Find out who disabled it, and why, first.
 
 ```sort
-prompt: Match each cause to the account state it produces.
-Locked out: A device still using an old password | Someone guessing
-Disabled: The person left | The account is under investigation
-Password expired: Policy requires a new password
+prompt: Calls from this morning. Which account state is each person in?
+level: 2
+Locked out: Riley mistyped her password five times in a row | Someone tried 40 passwords against jamie.torres in an hour
+Disabled: Kai's contract ended on Friday and IT turned the account off | The account is frozen while Compliance investigates
+Password expired: Taylor's password reached the end of its allowed age
 ```
 
 ### Resets
@@ -96,3 +98,10 @@ Its partner, event **4625**, is a failed sign-in. Two fields tell you why it fai
 ### Check yourself
 
 Here's one to think through. A caller says they're Jordan Ellis from Finance and needs an MFA reset before a board meeting in ten minutes, and their caller ID shows Jordan's name. What do you do, and which detail in that call should make you slow down instead of speeding up?
+
+<details class="lk-answer">
+<summary>Compare your answer</summary>
+
+Follow the same process you'd use for anyone: verify with a callback to the number on file, not the number that called you, before you touch the MFA. Caller ID can be spoofed, so seeing Jordan's name proves nothing. The detail that should slow you down is the deadline. A board meeting in ten minutes is pressure, and pressure to skip a step is the most common social engineering move there is.
+
+</details>

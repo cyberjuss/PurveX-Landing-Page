@@ -305,7 +305,14 @@ export function LessonDeck({
             {slide.recap ? (
               <span className="rd-kicker">In 30 seconds</span>
             ) : slide.activity ? (
-              <span className="rd-kicker">Try it</span>
+              <span className="rd-kicker">
+                Try it
+                {slide.activity.level ? (
+                  <span className={`lk__level lk__level--${slide.activity.level}`}>
+                    {slide.activity.level === 1 ? "Warm-up" : slide.activity.level === 2 ? "Apply it" : "On the job"}
+                  </span>
+                ) : null}
+              </span>
             ) : (
               slide.title !== label && <span className="rd-kicker">{label}</span>
             )}

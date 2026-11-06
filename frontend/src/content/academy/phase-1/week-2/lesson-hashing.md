@@ -32,10 +32,12 @@ With that in mind, checking a download comes down to three steps:
 **If it does not match,** don't run it and don't delete it either. Put both hashes in the ticket and escalate, because deleting the file destroys your evidence.
 
 ```order
-prompt: Put the verification in order.
-Take the reference hash from the vendor's own site
-Hash your copy of the file
-Let the tool compare the two hashes
+prompt: Riley has two copies of the vendor installer. Put your checks in order.
+level: 2
+Get the SHA-256 from the vendor's own site, not the mirror
+Run Get-FileHash on both copies
+Let a command compare each hash to the vendor's, not your eyes
+Run only the copy that matches, and escalate the other without deleting it
 ```
 
 ### What a hash cannot prove
@@ -84,3 +86,10 @@ Once you're working in a SOC, you'll see hashes everywhere:
 ### Check yourself
 
 Here's one to think through. The vendor emails you a new installer and puts the SHA-256 in that same email. The hash matches. Is the file verified?
+
+<details class="lk-answer">
+<summary>Compare your answer</summary>
+
+No. The hash arrived through the same channel as the file, so anyone who could swap the installer could swap the hash in that email too. A match only proves the two came from the same place. Get the reference hash from the vendor's own website, or confirm it with them another way, and check the file's digital signature as well.
+
+</details>

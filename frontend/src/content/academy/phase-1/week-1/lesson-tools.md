@@ -18,6 +18,14 @@ This week's challenge has you working on your own domain controller in an admin 
 Get-NetFirewallRule -DisplayName "PurveX*" | Select-Object DisplayName, Action, Enabled
 ```
 
+<details class="lk-answer">
+<summary>What you should see</summary>
+
+A short list of PurveX rules, each with an Action of Allow or Block and Enabled set to True or False. To practice reading a port, try a built-in rule: `Get-NetFirewallRule -DisplayName "Remote Desktop - User Mode (TCP-In)" | Get-NetFirewallPortFilter` should show port 3389. Being able to say what a rule does, and on which port, is exactly the skill the challenge asks for.
+
+</details>
+
+
 ```match
 prompt: Match each command to its job.
 Get-NetFirewallPortFilter = Find which port a rule blocks

@@ -20,7 +20,8 @@ That's why threats and weaknesses only make sense together. The same threat gets
 It also helps to know which threats are realistic for your own organization. A regional accounting firm and a defense contractor face genuinely different attackers, and if you planned every organization's defenses as though a nation-state group were about to show up, you'd spend effort that belongs elsewhere.
 
 ```sort
-prompt: Weakness or actor? Sort each one.
-Vulnerability: Unpatched software | A firewall left misconfigured | A policy that allows weak passwords | A port open that nobody needs
-Threat: A criminal group | Malware | An insider | A flood that takes out a data center | A nation-state group
+prompt: Weakness or actor? Sort what the risk review turned up.
+level: 2
+Vulnerability: The VPN has no MFA | An intern's account is still enabled after they left | Port 23 is open on the domain controller
+Threat: A criminal group spraying common passwords | An unhappy employee with admin rights | Ransomware arriving in a phishing email | A flood at the data center
 ```

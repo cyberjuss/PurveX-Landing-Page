@@ -1,7 +1,8 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowUp, Check, Flame, GripVertical, RotateCcw } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Flame, GripVertical, MessageCircle, RotateCcw } from "lucide-react";
+import { useCoachMaybe } from "@/components/academy/coach-context";
 import { confettiFrom } from "@/lib/confetti";
 import { curlyQuotes } from "@/lib/typography";
 import { dropLonePeriod } from "@/lib/lone-period";
@@ -103,6 +104,7 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
   const [mistakes, setMistakes] = useState(0);
   const [streak, setStreak] = useState(0);
   const [note, setNote] = useState("");
+  const [lastWrong, setLastWrong] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const left = cards.filter((c) => placed[c.id] === undefined);
@@ -122,6 +124,7 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
       setMistakes((m) => m + 1);
       setStreak(0);
       setMiss(id);
+      setLastWrong(match ? `"${card.text}" on the line "${activity.buckets[bucket].name}"` : `"${card.text}" in "${activity.buckets[bucket].name}"`);
       setNote(match ? `Not that one. ${card.text} belongs on another line.` : `Not ${activity.buckets[bucket].name}. Try another.`);
       window.setTimeout(() => setMiss((m) => (m === id ? null : m)), 450);
     }
@@ -145,6 +148,7 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
     setPicked(null);
     setMistakes(0);
     setNote("");
+    setLastWrong(null);
   }
 
   return (
@@ -258,6 +262,7 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
           {note}
         </span>
         <Streak count={streak} />
+        {!done && <CoachNudge prompt={activity.prompt} wrong={lastWrong} />}
         {Object.keys(placed).length > 0 && (
           <button type="button" className="lkd__reset" onClick={reset}>
             <RotateCcw className="h-3.5 w-3.5" /> Start over
@@ -357,9 +362,12 @@ function OrderActivity({ activity }: { activity: Extract<DeckActivity, { kind: "
             <Check className="h-4 w-4" /> Done
           </span>
         ) : (
-          <button type="button" className="rd-cta lkd__check" onClick={check}>
-            Check order
-          </button>
+          <>
+            {checked && !right && <CoachNudge prompt={activity.prompt} wrong="an order with some steps in the wrong place" />}
+            <button type="button" className="rd-cta lkd__check" onClick={check}>
+              Check order
+            </button>
+          </>
         )}
       </div>
     </div>
@@ -389,6 +397,7 @@ function ConnectActivity({ activity }: { activity: Extract<DeckActivity, { kind:
   const [picked, setPicked] = useState<number | null>(null);
   const [miss, setMiss] = useState<{ t: number; d: number } | null>(null);
   const [mistakes, setMistakes] = useState(0);
+  const [lastWrong, setLastWrong] = useState<string | null>(null);
   const [streak, setStreak] = useState(0);
   const [drag, setDrag] = useState<{ t: number; at: Pt } | null>(null);
   const [geom, setGeom] = useState<{ l: Record<number, Pt>; r: Record<number, Pt> }>({ l: {}, r: {} });
@@ -429,6 +438,7 @@ function ConnectActivity({ activity }: { activity: Extract<DeckActivity, { kind:
       setMistakes((m) => m + 1);
       setStreak(0);
       setMiss({ t, d });
+      setLastWrong(`"${activity.buckets[t].items[0]}" to "${activity.buckets[d].name}"`);
       window.setTimeout(() => setMiss(null), 650);
     }
   }
@@ -529,8 +539,32 @@ function ConnectActivity({ activity }: { activity: Extract<DeckActivity, { kind:
           )}
         </span>
         <Streak count={streak} />
+        {!done && <CoachNudge prompt={activity.prompt} wrong={lastWrong} />}
       </div>
     </div>
+  );
+}
+
+/**
+ * Shown once a student has placed something wrong. It hands Coach the
+ * question and the mistake, and asks for a nudge rather than the answer, so
+ * the student still does the thinking.
+ */
+function CoachNudge({ prompt, wrong }: { prompt: string; wrong: string | null }) {
+  const coach = useCoachMaybe();
+  if (!coach || !coach.enabled || !wrong) return null;
+  return (
+    <button
+      type="button"
+      className="lkd__coach"
+      onClick={() =>
+        coach.ask(
+          `I'm working on a practice question in my lesson: "${prompt}". I got one wrong: I tried ${wrong}. Don't give me the answer. Give me a hint or ask me a question that helps me see why that doesn't fit, so I can work out the right one myself.`
+        )
+      }
+    >
+      <MessageCircle className="h-3.5 w-3.5" aria-hidden /> Ask Coach
+    </button>
   );
 }
 

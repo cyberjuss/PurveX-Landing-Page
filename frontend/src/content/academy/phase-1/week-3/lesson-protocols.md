@@ -27,9 +27,8 @@ Email splits its work across protocols that run in two directions. SMTP carries 
 The useful question for an analyst is which machines should be speaking these protocols at all, and the answer is a short list: mail servers, and the mail clients of the people who read email. So if you see SMTP coming from a host that has no reason to handle mail, follow it up, because sending messages is one of the most common uses of a compromised machine.
 
 ```sort
-prompt: Match each job to the protocol that does it.
-DNS: Turns a name like google.com into an IP address
-DHCP: Hands an address to a laptop joining the Wi-Fi
-SMTP: Carries mail outward toward its destination
-IMAP: Lets a mail client pull messages down from a server
+prompt: You're reviewing the domain controller's traffic. Normal, or worth a second look?
+level: 3
+Normal for a DC: DNS lookups from the workstations | Kerberos sign-ins on port 88 from IT-WKS01 | LDAP directory lookups on port 389
+Worth a second look: SMTP mail leaving the domain controller | A Telnet console answering on port 23 | A password sent over plain HTTP | A workstation with an address starting 169.254
 ```

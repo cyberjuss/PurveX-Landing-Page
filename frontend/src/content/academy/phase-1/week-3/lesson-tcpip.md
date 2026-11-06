@@ -18,6 +18,7 @@ That split is worth committing to memory, because it tells you where to look whe
 
 ```sort
 prompt: Whose job is it, IP or TCP?
+level: 1
 IP: Giving every device an address | Moving data from one address to another | A packet that never found the host
 TCP: Making sure data arrives complete and in order | Numbering what it sends and waiting for confirmation | Resending anything that goes unacknowledged
 ```

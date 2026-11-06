@@ -21,8 +21,9 @@ What sets this apart from the other two failures is that you can't undo it. You 
 Each of these covers a gap the other two leave open, which is why you use all three together. Of the three, encryption is the one people most often assume is switched on when it isn't, and that assumption is costly, because unencrypted traffic can be read by anyone on the network path between the two ends. So when a colleague asks whether it's safe to send something through a particular system, the question you're really answering is whether that traffic is encrypted while it travels.
 
 ```match
-prompt: Match each control to the gap it covers.
-Authentication = Establishes who somebody is
-Access control = Decides what that person is allowed to reach
-Encryption = Makes the data unreadable to anyone who gets it by another route
+prompt: Which control would have stopped each of these?
+level: 1
+Authentication = Someone signed in as Sam Whitfield with a guessed password
+Access control = Riley in Operations could open the Wealth Management client list
+Encryption = Jordan's spreadsheet was read off the hotel Wi-Fi as it was sent
 ```

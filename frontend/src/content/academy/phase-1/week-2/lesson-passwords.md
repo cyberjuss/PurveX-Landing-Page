@@ -19,10 +19,11 @@ Putting those requirements together, a system should store a **salted, slow hash
 
 Without both halves, tools such as Hashcat and John the Ripper can work through common passwords across the whole table at once, and against a fast, unsalted hash they do it so quickly that cracking becomes trivial. That's exactly what happened to LinkedIn in 2012. It's also why the way a breached company stored its passwords tells you far more about the danger than the size of the breach does.
 
-```match
-prompt: Both halves of good password storage. Match them.
-Salt = A random value added per user, so two people with the same password get different hashes
-Slow hash = Argon2id or bcrypt, so each guess costs far more time
+```sort
+prompt: A vendor was breached. How exposed are PurveX staff, based on how the vendor stored passwords?
+level: 3
+Treat as exposed now: Stored Base64-encoded | Encrypted, with the key in the same database | Plain SHA-256 with no salt
+Time to respond, reset anyway: Salted bcrypt at cost 12
 ```
 
 ### Why their breach is your problem
@@ -47,6 +48,7 @@ While you work through those steps, there are two things you should never do. Do
 
 ```order
 prompt: A vendor was breached. Put your first moves in order.
+level: 3
 Find out how the passwords were stored
 Force resets for affected staff, confirmed exposures first
 Turn on MFA for those accounts and watch their sign-ins
@@ -92,3 +94,10 @@ The pattern tells you which attack you're looking at. Many 4625s on one account 
 ### Check yourself
 
 Here's one to think through. A leaked table shows two users with the same value in the password column. What does that tell you, and would a salt have changed it?
+
+<details class="lk-answer">
+<summary>Compare your answer</summary>
+
+Identical values mean those two users chose the same password, and that the system stored them without a salt. With a salt, each user gets a random value mixed in, so even the same password produces two different stored values and the reuse stays hidden. It also means cracking one cracks both, so reset both accounts.
+
+</details>

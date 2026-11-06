@@ -10,8 +10,42 @@
 <span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
 </div>
 
+<div class="ad-mission" data-id="w2-03" data-attempts="0">
+<span class="ad-mission__num">Ticket 01 · Warm-up · Encryption · Medium · INC-1091</span>
+<h4>The Recovery Key Call</h4>
+<p><strong>Phone call · 8:30 AM</strong><br>"Hi, it's Sam Whitfield from Wealth Management. My laptop rebooted for an update and now there's a blue BitLocker screen asking for a 48-digit key. I'm calling from my personal phone and I have a client in ten minutes. Can you just read me the key?"<br><strong>A</strong> Read the key out straight away. The client meeting can't wait.<br><strong>B</strong> Confirm it's really Sam first, for example by calling back on the number in the directory or checking with Sam's manager, then give the key.<br><strong>C</strong> Tell Sam the data can't be recovered and the laptop has to be wiped.</p>
+<p><strong>Task:</strong> Choose what you do and type its letter.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for The Recovery Key Call" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The recovery key is the one thing that unlocks the whole encrypted drive. Ask yourself who would gain from getting it read out over the phone, especially the morning after a breach.</p>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">Anyone can say they're Sam, and urgency is a classic pressure tactic. The key unlocks everything on the drive, so check who you're talking to first.</div>
+<div class="ad-miss" data-guess="c">Nothing is lost. BitLocker is doing its job, and the recovery key unlocks the drive with all of Sam's data intact.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{b}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Encryption is only as strong as the way its key is handed out. A caller on an unknown number, a deadline and a request for the key is how attackers talk their way past disk encryption. The morning after a breach is when they try.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Verify the caller through a channel you already trust, then read the key. Log the request in the ticket, because a recovery key that was given out should be rotated once the laptop is back in IT's hands.</p>
+</div>
+</div>
+</div>
+</div>
+
 <div class="ad-mission" data-id="w2-01" data-attempts="0">
-<span class="ad-mission__num">Ticket 01 · Encoding · High · INC-1091</span>
+<span class="ad-mission__num">Ticket 02 · Apply it · Encoding · High · INC-1091</span>
 <h4>Decode the Settlement Script</h4>
 <p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I can just send it, right? It's in the IT share.</p>
 <p><strong>Task:</strong> Open <code>settlement-upload.ps1</code> in the IT share, find out what the "encrypted" password really is, and report it.</p>
@@ -54,7 +88,7 @@
 </div>
 
 <div class="ad-mission" data-id="w2-02" data-attempts="0">
-<span class="ad-mission__num">Ticket 02 · Hashing · High · INC-1058 · INC-1091</span>
+<span class="ad-mission__num">Ticket 03 · Apply it · Hashing · High · INC-1058 · INC-1091</span>
 <h4>Catch the Altered Download</h4>
 <p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>The breach notice says to update the VPN client today. I found three download mirrors of version 2.4.1 in the IT share. IT published a checksum next to them. Which one is safe to install?</p>
 <p><strong>Task:</strong> Hash the three mirrors in the IT share and compare each with <code>checksums.txt</code>. Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>, and report its file name.</p>
@@ -96,42 +130,8 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="w2-03" data-attempts="0">
-<span class="ad-mission__num">Ticket 03 · Encryption · Medium · INC-1091</span>
-<h4>The Recovery Key Call</h4>
-<p><strong>Phone call · 9:40 AM</strong><br>"Hi, it's Sam Whitfield from Wealth Management. My laptop rebooted for an update and now there's a blue BitLocker screen asking for a 48-digit key. I'm calling from my personal phone and I have a client in ten minutes. Can you just read me the key?"<br><strong>A</strong> Read the key out straight away. The client meeting can't wait.<br><strong>B</strong> Confirm it's really Sam first, for example by calling back on the number in the directory or checking with Sam's manager, then give the key.<br><strong>C</strong> Tell Sam the data can't be recovered and the laptop has to be wiped.</p>
-<p><strong>Task:</strong> Choose what you do and type its letter.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for The Recovery Key Call" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>The recovery key is the one thing that unlocks the whole encrypted drive. Ask yourself who would gain from getting it read out over the phone, especially the morning after a breach.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">Anyone can say they're Sam, and urgency is a classic pressure tactic. The key unlocks everything on the drive, so check who you're talking to first.</div>
-<div class="ad-miss" data-guess="c">Nothing is lost. BitLocker is doing its job, and the recovery key unlocks the drive with all of Sam's data intact.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>GTF{b}</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>Encryption is only as strong as the way its key is handed out. A caller on an unknown number, a deadline and a request for the key is how attackers talk their way past disk encryption. The morning after a breach is when they try.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Verify the caller through a channel you already trust, then read the key. Log the request in the ticket, because a recovery key that was given out should be rotated once the laptop is back in IT's hands.</p>
-</div>
-</div>
-</div>
-</div>
-
 <div class="ad-mission" data-id="w2-04" data-attempts="0">
-<span class="ad-mission__num">Ticket 04 · Storing Passwords · Critical · INC-1058 · INC-1091</span>
+<span class="ad-mission__num">Ticket 04 · Stretch · Storing Passwords · Critical · INC-1058 · INC-1091</span>
 <h4>Crack the Shared Hash</h4>
 <p><strong>Alex Rivera · IT · 10:15 AM</strong><br>The breached vendor stored passwords as plain SHA-256, with no salt. The slice of its user table with PurveX accounts is in the IT share as <code>exported-hashes.txt</code>. Two of our staff have the same hash, which means the same password. Find out what it is, and make sure neither of them keeps using it.</p>
 <p><strong>Task:</strong> Find the two accounts that share a hash and crack it with <code>common-passwords.txt</code>. Then force both accounts to change their password at next logon, and report the password.</p>
@@ -175,7 +175,7 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0">
-<span class="ad-mission__num">Ticket 05 · Wrap-up · Report to the IT Lead · INC-1091</span>
+<span class="ad-mission__num">Ticket 05 · Stretch · Wrap-up · Report to the IT Lead · INC-1091</span>
 <h4>Fix the Script for Good</h4>
 <p><strong>Alex Rivera · IT · 11:00 AM</strong><br>Back to the settlement script from this morning. Operations still needs it to run every night. What's the right fix?<br><strong>A</strong> Encrypt the password properly with AES, and keep the key in the same script so it can decrypt it at run time.<br><strong>B</strong> Take the password out of the script, store it in a secrets vault or run the job under a managed service account, and change the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so nobody can read it.</p>
 <p><strong>Task:</strong> Choose the fix and type its letter.</p>

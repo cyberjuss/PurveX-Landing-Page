@@ -20,7 +20,8 @@ This also explains where a security program spends its time. Since you can rarel
 So before you escalate anything, get in the habit of naming the vulnerability, the threat and the impact. An escalation that includes all three gives the person receiving it what they need to decide, while one that only says "this looks bad" sends them off to redo your work.
 
 ```sort
-prompt: Does each control lower the likelihood, or the impact when something gets through?
-Lowers likelihood: Patching the software | Closing a port nobody needs | Strengthening the password policy
-Lowers impact: Backups | Network segmentation
+prompt: You have budget for six fixes. Does each lower the likelihood of an attack, or the damage when one gets through?
+level: 3
+Lowers likelihood: Turn on MFA for the VPN | Disable the old intern account | Close port 23 on the domain controller
+Lowers impact: Keep offline backups of the Finance share | Separate the client systems from the office network | Limit the client list to Wealth Management only
 ```

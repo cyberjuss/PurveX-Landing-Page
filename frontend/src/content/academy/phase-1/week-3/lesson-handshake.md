@@ -19,6 +19,7 @@ So when you're working through a capture, look for all three steps before you tr
 
 ```order
 prompt: Put the TCP handshake in order.
+level: 1
 SYN: the computer opening the connection asks to connect
 SYN-ACK: the computer being contacted accepts
 ACK: the opener confirms it got the reply

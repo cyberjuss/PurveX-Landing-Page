@@ -20,15 +20,17 @@ To see why, think about what each outage costs. A payment page that won't load l
 You need all three because a service can go down for more than one reason: hardware fails, a change goes wrong, or someone attacks it on purpose. That last case has a name you'll hear often. A **distributed denial of service** (DDoS) attack floods a service with more requests than it can answer, until real users can't get through. Nothing is stolen and nothing is changed, which makes it a useful reminder that an incident doesn't have to involve data leaving the building.
 
 ```match
-prompt: Match each control to what it does.
-Backups = Let you rebuild after something is lost
-Redundancy = Keeps a second path open when the first one fails
-Patching = Closes the defects that would be used to bring a service down
+prompt: Which availability control would get PurveX working again?
+level: 2
+Backups = Ransomware encrypted every file on the Finance share
+Redundancy = The office's only internet link went down at 9 AM
+Patching = A published flaw lets anyone crash the VPN with one request
 ```
 
 ```sort
-prompt: A leak, a lie or a lockout? Sort each failure by the part of the triad that broke.
-Confidentiality: A leaked password | Salaries seen by someone never meant to see them | Medical records read by the wrong person
-Integrity: A payroll figure that changed overnight | A firewall rule changed to allow traffic that used to be blocked | An altered medication dose
-Availability: A site that will not load | A DDoS flood makes the service unreachable | The time clock is unreachable at shift change
+prompt: Monday's queue at PurveX. A leak, a lie or a lockout?
+level: 2
+Confidentiality: The Wealth Management client export is sitting in the Operations share | Sam's password was pasted into a team chat
+Integrity: A wire approval's account number changed overnight | A firewall rule was quietly edited to allow Remote Desktop
+Availability: Nobody can open the file shares this morning | The time clock is down at shift change
 ```

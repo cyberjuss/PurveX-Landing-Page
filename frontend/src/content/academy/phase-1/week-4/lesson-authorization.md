@@ -11,10 +11,11 @@ Three principles shape almost every authorization decision you'll make, and it's
 - **Separation of duties.** No single person controls a sensitive process end to end, such as both editing what clients are billed and approving those changes, so a fraud or a serious mistake needs two people rather than one.
 
 ```match
-prompt: Match each principle to what it means.
-Least privilege = Each account gets only the access its job requires
-Need to know = Access to specific data only while a task requires it
-Separation of duties = No single person controls a sensitive process end to end
+prompt: Which principle is each PurveX rule enforcing?
+level: 2
+Least privilege = svc-backup-job can read the backup folders and nothing else
+Need to know = Morgan gets the audit folder only while this quarter's filing is open
+Separation of duties = Jordan can enter a wire, but someone else has to approve it
 ```
 
 ### Role-based access control
@@ -35,10 +36,11 @@ Admin rights get the same careful treatment. Rather than being granted as one bl
 | Level 3, Helpdesk | Workstations, password resets, local support | Servers or the domain controller |
 
 ```sort
-prompt: Which access level controls each one?
-Level 1 · Domain Admin: The domain controller | Active Directory
-Level 2 · Server Admin: Application servers | File servers
-Level 3 · Helpdesk: Workstations | Password resets | Local support
+prompt: Who should handle each request?
+level: 2
+Level 1 · Domain Admin: Change who sits in Domain Admins | Create a new department OU
+Level 2 · Server Admin: Patch the file server | Restart the reporting application
+Level 3 · Helpdesk: Reset Riley's password | Fix the printer on IT-WKS01
 ```
 
 ### Reading access
@@ -65,11 +67,12 @@ Here are the failures behind most of the authorization problems you'll meet. Wha
 - **Unreviewed groups.** This is the condition that lets all of the above persist. Regular access reviews, where each manager confirms who should still be in which group, catch what individual tickets miss.
 
 ```match
-prompt: Name the failure in each scenario.
-Privilege creep = Someone changed roles and kept the groups from the old one
-Stale account = An account still active for someone who has left
-Admin account for daily work = Every routine action an administrator takes is a privileged one
-Over-privileged service account = svc-backup-job signs in interactively and holds Domain Admin
+prompt: The access review found these. Name the failure in each.
+level: 3
+Privilege creep = Taylor moved to Compliance and still has Operations Users
+Stale account = An intern's account is still enabled six months after they left
+Admin account for daily work = Alex reads email while signed in to his admin account
+Over-privileged service account = svc-backup-job signs in to the desktop and holds Domain Admin
 ```
 
 ### Logs
@@ -90,3 +93,10 @@ When you see any of these in the logs, escalate:
 ### Check yourself
 
 Here's one to think through. `svc-backup-job` appears in a 4624 event with logon type 10, which is a Remote Desktop sign-in. A backup job never needs to sit at a remote desktop, so what does that tell you, and what do you check first?
+
+<details class="lk-answer">
+<summary>Compare your answer</summary>
+
+It tells you someone is using the service account's credentials interactively, which is either misuse or a compromise, because the job itself never needs a desktop. Check where the sign-in came from, what groups the account holds, and whether its password changed recently. Then escalate, because an attacker sitting in a service account often has far more access than a person would.
+
+</details>

@@ -27,6 +27,7 @@ You'll see why the distinction matters as soon as you start ranking work. An ana
 
 ```connect
 prompt: Connect each word to what it means.
+level: 1
 Vulnerability = A weakness
 Threat = Something or someone that could use it
 Risk = The chance the two meet, and what it would cost

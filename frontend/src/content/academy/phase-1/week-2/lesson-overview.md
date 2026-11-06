@@ -21,6 +21,7 @@ Because of those differences, the question you'll face on the job is never what 
 
 ```connect
 prompt: Connect each method to what it does.
+level: 1
 Encryption = Keeps data private. Whoever holds the key can reverse it.
 Hashing = Proves data was not changed. Nobody can reverse it.
 Encoding = A format change anybody can undo in one step. It guarantees nothing.

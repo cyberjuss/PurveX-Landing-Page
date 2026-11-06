@@ -34,12 +34,13 @@ At the same time, be careful not to read more into a port number than it can tel
 - The direction the connection traveled
 - Whether that service has any reason to be running there at all
 
-```sort
-prompt: Match each port to its protocol.
-SSH: 22
-Telnet: 23
-SMTP: 25
-DNS: 53
-HTTPS: 443
-RDP: 3389
+```match
+prompt: Which port would you expect to see for each of these?
+level: 2
+53 = A laptop looking up portal.purvexfinancial.local
+88 = A user signing in to the domain
+445 = Opening a file on the Finance share
+3389 = An admin taking over a Windows desktop remotely
+22 = An admin opening a remote shell on a Linux server
+25 = A mail server sending mail out
 ```

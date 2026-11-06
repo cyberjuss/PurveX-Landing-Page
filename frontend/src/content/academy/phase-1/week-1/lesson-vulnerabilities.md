@@ -16,9 +16,10 @@ Once you see vulnerabilities that way, you'll read a scanner report differently.
 The encouraging part is that vulnerabilities are also what you control most. You usually can't get rid of the people who would attack you, but you can patch the software, fix the configuration, strengthen the password policy and close the port. That's why so much of a security team's daily work happens right here.
 
 ```match
-prompt: Match each fix to the weakness it closes.
-Patch the software = Unpatched software
-Correct the configuration = A misconfigured firewall
-Strengthen the password policy = Weak passwords
-Close the port = A port left open that nobody needs
+prompt: The weekly scan came back. Match each fix to the finding it closes.
+level: 2
+Patch the software = The VPN client on every laptop is three versions behind
+Correct the configuration = A firewall rule allows Remote Desktop from anywhere
+Strengthen the password policy = Accounts can still use passwords like Summer2026
+Close the port = Port 23 is open on the domain controller and nobody knows why
 ```

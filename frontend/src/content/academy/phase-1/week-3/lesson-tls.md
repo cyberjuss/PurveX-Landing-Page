@@ -23,10 +23,21 @@ This changes what you can expect from a capture, and it's better to adjust that 
 
 In practice, that outside information is usually enough to decide whether a conversation belongs, which was the decision you were trying to make all along. Analysts work from it far more often than they read payloads.
 
-```match
-prompt: Match each one to what it does.
-TCP's handshake = Sets up the connection
-TLS's handshake = Sets up the privacy
-HTTP = Anyone watching the wire can read the data
-HTTPS = The data is encrypted and watchers see only gibberish
+```sort
+prompt: You captured an HTTPS session in Wireshark. What can you still see?
+level: 3
+Visible: Which two machines talked | The port they used | How much data moved, and which way | The site name, in most connections
+Hidden: The password typed into the form | The content of the page
 ```
+
+
+### Check yourself
+
+A workstation sends traffic on port 443 to an address nobody recognizes, every five minutes, day and night. You can't read the payload. Do you have anything to go on?
+
+<details class="lk-answer">
+<summary>Compare your answer</summary>
+
+Plenty. A connection on a fixed interval around the clock is a pattern people don't make, so it suggests software calling home. You can see the destination, the site name in the TLS handshake, how much data moves and in which direction, and the DNS lookup that came before it. Find out which process on the workstation is making the connection, and escalate with that evidence.
+
+</details>

@@ -22,6 +22,14 @@ For the fixes, these Active Directory commands cover everything the challenge as
 
 **Try it:** filter the Security log for 4624 and find the sign-in from when you logged on to your domain controller today.
 
+<details class="lk-answer">
+<summary>What you should see</summary>
+
+A 4624 event with your account name and a time that matches when you signed in. Open it and find the **Logon Type**: 2 means you were at the keyboard, and 10 means Remote Desktop. Then run `Get-ADPrincipalGroupMembership alex.rivera | Select-Object Name` and check it against The Environment tab, where Alex holds IT Users and IT Admins. Comparing what the directory says with what it should say is how the challenge starts.
+
+</details>
+
+
 ```match
 prompt: Match each tool to the review question it answers.
 Event Viewer, event 4625 = Has someone been guessing this password?

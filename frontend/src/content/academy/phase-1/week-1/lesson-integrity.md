@@ -19,6 +19,8 @@ That difference shapes how you investigate, too. With confidentiality, you're as
 
 ```match
 prompt: Each property asks its own question. Match them.
+level: 1
 Confidentiality = Could anyone have seen this?
 Integrity = Is this still what it was?
+Availability = Can people reach it when they need it?
 ```

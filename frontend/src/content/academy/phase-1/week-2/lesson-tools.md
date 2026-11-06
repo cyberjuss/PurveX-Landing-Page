@@ -19,6 +19,14 @@ The second is PowerShell on your domain controller, which covers the rest of the
 
 **Try it:** paste `SGVsbG8gUHVydmVY` into CyberChef and add **From Base64**. If the output reads as a greeting, you've just decoded your first value.
 
+<details class="lk-answer">
+<summary>What you should see</summary>
+
+The output reads `Hello PurveX`. Now try the other direction: add **SHA2** with size 256 below it and watch a 64-character hash appear. Change one letter in the input and notice that the whole hash changes, which is the property you'll rely on in the challenge.
+
+</details>
+
+
 ```match
 prompt: Match each CyberChef step to the value it handles.
 From Hex = 507572766558

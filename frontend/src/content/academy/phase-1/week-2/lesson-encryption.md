@@ -35,9 +35,11 @@ The second, **asymmetric encryption**, uses a pair of keys instead.
 HTTPS is a good example of the two working together. Your browser and the website use their key pairs to agree on a fresh shared key for the session, usually AES, and that shared key protects everything sent afterwards. In other words, the slow method solves the problem of agreeing on a secret in public, and then the fast method does the actual work.
 
 ```match
-prompt: Match each kind of encryption to how it works.
-Symmetric = One shared key both locks and unlocks, so it is fast
-Asymmetric = A pair of keys, where anything locked with one opens only with the other
+prompt: Which kind of encryption is doing the work in each case?
+level: 2
+Symmetric = BitLocker locking every file on Sam's drive with one key
+Asymmetric = A vendor signing an installer to prove they published it
+Both together = Your browser agreeing a key with a site, then protecting the whole session
 ```
 
 ### Back to Sam: the recovery key call
@@ -102,12 +104,20 @@ Finally, encryption shows up on the attacking side too, in two patterns you'll l
 - Phishing emails often carry an encrypted ZIP with the password in the email body. Mail scanners cannot look inside the ZIP, and attackers rely on that.
 
 ```match
-prompt: Where is the data, and what protects it?
-At rest = A laptop's drive, protected by BitLocker
-In transit = Signing in to a web portal, protected by HTTPS or a VPN
-In use = A file open in an app, protected by access control and endpoint security
+prompt: Which protection covers each situation?
+level: 2
+BitLocker = Sam's laptop is stolen from a parked car
+HTTPS or a VPN = Jordan signs in to the bank portal on hotel Wi-Fi
+Access control and endpoint security = Malware runs while Sam is signed in
 ```
 
 ### Check yourself
 
 Here's one to think through before the challenge. A caller says they're Morgan Lee, traveling and locked out by BitLocker, and they want the recovery key sent to a personal email address. What do you do?
+
+<details class="lk-answer">
+<summary>Compare your answer</summary>
+
+You don't send it. Verify the caller with a callback to the number on file, match the Key ID on their screen to the stored recovery key, and read the digits out only over that verified call. A recovery key never goes to a personal email address. Notice the pressure in the request, too: travel, urgency and a new channel are exactly how attackers talk their way past disk encryption, so document the call and escalate if they push back.
+
+</details>

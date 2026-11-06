@@ -1504,3 +1504,22 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
   :is(.lk.is-full, .lk:fullscreen) .lk__body { grid-template-columns: minmax(0, 1fr); }
   :is(.lk.is-full, .lk:fullscreen) .lk__body > .lk__art { max-width: 200px; }
 }
+
+/* Appears after a wrong placement: a quiet way to ask Coach for a nudge. */
+.lkd__coach { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rd-line, rgba(16,25,46,0.14)); border-radius: 999px; background: none; padding: 4px 12px; font-size: var(--ty-note, 13px); font-weight: 600; color: var(--rd-accent, #5546e0); cursor: pointer; }
+.lkd__coach:hover { background: color-mix(in srgb, var(--rd-accent, #5546e0) 8%, transparent); }
+
+/* Difficulty on a Try it slide, so the climb through a week is visible. */
+.lk__level { display: inline-block; margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; vertical-align: 1px; }
+.lk__level--1 { background: color-mix(in srgb, #16a34a 14%, transparent); color: #15803d; }
+.lk__level--2 { background: color-mix(in srgb, #d97706 16%, transparent); color: #b45309; }
+.lk__level--3 { background: color-mix(in srgb, #dc2626 14%, transparent); color: #b91c1c; }
+
+/* "Compare your answer" and "What you should see": the model answer stays
+   folded until the student has thought it through. */
+.lk-answer { margin: 14px 0 0; border: 1px solid var(--rd-line, rgba(16,25,46,0.14)); border-radius: 10px; padding: 10px 14px; background: color-mix(in srgb, var(--rd-accent, #5546e0) 4%, transparent); }
+.lk-answer > summary { cursor: pointer; font-weight: 700; font-size: var(--ty-note, 13px); color: var(--rd-accent, #5546e0); list-style: none; }
+.lk-answer > summary::-webkit-details-marker { display: none; }
+.lk-answer > summary::before { content: "+ "; }
+.lk-answer[open] > summary::before { content: "− "; }
+.lk-answer > p { margin: 10px 0 0; }

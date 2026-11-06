@@ -38,12 +38,20 @@ Attackers know about Base64 too, and they use it to hide commands. PowerShell wi
 Encryption has a telltale habit of its own. Good encryption mixes in a random value each time, so encrypting the same thing twice with the same key gives two different results. If you ever see two identical encrypted values, treat that as a warning sign about how the encryption was built.
 
 ```sort
-prompt: Encoding, encryption or hashing? Sort each clue.
-Encoding: Letters, digits, + and /, often ending in = | Anyone can get it back in one step
-Encryption: Random characters that grow with the input | Only the key holder can get it back
-Hashing: Always the same length, 64 characters for SHA-256 | Nobody can ever get it back
+prompt: You found these in PurveX files. Encoding, encryption or hashing?
+level: 2
+Encoding: password: SGFyYm9yMjAyNg== in a vendor script | A config value ending in == that decodes in one click
+Encryption: A note that only opens with the passphrase Tide-Lamp-42 | Sam's BitLocker drive
+Hashing: A 64-character value printed next to a download link | $6$N4tQ2x$YkiZ5p… in a password table
 ```
 
 ### Check yourself
 
 Here's a situation to think through before moving on. A log shows `powershell.exe -enc` followed by 400 characters of Base64 on a Finance laptop at 2:14 in the morning. Is that command really hidden from you? And what's the first thing you'd do?
+
+<details class="lk-answer">
+<summary>Compare your answer</summary>
+
+It isn't hidden at all, because Base64 is encoding, and anyone can reverse it. Decode it first, with From Base64 and then Decode text set to UTF-16LE, so you can read exactly what it runs before you judge it. Then look at who ran it and whether anything like it is normal for that laptop. If the decoded command downloads something or connects out, that's when you escalate and isolate the machine.
+
+</details>

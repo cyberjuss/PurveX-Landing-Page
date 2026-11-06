@@ -4050,6 +4050,18 @@ p.ad-cmd, li.ad-cmd { position: relative; }
 .academy-prose .ad-flag__coach:hover { background: color-mix(in srgb, var(--rd-accent, #5546e0) 8%, transparent); }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-flag__coach { border-color: var(--rd-line-dark, #223047); color: #9a8cff; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-flag__coach:hover { background: color-mix(in srgb, #9a8cff 10%, transparent); }
+/* Shown under a challenge after a wrong answer. Asks Coach for a nudge that
+   fits the mistake, never the answer. Removed once the question is solved. */
+.academy-prose .ad-miss__coach {
+  appearance: none; -webkit-appearance: none;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  margin: 0.75rem 0 0; padding: 0.4rem 0.8rem;
+  border: 1px solid var(--rd-line, rgba(16,25,46,0.14)); border-radius: 999px;
+  background: transparent; color: var(--rd-accent, #5546e0);
+  font-size: var(--ty-small); font-weight: 600; cursor: pointer;
+}
+.academy-prose .ad-miss__coach:hover { background: color-mix(in srgb, var(--rd-accent, #5546e0) 8%, transparent); }
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-miss__coach { border-color: var(--rd-line-dark, #223047); color: #9a8cff; }
 
 /* One motion language for Academy. Soft Y for first paint, menus, drills.
    Directional X for next and previous. A short rise on routes lives on

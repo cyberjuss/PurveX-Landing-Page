@@ -11,7 +11,7 @@
 </div>
 
 <div class="ad-mission" data-id="w1-01" data-attempts="0">
-<span class="ad-mission__num">Ticket 01 · Confidentiality · High · INC-1090</span>
+<span class="ad-mission__num">Ticket 01 · Warm-up · Confidentiality · High · INC-1090</span>
 <h4>Close the Exposed Client Export</h4>
 <p><strong>Sam Whitfield · Wealth Management · 8:15 AM</strong><br>Someone in Operations just messaged me asking why our client list is in their share. Those are our clients' account numbers and balances. Can you find it and get it back where it belongs?</p>
 <p><strong>Task:</strong> Find the Wealth Management client export in the Operations share and move it into the Wealth Management share. Then report how many client records were exposed.</p>
@@ -54,53 +54,42 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="w1-02" data-attempts="0">
-<span class="ad-mission__num">Ticket 02 · Integrity · Critical · INC-1090</span>
-<h4>Catch the Altered Wire</h4>
-<p><strong>Jordan Ellis · Finance · 8:22 AM</strong><br>I approved November's wires on Friday and saved the file's SHA-256 hash next to it, like always. This morning the file looks fine to me, but something about it feels off. The wires go out at noon. Can you check it against what I signed off?</p>
-<p><strong>Task:</strong> Prove whether <code>Wire_Approvals_Nov.csv</code> in the Finance share still matches the hash Jordan saved. If it doesn't, compare it with the approved copy in <code>C:\PurveX\Archive</code>, restore the approved version, and report the Wire ID that was altered.</p>
+<div class="ad-mission" data-id="w1-04" data-attempts="0">
+<span class="ad-mission__num">Ticket 02 · Warm-up · Vulnerabilities and Threats · INC-1090</span>
+<h4>Weakness or Threat?</h4>
+<p><strong>Alex Rivera · IT · 8:24 AM</strong><br>I'm writing up the client export for Compliance. Which of these describes it correctly?<br><strong>A</strong> The vulnerability is the Operations staff, and the threat is the client file.<br><strong>B</strong> The vulnerability is client data stored where Operations can read it, and the threat is anyone using an Operations account, a curious colleague or an attacker who has stolen one.<br><strong>C</strong> The vulnerability is the CSV file format, and the threat is Wealth Management.</p>
+<p><strong>Task:</strong> Choose the correct description and type its letter.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Wire" placeholder="a Wire ID" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{WR-2203}" data-accept="2203">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for Weakness or Threat?" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A hash changes completely if even one character in the file changes, so a mismatch proves the file was altered. Comparing it line by line with the approved copy shows you where.</p>
-<ol>
-<li>Hash the Finance file and compare it with the value in <code>Wire_Approvals_Nov.sha256</code>.</li>
-<li>Compare the Finance file with <code>C:\PurveX\Archive\Wire_Approvals_Nov.csv</code> and find the line that differs.</li>
-<li>Copy the approved version back over the Finance file, then hash it again to confirm it matches.</li>
-</ol>
-<p>In PowerShell:</p>
-<ul>
-<li><code>(Get-FileHash C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv).Hash; Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.sha256</code></li>
-<li><code>Compare-Object (Get-Content C:\PurveX\Archive\Wire_Approvals_Nov.csv) (Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv)</code></li>
-<li><code>Copy-Item C:\PurveX\Archive\Wire_Approvals_Nov.csv C:\PurveX\Shares\Finance\ -Force</code></li>
-</ul>
+<p>A vulnerability is a weakness in a system or process. A threat is something or someone that could take advantage of it.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="contoso-data-feeds|contoso">That's the beneficiary on the altered line. Report its Wire ID, the first value on that line.</div>
-<div class="ad-miss" data-guess="wr-2201|wr-2202|wr-2204|2201|2202|2204">That wire matches the approved copy. Compare the two files again and find the line that differs.</div>
+<div class="ad-miss" data-guess="a">People aren't the weakness here, and a file can't act on its own. Ask which part is the flaw and which part could exploit it.</div>
+<div class="ad-miss" data-guess="c">The file format did nothing wrong, and Wealth Management owns the data. Look for the flaw in where the data was stored.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>GTF{WR-2203}</code></p>
+<p class="ad-flag__code"><code>GTF{b}</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>WR-2203's account number was swapped, so at noon $9,800 would have gone to an account nobody approved. The file still opened, still looked tidy and still said Jordan approved it. That's an integrity failure, and only the hash Jordan saved on Friday could prove it.</p>
+<p>Getting the two apart tells you what you can fix. You can't remove every curious colleague or every stolen password, but you can remove the weakness by keeping client data where only its own department can reach it.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Restore the approved copy, confirm the hash matches again, and hold the noon release until Finance confirms every wire with the beneficiary by phone. Then work out who could write to the Finance share over the weekend.</p>
+<p>Write the finding in the order the lessons gave you: the vulnerability, the threat that could use it, the CIA property that failed, and the impact. Then whoever reads it can act without redoing your work.</p>
 </div>
 </div>
 </div>
 </div>
 
 <div class="ad-mission" data-id="w1-03" data-attempts="0">
-<span class="ad-mission__num">Ticket 03 · Availability · High · INC-1090</span>
+<span class="ad-mission__num">Ticket 03 · Apply it · Availability · High · INC-1090</span>
 <h4>Bring the File Shares Back</h4>
 <p><strong>Priya Nair · IT · 8:31 AM</strong><br>The phones haven't stopped. Nobody on the fourth floor, the office network at 10.250.40.0/24, can open a file share this morning, whatever department they're in. The files are all still there on the server. The only thing that happened this weekend was a maintenance window.</p>
 <p><strong>Task:</strong> Find the firewall rule the weekend's maintenance left behind on the domain controller and switch it off. Then report the port it was blocking.</p>
@@ -145,42 +134,53 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="w1-04" data-attempts="0">
-<span class="ad-mission__num">Ticket 04 · Vulnerabilities and Threats · INC-1090</span>
-<h4>Weakness or Threat?</h4>
-<p><strong>Alex Rivera · IT · 9:10 AM</strong><br>I'm writing up the client export for Compliance. Which of these describes it correctly?<br><strong>A</strong> The vulnerability is the Operations staff, and the threat is the client file.<br><strong>B</strong> The vulnerability is client data stored where Operations can read it, and the threat is anyone using an Operations account, a curious colleague or an attacker who has stolen one.<br><strong>C</strong> The vulnerability is the CSV file format, and the threat is Wealth Management.</p>
-<p><strong>Task:</strong> Choose the correct description and type its letter.</p>
+<div class="ad-mission" data-id="w1-02" data-attempts="0">
+<span class="ad-mission__num">Ticket 04 · Apply it · Integrity · Critical · INC-1090</span>
+<h4>Catch the Altered Wire</h4>
+<p><strong>Jordan Ellis · Finance · 8:40 AM</strong><br>I approved November's wires on Friday and saved the file's SHA-256 hash next to it, like always. This morning the file looks fine to me, but something about it feels off. The wires go out at noon. Can you check it against what I signed off?</p>
+<p><strong>Task:</strong> Prove whether <code>Wire_Approvals_Nov.csv</code> in the Finance share still matches the hash Jordan saved. If it doesn't, compare it with the approved copy in <code>C:\PurveX\Archive</code>, restore the approved version, and report the Wire ID that was altered.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Weakness or Threat?" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Wire" placeholder="a Wire ID" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{WR-2203}" data-accept="2203">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A vulnerability is a weakness in a system or process. A threat is something or someone that could take advantage of it.</p>
+<p>A hash changes completely if even one character in the file changes, so a mismatch proves the file was altered. Comparing it line by line with the approved copy shows you where.</p>
+<ol>
+<li>Hash the Finance file and compare it with the value in <code>Wire_Approvals_Nov.sha256</code>.</li>
+<li>Compare the Finance file with <code>C:\PurveX\Archive\Wire_Approvals_Nov.csv</code> and find the line that differs.</li>
+<li>Copy the approved version back over the Finance file, then hash it again to confirm it matches.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>(Get-FileHash C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv).Hash; Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.sha256</code></li>
+<li><code>Compare-Object (Get-Content C:\PurveX\Archive\Wire_Approvals_Nov.csv) (Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv)</code></li>
+<li><code>Copy-Item C:\PurveX\Archive\Wire_Approvals_Nov.csv C:\PurveX\Shares\Finance\ -Force</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">People aren't the weakness here, and a file can't act on its own. Ask which part is the flaw and which part could exploit it.</div>
-<div class="ad-miss" data-guess="c">The file format did nothing wrong, and Wealth Management owns the data. Look for the flaw in where the data was stored.</div>
+<div class="ad-miss" data-guess="contoso-data-feeds|contoso">That's the beneficiary on the altered line. Report its Wire ID, the first value on that line.</div>
+<div class="ad-miss" data-guess="wr-2201|wr-2202|wr-2204|2201|2202|2204">That wire matches the approved copy. Compare the two files again and find the line that differs.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>GTF{b}</code></p>
+<p class="ad-flag__code"><code>GTF{WR-2203}</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>Getting the two apart tells you what you can fix. You can't remove every curious colleague or every stolen password, but you can remove the weakness by keeping client data where only its own department can reach it.</p>
+<p>WR-2203's account number was swapped, so at noon $9,800 would have gone to an account nobody approved. The file still opened, still looked tidy and still said Jordan approved it. That's an integrity failure, and only the hash Jordan saved on Friday could prove it.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Write the finding in the order the lessons gave you: the vulnerability, the threat that could use it, the CIA property that failed, and the impact. Then whoever reads it can act without redoing your work.</p>
+<p>Restore the approved copy, confirm the hash matches again, and hold the noon release until Finance confirms every wire with the beneficiary by phone. Then work out who could write to the Finance share over the weekend.</p>
 </div>
 </div>
 </div>
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="w1-05" data-attempts="0">
-<span class="ad-mission__num">Ticket 05 · Risk · Report to the CISO · INC-1090</span>
+<span class="ad-mission__num">Ticket 05 · Stretch · Risk · Report to the CISO · INC-1090</span>
 <h4>Rank the Weekend</h4>
 <p><strong>CISO · 9:30 AM</strong><br>Looking back at 8:15, when all three tickets were open at once, which one should have been escalated first?<br><strong>A</strong> The client export, because client data was exposed.<br><strong>B</strong> The altered wire, because $9,800 was due to leave the firm at noon to an account nobody approved, and a sent wire is hard to get back.<br><strong>C</strong> The blocked file shares, because they affected the most people.</p>
 <p><strong>Task:</strong> Choose the ticket with the highest risk at 8:15 and type its letter.</p>

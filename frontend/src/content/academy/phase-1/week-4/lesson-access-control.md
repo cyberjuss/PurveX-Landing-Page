@@ -29,10 +29,11 @@ Broken access control tends to show up in three recognizable forms:
 - **Parameter tampering:** sending a value the server should set itself, such as a role or account ID.
 
 ```sort
-prompt: Name the flaw.
-IDOR: Changing an ID in a request returns someone else's record
-Forced browsing: Requesting /admin, a page the user was never shown
-Parameter tampering: Sending a role the server should set itself
+prompt: Three reports came in about the client portal. Name the flaw behind each.
+level: 3
+IDOR: Changing /statements?id=10451 to 10452 shows another client's statement
+Forced browsing: A regular user types /admin and the admin page loads
+Parameter tampering: The sign-up form sends role=admin and the server accepts it
 ```
 
 ### Fixes
@@ -70,3 +71,10 @@ In web and application logs, these are the signs that someone is probing access 
 ### Check yourself
 
 Here's one to think through before the challenge. A developer tells you the admin link is safe because it only appears in the menu for admins. What question would you ask them, and how would you prove the answer?
+
+<details class="lk-answer">
+<summary>Compare your answer</summary>
+
+Ask whether the server checks the user's role when the admin page is requested directly, not just whether the menu hides the link. To prove it, on a test system you're authorized to test, sign in as an ordinary user and type the admin address straight into the browser. The server should refuse with a 403. If the page loads, hiding the link was the only thing protecting it.
+
+</details>

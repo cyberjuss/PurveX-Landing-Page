@@ -1,9 +1,12 @@
 import { marked, type Token } from "marked";
 import { GLOSSARY, lookup, type GlossaryEntry } from "@/lib/concept-glossary";
 
+/** How hard an exercise is: a recall warm-up, applying the idea, or a judgment call from the job. */
+export type ActivityLevel = 1 | 2 | 3;
+
 export type DeckActivity =
-  | { kind: "sort"; prompt: string; buckets: { name: string; items: string[] }[]; layout?: "match" | "connect" }
-  | { kind: "order"; prompt: string; items: string[] };
+  | { kind: "sort"; prompt: string; buckets: { name: string; items: string[] }[]; layout?: "match" | "connect"; level?: ActivityLevel }
+  | { kind: "order"; prompt: string; items: string[]; level?: ActivityLevel };
 
 export interface DeckSlide {
   /** The heading the slide sits under, or the section label before any heading. */
@@ -115,6 +118,9 @@ function plain(text: string) {
  *     Client sends SYN
  *     Server replies SYN-ACK
  *     ```
+ *
+ * Any block may add `level: 1`, `2` or `3` (warm-up, apply it, on the job),
+ * so a week's exercises can climb from recall to judgment.
  */
 export function parseActivity(lang: string, body: string): DeckActivity | null {
   const lines = body.split("\n").map((l) => l.trim()).filter(Boolean);
@@ -125,9 +131,12 @@ export function parseActivity(lang: string, body: string): DeckActivity | null {
         ? "Drag each term to what it matches."
         : "Drag the steps into order.";
   const rest: string[] = [];
+  let level: ActivityLevel | undefined;
   for (const line of lines) {
     const p = /^prompt:\s*(.+)$/i.exec(line);
+    const lv = /^level:\s*([123])$/i.exec(line);
     if (p) prompt = p[1];
+    else if (lv) level = Number(lv[1]) as ActivityLevel;
     else rest.push(line);
   }
   // A match block pairs a short term with what it matches, one pair a line:
@@ -140,11 +149,11 @@ export function parseActivity(lang: string, body: string): DeckActivity | null {
         return at < 1 ? null : { name: line.slice(at + 3).trim(), items: [line.slice(0, at).trim()] };
       })
       .filter((b): b is { name: string; items: string[] } => Boolean(b && b.name && b.items[0]));
-    return buckets.length >= 2 ? { kind: "sort", prompt, buckets, layout: lang } : null;
+    return buckets.length >= 2 ? { kind: "sort", prompt, buckets, layout: lang, level } : null;
   }
   if (lang === "order") {
     const items = rest.map((l) => l.replace(/^(\d+[.)]|[-*])\s+/, ""));
-    return items.length >= 2 ? { kind: "order", prompt, items } : null;
+    return items.length >= 2 ? { kind: "order", prompt, items, level } : null;
   }
   const buckets = rest
     .map((line) => {
@@ -154,7 +163,7 @@ export function parseActivity(lang: string, body: string): DeckActivity | null {
       return { name: line.slice(0, at).trim(), items };
     })
     .filter((b): b is { name: string; items: string[] } => Boolean(b && b.items.length));
-  return buckets.length >= 2 ? { kind: "sort", prompt, buckets } : null;
+  return buckets.length >= 2 ? { kind: "sort", prompt, buckets, level } : null;
 }
 
 // Splits a lesson section into slides the way a deck would: one per heading,
