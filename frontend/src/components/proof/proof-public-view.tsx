@@ -66,6 +66,7 @@ export function ProofPublicView({
   data,
   shotSrc = (id) => `/p/${settings.slug}/shot/${id}`,
   clipSrc = (id) => `/p/${settings.slug}/clip/${id}`,
+  posterSrc = (id) => `/p/${settings.slug}/clip/${id}?poster=1`,
   avatarSrc = null,
   resumeHref = settings.resumePath ? `/p/${settings.slug}/resume` : null,
   printable = true,
@@ -76,6 +77,8 @@ export function ProofPublicView({
   shotSrc?: (id: string) => string;
   /** Where each challenge clip streams from. Null shows the card without a player. */
   clipSrc?: (id: string) => string | null;
+  /** The still frame each clip shows before it plays. */
+  posterSrc?: (id: string) => string | null;
   /** The student's profile photo, when they added one. */
   avatarSrc?: string | null;
   /** Where the resume downloads from, when the student added one. */
@@ -86,9 +89,20 @@ export function ProofPublicView({
   const first = settings.displayName.split(" ")[0];
   const roles = data.roleNames ?? [];
   const certs = [...(data.certs ?? []), ...(settings.extraCerts ?? []).map((c) => ({ name: c.name, status: certStatusText(c) }))];
-  const openTo = roles.length ? `Open to ${list(roles)} roles` : "";
-  const where = [settings.location ?? "", settings.availability ?? ""].filter(Boolean).join(" · ");
-  const eligible = [settings.workAuth ?? "", settings.clearance ?? ""].filter(Boolean).join(" · ");
+  // One role line: the main target, then any others, instead of saying it twice.
+  const primary = data.roleName ?? roles[0] ?? null;
+  const others = roles.filter((r) => r !== primary);
+  const roleLine = primary ? `${primary}${others.length ? ` · also open to ${list(others)}` : ""}` : "";
+  // Where, when and eligibility as small tags, and a cert or two beside them rather than a whole section.
+  const tags = [settings.location, settings.availability, settings.workAuth, settings.clearance].filter((t): t is string => Boolean(t));
+  const certsInHead = certs.length > 0 && certs.length <= 2;
+  const clips = data.clips ?? [];
+  const verifiedCount = data.items.filter((it) => it.verified).length;
+  const stats = [
+    { n: data.items.length, label: data.items.length === 1 ? "lab task" : "lab tasks" },
+    { n: verifiedCount, label: "verified by Range" },
+    { n: clips.length, label: clips.length === 1 ? "recorded solve" : "recorded solves" },
+  ].filter((x, i) => i === 0 || x.n > 0);
   const mailto = settings.contactEmail ? `mailto:${settings.contactEmail}?subject=${encodeURIComponent("Your PurveX portfolio")}` : null;
   const socials = [
     { key: "linkedin", href: settings.linkedinUrl, label: "LinkedIn" },
@@ -129,20 +143,36 @@ export function ProofPublicView({
             {avatarSrc && <img className="pp-avatar" src={avatarSrc} alt={settings.displayName} />}
             <div>
               <h1>{settings.displayName}</h1>
-              {data.roleName && <p className="pp-role">{data.roleName} candidate</p>}
-              {(where || settings.contactEmail) && (
-                <p className="pp-open">
-                  {[where, settings.contactEmail ?? ""].filter(Boolean).join(" · ")}
-                </p>
+              {roleLine && <p className="pp-role">{roleLine}</p>}
+              {(tags.length > 0 || certsInHead) && (
+                <ul className="pp-tags">
+                  {tags.map((t) => (
+                    <li key={t}>{t}</li>
+                  ))}
+                  {certsInHead &&
+                    certs.map((c) => (
+                      <li key={c.name} className={`pp-tag--cert${c.status.startsWith("Certified") ? " is-done" : ""}`}>
+                        {c.name} · {c.status}
+                      </li>
+                    ))}
+                </ul>
               )}
-              {openTo && <p className="pp-open">{openTo}</p>}
-              {eligible && <p className="pp-open">{eligible}</p>}
             </div>
           </div>
+          {stats[0].n > 0 && (
+            <dl className="pp-stats">
+              {stats.map((x) => (
+                <div key={x.label}>
+                  <dt>{x.n}</dt>
+                  <dd>{x.label}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
           {(canReach || printable) && (
             <div className="pp-reach">
               {actions}
-              {printable && <ProofPrintButton>{FILE}Save as PDF</ProofPrintButton>}
+              {printable && <ProofPrintButton className="pp-print">{FILE}Save as PDF</ProofPrintButton>}
               {socials.map((s) => (
                 <a key={s.key} className="pp-icon" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${first} on ${s.label}`} title={s.label}>
                   {SOCIAL[s.key]}
@@ -152,7 +182,60 @@ export function ProofPublicView({
           )}
         </header>
 
-        {certs.length > 0 && (
+        {clips.length > 0 && (
+          <section className="pp-sec">
+            <h2>Recorded challenges</h2>
+            <p className="pp-note">
+              {first} recorded these challenges while working them. Range adds a clip to this page only after recording every question in the challenge as solved, and stamps the solve date on it.
+            </p>
+            <ul className="pp-clips">
+              {clips.map((c) => {
+                const src = clipSrc(c.id);
+                return (
+                  <li key={c.id} className="pp-clip">
+                    <div className="pp-clip__frame">
+                      {src ? (
+                        <video
+                          className="pp-clip__video"
+                          src={src}
+                          poster={c.hasPoster ? (posterSrc(c.id) ?? undefined) : undefined}
+                          controls
+                          preload="none"
+                          playsInline
+                          aria-label={`${first} working ${c.title}`}
+                        />
+                      ) : (
+                        <div className="pp-clip__video pp-clip__video--off">Loading the clip</div>
+                      )}
+                      <span className="pp-clip__badge">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" />
+                          <path d="M8.5 12l2.5 2.5 4.5-5" />
+                        </svg>
+                        Verified solve
+                      </span>
+                      {c.durationSec > 0 && <span className="pp-clip__len">{clipLength(c.durationSec)}</span>}
+                    </div>
+                    <div className="pp-clip__stamp">
+                      <b>{c.title}</b>
+                      <span>
+                        {c.solvedAt ? `Solved ${shortDay(c.solvedAt)}` : "Solved"}
+                        {settings.credentialId && (
+                          <>
+                            {" · "}
+                            <code>{settings.credentialId}</code> · <a href={`/verify/${settings.credentialId}`}>Verify</a>
+                          </>
+                        )}
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
+        {certs.length > 2 && (
           <section className="pp-sec">
             <h2>Certifications</h2>
             <ul className="pp-certs">
@@ -204,49 +287,6 @@ export function ProofPublicView({
           </ul>
         </section>
 
-        {(data.clips ?? []).length > 0 && (
-          <section className="pp-sec">
-            <h2>Recorded challenges</h2>
-            <p className="pp-note">
-              {first} recorded these challenges while working them. Range adds a clip to this page only after recording every question in the challenge as solved, and stamps the solve date on it.
-            </p>
-            <ul className="pp-clips">
-              {(data.clips ?? []).map((c) => {
-                const src = clipSrc(c.id);
-                return (
-                  <li key={c.id} className="pp-clip">
-                    <div className="pp-clip__frame">
-                      {src ? (
-                        <video className="pp-clip__video" src={src} controls preload="metadata" playsInline aria-label={`${first} working ${c.title}`} />
-                      ) : (
-                        <div className="pp-clip__video pp-clip__video--off">Loading the clip</div>
-                      )}
-                      <span className="pp-clip__badge">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                          <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" />
-                          <path d="M8.5 12l2.5 2.5 4.5-5" />
-                        </svg>
-                        Verified solve
-                      </span>
-                    </div>
-                    <div className="pp-clip__stamp">
-                      <b>{c.title}</b>
-                      <span>
-                        {[c.solvedAt ? `Solved ${day(c.solvedAt)}` : "", c.durationSec ? clipLength(c.durationSec) : ""].filter(Boolean).join(" · ")}
-                      </span>
-                      {settings.credentialId && (
-                        <span className="pp-clip__cred">
-                          <code>{settings.credentialId}</code> · <a href={`/verify/${settings.credentialId}`}>Verify</a>
-                        </span>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        )}
-
         {settings.showSkills && data.skills.length > 0 && (
           <section className="pp-sec">
             <h2>Skills</h2>
@@ -262,7 +302,7 @@ export function ProofPublicView({
         )}
 
         {(mailto || resumeHref) && (
-          <section className="pp-cta">
+          <section className="pp-cta pp-cta--phone">
             <div>
               <h2>Interested in {first}?</h2>
               <p>
@@ -287,7 +327,9 @@ export function ProofPublicView({
   );
 }
 
-/** 754 seconds reads as "12:34 long". */
+/** 754 seconds reads as 12:34, like a video thumbnail. */
 function clipLength(sec: number) {
-  return `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")} long`;
+  return `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")}`;
 }
+
+const shortDay = (iso: string) => new Date(`${iso.slice(0, 10)}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });

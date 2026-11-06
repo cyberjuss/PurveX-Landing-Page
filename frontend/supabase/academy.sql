@@ -253,8 +253,12 @@ create table if not exists public.academy_challenge_clips (
   recorded_at timestamptz,
   solved_at timestamptz,
   status text not null default 'pending' check (status in ('pending', 'ready')),
+  poster_path text,
   created_at timestamptz not null default now()
 );
+
+-- The still frame a clip shows before it plays, captured when recording stops.
+alter table public.academy_challenge_clips add column if not exists poster_path text;
 
 create index if not exists academy_challenge_clips_user
   on public.academy_challenge_clips (user_id, challenge);
@@ -266,10 +270,10 @@ create policy "Students read their own challenge clips"
   on public.academy_challenge_clips for select
   using (auth.uid() = user_id);
 
--- 100 MB per clip, WebM only. The project's own storage upload limit
+-- 100 MB per clip, WebM videos and their JPEG still frames only. The project's own storage upload limit
 -- (Dashboard, Storage, Settings) must be at least this for the cap to apply.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('proof-clips', 'proof-clips', false, 104857600, array['video/webm'])
+values ('proof-clips', 'proof-clips', false, 104857600, array['video/webm', 'image/jpeg'])
 on conflict (id) do update set file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
 
 -- Optional, self-reported work eligibility shown to employers.

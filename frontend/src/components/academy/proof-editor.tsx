@@ -44,7 +44,7 @@ type Data = {
   saved: boolean;
   shots: Shot[];
   /** Verified challenge clips already on the profile. */
-  clips?: { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null }[];
+  clips?: { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null; hasPoster: boolean }[];
   blockers: string[];
   /** On Explore: the draft is readable, but publishing it is what Pro buys. */
   locked?: boolean;
@@ -143,12 +143,16 @@ export function ProofEditor() {
     let stop = false;
     for (const c of data.clips) {
       if (clipUrlsRef.current[c.id]) continue;
-      academyFetch(`/academy/api/proof/clip?id=${encodeURIComponent(c.id)}`)
-        .then((r) => (r.ok ? (r.json() as Promise<{ url?: string }>) : null))
-        .then((b) => {
-          if (b?.url && !stop) setClipUrls((u) => ({ ...u, [c.id]: b.url! }));
-        })
-        .catch(() => {});
+      // The video, and its still frame under "<id>:poster" when it has one.
+      const wants: [string, string][] = [[c.id, ""], ...(c.hasPoster ? ([[`${c.id}:poster`, "&poster=1"]] as [string, string][]) : [])];
+      for (const [key, extra] of wants) {
+        academyFetch(`/academy/api/proof/clip?id=${encodeURIComponent(c.id)}${extra}`)
+          .then((r) => (r.ok ? (r.json() as Promise<{ url?: string }>) : null))
+          .then((b) => {
+            if (b?.url && !stop) setClipUrls((u) => ({ ...u, [key]: b.url! }));
+          })
+          .catch(() => {});
+      }
     }
     return () => {
       stop = true;
@@ -398,6 +402,7 @@ export function ProofEditor() {
             data={{ items, skills: data.skills, roleName: data.roleName, roleNames: data.roleNames, certs: data.certs, lastLabCheck: data.lastLabCheck, shots: data.shots, clips: data.clips ?? [] }}
             shotSrc={(id) => urls[id] ?? ""}
             clipSrc={(id) => clipUrls[id] ?? null}
+            posterSrc={(id) => clipUrls[`${id}:poster`] ?? null}
             printable={false}
             avatarSrc={avatar}
             resumeHref={resumeUrl}

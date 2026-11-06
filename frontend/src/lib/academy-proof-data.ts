@@ -23,7 +23,7 @@ export type ProofData = {
   clips: ProofClip[];
 };
 
-export type ProofClip = { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null };
+export type ProofClip = { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null; hasPoster: boolean };
 
 /** Everything the profile shows, read fresh from the student's own records. */
 export async function loadProofData(userId: string): Promise<ProofData> {
@@ -49,7 +49,7 @@ export async function loadProofData(userId: string): Promise<ProofData> {
     lastLabCheck: lab?.uploadedAt ?? null,
     settings,
     shots,
-    clips: clips.map((c) => ({ id: c.id, title: CHALLENGE_LABELS[c.challenge], durationSec: c.durationSec, solvedAt: c.solvedAt, recordedAt: c.recordedAt })),
+    clips: clips.map((c) => ({ id: c.id, title: CHALLENGE_LABELS[c.challenge], durationSec: c.durationSec, solvedAt: c.solvedAt, recordedAt: c.recordedAt, hasPoster: Boolean(c.posterPath) })),
   };
 }
 

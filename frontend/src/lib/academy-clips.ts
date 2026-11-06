@@ -22,6 +22,8 @@ export type ChallengeClip = {
   recordedAt: string | null;
   solvedAt: string | null;
   status: "pending" | "ready";
+  /** The still frame shown before the clip plays, once it has arrived. */
+  posterPath: string | null;
   createdAt: string;
 };
 
@@ -50,9 +52,12 @@ function fromRow(r: Record<string, unknown>): ChallengeClip {
     recordedAt: typeof r.recorded_at === "string" ? r.recorded_at : null,
     solvedAt: typeof r.solved_at === "string" ? r.solved_at : null,
     status: r.status === "ready" ? "ready" : "pending",
+    posterPath: typeof r.poster_path === "string" ? r.poster_path : null,
     createdAt: String(r.created_at ?? ""),
   };
 }
+
+const posterPathFor = (videoPath: string) => videoPath.replace(/\.webm$/, ".jpg");
 
 export const clipsAvailable = () => Boolean(supabaseAdmin);
 
@@ -77,7 +82,7 @@ export async function startClip(
   durationSec: number,
   recordedAt: string | null,
   solvedAt: string
-): Promise<{ id: string; uploadUrl: string } | null> {
+): Promise<{ id: string; uploadUrl: string; posterUploadUrl: string | null } | null> {
   if (!supabaseAdmin) return null;
   const id = randomUUID();
   const path = `${userId}/${challenge}-${id}.webm`;
@@ -102,7 +107,9 @@ export async function startClip(
     await supabaseAdmin.from(TABLE).delete().eq("id", id);
     return null;
   }
-  return { id, uploadUrl: signed.data.signedUrl };
+  // The still frame is optional: a clip without one shows a plain dark frame.
+  const poster = await supabaseAdmin.storage.from(BUCKET).createSignedUploadUrl(posterPathFor(path));
+  return { id, uploadUrl: signed.data.signedUrl, posterUploadUrl: poster.data?.signedUrl ?? null };
 }
 
 /** Marks an uploaded clip live once the file is really there, and retires the challenge's older clip. */
@@ -116,19 +123,22 @@ export async function confirmClip(userId: string, id: string): Promise<Challenge
   const file = (found ?? []).find((f) => f.name === name);
   const size = Number((file?.metadata as { size?: number } | null)?.size ?? 0);
   if (!file || size <= 0 || size > CLIP_MAX_BYTES) return null;
-  const { error } = await supabaseAdmin.from(TABLE).update({ status: "ready", size_bytes: size }).eq("id", id).eq("user_id", userId);
+  const posterName = posterPathFor(clip.path).split("/").pop() ?? "";
+  const { data: posters } = await supabaseAdmin.storage.from(BUCKET).list(userId, { search: posterName, limit: 5 });
+  const posterPath = (posters ?? []).some((f) => f.name === posterName) ? posterPathFor(clip.path) : null;
+  const { error } = await supabaseAdmin.from(TABLE).update({ status: "ready", size_bytes: size, poster_path: posterPath }).eq("id", id).eq("user_id", userId);
   if (error) {
     console.error(`${TABLE} confirm failed`, error.message);
     return null;
   }
   for (const old of clips.filter((c) => c.challenge === clip.challenge && c.id !== id)) await removeClip(userId, old);
-  return { ...clip, status: "ready", sizeBytes: size };
+  return { ...clip, status: "ready", sizeBytes: size, posterPath };
 }
 
 async function removeClip(userId: string, clip: ChallengeClip) {
   if (!supabaseAdmin) return;
   await supabaseAdmin.from(TABLE).delete().eq("id", clip.id).eq("user_id", userId);
-  await supabaseAdmin.storage.from(BUCKET).remove([clip.path]);
+  await supabaseAdmin.storage.from(BUCKET).remove([clip.path, posterPathFor(clip.path)]);
 }
 
 export async function deleteClip(userId: string, id: string): Promise<boolean> {
@@ -139,8 +149,10 @@ export async function deleteClip(userId: string, id: string): Promise<boolean> {
 }
 
 /** A short-lived link the video player can stream from, with seeking. */
-export async function clipPlayUrl(clip: ChallengeClip): Promise<string | null> {
+export async function clipPlayUrl(clip: ChallengeClip, poster = false): Promise<string | null> {
   if (!supabaseAdmin) return null;
-  const { data, error } = await supabaseAdmin.storage.from(BUCKET).createSignedUrl(clip.path, PLAY_SECONDS);
+  const path = poster ? clip.posterPath : clip.path;
+  if (!path) return null;
+  const { data, error } = await supabaseAdmin.storage.from(BUCKET).createSignedUrl(path, PLAY_SECONDS);
   return error || !data ? null : data.signedUrl;
 }

@@ -40,9 +40,10 @@ const view = (c: Awaited<ReturnType<typeof listClips>>[number]) => ({
   sizeBytes: c.sizeBytes,
   recordedAt: c.recordedAt,
   solvedAt: c.solvedAt,
+  hasPoster: Boolean(c.posterPath),
 });
 
-/** Your own clips, or ?id=...&play=1 for a link to watch one. */
+/** Your own clips, or ?id=... for a link to watch one (add &poster=1 for its still frame). */
 export async function GET(request: Request) {
   const a = await auth(request, false);
   if (a.error) return a.error;
@@ -51,7 +52,7 @@ export async function GET(request: Request) {
   const id = params.get("id");
   if (id) {
     const clip = clips.find((c) => c.id === id);
-    const url = clip ? await clipPlayUrl(clip) : null;
+    const url = clip ? await clipPlayUrl(clip, params.get("poster") === "1") : null;
     return url ? NextResponse.json({ url }) : NextResponse.json({ error: "Not found." }, { status: 404 });
   }
   return NextResponse.json({ clips: clips.map(view) });

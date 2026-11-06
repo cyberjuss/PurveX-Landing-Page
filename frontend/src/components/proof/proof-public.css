@@ -34,6 +34,16 @@
 .pp-head h1 { font-size: clamp(28px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
 .pp-role { margin-top: 6px; font-size: var(--ty-lead); font-weight: 500; color: var(--pp-accent); }
 .pp-open { margin-top: 4px; font-size: var(--ty-body); color: var(--pp-ink-3); }
+/* Location, availability, eligibility and a cert or two, as one row of tags. */
+.pp-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; }
+.pp-tags li { padding: 3px 10px; border: 1px solid var(--pp-line); border-radius: 999px; background: var(--pp-bg-2); font-size: var(--ty-note); color: var(--pp-ink-2); }
+.pp-tags li.pp-tag--cert { border-color: rgba(85, 70, 224, 0.3); background: rgba(85, 70, 224, 0.06); color: var(--pp-accent-2); font-weight: 600; }
+.pp-tags li.pp-tag--cert.is-done { border-color: rgba(15, 159, 110, 0.35); background: rgba(15, 159, 110, 0.08); color: #0f7a55; }
+/* The page in numbers, for the employer who reads nothing else. */
+.pp-stats { display: flex; flex-wrap: wrap; gap: 10px 32px; margin: 22px 0 0; padding: 14px 0; border-top: 1px solid var(--pp-line); border-bottom: 1px solid var(--pp-line); }
+.pp-stats > div { display: flex; align-items: baseline; gap: 8px; }
+.pp-stats dt { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: var(--pp-ink); }
+.pp-stats dd { margin: 0; font-size: var(--ty-note); color: var(--pp-ink-3); }
 
 /* Contact row under the name. */
 .pp-reach { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
@@ -100,6 +110,8 @@
 .pp-cta h2 { font-size: var(--ty-h4); font-weight: 700; letter-spacing: -0.01em; }
 .pp-cta p { margin-top: 4px; font-size: var(--ty-body); color: var(--pp-ink-2); }
 .pp-cta__btns { display: flex; flex-wrap: wrap; gap: 8px; }
+/* The header's buttons are in view on a wide screen. Only a phone, scrolled past them, needs them again. */
+@media (min-width: 721px) { .pp-cta--phone { display: none; } }
 
 .pp-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; padding-top: 20px; font-size: var(--ty-small); color: var(--pp-ink-3); }
 .pp-foot code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--pp-ink); }
@@ -124,6 +136,11 @@
 }
 @media (max-width: 560px) {
   .pp-id { flex-direction: column; align-items: flex-start; gap: 16px; }
+  /* Saving as PDF is a desk job. On a phone it only pushes the useful buttons down. */
+  .pp .pp-print { display: none; }
+  .pp-job h3 .pp-verified { display: flex; width: fit-content; margin: 6px 0 0; }
+  .pp-stats { gap: 8px 20px; }
+  .pp-stats dt { font-size: 22px; }
   .pp-avatar { width: 92px; height: 92px; }
   .pp-cta__btns, .pp-cta__btns .pp-btn { width: 100%; }
   .pp-reach .pp-btn { flex: 1 1 100%; }  .pp-viewer__stage { padding: 10px; }
@@ -157,7 +174,8 @@
 .pp-clip__stamp { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-top: 3px solid #0f7a55; }
 .pp-clip__stamp b { font-size: var(--ty-body); color: var(--pp-ink); }
 .pp-clip__stamp span { font-size: var(--ty-note); color: var(--pp-ink-3); }
-.pp-clip__cred code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--pp-ink-2); }
+.pp-clip__stamp code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--pp-ink-2); }
+.pp-clip__len { position: absolute; top: 10px; right: 10px; padding: 2px 7px; border-radius: 4px; background: rgba(11, 16, 32, 0.85); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; color: #fff; pointer-events: none; }
 @media print {
   .pp-clips { display: block; }
   .pp-clip { break-inside: avoid; margin: 0 0 8px; border: 0; }

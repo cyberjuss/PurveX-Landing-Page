@@ -32,6 +32,9 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
   const [take, setTake] = useState<Take | null>(null);
   const [clip, setClip] = useState<ClipState>({ kind: "idle" });
   const startedAtRef = useRef<{ iso: string; ms: number } | null>(null);
+  // A muted copy of the capture, read once at the end for the profile's still frame.
+  const frameRef = useRef<HTMLVideoElement | null>(null);
+  const posterRef = useRef<Blob | null>(null);
   const helpId = useId();
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -61,6 +64,8 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     recorderRef.current = null;
+    if (frameRef.current) frameRef.current.srcObject = null;
+    frameRef.current = null;
     setRecording(false);
     setSeconds(0);
   }, [stopTimer]);
@@ -85,9 +90,28 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
     window.setTimeout(() => URL.revokeObjectURL(url), 4000);
   }, [label]);
 
-  const stop = useCallback(() => {
-    recorderRef.current?.stop();
+  /** Saves what the screen shows right now as a JPEG, for the clip's still frame. Skipped quietly if the browser can't. */
+  const grabFrame = useCallback(() => {
+    const v = frameRef.current;
+    if (!v || !v.videoWidth) return;
+    const scale = Math.min(1, 1280 / v.videoWidth);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(v.videoWidth * scale);
+    canvas.height = Math.round(v.videoHeight * scale);
+    try {
+      canvas.getContext("2d")?.drawImage(v, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((b) => {
+        if (b) posterRef.current = b;
+      }, "image/jpeg", 0.8);
+    } catch {
+      // A still frame is a nice-to-have. The clip works without one.
+    }
   }, []);
+
+  const stop = useCallback(() => {
+    grabFrame();
+    recorderRef.current?.stop();
+  }, [grabFrame]);
 
   const start = useCallback(async () => {
     let stream: MediaStream;
@@ -100,6 +124,13 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
     }
     streamRef.current = stream;
     chunksRef.current = [];
+    posterRef.current = null;
+    const frame = document.createElement("video");
+    frame.muted = true;
+    frame.playsInline = true;
+    frame.srcObject = stream;
+    frame.play().catch(() => {});
+    frameRef.current = frame;
     const mimeType = pickMimeType();
     // A modest bitrate keeps screen text readable and a 15-minute clip under the profile's size cap.
     const recorder = new MediaRecorder(stream, { ...(mimeType ? { mimeType } : {}), videoBitsPerSecond: CLIP_VIDEO_BPS, audioBitsPerSecond: CLIP_AUDIO_BPS });
@@ -140,7 +171,7 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ challenge, sizeBytes: take.blob.size, durationSec: take.seconds, recordedAt: take.recordedAt }),
       });
-      const body = (await res.json().catch(() => ({}))) as { id?: string; uploadUrl?: string; error?: string; upgrade?: string };
+      const body = (await res.json().catch(() => ({}))) as { id?: string; uploadUrl?: string; posterUploadUrl?: string | null; error?: string; upgrade?: string };
       if (!res.ok || !body.id || !body.uploadUrl) return fail(body.error ?? "Couldn't add the clip. Try again.", res.status === 403);
       const put = await fetch(body.uploadUrl, {
         method: "PUT",
@@ -148,6 +179,9 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
         body: take.blob,
       });
       if (!put.ok) return fail("The upload didn't finish. Check your connection and try again.");
+      if (body.posterUploadUrl && posterRef.current) {
+        await fetch(body.posterUploadUrl, { method: "PUT", headers: { "Content-Type": "image/jpeg", "x-upsert": "false" }, body: posterRef.current }).catch(() => null);
+      }
       const done = await academyFetch(`/academy/api/proof/clip?id=${encodeURIComponent(body.id)}`, { method: "PATCH" });
       if (!done.ok) {
         const b = (await done.json().catch(() => ({}))) as { error?: string };
