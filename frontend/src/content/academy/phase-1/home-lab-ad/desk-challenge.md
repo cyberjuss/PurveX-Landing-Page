@@ -2,8 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>A New Hire's First Week</h3>
 <p class="ad-brief__ask">Maya Okafor joined Wealth Management on Monday, and nothing about the account has gone right since. Can you work every call from the first week and leave the account the way it should have started?</p>
-<p>These calls follow the four tabs you just read: finding an account, unlocking or resetting it, moving it, and reading it. Where a call asks you to change something, your lab has to show the change before your answer counts.</p>
-<p>Maya's account is already in your directory, exactly as HR's import left it: in the wrong department.</p>
+<p>Maya's account is in your directory as HR's import left it, in the wrong department. Where a call asks for a change, your lab has to show it before your answer counts.</p>
 </div>
 
 <div class="ad-progress">

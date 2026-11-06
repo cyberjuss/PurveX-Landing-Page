@@ -12,7 +12,7 @@ Every fix in this section rests on one rule: **nothing arriving from the browser
 - cookies
 - the body of the request
 
-Changing those values takes no special skill. The developer tools built into every browser are enough. Intercepting proxies such as Burp Suite or OWASP ZAP make editing a request on its way out routine.
+Browser developer tools, or proxies such as Burp Suite and OWASP ZAP, change any of these in seconds.
 
 So the server can't take identity or permission from the request itself. On every request, it has to establish three things from its own records:
 
@@ -20,11 +20,11 @@ So the server can't take identity or permission from the request itself. On ever
 2. What role that person has.
 3. Whether that role may perform this action on this item.
 
-That's also why hiding a button is not access control. The mistake is common enough to say bluntly. Removing a link from a menu changes what a user is invited to do. It changes nothing about what the server does if someone types the address directly.
+Hiding a button is not access control. It changes nothing if someone types the address directly.
 
 ### Common forms
 
-Broken access control tends to show up in three recognizable forms:
+Three common forms:
 
 - **Insecure direct object reference (IDOR):** changing an ID in a request returns someone else's record. First American Financial exposed about 885 million documents this way in 2019. This week's challenge ends with this flaw.
 - **Forced browsing:** requesting a page the user was never shown, such as `/admin`.
@@ -39,7 +39,7 @@ Parameter tampering: Sending a role the server should set itself
 
 ### Fixes
 
-Every one of the fixes follows from that same rule of never trusting the client:
+All follow from never trusting the client:
 
 - **Check on the server, every time.** Take identity and role from the session rather than the request, and confirm ownership of each item before returning it.
 - **Deny by default.** An action stays closed unless a rule opens it for this role. A new feature is then safe until somebody decides otherwise, rather than exposed until somebody notices.
@@ -49,11 +49,11 @@ Every one of the fixes follows from that same rule of never trusting the client:
 
 ### Testing
 
-Before you try this yourself, a word of caution. Changing identifiers on a system you don't have written permission to test is unauthorized access. That's true even if you only looked, and even if the flaw was obvious. Good intentions aren't a defense, and finding a real vulnerability doesn't make the access authorized. Practice on the PortSwigger Web Security Academy labs instead, which exist for this purpose. On the job, this kind of testing always needs a signed scope, agreed in advance.
+Changing identifiers on a system you don't have written permission to test is unauthorized access. That's true even if you only looked, and even if the flaw was obvious. Good intentions aren't a defense, and finding a real vulnerability doesn't make the access authorized. Practice on the PortSwigger Web Security Academy labs instead, which exist for this purpose. On the job, this kind of testing always needs a signed scope, agreed in advance.
 
 ### When a user reports it
 
-Sometimes the flaw finds you, when a user reports seeing someone else's data. When that happens:
+If a user reports seeing someone else's data:
 
 1. Ask them not to try any more addresses.
 2. Record what they saw: the address, the time, their account and whose data appeared.
@@ -71,4 +71,4 @@ Signs of access control probing in web and application logs:
 
 ### Check yourself
 
-Here's one to think through before the challenge. A developer tells you the admin link is safe because it only appears in the menu for admins. What question would you ask them, and how would you prove the answer?
+A developer tells you the admin link is safe because it only appears in the menu for admins. What question would you ask them, and how would you prove the answer?

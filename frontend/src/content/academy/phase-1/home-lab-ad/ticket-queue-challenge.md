@@ -2,8 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
 <p class="ad-brief__ask">When a request lands in your queue, can you check what's actually true in Active Directory, and then make the change the ticket needs?</p>
-<p>Welcome to the PurveX Financial help desk queue. Treat every request here as a claim to verify before you change anything. The early tickets stay in Active Directory, and the later ones take you further, into DNS, the firewall, Group Policy and the file shares.</p>
-<p>Each ticket ends by asking for a short finding. Before your answer counts, though, your lab has to show the change, so your answer always reflects the directory after you've acted.</p>
+<p>Treat every request as a claim to verify before you change anything. Early tickets stay in Active Directory. Later ones reach DNS, the firewall, Group Policy and the file shares. Your lab has to show each change before your answer counts.</p>
 </div>
 
 <div class="ad-progress">

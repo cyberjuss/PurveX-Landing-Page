@@ -1,6 +1,6 @@
 ### Authentication
 
-Authentication is the work of proving an identity. In other words, it answers just one question, who you are, and says nothing about what you're allowed to do once that's settled. Everything in this section is about making that proof hard to fake, because every permission the system grants afterwards assumes it got this first step right.
+Authentication proves who you are, nothing more. Every permission granted afterwards assumes it got this right, so the proof has to be hard to fake.
 
 ### Factors
 <!-- art: mfa -->
@@ -11,14 +11,11 @@ Authentication is the work of proving an identity. In other words, it answers ju
 | Something you have | Phone with an authenticator app, security key, smart card |
 | Something you are | Fingerprint, face |
 
-**Multi-factor authentication**, almost always shortened to MFA, requires proof from two different rows of that table. That's why a password plus a security question isn't multi-factor at all: both are things you know, so both usually get lost in the same breach.
+**Multi-factor authentication** (MFA) needs proof from two different rows. A password plus a security question isn't MFA: both are things you know and leak together.
 
-The reason MFA matters is blunt: passwords leak, constantly and at scale, and a password that has leaked offers no protection at all to the account it guards. That's how attackers walked into Colonial Pipeline in 2021, through a VPN account with a leaked password and no second factor. The ransomware incident that followed interrupted fuel supply across much of the US East Coast.
+Passwords leak constantly, and a leaked password protects nothing. Attackers entered Colonial Pipeline in 2021 through a VPN account with a leaked password and no second factor.
 
-Even so, it's a mistake to think of MFA as simply on or off, because the different methods vary a lot in how well they protect you:
-
-- **Text and app codes** can be captured by a convincing fake sign-in page and replayed within seconds, because the user hands the code over willingly.
-- **Security keys and passkeys** check the real address of the site before responding, so a fake page receives nothing it can use.
+MFA methods vary a lot in strength. That's ranked further down.
 
 ```sort
 prompt: Which kind of factor is each one?
@@ -41,7 +38,7 @@ Search-ADAccount -LockedOut
 Unlock-ADAccount jamie.torres
 ```
 
-One rule to remember from that table: don't re-enable a disabled account just because someone asks. Find out who disabled it, and why, first.
+Don't re-enable a disabled account just because someone asks. Find out who disabled it and why.
 
 ```sort
 prompt: Match each cause to the account state it produces.
@@ -52,18 +49,18 @@ Password expired: Policy requires a new password
 
 ### Resets
 
-It's easy to think of a password or MFA reset as an administrative chore, but it's an authentication decision. For the length of that call, you are the authentication system, which means you can briefly set aside every control the organization has invested in, for one account. That's precisely why attackers target this call. In 2023, for example, attackers reportedly got their first foothold at MGM Resorts without any technical exploit, by talking the IT help desk into resetting an employee's MFA.
+A reset isn't a chore. For that call, you are the authentication system, and you can bypass every control for one account. That's why attackers target it. In 2023, attackers reportedly got into MGM Resorts by talking the help desk into resetting an employee's MFA.
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-There's one situation you should learn to recognize instantly. When a user reports MFA prompts they didn't trigger, someone already has their password and is waiting at the door for approval. The second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and end their active sessions before you escalate. That last step matters, because a password reset on its own leaves any session the attacker has already opened untouched.
+If a user reports MFA prompts they didn't trigger, someone has their password and the second factor is all that's holding. Tell them to deny every prompt, reset the password and end their active sessions, then escalate. A reset alone leaves an attacker's open session running.
 
 ### Escalate
 
-Some signs mean you should pass the case up straight away rather than handle it yourself:
+Escalate straight away for:
 
 - sign-ins to an account that should be dormant
 - MFA prompts the user did not start
@@ -72,7 +69,7 @@ Some signs mean you should pass the case up straight away rather than handle it 
 
 ### How strong is the MFA?
 
-Earlier, you saw that MFA methods differ in strength. Here they are in order, from weakest to strongest:
+Weakest to strongest:
 
 1. **Text or voice codes.** Open to phishing and to SIM swapping, where an attacker moves the number to a new SIM.
 2. **Authenticator app codes.** A fake sign-in page can still capture the code and use it within seconds.
@@ -82,13 +79,13 @@ Earlier, you saw that MFA methods differ in strength. Here they are in order, fr
 
 ### What the system issues after sign-in
 
-Once you've signed in, the system doesn't ask for your password on every click. Instead, it issues a **session token**, usually a cookie, and the browser sends that token with every request, so it stands in for the password from then on. That's why a stolen token is so dangerous: it bypasses both the password and MFA.
+After sign-in, the system issues a **session token**, usually a cookie, that stands in for the password on every request. A stolen token bypasses both the password and MFA.
 
-In a Windows domain, **Kerberos** plays the same role. The domain controller checks the password once, then issues a ticket that the computer shows to other services instead.
+In a Windows domain, **Kerberos** does the same: the domain controller checks the password once and issues a ticket.
 
 ### Reading sign-in events
 
-All of these sign-ins leave a record you can read. Event **4624** is a successful sign-in, and its **logon type** tells you how the person signed in:
+Event **4624** is a successful sign-in. Its **logon type** says how:
 
 | Logon type | Meaning |
 |---|---|
@@ -100,4 +97,4 @@ Its partner, event **4625**, is a failed sign-in. Two fields tell you why it fai
 
 ### Check yourself
 
-Here's one to think through. A caller says they're Jordan Ellis from Finance and needs an MFA reset before a board meeting in ten minutes, and their caller ID shows Jordan's name. What do you do, and which detail in that call should make you slow down instead of speeding up?
+A caller says they're Jordan Ellis from Finance and needs an MFA reset before a board meeting in ten minutes, and their caller ID shows Jordan's name. What do you do, and which detail in that call should make you slow down instead of speeding up?

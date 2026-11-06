@@ -1,8 +1,8 @@
 ### Common Ports
 
-Once the handshake has connected two machines, the port decides which service on the far machine you're talking to. A port is the second half of a network destination. If the IP address gets you to the building, the port gets you to the right door inside it. Every network service on a device listens on its own port. That's what lets one machine with one address run a web server, a mail server and a remote login service at once, without any of them getting in each other's way.
+If the IP address gets you to the building, the port gets you to the right door. Each service listens on its own port, so one machine can run a web server, a mail server and remote login at once.
 
-Some ports are used so consistently that the number alone tells you what service is almost certainly on the other end. Here are the ones you'll meet most often.
+Some ports are so standard the number tells you the service:
 
 | Port | Protocol | Use |
 | :---- | :---- | :---- |
@@ -15,7 +15,7 @@ Some ports are used so consistently that the number alone tells you what service
 | 443 | HTTPS | Web traffic (encrypted) |
 | 3389 | RDP | Remote desktop |
 
-A domain controller adds its own set. These are normal on a DC, so learn them well enough that anything else on the list stands out.
+A domain controller adds its own. Know them, so anything else stands out:
 
 | Port | Protocol | Use |
 | :---- | :---- | :---- |
@@ -26,9 +26,9 @@ A domain controller adds its own set. These are normal on a DC, so learn them we
 | 3268 / 3269 | Global Catalog | Directory lookups across the forest |
 | 5985 | WinRM | Remote PowerShell |
 
-Two entries in the first table deserve special attention. Traffic on port 22 or port 3389 from somewhere you didn't expect is always worth a second look. Both ports exist to let someone control a machine, not just fetch something from it. That's why attackers reach for them once they've got a foothold. It's also why traffic on those ports between two internal machines that have no business talking to each other is one of the more useful things to watch for.
+Watch 22 and 3389. Both let someone control a machine, so attackers reach for them once inside. Traffic on them between two internal machines with no reason to talk is worth a look.
 
-At the same time, be careful not to read more into a port number than it can tell you. A port tells you which door the traffic used, and nothing more. It doesn't tell you the conversation was legitimate, because an attacker is free to run any service on any port they like. So before you draw a conclusion, check three things:
+A port only tells you which door was used, not that the traffic is legitimate. Anyone can run any service on any port. Before concluding, check:
 
 - The host involved
 - The direction the connection traveled

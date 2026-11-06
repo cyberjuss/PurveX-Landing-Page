@@ -2,8 +2,8 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Network Change That Went Wrong</h3>
 <p class="ad-brief__ask">A contractor ran a network change at PurveX Financial over the weekend. It's Monday, and the cleanup they promised never happened. Can you read their change log, find what they left behind, and put it right?</p>
-<p>The contractor's changes are already in your lab, and their change log is in the IT share. Read it the way you would on the job: every line is a change that someone now has to check.</p>
-<p>You'll use two tools network and security staff reach for every week: <strong>Nmap</strong>, to check what a server exposes, and <strong>Wireshark</strong>, to see what crosses the wire. Install both on your domain controller from their official sites, <code>nmap.org/download</code> and <code>wireshark.org/download</code>. Keep the Npcap option ticked when the installers offer it, including support for loopback traffic.</p>
+<p>The changes are in your lab and the change log is in the IT share. Every line is something to check.</p>
+<p>Install <strong>Nmap</strong> and <strong>Wireshark</strong> on your domain controller from <code>nmap.org/download</code> and <code>wireshark.org/download</code>. Keep Npcap ticked, with loopback support.</p>
 </div>
 
 <div class="ad-progress">

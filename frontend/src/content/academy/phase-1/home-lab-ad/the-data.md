@@ -5,7 +5,7 @@
 
 ### Data Categories
 
-Knowing where data lives changes how you read a ticket. Instead of only saying that an account was accessed, you'll be able to say what was actually at risk when it was.
+Knowing where data lives tells you what was at risk when an account was accessed.
 
 | Data Category | Examples | Primarily Handled By |
 | :---- | :---- | :---- |
@@ -19,11 +19,11 @@ Knowing where data lives changes how you read a ticket. Instead of only saying t
 | Regulatory and audit material | Compliance filings, audit trails, GLBA and SOX documentation | Compliance |
 | System and access logs | Authentication logs, admin activity, account changes | IT |
 
-So before you decide how urgent a ticket is, find the row that's in play. That's why a group change in Wealth Management is a bigger problem than the same change in Operations: the data behind it is far more sensitive.
+Find the row in play before you judge urgency. A group change in Wealth Management matters more than the same change in Operations, because the data behind it is more sensitive.
 
 ### Who Wealth Management Serves
 
-Since Wealth Management handles so much of that data, it helps to know who it serves. The department works with private clients rather than corporate accounts, and its client list mirrors a real advisory firm's.
+Wealth Management serves private clients:
 
 | Client Type | Description |
 | ----- | ----- |
@@ -32,4 +32,4 @@ Since Wealth Management handles so much of that data, it helps to know who it se
 | Trust and estate accounts | Accounts tied to trusts, wills, and estate planning |
 | Retirement-focused clients | Clients nearing or already in retirement |
 
-These clients are the reason Wealth Management is on the critical list. So when you size up a login or group change there, measure it against this table rather than against how urgent the ticket sounds.
+These clients are why Wealth Management is critical.

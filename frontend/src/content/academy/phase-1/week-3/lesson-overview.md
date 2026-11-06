@@ -5,9 +5,9 @@
 
 ### Overview
 
-The first time you open a network capture, it's disorienting. Thousands of rows scroll past, every one of them full of numbers, and none of them gives you an obvious clue about which ones matter. The reason is simple, even if it's frustrating at first: nothing in a packet announces itself as suspicious. A network that's working perfectly produces just as many rows as one that's been compromised.
+A network capture is thousands of rows of numbers, and nothing in a packet announces itself as suspicious. A healthy network produces as many rows as a compromised one.
 
-What makes a capture readable, then, is knowing that every conversation is built from the same small set of pieces, always in the same order:
+What makes it readable is that every conversation is built from the same pieces, in the same order:
 
 - An **address**, so the traffic knows where to go
 - A **reliable connection**, established before any data moves
@@ -15,8 +15,8 @@ What makes a capture readable, then, is knowing that every conversation is built
 - A **protocol**, governing what the two sides say
 - Often **encryption**, layered on top of all of it
 
-This week, we'll take those pieces one at a time. First comes TCP/IP addressing, then the TCP three-way handshake, then the ports and protocols you'll meet most often. Last is how TLS wraps a connection once TCP has brought it up. Each piece is simple on its own. The real difficulty is taking them all in at once, which is why we'll build them up step by step.
+This week takes them one at a time: addressing, the handshake, ports, protocols, then TLS.
 
-After that, the challenge puts you on the job, cleaning up after a network change that went wrong in your own lab. You'll use Nmap and Wireshark, the two tools network and security teams use to check what a server exposes and what crosses the wire. Nothing you find there will be labeled "malicious". Instead, you'll be looking for something that doesn't fit a pattern you've already learned, and that's why the learning has to come first. Once you know what normal looks like at each layer, the exception jumps out at you. Without that, you could stare at a perfectly healthy network for an hour.
+Then the challenge has you clean up a network change that went wrong in your lab. Nothing there is labeled "malicious". You'll spot what doesn't fit, which only works once you know what normal looks like.
 
-By the end of the week, every conversation in a capture should answer four questions for you. Where is it going? Which port did it use? Did the handshake complete? And could anybody watching the wire read what was said? Those four answers tell you whether a conversation deserves more of your attention, and deciding that quickly is most of the job.
+By the end of the week, ask four questions of any conversation: Where is it going? Which port? Did the handshake complete? Could anyone watching read it? The answers tell you whether it deserves a closer look.

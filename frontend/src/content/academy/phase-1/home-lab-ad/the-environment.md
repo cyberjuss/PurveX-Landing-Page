@@ -1,12 +1,8 @@
 ### The Environment
 
-This page is the full inventory of every user account and workstation, with the totals at the end. When you build the lab, the build script creates everything listed here, and the Range download adds the Ticket Queue objects shown at the bottom.
-
-Try to learn the roster well enough that you'd notice if someone were missing. That way, if your directory and this page ever disagree, you'll know to stop and find out why before you close a ticket.
+Every user and workstation the build script creates. Learn it well enough to notice if your directory ever disagrees.
 
 ### Full User Directory
-
-Here is every user account in the environment, with its department, title, username, and group membership.
 
 | Department | Name | Title | Username | Group Membership |
 | :---- | :---- | :---- | :---- | :---- |
@@ -20,17 +16,11 @@ Here is every user account in the environment, with its department, title, usern
 | Operations | Riley Kwan | Settlements Coordinator | riley.kwan | Operations Users |
 | Finance and Accounting | Jordan Ellis | Staff Accountant | jordan.ellis | Finance Accounting Users |
 
-There are nine users, and each one sits in a single standard group. The one exception is Alex Rivera, who also holds IT Admins.
+Each user has one standard group. Alex Rivera also holds IT Admins, so odd activity on Alex's account carries more risk.
 
-That extra group is worth remembering, because it means unusual activity on Alex's account carries more risk than unusual activity on Jordan's.
-
-Notice, too, that a title isn't a group. Priya Nair is a Help Desk Technician, for example, yet she sits in IT Users rather than Helpdesk.
-
-So when a ticket names a person, look up the username and read the account's Member Of list, rather than guessing their access from their title.
+A title isn't a group. Priya Nair is a Help Desk Technician but sits in IT Users, not Helpdesk. Read the Member Of list, don't guess from the title.
 
 ### The Client Workstation
-
-Alongside the users, the lab has just one client machine. Learn where it belongs, so you'll notice if it ever moves.
 
 | Item | Detail |
 | :---- | :---- |
@@ -38,11 +28,9 @@ Alongside the users, the lab has just one client machine. Learn where it belongs
 | Assigned department | IT |
 | Location | Workstations folder under IT |
 
-Because there's only one, a ticket that names a different workstation is already a finding, and so is IT-WKS01 showing up under a different department. In either case, confirm the folder before you treat the name as proof.
+A ticket naming a different workstation, or IT-WKS01 in another department, is already a finding.
 
 ### What Is in This Environment
-
-Putting it all together, these totals are what normal looks like here.
 
 | Item | Count |
 | :---- | :---- |
@@ -53,13 +41,11 @@ Putting it all together, these totals are what normal looks like here.
 | User accounts | 9 |
 | Client workstations | 1 |
 
-You might wonder why there are only two access level groups when there are three levels. Level 1 uses the built-in `Domain Admins` group, so the build doesn't need to create a third one.
-
-Once you've built the lab, compare it with these counts. If anything differs, check the build before you trust any ticket answer.
+Only two access level groups, because Level 1 uses the built-in `Domain Admins`. If your build's counts differ, check the build before trusting any ticket answer.
 
 ### Ticket Queue Objects
 
-Finally, the Range download also plants the following objects for the Ticket Queue. Treat them as work to do, rather than as part of the baseline:
+The Range download also plants these for the Ticket Queue. They're work to do, not baseline:
 
 - The `All Employees` and `Finance Reports` groups in `AccessLevels`
 - `old.intern` in IT and `svc-backup-job` in `OU=ServiceAccounts`

@@ -2,8 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Build Out the Directory</h3>
 <p class="ad-brief__ask">You've read how the directory fits together. Can you build each piece of it yourself, in your own lab, and explain why it goes where it does?</p>
-<p>PurveX Financial is growing. A new IT workstation is on its way, Compliance is getting its first laptops, IT has hired a second help desk technician, and a print job needs an identity of its own. Your job this afternoon is to get the directory ready for all of it.</p>
-<p>Every question here follows one of the tabs you just read, in the same order. Where a question asks you to build something, your lab has to show it before your answer counts, so keep the domain controller running.</p>
+<p>A new IT workstation, Compliance's first laptops, a second help desk technician and a print job's identity all need a place in the directory. Where a question asks you to build something, your lab has to show it before your answer counts.</p>
 </div>
 
 <div class="ad-progress">

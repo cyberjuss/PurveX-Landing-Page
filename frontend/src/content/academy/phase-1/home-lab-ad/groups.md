@@ -5,7 +5,7 @@
 
 ### Containers
 
-Before we get to groups, there's one look-alike to watch for. In the console, a **Container** looks just like an OU, because both use a folder icon and the OU's extra badge is easy to miss. But a Container is a different kind of object, and the icon will fool you if you judge by appearance alone.
+In the console, a **Container** looks like an OU. Both use a folder icon, but they're different objects.
 
 | | Organizational Unit | Container |
 | ----- | ----- | ----- |
@@ -14,16 +14,7 @@ Before we get to groups, there's one look-alike to watch for. In the console, a 
 | Can you create your own in the console? | Yes, anywhere | No, Windows builds the default set |
 | Examples in this domain | `OU=IT`, `OU=Compliance` | `CN=Users`, `CN=Computers` |
 
-The two you'll meet most are the default `Users` and `Computers` folders, which are Containers rather than OUs. Windows creates both of them, and they stay where they are.
-
-That matters because you can't do either of these with a Container:
-
-- Create your own from the console
-- Link a GPO
-
-That's why the build script puts every account in a real OU: no Group Policy linked to an OU can reach an account left in a Container.
-
-So if you ever find someone in a default folder, that account isn't where it belongs. Never treat the default folders as a department.
+The default `Users` and `Computers` folders are Containers. No GPO can link to them, so an account left there misses every policy linked to an OU. Anyone you find there isn't where they belong.
 
 ```sort
 prompt: Organizational Unit or Container?
@@ -33,11 +24,9 @@ Container: Windows builds it and you cannot make your own | CN=Computers | CN=Us
 
 ### Security Groups
 
-Now for groups themselves. A **Security Group** is a list of accounts. You use it to grant permissions or apply Group Policy to the people who need them, whatever OU they live in.
+A **Security Group** is a list of accounts used to grant permissions or filter Group Policy. Unlike an OU, groups cross departments: an account has one OU but any number of groups.
 
-That's the big difference from a folder: a group can cross departments. While an account has exactly one OU, it can sit in any number of groups.
-
-At PurveX, every department has a standard access group:
+Each department has a standard group:
 
 - `IT Users`
 - `Compliance Users`
@@ -45,9 +34,7 @@ At PurveX, every department has a standard access group:
 - `Operations Users`
 - `Finance Accounting Users`
 
-IT also has a second, more privileged group called `IT Admins`, and that extra group is how two people in the same folder can end up with different access.
-
-To read someone's access, open the object and read its folder first, then every group on its Member Of tab. Try it by comparing these two:
+IT also has `IT Admins`. Compare these two:
 
 <div class="ad-og" aria-label="Alex Rivera and Priya Nair with their groups">
   <article class="ad-og__card">
@@ -87,6 +74,4 @@ To read someone's access, open the object and read its folder first, then every 
   </article>
 </div>
 
-Alex and Priya both live under IT, but only Alex is in IT Admins. That answers this tab's question: the folder alone never tells you what someone can do.
-
-To sum up, the OU tells you where an account lives, and the groups tell you what it can do. So check both, and confirm that both match what this environment says they should be.
+Same folder, different access. The OU tells you where an account lives. Its groups tell you what it can do.

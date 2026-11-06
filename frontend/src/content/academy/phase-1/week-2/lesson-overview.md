@@ -5,13 +5,13 @@
 
 ### Overview
 
-A lot of the data you'll handle on the desk arrives looking unreadable. It might be a string in a config file, a column of passwords in a leaked table or a long value next to a download link. When you see something like that, the instinct is to call it "encrypted" and move on. That instinct causes real damage more often than you'd think, because there are three different ways to scramble data, and each one offers a very different guarantee.
+Data often arrives looking unreadable: a string in a config file, a column of leaked passwords, a long value next to a download link. The instinct is to call it "encrypted". That's often wrong, and costly, because there are three ways to scramble data and each guarantees something different.
 
 - **Encryption** keeps data private, reversible only by whoever holds the key.
 - **Hashing** proves data was not changed, and cannot be reversed by anybody at all.
 - **Encoding** is a format change anybody can undo in one step, so it guarantees nothing.
 
-Because of those differences, the question you'll face on the job is never what a value looks like. Instead, it's what somebody could do with that value if they had a copy of it.
+So the question on the job isn't what a value looks like. It's what someone could do with a copy of it.
 
 | Method | Can you get the original back? |
 |---|---|
@@ -28,8 +28,8 @@ Encoding = A format change anybody can undo in one step. It guarantees nothing.
 
 ### Why It Matters
 
-Mixing these up has a real, documented cost. In 2012, for example, around 6.5 million LinkedIn password hashes leaked. They had been stored without a salt, so identical passwords produced identical values. Attackers could go after the whole set at once instead of one account at a time. As a result, more than 60% of them were cracked within about a week.
+In 2012, about 6.5 million LinkedIn password hashes leaked. They had no salt, so identical passwords had identical hashes and attackers could crack the whole set at once. More than 60% fell within about a week.
 
-The good news is that the same ideas work just as reliably in your favor. In 2023, analysts tracked a poisoned 3CX installer across many organizations by sharing a single hash of the malicious file. With that one value in hand, any team could check its own copies in seconds. So these methods aren't only things that get done to you. They're also tools you can pick up and use yourself.
+The same ideas work for you. In 2023, analysts tracked a poisoned 3CX installer across many organizations by sharing one hash of the malicious file. Any team could check its own copies in seconds.
 
-By the end of this week, you'll be able to tell encoding, encryption and hashing apart on sight, and to verify a download against a published hash. You'll also be able to explain why a password store needs both a salt and a slow algorithm. That lets you work a BitLocker recovery call or a vendor breach without guessing.
+By the end of this week, you'll tell the three apart on sight, verify a download against a published hash, and explain why stored passwords need a salt and a slow algorithm.
