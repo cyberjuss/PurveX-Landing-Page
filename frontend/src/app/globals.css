@@ -4418,6 +4418,43 @@ html:active-view-transition .ax-page { animation: none }
 .academy-bg[data-academy-theme="dark"] .ad-record__btn:hover { border-color: #fca5a5; background: color-mix(in srgb, #fca5a5 10%, transparent); }
 .academy-bg[data-academy-theme="dark"] .ad-record__btn--on { background: #e5484d; border-color: #e5484d; color: #fff; }
 .academy-bg[data-academy-theme="dark"] .ad-record__btn--on svg { color: #fff; }
+.ad-record { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.ad-record__help {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #475569;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.ad-record__help:hover, .ad-record__help[aria-expanded="true"] { color: #0f172a; }
+.ad-record__guide {
+  flex-basis: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(138, 148, 168, 0.4);
+  background: color-mix(in srgb, #e5484d 4%, transparent);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #334155;
+}
+.ad-record__guide-title { margin: 0 0 8px; font-weight: 700; color: #0f172a; }
+.ad-record__guide ol { margin: 0; padding-left: 1.25rem; list-style: decimal; }
+.ad-record__guide li { margin: 0 0 6px; }
+.ad-record__guide code { font-size: 0.8em; overflow-wrap: anywhere; }
+.ad-record__guide-note { margin: 10px 0 0; font-size: 0.8125rem; color: #475569; }
+.academy-bg[data-academy-theme="dark"] .ad-record__help { color: #cbd5e1; }
+.academy-bg[data-academy-theme="dark"] .ad-record__help:hover,
+.academy-bg[data-academy-theme="dark"] .ad-record__help[aria-expanded="true"] { color: #fff; }
+.academy-bg[data-academy-theme="dark"] .ad-record__guide { border-color: rgba(148, 163, 184, 0.35); background: rgba(252, 165, 165, 0.05); color: #cbd5e1; }
+.academy-bg[data-academy-theme="dark"] .ad-record__guide-title { color: #f1f5f9; }
+.academy-bg[data-academy-theme="dark"] .ad-record__guide-note { color: #94a3b8; }
 
 /* Readiness report and the Academy's report-style design system */
 /* Light theme. The muted ink and the status colours are measured against white:

@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Circle, Square } from "lucide-react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { Circle, HelpCircle, Square } from "lucide-react";
 
 function slugify(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -20,6 +20,8 @@ export function ChallengeRecorder({ label }: { label: string }) {
   const [supported, setSupported] = useState(false);
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const helpId = useId();
   const recorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -114,16 +116,55 @@ export function ChallengeRecorder({ label }: { label: string }) {
   const ss = String(seconds % 60).padStart(2, "0");
 
   return (
-    <div className="ad-record">
-      {recording ? (
-        <button type="button" className="ad-record__btn ad-record__btn--on" onClick={stop}>
-          <Square className="h-3.5 w-3.5" aria-hidden /> Stop recording · {mm}:{ss}
+    <>
+      <div className="ad-record">
+        {recording ? (
+          <button type="button" className="ad-record__btn ad-record__btn--on" onClick={stop}>
+            <Square className="h-3.5 w-3.5" aria-hidden /> Stop recording · {mm}:{ss}
+          </button>
+        ) : (
+          <button type="button" className="ad-record__btn" onClick={start}>
+            <Circle className="h-3.5 w-3.5" aria-hidden /> Record your challenge
+          </button>
+        )}
+        <button
+          type="button"
+          className="ad-record__help"
+          aria-expanded={helpOpen}
+          aria-controls={helpId}
+          onClick={() => setHelpOpen((o) => !o)}
+        >
+          <HelpCircle className="h-3.5 w-3.5" aria-hidden /> How to record
         </button>
-      ) : (
-        <button type="button" className="ad-record__btn" onClick={start}>
-          <Circle className="h-3.5 w-3.5" aria-hidden /> Record your challenge
-        </button>
-      )}
-    </div>
+      </div>
+      {helpOpen ? (
+        <div id={helpId} className="ad-record__guide" role="region" aria-label="How to record a challenge">
+          <p className="ad-record__guide-title">How to record a challenge</p>
+          <ol>
+            <li>
+              Before you start, close anything you don&apos;t want on camera, such as email or chat. Then click{" "}
+              <strong>Record your challenge</strong>, and your browser will ask what you&apos;d like to share.
+            </li>
+            <li>
+              Choose what to capture. Pick <strong>Entire screen</strong> if you&apos;ll move between this page and your
+              lab, or a single window if all the work happens in one place. If your browser offers{" "}
+              <strong>Share audio</strong>, tick it to include sound from the screen. Your microphone isn&apos;t recorded.
+            </li>
+            <li>Work the challenge as usual. The red button counts how long you&apos;ve been recording.</li>
+            <li>
+              When you&apos;re finished, click <strong>Stop recording</strong>, or <strong>Stop sharing</strong> in your
+              browser&apos;s bar. The video saves to your Downloads folder as{" "}
+              <code>purvex-{slugify(label)}-date.webm</code>.
+            </li>
+          </ol>
+          <p className="ad-record__guide-note">
+            The recording stays on your computer, and nothing is uploaded to PurveX. If you switch to a different
+            challenge while recording, it stops and saves what you have so far. Before you share the video, watch it
+            through once for passwords or anything private on screen. Most video sites accept .webm files, and for one
+            that doesn&apos;t, convert the file to .mp4 first.
+          </p>
+        </div>
+      ) : null}
+    </>
   );
 }
