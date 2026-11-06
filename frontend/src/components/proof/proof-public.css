@@ -7,9 +7,9 @@
   --pp-ink-2: #374151;
   --pp-ink-3: #6b7280;
   --pp-line: #e5e7eb;
-  /* Navy and slate, like a firm's own letterhead. Green is kept for verification only. */
-  --pp-accent: #1f3a5f;
-  --pp-accent-2: #152a46;
+  /* PurveX purple on slate. Green is kept for verification only. */
+  --pp-accent: #5546e0;
+  --pp-accent-2: #4536c8;
   --pp-good: #1d5c45;
   --pp-good-bg: #eef5f1;
   --pp-good-line: #b9d6c8;
@@ -49,7 +49,7 @@
 /* Location, availability, eligibility and a cert or two, as one row of tags. */
 .pp-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; }
 .pp-tags li { padding: 3px 9px; border: 1px solid #d1d5db; border-radius: 2px; background: var(--pp-bg); font-size: var(--ty-note); color: var(--pp-ink-2); }
-.pp-tags li.pp-tag--cert { border-color: #9fb0c6; color: var(--pp-accent); font-weight: 600; }
+.pp-tags li.pp-tag--cert { border-color: rgba(85, 70, 224, 0.35); color: var(--pp-accent-2); font-weight: 600; }
 .pp-tags li.pp-tag--cert.is-done { border-color: var(--pp-good-line); background: var(--pp-good-bg); color: var(--pp-good); }
 /* The page in numbers, for the employer who reads nothing else. */
 .pp-stats { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: 24px 0 0; border: 1px solid var(--pp-line); }
