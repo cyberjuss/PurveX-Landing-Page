@@ -7,12 +7,15 @@
   --pp-ink-2: #374151;
   --pp-ink-3: #6b7280;
   --pp-line: #e5e7eb;
-  --pp-accent: #5546e0;
-  --pp-accent-2: #4536c8;
-  --pp-good: #166534;
+  /* Navy and slate, like a firm's own letterhead. Green is kept for verification only. */
+  --pp-accent: #1f3a5f;
+  --pp-accent-2: #152a46;
+  --pp-good: #1d5c45;
+  --pp-good-bg: #eef5f1;
+  --pp-good-line: #b9d6c8;
   min-height: 100dvh;
   padding: 0 0 56px;
-  border-top: 4px solid var(--pp-accent);
+  border-top: 6px solid var(--pp-accent);
   background: var(--pp-bg);
   color: var(--pp-ink);
   color-scheme: light;
@@ -28,34 +31,45 @@
 .pp svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Header: who they are on the left, how to reach them on the right. */
-.pp-head { padding: 40px 0 30px; border-bottom: 1px solid var(--pp-line); }
+.pp-head { display: grid; grid-template-columns: minmax(0, 1fr) 230px; align-items: start; gap: 32px; padding: 40px 0 30px; border-bottom: 1px solid var(--pp-line); }
+.pp-head__main { min-width: 0; }
+/* The credential, set apart like the seal on a certificate. */
+.pp-cred { display: grid; gap: 6px; padding: 16px 18px; border: 1px solid var(--pp-line); border-top: 3px solid var(--pp-accent); background: var(--pp-bg-2); }
+.pp-cred__label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pp-ink-3); }
+.pp-cred__id { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; color: var(--pp-ink); }
+.pp-cred__note { font-size: var(--ty-small); line-height: 1.45; color: var(--pp-ink-3); }
+.pp .pp-cred__link { margin-top: 4px; font-size: var(--ty-note); font-weight: 600; color: var(--pp-accent); text-decoration: none; }
+.pp .pp-cred__link::after { content: " \2192"; }
+.pp .pp-cred__link:hover { text-decoration: underline; }
 .pp-id { display: flex; align-items: center; gap: 22px; min-width: 0; }
 .pp-avatar { flex: none; width: 112px; height: 112px; border-radius: 50%; object-fit: cover; border: 1px solid var(--pp-line); background: var(--pp-bg-2); }
 .pp-head h1 { font-size: clamp(28px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
-.pp-role { margin-top: 6px; font-size: var(--ty-lead); font-weight: 500; color: var(--pp-accent); }
+.pp-role { margin-top: 6px; font-size: var(--ty-lead); font-weight: 500; color: var(--pp-ink-2); }
 .pp-open { margin-top: 4px; font-size: var(--ty-body); color: var(--pp-ink-3); }
 /* Location, availability, eligibility and a cert or two, as one row of tags. */
 .pp-tags { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; }
-.pp-tags li { padding: 3px 10px; border: 1px solid var(--pp-line); border-radius: 999px; background: var(--pp-bg-2); font-size: var(--ty-note); color: var(--pp-ink-2); }
-.pp-tags li.pp-tag--cert { border-color: rgba(85, 70, 224, 0.3); background: rgba(85, 70, 224, 0.06); color: var(--pp-accent-2); font-weight: 600; }
-.pp-tags li.pp-tag--cert.is-done { border-color: rgba(15, 159, 110, 0.35); background: rgba(15, 159, 110, 0.08); color: #0f7a55; }
+.pp-tags li { padding: 3px 9px; border: 1px solid #d1d5db; border-radius: 2px; background: var(--pp-bg); font-size: var(--ty-note); color: var(--pp-ink-2); }
+.pp-tags li.pp-tag--cert { border-color: #9fb0c6; color: var(--pp-accent); font-weight: 600; }
+.pp-tags li.pp-tag--cert.is-done { border-color: var(--pp-good-line); background: var(--pp-good-bg); color: var(--pp-good); }
 /* The page in numbers, for the employer who reads nothing else. */
-.pp-stats { display: flex; flex-wrap: wrap; gap: 10px 32px; margin: 22px 0 0; padding: 14px 0; border-top: 1px solid var(--pp-line); border-bottom: 1px solid var(--pp-line); }
-.pp-stats > div { display: flex; align-items: baseline; gap: 8px; }
-.pp-stats dt { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: var(--pp-ink); }
-.pp-stats dd { margin: 0; font-size: var(--ty-note); color: var(--pp-ink-3); }
+.pp-stats { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: 24px 0 0; border: 1px solid var(--pp-line); }
+.pp-stats > div { display: grid; gap: 4px; padding: 12px 16px; }
+.pp-stats > div + div { border-left: 1px solid var(--pp-line); }
+.pp-stats dt { order: 2; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--pp-ink); }
+.pp-stats dd { order: 1; margin: 0; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pp-ink-3); }
 
 /* Contact row under the name. */
 .pp-reach { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 22px; }
-.pp .pp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 38px; padding: 0 16px; border: 1px solid #d1d5db; border-radius: 4px; background: var(--pp-bg); font-family: inherit; font-size: var(--ty-note); font-weight: 600; color: var(--pp-ink); text-decoration: none; cursor: pointer; }
+.pp .pp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 38px; padding: 0 16px; border: 1px solid #d1d5db; border-radius: 2px; background: var(--pp-bg); font-family: inherit; font-size: var(--ty-note); font-weight: 600; color: var(--pp-ink); text-decoration: none; cursor: pointer; }
 .pp .pp-btn:hover { border-color: var(--pp-ink-3); background: var(--pp-bg-2); }
 .pp .pp-btn--primary, .pp a.pp-btn--primary { border-color: var(--pp-accent); background: var(--pp-accent); color: #fff; }
 .pp .pp-btn--primary:hover, .pp a.pp-btn--primary:hover { border-color: var(--pp-accent-2); background: var(--pp-accent-2); color: #fff; }
-.pp .pp-icon { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #d1d5db; border-radius: 4px; background: var(--pp-bg); color: var(--pp-ink-2); }
+.pp .pp-icon { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid #d1d5db; border-radius: 2px; background: var(--pp-bg); color: var(--pp-ink-2); }
 .pp .pp-icon:hover { border-color: var(--pp-accent); color: var(--pp-accent); }
 
 .pp-sec { padding: 36px 0; border-bottom: 1px solid var(--pp-line); }
-.pp-sec h2 { font-size: var(--ty-note); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pp-accent); }
+.pp-sec h2 { display: flex; align-items: center; gap: 14px; font-size: var(--ty-note); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pp-ink); }
+.pp-sec h2::before { content: ""; flex: none; width: 4px; height: 16px; background: var(--pp-accent); }
 .pp-note { margin-top: 12px; max-width: 68ch; font-size: var(--ty-body); line-height: 1.7; color: var(--pp-ink-2); }
 
 /* Certifications. */
@@ -75,17 +89,17 @@
 .pp-act li { list-style: disc; }
 .pp-act li::marker { color: var(--pp-ink-3); }
 
-.pp-cover { position: relative; display: block; width: 100%; aspect-ratio: 16 / 10; padding: 0; border: 1px solid var(--pp-line); border-radius: 4px; background: var(--pp-bg-2); overflow: hidden; cursor: zoom-in; }
+.pp-cover { position: relative; display: block; width: 100%; aspect-ratio: 16 / 10; padding: 0; border: 1px solid var(--pp-line); border-radius: 2px; background: var(--pp-bg-2); overflow: hidden; cursor: zoom-in; }
 .pp-cover img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: left top; }
 .pp-cover:hover { border-color: var(--pp-ink-3); }
 .pp-cover:focus-visible { outline: 2px solid var(--pp-accent); outline-offset: 2px; }
 .pp-cover__count { position: absolute; right: 6px; bottom: 6px; display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 3px; background: rgba(17, 24, 39, 0.8); font-size: var(--ty-small); font-weight: 600; color: #fff; }
 .pp-cover__count svg { width: 14px; height: 14px; }
 
-.pp-viewer { width: min(960px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 1px solid var(--pp-line); border-radius: 6px; background: var(--pp-bg); color: var(--pp-ink); color-scheme: light; }
+.pp-viewer { width: min(960px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 1px solid var(--pp-line); border-radius: 2px; background: var(--pp-bg); color: var(--pp-ink); color-scheme: light; }
 .pp-viewer::backdrop { background: rgba(17, 24, 39, 0.72); }
 .pp-viewer__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--pp-line); font-size: var(--ty-note); font-weight: 600; }
-.pp-viewer__bar button, .pp-viewer__nav { border: 1px solid #d1d5db; border-radius: 4px; background: var(--pp-bg); color: var(--pp-ink); cursor: pointer; }
+.pp-viewer__bar button, .pp-viewer__nav { border: 1px solid #d1d5db; border-radius: 2px; background: var(--pp-bg); color: var(--pp-ink); cursor: pointer; }
 .pp-viewer__bar button { width: 30px; height: 30px; }
 .pp-viewer__stage { position: relative; display: flex; align-items: center; justify-content: center; padding: 14px 56px; background: var(--pp-bg-2); }
 .pp-viewer__stage img { display: block; max-width: 100%; max-height: calc(100dvh - 240px); height: auto; border: 1px solid var(--pp-line); }
@@ -131,6 +145,9 @@
 }
 
 @media (max-width: 720px) {
+  .pp-head { grid-template-columns: 1fr; gap: 22px; }
+  .pp-stats { grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pp-stats > div { padding: 10px 12px; }
   .pp-jobs > li.has-shots { grid-template-columns: 1fr; gap: 14px; }
   .pp-skills > div { grid-template-columns: 1fr; gap: 4px; }
 }
@@ -139,8 +156,8 @@
   /* Saving as PDF is a desk job. On a phone it only pushes the useful buttons down. */
   .pp .pp-print { display: none; }
   .pp-job h3 .pp-verified { display: flex; width: fit-content; margin: 6px 0 0; }
-  .pp-stats { gap: 8px 20px; }
   .pp-stats dt { font-size: 22px; }
+  .pp-stats dd { font-size: 10px; }
   .pp-avatar { width: 92px; height: 92px; }
   .pp-cta__btns, .pp-cta__btns .pp-btn { width: 100%; }
   .pp-reach .pp-btn { flex: 1 1 100%; }  .pp-viewer__stage { padding: 10px; }
@@ -154,28 +171,28 @@
 .pp-verified {
   display: inline-flex; align-items: center; gap: 5px; margin-left: 10px; padding: 2px 8px;
   vertical-align: middle; font-size: 11.5px; font-weight: 650; letter-spacing: 0.01em; white-space: nowrap;
-  color: #0f7a55; background: rgba(15, 159, 110, 0.1); box-shadow: inset 0 0 0 1px rgba(15, 159, 110, 0.35); border-radius: 4px;
+  color: var(--pp-good); background: var(--pp-good-bg); box-shadow: inset 0 0 0 1px var(--pp-good-line); border-radius: 2px;
 }
 .pp-verified svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-@media print { .pp-verified { color: #0f7a55; } }
+@media print { .pp-verified { color: #1d5c45; } }
 
 /* Verified challenge clips: the recording, a Verified solve badge on the frame,
    and a stamp tying it to the solve date and the student's credential. */
 .pp-clips { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-.pp-clip { border: 1px solid var(--pp-line); border-radius: 6px; overflow: hidden; background: var(--pp-bg); }
-.pp-clip__frame { position: relative; background: #0b1020; }
-.pp-clip__video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #0b1020; object-fit: contain; }
+.pp-clip { border: 1px solid var(--pp-line); border-radius: 2px; overflow: hidden; background: var(--pp-bg); }
+.pp-clip__frame { position: relative; background: #111827; }
+.pp-clip__video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #111827; object-fit: contain; }
 .pp-clip__video--off { display: flex; align-items: center; justify-content: center; padding: 16px; text-align: center; font-size: var(--ty-note); color: #cbd5e1; }
 .pp-clip__badge {
   position: absolute; top: 10px; left: 10px; display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;
-  font-size: 11.5px; font-weight: 700; letter-spacing: 0.01em; color: #fff; background: rgba(15, 122, 85, 0.92); border-radius: 4px; pointer-events: none;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #fff; background: rgba(29, 92, 69, 0.94); border-radius: 2px; pointer-events: none;
 }
 .pp-clip__badge svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.pp-clip__stamp { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-top: 3px solid #0f7a55; }
+.pp-clip__stamp { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-top: 1px solid var(--pp-line); }
 .pp-clip__stamp b { font-size: var(--ty-body); color: var(--pp-ink); }
 .pp-clip__stamp span { font-size: var(--ty-note); color: var(--pp-ink-3); }
 .pp-clip__stamp code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--pp-ink-2); }
-.pp-clip__len { position: absolute; top: 10px; right: 10px; padding: 2px 7px; border-radius: 4px; background: rgba(11, 16, 32, 0.85); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; color: #fff; pointer-events: none; }
+.pp-clip__len { position: absolute; top: 10px; right: 10px; padding: 2px 7px; border-radius: 2px; background: rgba(11, 16, 32, 0.85); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; color: #fff; pointer-events: none; }
 @media print {
   .pp-clips { display: block; }
   .pp-clip { break-inside: avoid; margin: 0 0 8px; border: 0; }

@@ -138,6 +138,7 @@ export function ProofPublicView({
     <main className="pp">
       <div className="pp__wrap">
         <header className="pp-head">
+          <div className="pp-head__main">
           <div className="pp-id">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {avatarSrc && <img className="pp-avatar" src={avatarSrc} alt={settings.displayName} />}
@@ -179,6 +180,17 @@ export function ProofPublicView({
                 </a>
               ))}
             </div>
+          )}
+          </div>
+          {settings.credentialId && (
+            <aside className="pp-cred" aria-label="Credential">
+              <span className="pp-cred__label">Range credential</span>
+              <code className="pp-cred__id">{settings.credentialId}</code>
+              <span className="pp-cred__note">Lab work confirmed in a live Active Directory environment</span>
+              <a className="pp-cred__link" href={`/verify/${settings.credentialId}`}>
+                Verify credential
+              </a>
+            </aside>
           )}
         </header>
 
