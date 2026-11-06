@@ -21,7 +21,7 @@ The impact of that failure
 
 ### Trade-offs
 
-There's one more idea to carry into the challenges, and it's that the three properties don't live independently of each other. In practice, they pull against each other:
+There's one more idea to carry into the challenge, and it's that the three properties don't live independently of each other. In practice, they pull against each other:
 
 - Stronger **confidentiality**, such as extra MFA prompts or an air gap, makes data harder for the wrong person to reach, but also harder for the right one.
 - Easier **availability**, such as a file share open to everyone, means people can always get to their work, but it removes the barrier that keeps the wrong people out.

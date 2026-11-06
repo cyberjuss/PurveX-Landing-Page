@@ -444,8 +444,8 @@ const LAB_PASS_SKILLS: Record<LabPassId, string[]> = {
  * out of this list to avoid tagging the same skill twice.
  */
 const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "response"; label: string }[] = [
-  { id: "rt-05", bucket: "response", label: "Risk Assessment and Triage" },
-  { id: "w1e-c6", bucket: "response", label: "File Permission Remediation" },
+  { id: "w1-05", bucket: "response", label: "Risk Assessment and Triage" },
+  { id: "w1-02", bucket: "response", label: "File Integrity Verification" },
   { id: "bt-03", bucket: "response", label: "Access Baseline Remediation" },
   { id: "th-01", bucket: "response", label: "Fine-Grained Password Policy" },
   { id: "mw2-02", bucket: "monitoring", label: "Sysmon" },

@@ -1,9 +1,8 @@
 import type { RoleId } from "@/lib/academy-certs";
 
 // There are no more browser-widget labs -- every "Lab:" section is now real
-// markdown, and the skill that used to live in the risk-triage chat widget
-// moved into the "Challenge: Monday Morning Risk Triage" mission chain
-// instead. This module stays only because the coach (academy-coach.ts,
+// markdown, and the risk ranking that used to live in a chat widget is now
+// part of Week 1's "Challenge: The Weekend Incident Report". This module stays only because the coach (academy-coach.ts,
 // academy-coach-mode.ts, academy-activity.ts) still imports isBrowserLab as
 // a general "is this place a browser lab" check.
 

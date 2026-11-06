@@ -37,6 +37,12 @@ export const SKILLS: Record<Skill, { label: string; advice: string }> = {
 
 // mission id -> skill. d1 = Operation Day One, tq = Ticket Queue.
 export const MISSION_SKILLS: Record<string, Skill> = {
+  // Week 1: The Weekend Incident Report, one challenge set in the PurveX lab.
+  "w1-01": "security",
+  "w1-02": "security",
+  "w1-03": "troubleshooting",
+  "w1-04": "risk",
+  "w1-05": "risk",
   // Home Lab: Build Out the Directory and A New Hire's First Week, the two
   // reading sittings turned into graded challenges.
   "dr-01": "directory",
@@ -64,19 +70,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   // CIA Triad in Practice: the same client-only "Check Yourself" pattern
   // Week 3's Wireshark labs used before they were converted to real
   // ad-mission tickets so they counted toward readiness. Converted here too.
-  "w1e-c1": "risk",
-  "w1e-c2": "risk",
-  "w1e-c3": "risk",
-  "w1e-c4": "risk",
-  "w1e-c5": "risk",
-  "w1e-c7": "risk",
   // CVSS Vulnerability Scoring: same conversion.
-  "w1m-c1": "risk",
-  "w1m-c2": "risk",
-  "w1m-c3": "risk",
-  "w1m-c4": "risk",
-  "w1m-c5": "risk",
-  "w1m-c6": "risk",
   // Hashing and Encryption with CyberChef: same conversion.
   "w2e-c1": "security",
   "w2e-c2": "security",
@@ -282,20 +276,10 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "rk-07": "security",
   "rk-08": "logs",
   "rk-09": "security",
-  // Week 1's risk-triage challenge, replacing the old browser-only chat
-  // widget with a real ranking exercise against the org chart's own
-  // department-criticality facts.
-  "rt-01": "risk",
-  "rt-02": "risk",
-  "rt-03": "risk",
-  "rt-04": "risk",
-  "rt-05": "risk",
   // Questions added to the course without a line here. An id missing from this
   // map is dropped every time progress is read back (sanitizeResults), so the
   // solve vanished on reload and its challenge could never complete.
   // check:range:challenges now fails if a challenge question is left out.
-  "w1e-c6": "risk",
-  "w1m-c0": "risk",
   "w2e-c6": "security",
   "w2m-c6": "security",
   "sm-01": "security",

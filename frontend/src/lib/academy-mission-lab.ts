@@ -217,6 +217,21 @@ const MISSION_LAB = {
     ],
     { tickets: ["DATA-SAMPLE"] }
   ),
+  // Week 1: The Weekend Incident Report. The setup block at the top of the
+  // challenge plants all three incidents. Each fix is read back from the lab.
+  "w1-01": G([
+    { c: { t: "file", path: "Shares\\Operations\\WM_Client_Export.csv", want: false }, label: "The client export is gone from the Operations share" },
+    { c: { t: "file", path: "Shares\\WealthManagement\\WM_Client_Export.csv", want: true }, label: "The client export is in the Wealth Management share" },
+  ]),
+  // The approved file is 299 bytes. Notepad may drop the last line break or
+  // add a byte-order mark, so those sizes count too. The altered file is
+  // four bytes longer and none of its variants land on these.
+  "w1-02": G([{ c: { t: "fileSize", path: "Shares\\Finance\\Wire_Approvals_Nov.csv", sizes: [299, 297, 302, 300] }, label: "Wire_Approvals_Nov.csv matches the approved copy again" }]),
+  "w1-03": G([
+    // The hash file proves the setup ran: with no rule at all, "off" would pass by itself.
+    { c: { t: "file", path: "Shares\\Finance\\Wire_Approvals_Nov.sha256", want: true }, label: "The weekend's incidents are set up in this lab" },
+    { c: { t: "fwRuleOff", name: "PurveX Maint - Block File Sharing" }, label: "The maintenance block rule is disabled or removed" },
+  ]),
   // Home Lab: Build Out the Directory. The student creates every object these
   // check, under names no other challenge uses, so nothing needs planting and
   // nothing here can change another challenge's answer.

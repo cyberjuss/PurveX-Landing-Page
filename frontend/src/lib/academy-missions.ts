@@ -14,14 +14,6 @@ export type MissionCatalogEntry = {
     | "phishing-chain"
     | "open-door"
     | "keys-to-the-domain"
-    | "risk-triage"
-    | "cia-triad"
-    | "cia-confidentiality"
-    | "cia-integrity"
-    | "cia-availability"
-    | "cvss-scoring"
-    | "cvss-check"
-    | "cvss-patch-decision"
     | "encode-encrypt-hash"
     | "encode-encrypt-apply"
     | "encode-encrypt-protect"
@@ -51,7 +43,8 @@ export type MissionCatalogEntry = {
     | "overnight-alert"
     | "lockout-threshold"
     | "build-out-directory"
-    | "new-hire-week";
+    | "new-hire-week"
+    | "weekend-incident-report";
   title: string;
   prompt: string;
   skill: Skill;
@@ -369,25 +362,6 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "cd-05": { id: "cd-05", challenge: "client-data", title: "The Batch That Did Not Balance", prompt: "Find the settlement batch that did not reconcile.", skill: "security" },
   "cd-06": { id: "cd-06", challenge: "client-data", title: "Fingerprint the Register", prompt: "Take the SHA-256 hash of the client register.", skill: "security" },
   "cd-07": { id: "cd-07", challenge: "client-data", title: "Who Can Read the Register", prompt: "Build a least-privilege reader group and name the group the share lets read it today.", skill: "accounts" },
-  "rt-01": { id: "rt-01", challenge: "risk-triage", title: "Which Property Failed (INC-1081)", prompt: "Name the CIA property that fails in the Wealth Management share ticket.", skill: "risk" },
-  "rt-02": { id: "rt-02", challenge: "risk-triage", title: "The Quiet Backup Failure (INC-1081)", prompt: "Name the CIA property at risk in the silent backup failure.", skill: "risk" },
-  "rt-03": { id: "rt-03", challenge: "risk-triage", title: "Rank Them by Department (INC-1081)", prompt: "Rank the four tickets using department criticality.", skill: "risk" },
-  "rt-04": { id: "rt-04", challenge: "risk-triage", title: "Why the Printer Waits (INC-1081)", prompt: "Justify ranking the loudest ticket last.", skill: "risk" },
-  "rt-05": { id: "rt-05", challenge: "risk-triage", title: "Fix the Wealth Management Share (INC-1081)", prompt: "Lock the Wealth Management folder down to Wealth Management Users and confirm it.", skill: "risk" },
-  "w1e-c1": { id: "w1e-c1", challenge: "cia-confidentiality", title: "Did the File's Contents Change? (INC-1082)", prompt: "After chmod 600, say whether ledger.txt's contents changed.", skill: "risk" },
-  "w1e-c2": { id: "w1e-c2", challenge: "cia-integrity", title: "How Much of the Hash Changed (INC-1083)", prompt: "Say how much of the SHA-256 hash changed after editing one digit.", skill: "risk" },
-  "w1e-c3": { id: "w1e-c3", challenge: "cia-availability", title: "Did the Page Survive the Outage (INC-1084)", prompt: "Say whether index.html was still on disk while nginx was stopped.", skill: "risk" },
-  "w1e-c4": { id: "w1e-c4", challenge: "cia-triad", title: "Which Property Failed, Client Portal Mixup (INC-1085)", prompt: "Name the CIA property that failed when a client saw another client's statement.", skill: "risk" },
-  "w1e-c5": { id: "w1e-c5", challenge: "cia-triad", title: "Ransomware Plus Data Theft (INC-1086)", prompt: "Name which CIA properties failed in a ransomware attack that also stole data.", skill: "risk" },
-  "w1e-c6": { id: "w1e-c6", challenge: "cia-triad", title: "Restore jamie.torres's Access (INC-1151)", prompt: "Restore read access on ledger.txt and confirm the permission string.", skill: "risk" },
-  "w1e-c7": { id: "w1e-c7", challenge: "cia-triad", title: "What a Backup Can't Touch (INC-1152)", prompt: "Say which CIA properties a clean backup restore fixes, and which one it can't.", skill: "risk" },
-  "w1m-c0": { id: "w1m-c0", challenge: "cvss-scoring", title: "Confirm What the Machine Holds (INC-1154)", prompt: "Check the real contents of /var/www/html instead of taking it on faith.", skill: "risk" },
-  "w1m-c1": { id: "w1m-c1", challenge: "cvss-check", title: "Did the Base Score Move? (INC-1087)", prompt: "Say whether the CVSS Base Score changed during this lab.", skill: "risk" },
-  "w1m-c2": { id: "w1m-c2", challenge: "cvss-check", title: "Which Machine Scored Higher (INC-1088)", prompt: "Say which of two machines scored higher on the Environmental Score.", skill: "risk" },
-  "w1m-c3": { id: "w1m-c3", challenge: "cvss-check", title: "Name the Model Behind the Inputs (INC-1089)", prompt: "Name the model the CVSS Security Requirements are built from.", skill: "risk" },
-  "w1m-c4": { id: "w1m-c4", challenge: "cvss-check", title: "What Captures the Machine's Value (INC-1090)", prompt: "Name the CVSS input that captures what a machine holds.", skill: "risk" },
-  "w1m-c5": { id: "w1m-c5", challenge: "cvss-patch-decision", title: "Justify the Patch Order (INC-1091)", prompt: "Name the CVSS input that justifies patching one machine before another with the same finding.", skill: "risk" },
-  "w1m-c6": { id: "w1m-c6", challenge: "cvss-patch-decision", title: "What a Hostname Can't Prove (INC-1155)", prompt: "Say what you'd have to confirm before scoring an undocumented machine's Environmental Score.", skill: "risk" },
   "w2e-c1": { id: "w2e-c1", challenge: "encode-encrypt-hash", title: "No Reverse Operation (INC-1092)", prompt: "Name which of encoding, encryption or hashing has no reverse operation.", skill: "security" },
   "w2e-c2": { id: "w2e-c2", challenge: "encode-encrypt-hash", title: "What AES Needed That Base64 Did Not (INC-1093)", prompt: "Name what AES decryption required that Base64 decoding did not.", skill: "security" },
   "w2e-c3": { id: "w2e-c3", challenge: "encode-encrypt-apply", title: "Match the Job to the Tool (INC-1094)", prompt: "Name which transformation fits storing a password that is only ever checked, never read back.", skill: "security" },
@@ -839,6 +813,41 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Confirm maya.okafor's transfer and name the two things that must both match.",
     skill: "accounts",
   },
+  "w1-01": {
+    id: "w1-01",
+    challenge: "weekend-incident-report",
+    title: "Close the Exposed Client Export",
+    prompt: "Find the Wealth Management client export sitting in the Operations share, move it where it belongs, and report how many client records were exposed.",
+    skill: "security",
+  },
+  "w1-02": {
+    id: "w1-02",
+    challenge: "weekend-incident-report",
+    title: "Catch the Altered Wire",
+    prompt: "Prove the November wire approvals were changed, restore the approved copy, and name the wire that was altered.",
+    skill: "security",
+  },
+  "w1-03": {
+    id: "w1-03",
+    challenge: "weekend-incident-report",
+    title: "Bring the File Shares Back",
+    prompt: "Find what is blocking every department's file shares since the weekend, switch it off, and report the port it blocked.",
+    skill: "troubleshooting",
+  },
+  "w1-04": {
+    id: "w1-04",
+    challenge: "weekend-incident-report",
+    title: "Weakness or Threat?",
+    prompt: "For the exposed client export, choose which part is the vulnerability and which is the threat.",
+    skill: "risk",
+  },
+  "w1-05": {
+    id: "w1-05",
+    challenge: "weekend-incident-report",
+    title: "Rank the Weekend",
+    prompt: "Rank the three findings by risk and choose which one the firm must deal with first.",
+    skill: "risk",
+  },
 };
 
 export const CHALLENGE_PATHS: Record<
@@ -855,14 +864,6 @@ export const CHALLENGE_PATHS: Record<
   "phishing-chain": { href: "/range/phase-2/capstone", tab: "the-phishing-chain" },
   "open-door": { href: "/range/phase-2/capstone", tab: "the-open-door" },
   "keys-to-the-domain": { href: "/range/phase-2/capstone", tab: "the-keys-to-the-domain" },
-  "risk-triage": { href: "/range/phase-1/week-1", tab: "monday-morning-risk-triage" },
-  "cia-confidentiality": { href: "/range/phase-1/week-1", tab: "predict-it-then-break-confidentiality" },
-  "cia-integrity": { href: "/range/phase-1/week-1", tab: "break-integrity-and-watch-the-hash-scramble" },
-  "cia-availability": { href: "/range/phase-1/week-1", tab: "break-availability-without-touching-the-file" },
-  "cia-triad": { href: "/range/phase-1/week-1", tab: "name-it-then-fix-what-you-broke" },
-  "cvss-scoring": { href: "/range/phase-1/week-1", tab: "score-the-same-flaw-on-two-machines" },
-  "cvss-check": { href: "/range/phase-1/week-1", tab: "check-yourself-what-actually-changed-the-score" },
-  "cvss-patch-decision": { href: "/range/phase-1/week-1", tab: "justify-the-fix-then-take-it-further" },
   "encode-encrypt-hash": { href: "/range/phase-1/week-2", tab: "tell-encoding-hashing-and-encryption-apart" },
   "encode-encrypt-apply": { href: "/range/phase-1/week-2", tab: "put-the-right-one-to-work" },
   "encode-encrypt-protect": { href: "/range/phase-1/week-2", tab: "protect-a-real-file-then-take-it-further" },
@@ -893,6 +894,7 @@ export const CHALLENGE_PATHS: Record<
   "lockout-threshold": { href: "/range/phase-2/baselines-thresholds", tab: "set-a-defensible-lockout-threshold" },
   "build-out-directory": { href: "/range/phase-1/home-lab-directory", tab: "build-out-the-directory" },
   "new-hire-week": { href: "/range/phase-1/home-lab-desk", tab: "a-new-hire-s-first-week" },
+  "weekend-incident-report": { href: "/range/phase-1/week-1", tab: "the-weekend-incident-report" },
 };
 
 /** The challenge a page's "Challenge: ..." tab runs, from the page and the tab's slug. */
@@ -918,7 +920,6 @@ export function challengeFromMission(id: string): MissionCatalogEntry["challenge
   if (id.startsWith("cap-")) return "wire";
   if (id.startsWith("cry-")) return "crypto";
   if (id.startsWith("cd-")) return "client-data";
-  if (id.startsWith("rt-")) return "risk-triage";
   return MISSION_CATALOG[id]?.challenge ?? null;
 }
 
@@ -952,14 +953,6 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "phishing-chain": "The Phishing Chain",
   "open-door": "The Open Door",
   "keys-to-the-domain": "The Keys to the Domain",
-  "risk-triage": "Monday Morning Risk Triage",
-  "cia-confidentiality": "Predict It, Then Break Confidentiality",
-  "cia-integrity": "Break Integrity and Watch the Hash Scramble",
-  "cia-availability": "Break Availability Without Touching the File",
-  "cia-triad": "Name It, Then Fix What You Broke",
-  "cvss-scoring": "Score the Same Flaw on Two Machines",
-  "cvss-check": "Check Yourself: What Actually Changed the Score",
-  "cvss-patch-decision": "Justify the Fix, Then Take It Further",
   "encode-encrypt-hash": "Tell Encoding, Hashing, and Encryption Apart",
   "encode-encrypt-apply": "Put the Right One to Work",
   "encode-encrypt-protect": "Protect a Real File, Then Take It Further",
@@ -990,6 +983,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "lockout-threshold": "Set a Defensible Lockout Threshold",
   "build-out-directory": "Build Out the Directory",
   "new-hire-week": "A New Hire's First Week",
+  "weekend-incident-report": "The Weekend Incident Report",
 };
 
 export function lastTouchedMission(results: Results): MissionCatalogEntry | null {
@@ -1031,6 +1025,7 @@ export const LAB_GATED_MISSIONS = [
   "la2-04",
   "dr-01", "dr-03", "dr-05", "dr-07", "dr-09", "dr-11",
   "dk-02", "dk-04", "dk-05", "dk-06", "dk-07", "dk-10",
+  "w1-01", "w1-02", "w1-03",
 ];
 
 /**
