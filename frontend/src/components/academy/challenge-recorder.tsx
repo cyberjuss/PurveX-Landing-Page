@@ -141,28 +141,13 @@ export function ChallengeRecorder({ label }: { label: string }) {
         <div id={helpId} className="ad-record__guide" role="region" aria-label="How to record a challenge">
           <p className="ad-record__guide-title">How to record a challenge</p>
           <ol>
+            <li>Click <strong>Record your challenge</strong> and choose your screen or window.</li>
+            <li>Work the challenge as usual.</li>
             <li>
-              Before you start, close anything you don&apos;t want on camera, such as email or chat. Then click{" "}
-              <strong>Record your challenge</strong>, and your browser will ask what you&apos;d like to share.
-            </li>
-            <li>
-              Choose what to capture. Pick <strong>Entire screen</strong> if you&apos;ll move between this page and your
-              lab, or a single window if all the work happens in one place. If your browser offers{" "}
-              <strong>Share audio</strong>, tick it to include sound from the screen. Your microphone isn&apos;t recorded.
-            </li>
-            <li>Work the challenge as usual. The red button counts how long you&apos;ve been recording.</li>
-            <li>
-              When you&apos;re finished, click <strong>Stop recording</strong>, or <strong>Stop sharing</strong> in your
-              browser&apos;s bar. The video saves to your Downloads folder as{" "}
-              <code>purvex-{slugify(label)}-date.webm</code>.
+              Click <strong>Stop recording</strong>. The video saves to your Downloads folder.
             </li>
           </ol>
-          <p className="ad-record__guide-note">
-            The recording stays on your computer, and nothing is uploaded to PurveX. If you switch to a different
-            challenge while recording, it stops and saves what you have so far. Before you share the video, watch it
-            through once for passwords or anything private on screen. Most video sites accept .webm files, and for one
-            that doesn&apos;t, convert the file to .mp4 first.
-          </p>
+          <p className="ad-record__guide-note">It stays on your computer. Nothing is uploaded.</p>
         </div>
       ) : null}
     </>
