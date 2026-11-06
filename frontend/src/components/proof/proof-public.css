@@ -31,16 +31,7 @@
 .pp svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Header: who they are on the left, how to reach them on the right. */
-.pp-head { display: grid; grid-template-columns: minmax(0, 1fr) 230px; align-items: start; gap: 32px; padding: 40px 0 30px; border-bottom: 1px solid var(--pp-line); }
-.pp-head__main { min-width: 0; }
-/* The credential, set apart like the seal on a certificate. */
-.pp-cred { display: grid; gap: 6px; padding: 16px 18px; border: 1px solid var(--pp-line); border-top: 3px solid var(--pp-accent); background: var(--pp-bg-2); }
-.pp-cred__label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--pp-ink-3); }
-.pp-cred__id { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; color: var(--pp-ink); }
-.pp-cred__note { font-size: var(--ty-small); line-height: 1.45; color: var(--pp-ink-3); }
-.pp .pp-cred__link { margin-top: 4px; font-size: var(--ty-note); font-weight: 600; color: var(--pp-accent); text-decoration: none; }
-.pp .pp-cred__link::after { content: " \2192"; }
-.pp .pp-cred__link:hover { text-decoration: underline; }
+.pp-head { padding: 40px 0 30px; border-bottom: 1px solid var(--pp-line); }
 .pp-id { display: flex; align-items: center; gap: 22px; min-width: 0; }
 .pp-avatar { flex: none; width: 112px; height: 112px; border-radius: 50%; object-fit: cover; border: 1px solid var(--pp-line); background: var(--pp-bg-2); }
 .pp-head h1 { font-size: clamp(28px, 5.5vw, 38px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
@@ -139,7 +130,6 @@
 }
 
 @media (max-width: 720px) {
-  .pp-head { grid-template-columns: 1fr; gap: 22px; }
   .pp-jobs > li.has-shots { grid-template-columns: 1fr; gap: 14px; }
   .pp-skills > div { grid-template-columns: 1fr; gap: 4px; }
 }
