@@ -28,10 +28,7 @@ export function PhaseLocked({ phase, title, summary }: { phase: string; title?: 
       </header>
       <div className="ax-soon">
         <span className="rd-stamp rd-text-none">Coming soon</span>
-        <p>
-          {preview ? `${preview.label} is still being finished.` : "This phase is still being finished."} Keep working through Phase 1 for now, because
-          everything here builds on the environment you set up there.
-        </p>
+        <p>Keep going in Phase 1 for now. Everything here builds on it.</p>
         {preview && (
           <>
             <ul className="ax-soon__points">
@@ -39,7 +36,7 @@ export function PhaseLocked({ phase, title, summary }: { phase: string; title?: 
                 <li key={pt}>{pt}</li>
               ))}
             </ul>
-            <PhaseNotify phase={phase} label={preview.label} />
+            <PhaseNotify phase={phase} />
           </>
         )}
       </div>

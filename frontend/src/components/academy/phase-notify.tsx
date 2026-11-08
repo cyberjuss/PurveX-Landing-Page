@@ -6,7 +6,7 @@ import { academyFetch } from "@/lib/academy-client";
 
 // "Notify me when it opens" for a coming-soon phase. Uses the email on the
 // signed-in account, and lets the student take it back.
-export function PhaseNotify({ phase, label }: { phase: string; label: string }) {
+export function PhaseNotify({ phase }: { phase: string }) {
   const [state, setState] = useState<"loading" | "off" | "on" | "saving" | "error">("loading");
   const [email, setEmail] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -53,7 +53,7 @@ export function PhaseNotify({ phase, label }: { phase: string; label: string }) 
       <div className="ax-notify ax-notify--on" role="status">
         <Check className="h-4 w-4" aria-hidden />
         <p>
-          You&apos;re on the list. We&apos;ll email {email ? <strong>{email}</strong> : "you"} the day {label} opens.
+          You&apos;re on the list. We&apos;ll email {email ? <strong>{email}</strong> : "you"} when it opens.
         </p>
         <button type="button" className="ax-notify__undo" onClick={leave}>
           Remove me
@@ -67,7 +67,7 @@ export function PhaseNotify({ phase, label }: { phase: string; label: string }) 
         <BellRing className="h-4 w-4" aria-hidden /> {state === "saving" ? "Saving…" : "Notify me when it opens"}
       </button>
       <p className="ax-notify__fine">
-        {message || <>We&apos;ll send one email{email ? <> to <strong>{email}</strong></> : null} when {label} opens, and nothing else.</>}
+        {message || <>One email{email ? <> to <strong>{email}</strong></> : null}, nothing else.</>}
       </p>
     </div>
   );

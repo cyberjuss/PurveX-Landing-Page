@@ -15,9 +15,9 @@ export const PHASE_PREVIEW: Record<string, { label: string; title: string; summa
     title: "Threat Detection & Log Analysis",
     summary: "An alert fires. Read the host, the account and the log before you decide what happened.",
     points: [
-      "Work a SOC alert queue and decide what is real",
-      "Write detections in KQL that catch an attack and ignore the noise",
-      "Trace four full attack campaigns across the Cyber Kill Chain and MITRE ATT&CK",
+      "Work a SOC alert queue",
+      "Write detections in KQL",
+      "Trace four real attack campaigns",
     ],
   },
   "phase-3": {
@@ -25,9 +25,9 @@ export const PHASE_PREVIEW: Record<string, { label: string; title: string; summa
     title: "Incident Response",
     summary: "Triage and investigation through containment and writing it up.",
     points: [
-      "Run an incident from first alert to containment",
-      "Collect and protect evidence the way a responder would",
-      "Write the report that leadership and auditors read",
+      "Run an incident from alert to containment",
+      "Collect and protect evidence",
+      "Write the incident report",
     ],
   },
 };
