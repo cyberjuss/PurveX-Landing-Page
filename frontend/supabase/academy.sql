@@ -607,3 +607,8 @@ drop policy if exists "Students read their own phase interest" on public.academy
 create policy "Students read their own phase interest"
   on public.academy_phase_interest for select
   using (auth.uid() = user_id);
+
+-- The intake's newer answers (timeline, hours, what they have done, the
+-- quick check, their machine, how they like help, notes). One jsonb column so
+-- new questions never need a migration. Coach reads it.
+alter table public.academy_profiles add column if not exists extras jsonb not null default '{}'::jsonb;

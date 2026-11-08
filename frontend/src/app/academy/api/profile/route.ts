@@ -34,7 +34,11 @@ export async function PUT(request: Request) {
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
-  const profile = sanitizeProfile({ ...(payload as { profile?: object }).profile, updatedAt: new Date().toISOString() });
+  const incoming = (payload as { profile?: Record<string, unknown> }).profile ?? {};
+  // A form that only edits goals (the goals panel) sends no extras. Keep the
+  // intake's answers then, rather than wiping them.
+  const extras = "extras" in incoming ? incoming.extras : (await readProfile(a.student.id)).profile?.extras;
+  const profile = sanitizeProfile({ ...incoming, extras, updatedAt: new Date().toISOString() });
   if (!profile) {
     return NextResponse.json({ error: "Please complete every question and select at least one role." }, { status: 400 });
   }

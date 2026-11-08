@@ -324,6 +324,117 @@ export const CERT_STATUSES: { id: CertStatus; label: string }[] = [
 
 export type CertGoal = { status: CertStatus; /** YYYY-MM-DD, only when studying. */ examDate?: string; /** YYYY-MM-DD, only when earned. */ earnedDate?: string };
 
+/** The intake's newer answers. All optional, so a profile saved before they
+ *  existed is still complete. Coach reads them to pitch every answer. */
+export type Timeline = "3m" | "6m" | "12m" | "open";
+export type Hours = "lt3" | "3-6" | "6-10" | "10+";
+export type Machine = "win" | "mac" | "chromebook" | "unsure";
+export type HelpStyle = "hint" | "walk" | "example";
+export const TIMELINES: { id: Timeline; label: string }[] = [
+  { id: "3m", label: "Within 3 months" },
+  { id: "6m", label: "In 3 to 6 months" },
+  { id: "12m", label: "Within the year" },
+  { id: "open", label: "No deadline, learning at my own pace" },
+];
+export const HOURS: { id: Hours; label: string }[] = [
+  { id: "lt3", label: "Under 3 hours a week" },
+  { id: "3-6", label: "3 to 6 hours a week" },
+  { id: "6-10", label: "6 to 10 hours a week" },
+  { id: "10+", label: "10 or more hours a week" },
+];
+/** Things a student has done in real life. More honest than rating yourself. */
+export const DONE: { id: string; label: string }[] = [
+  { id: "tickets", label: "Worked a ticket queue" },
+  { id: "ad-reset", label: "Reset a password in Active Directory" },
+  { id: "powershell", label: "Used PowerShell" },
+  { id: "vm", label: "Built a virtual machine" },
+  { id: "eventlogs", label: "Read Windows event logs" },
+  { id: "wireshark", label: "Used Wireshark" },
+];
+export const MACHINES: { id: Machine; label: string }[] = [
+  { id: "win", label: "A Windows PC with 16 GB of memory or more" },
+  { id: "mac", label: "A Mac" },
+  { id: "chromebook", label: "A Chromebook or tablet" },
+  { id: "unsure", label: "Not sure" },
+];
+export const HELP_STYLES: { id: HelpStyle; label: string }[] = [
+  { id: "hint", label: "Give me a hint so I can try again" },
+  { id: "walk", label: "Walk me through it step by step" },
+  { id: "example", label: "Show me a worked example" },
+];
+/** Four first-day tickets. Not graded: the misses tell Coach where to start. */
+export const QUICK_CHECK: { id: string; topic: string; prompt: string; options: string[]; answer: number; why: string }[] = [
+  {
+    id: "cia",
+    topic: "the CIA triad",
+    prompt: "Payroll numbers changed overnight. Nothing leaked and everyone can still work. What failed?",
+    options: ["Confidentiality, a leak", "Integrity, a lie", "Availability, a lockout"],
+    answer: 1,
+    why: "The data still looks normal but can't be trusted. That's integrity.",
+  },
+  {
+    id: "ports",
+    topic: "common ports",
+    prompt: "A laptop is accepting connections on port 3389. What is that port for?",
+    options: ["Web traffic", "Remote Desktop", "Email"],
+    answer: 1,
+    why: "3389 is RDP, which lets someone control the machine remotely.",
+  },
+  {
+    id: "encoding",
+    topic: "encoding versus encryption",
+    prompt: "A vendor script says the password is encrypted: SGFyYm9yMjAyNg==. Is it?",
+    options: ["Yes, it can't be read without a key", "No, it's Base64, so anyone can decode it", "It's a hash, so it can't be reversed"],
+    answer: 1,
+    why: "Letters, digits and a trailing = is Base64. Anyone can undo it in one step.",
+  },
+  {
+    id: "groups",
+    topic: "groups versus job titles",
+    prompt: "Priya's job title is Help Desk Technician. Does that put her in the Helpdesk group?",
+    options: ["Yes, the title sets her access", "No, only group membership grants access"],
+    answer: 1,
+    why: "A title is just a field on the account. Access comes from the groups it's in.",
+  },
+];
+export type ProfileExtras = {
+  timeline?: Timeline;
+  hours?: Hours;
+  done?: string[];
+  /** Quick-check results, by question id: true when they got it right. */
+  quick?: Record<string, boolean>;
+  machine?: Machine;
+  help?: HelpStyle;
+  notes?: string;
+};
+
+/** An empty list is a real answer ("none of these yet"). A list of nothing
+ *  recognizable is not, so it counts as unanswered. */
+function doneList(v: unknown, ids: Set<string>): string[] | undefined {
+  if (!Array.isArray(v)) return undefined;
+  const kept = [...new Set(v.filter((x): x is string => typeof x === "string" && ids.has(x)))];
+  return v.length > 0 && kept.length === 0 ? undefined : kept;
+}
+
+export function sanitizeExtras(raw: unknown): ProfileExtras {
+  const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const pick = <T extends string>(v: unknown, list: { id: T }[]) => (list.some((x) => x.id === v) ? (v as T) : undefined);
+  const doneIds = new Set(DONE.map((d) => d.id));
+  const quickIds = new Set(QUICK_CHECK.map((q) => q.id));
+  const quickIn = (r.quick && typeof r.quick === "object" ? r.quick : {}) as Record<string, unknown>;
+  const quick = Object.fromEntries(Object.entries(quickIn).filter(([k, v]) => quickIds.has(k) && typeof v === "boolean")) as Record<string, boolean>;
+  const out: ProfileExtras = {
+    timeline: pick(r.timeline, TIMELINES),
+    hours: pick(r.hours, HOURS),
+    done: doneList(r.done, doneIds),
+    quick: Object.keys(quick).length ? quick : undefined,
+    machine: pick(r.machine, MACHINES),
+    help: pick(r.help, HELP_STYLES),
+    notes: typeof r.notes === "string" && r.notes.trim() ? r.notes.replace(/\s+/g, " ").trim().slice(0, 200) : undefined,
+  };
+  return Object.fromEntries(Object.entries(out).filter(([, v]) => v !== undefined)) as ProfileExtras;
+}
+
 export type StudentProfile = {
   certs: Record<CertId, CertGoal>;
   otherCerts: string;
@@ -335,6 +446,7 @@ export type StudentProfile = {
    *  the email address happened to say -- nothing in the product could
    *  change it. Empty means keep using the account's. */
   callMe: string;
+  extras: ProfileExtras;
   updatedAt: string;
 };
 
@@ -369,6 +481,7 @@ export function sanitizeProfile(raw: unknown, { fillNewCerts = false }: { fillNe
     start,
     background: clip(r.background, 280),
     callMe: clip(r.callMe, 40),
+    extras: sanitizeExtras(r.extras),
     updatedAt: typeof r.updatedAt === "string" ? r.updatedAt.slice(0, 40) : new Date().toISOString(),
   };
 }

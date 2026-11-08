@@ -1017,7 +1017,7 @@ export async function readProfile(userId: string): Promise<{ profile: StudentPro
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin
       .from("academy_profiles")
-      .select("certs, other_certs, roles, start_level, background, updated_at")
+      .select("*")
       .eq("user_id", userId)
       .maybeSingle();
     if (!error) {
@@ -1029,6 +1029,7 @@ export async function readProfile(userId: string): Promise<{ profile: StudentPro
           roles: data.roles,
           start: data.start_level,
           background: data.background,
+          extras: data.extras,
           updatedAt: data.updated_at,
         },
         { fillNewCerts: true }
@@ -1049,7 +1050,7 @@ export async function loadProfile(userId: string): Promise<StudentProfile | null
 export async function saveProfile(userId: string, profile: StudentProfile): Promise<boolean> {
   memoryProfiles.set(userId, profile);
   if (!supabaseAdmin) return true;
-  const { error } = await supabaseAdmin.from("academy_profiles").upsert({
+  const row = {
     user_id: userId,
     certs: profile.certs,
     other_certs: profile.otherCerts,
@@ -1057,7 +1058,11 @@ export async function saveProfile(userId: string, profile: StudentProfile): Prom
     start_level: profile.start,
     background: profile.background,
     updated_at: profile.updatedAt,
-  });
+  };
+  let { error } = await supabaseAdmin.from("academy_profiles").upsert({ ...row, extras: profile.extras });
+  // Until academy.sql adds the extras column, save everything else rather
+  // than turn a student away at the door. The browser keeps the full answers.
+  if (error && /extras/i.test(error.message)) ({ error } = await supabaseAdmin.from("academy_profiles").upsert(row));
   if (error) console.error("academy_profiles upsert failed", error.message);
   return !error;
 }

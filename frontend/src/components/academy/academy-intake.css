@@ -54,3 +54,12 @@ span.axq-icon { cursor: default; }
   .axq-step, .axq-list > .axq-opt, .axq-reveal, .axq-next, .axq-opt.is-on .axq-mark { animation: none; }
   .axq-bar i::after { transition: none; }
 }
+
+/* Quick check: one line under the choices, right or not, with the why. */
+.axq-fb { margin: 14px 0 0; padding: 10px 14px; border-radius: 10px; font-size: 0.92rem; line-height: 1.5; }
+.axq-fb.is-right { background: color-mix(in srgb, #0f9f6e 10%, transparent); color: #0b6b4b; }
+.axq-fb.is-wrong { background: color-mix(in srgb, #c4820e 12%, transparent); color: #8a5a06; }
+.axq-fb strong { font-weight: 700; }
+
+/* A quick-check question is a sentence, not a heading: set it smaller. */
+.axq-step h1.is-long { font-size: clamp(1.25rem, 1rem + 1.2vw, 1.6rem); line-height: 1.3; }
