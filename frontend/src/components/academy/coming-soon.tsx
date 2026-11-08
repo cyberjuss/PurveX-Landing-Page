@@ -1,6 +1,8 @@
-// Shared "no content yet" placeholder -- used both for an individual week
-// with an empty sections array (Phase 1 Week 2, all of Phase 2) and for a
-// phase with no weeks defined at all (Phase 3).
+import { PHASE_PREVIEW } from "@/lib/academy-locks";
+import { PhaseNotify } from "./phase-notify";
+
+// Shared "no content yet" placeholder, for a week whose sections are still
+// being written.
 export function ComingSoon({ message }: { message: string }) {
   return (
     <div className="ax-soon">
@@ -10,19 +12,36 @@ export function ComingSoon({ message }: { message: string }) {
   );
 }
 
-/** Shown in place of a whole phase while it is locked. */
-export function PhaseLocked({ title, summary }: { title: string; summary: string }) {
+/**
+ * Shown in place of a whole phase while it is coming soon: what the phase
+ * covers, and a way to be emailed the day it opens.
+ */
+export function PhaseLocked({ phase, title, summary }: { phase: string; title?: string; summary?: string }) {
+  const preview = PHASE_PREVIEW[phase];
   return (
     <div className="rd">
       <header className="rd-mast">
         <div className="ax-titleblock">
-          <h1>{title}</h1>
-          <p>{summary}</p>
+          <h1>{title ?? preview?.title}</h1>
+          <p>{summary ?? preview?.summary}</p>
         </div>
       </header>
       <div className="ax-soon">
-        <span className="rd-stamp rd-text-none">Locked</span>
-        <p>This phase is locked for now. Keep working through Phase 1.</p>
+        <span className="rd-stamp rd-text-none">Coming soon</span>
+        <p>
+          {preview ? `${preview.label} is still being finished.` : "This phase is still being finished."} Keep working through Phase 1 for now, because
+          everything here builds on the environment you set up there.
+        </p>
+        {preview && (
+          <>
+            <ul className="ax-soon__points">
+              {preview.points.map((pt) => (
+                <li key={pt}>{pt}</li>
+              ))}
+            </ul>
+            <PhaseNotify phase={phase} label={preview.label} />
+          </>
+        )}
       </div>
     </div>
   );

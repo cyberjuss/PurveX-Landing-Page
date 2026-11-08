@@ -3,7 +3,7 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, FlaskConical, Hammer, Lock } from "lucide-react";
+import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, FlaskConical, Hammer } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf, labLinksOf } from "@/lib/academy-entries";
 import { slugify, useAcademyProgress } from "./academy-progress";
@@ -97,15 +97,19 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           </button>
         );
         if (isPhaseLocked(phase.slug)) {
+          // Coming soon: one link to the phase page, which says what it covers
+          // and offers to email the student the day it opens.
           return (
-            <div
+            <Link
               key={phase.slug}
-              className="flex items-center justify-between gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] opacity-70"
-              title="Locked for now"
+              href={`/range/${phase.slug}`}
+              onClick={onNavigate}
+              className="flex items-center justify-between gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] transition hover:text-[var(--rd-ink)]"
+              title="Coming soon. Get an email when it opens."
             >
-              <span className="truncate">{phase.label} — {phase.title}</span>
-              <Lock className="h-3 w-3 shrink-0" aria-label="Locked" />
-            </div>
+              <span className="truncate">{phase.label} · {phase.title}</span>
+              <span className="shrink-0 rounded-full border border-[var(--rd-line)] px-1.5 py-px text-[10px] tracking-[0.06em]">Soon</span>
+            </Link>
           );
         }
         // Challenges reads as its own kind of work, not one more sitting in

@@ -14,6 +14,7 @@
 import {
   LAB_SKILLS,
   MISSION_SKILLS,
+  SCORED_SKILLS,
   SCORE_READY,
   SCORE_SOLID,
   itemPoints,
@@ -64,7 +65,9 @@ const missionId = Object.keys(MISSION_SKILLS)[0];
 eq("itemPoints routes a mission to missionPoints", itemPoints(missionId, { solved: true, wrong: 2, hint: false }), 40);
 
 console.log("\n--- the whole transcript ---");
-const ids = Object.keys({ ...MISSION_SKILLS, ...LAB_SKILLS });
+// Only what readiness counts: a phase that is still coming soon is left out,
+// because nobody can do its work yet.
+const ids = Object.keys(SCORED_SKILLS);
 const labIds = new Set(Object.keys(LAB_SKILLS));
 // A browser lab records its own points, so a clean pass on one is 100. The
 // 70 above is the legacy figure for a lab finished before labs were scored,
@@ -112,7 +115,7 @@ console.log("\n--- one weak skill blocks ready ---");
 // Ready needs every skill at the competent bar, not just a strong total. Zero
 // out the smallest skill: the total stays high, the skill falls to nothing,
 // and the student must not be called ready.
-const skillOf: Record<string, Skill> = { ...MISSION_SKILLS, ...(LAB_SKILLS as Record<string, Skill>) };
+const skillOf: Record<string, Skill> = SCORED_SKILLS;
 const counts = Object.values(skillOf).reduce<Record<string, number>>((c, s) => ((c[s] = (c[s] ?? 0) + 1), c), {});
 const smallest = Object.entries(counts).sort((a, b) => a[1] - b[1])[0][0] as Skill;
 const oneSkillZeroed = summarize(all((id) => (skillOf[id] === smallest ? { solved: true, wrong: 3, hint: false } : clean(id))));
@@ -202,5 +205,9 @@ const unstarted = student({ readiness: { overall: null, accuracy: null, level: "
   const r = rollUp([], NOW);
   t("an empty class does not divide by zero", r.avgReadiness === null && r.students === 0 && r.weakest.length === 0);
 }
+console.log("\n--- coming-soon phases ---");
+t("a locked phase's missions are not counted toward readiness", Object.keys(SCORED_SKILLS).length <= Object.keys(MISSION_SKILLS).length, `${Object.keys(SCORED_SKILLS).length} of ${Object.keys(MISSION_SKILLS).length}`);
+
 console.log(`\n${failures ? `\x1b[31m${failures} failed\x1b[0m` : "\x1b[32mall passed\x1b[0m"}`);
 process.exit(failures ? 1 : 0);
+

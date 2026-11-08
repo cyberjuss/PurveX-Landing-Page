@@ -137,7 +137,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
                 <span className="ax-path__title">
                   {copy.title}
                   {locked ? (
-                    <em className="ax-tag">Locked</em>
+                    <em className="ax-tag">Coming soon</em>
                   ) : soon ? (
                     <em className="ax-tag">In preparation</em>
                   ) : phase && isPhaseComplete(phase.slug) ? (
@@ -173,7 +173,12 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
           );
           return (
             <li key={copy.slug} className="ax-rise" style={{ ["--ax-i" as string]: i + 1 }}>
-              {soon ? (
+              {locked ? (
+                // A coming-soon phase still opens its page, which offers the email.
+                <Link href={copy.href} className="ax-path__row ax-path__row--soon">
+                  {row}
+                </Link>
+              ) : soon ? (
                 <div className="ax-path__row ax-path__row--soon">{row}</div>
               ) : (
                 <Link href={href} className={`ax-path__row${here ? " ax-path__row--here" : ""}`}>

@@ -2,6 +2,9 @@
 // Results are cached in the browser (localStorage) and saved to the account,
 // keyed by the mission's data-id.
 
+import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
+import { isPhaseLocked } from "@/lib/academy-locks";
+
 export type Skill = "accounts" | "directory" | "troubleshooting" | "security" | "logs" | "access" | "risk";
 
 export const SKILLS: Record<Skill, { label: string; advice: string }> = {
@@ -291,8 +294,23 @@ export const LAB_SKILLS: Partial<Record<LabPassId, Skill>> = {};
 /** The scored labs, for the readiness report. href opens the lab's tab. */
 export const LAB_CATALOG: { id: LabPassId; title: string; skill: Skill; href: string }[] = [];
 
-/** Everything readiness counts: missions and scored labs. */
-const SCORED_SKILLS: Record<string, Skill> = { ...MISSION_SKILLS, ...(LAB_SKILLS as Record<string, Skill>) };
+/** The phase a mission belongs to, read from where its challenge lives. */
+export function missionPhase(id: string): string | undefined {
+  const challenge = MISSION_CATALOG[id]?.challenge;
+  return challenge ? CHALLENGE_PATHS[challenge]?.href.split("/")[2] : undefined;
+}
+
+/**
+ * Everything readiness counts: missions and scored labs, minus anything in a
+ * phase that is still coming soon. A student cannot do work that is locked,
+ * so counting it would keep everyone short of 100 and of Ready.
+ */
+export const SCORED_SKILLS: Record<string, Skill> = Object.fromEntries(
+  Object.entries({ ...MISSION_SKILLS, ...(LAB_SKILLS as Record<string, Skill>) }).filter(([id]) => {
+    const phase = missionPhase(id);
+    return !phase || !isPhaseLocked(phase);
+  })
+);
 
 /** Mission results only, without passed labs. */
 export function missionResults(results: Results): Results {
@@ -439,7 +457,9 @@ export function summarize(results: Results): Summary {
   // Floored at the best this student has had, so new challenges never take points away.
   const overall = Math.max(Math.round(sum / total), readinessBest(results));
   const accuracy = finished ? Math.round(sum / finished) : null;
-  const skills: SkillRow[] = (Object.keys(per) as Skill[]).map((key) => ({
+  // A skill with nothing open to practice yet is left out, so it can neither
+  // block Ready nor be suggested as something to work on.
+  const skills: SkillRow[] = (Object.keys(per) as Skill[]).filter((key) => per[key].total > 0).map((key) => ({
     key,
     label: SKILLS[key].label,
     score: per[key].done === 0 ? null : Math.round(per[key].sum / per[key].done),

@@ -5239,6 +5239,14 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 
 .ax-soon { margin-top: 40px; padding: 8px 0 0; }
 .ax-soon p { margin-top: 16px; max-width: 48ch; font-size: var(--ty-lead); line-height: 1.6; color: var(--rd-ink-2); }
+/* A coming-soon phase: what it covers, and the "Notify me" button. */
+.ax-soon__points { margin: 18px 0 0; padding-left: 1.2em; list-style: disc; max-width: 56ch; color: var(--rd-ink-2); line-height: 1.7; }
+.ax-notify { margin-top: 26px; min-height: 48px; }
+.ax-notify__btn { display: inline-flex; align-items: center; gap: 8px; }
+.ax-notify .ax-notify__fine { margin-top: 10px; font-size: var(--ty-note, 13px); color: var(--rd-ink-3); }
+.ax-notify--on { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px 16px; max-width: 60ch; border: 1px solid color-mix(in srgb, var(--rd-good, #0f9f6e) 35%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--rd-good, #0f9f6e) 8%, transparent); color: var(--rd-good, #0f9f6e); }
+.ax-notify--on p { margin: 0; flex: 1; font-size: var(--ty-small); color: var(--rd-ink-2); }
+.ax-notify__undo { border: 0; background: none; padding: 0; font-size: var(--ty-note, 13px); color: var(--rd-ink-3); text-decoration: underline; cursor: pointer; }
 
 /* The cheat sheet: each fact a panel in the Resources language. An accent
    tile, a mono kicker and a display title, then tables with inset lines. */

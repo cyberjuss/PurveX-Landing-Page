@@ -588,3 +588,22 @@ grant execute on function public.academy_claim_coach_question(uuid, date, intege
 grant execute on function public.academy_release_coach_question(uuid, date) to service_role;
 grant execute on function public.academy_claim_lab_coach_question(uuid, date, text, integer) to service_role;
 grant execute on function public.academy_release_lab_coach_question(uuid, date, text) to service_role;
+
+-- Students who asked to be emailed when a coming-soon phase opens. One row per
+-- student per phase. Written by the server only; notified_at is set by
+-- scripts/notify-phase.mjs once the launch email has gone out.
+create table if not exists public.academy_phase_interest (
+  user_id uuid not null references auth.users (id) on delete cascade,
+  phase text not null,
+  email text not null,
+  created_at timestamptz not null default now(),
+  notified_at timestamptz,
+  primary key (user_id, phase)
+);
+
+alter table public.academy_phase_interest enable row level security;
+
+drop policy if exists "Students read their own phase interest" on public.academy_phase_interest;
+create policy "Students read their own phase interest"
+  on public.academy_phase_interest for select
+  using (auth.uid() = user_id);

@@ -9,7 +9,7 @@ import { PhaseLocked } from "@/components/academy/coming-soon";
 // you were already looking at.
 export default function Phase2Page() {
   const phase = findPhase("phase-2")!;
-  if (isPhaseLocked(phase.slug)) return <PhaseLocked title={phase.title} summary="An alert fires. Read the host, the account, and the log before you decide what happened." />;
+  if (isPhaseLocked(phase.slug)) return <PhaseLocked phase={phase.slug} />;
   const entry = firstAvailableEntry(phase);
   redirect(entry ? `/range/${phase.slug}/${entry.slug}` : "/range");
 }

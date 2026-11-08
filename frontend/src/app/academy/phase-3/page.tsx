@@ -2,7 +2,7 @@ import { ComingSoon, PhaseLocked } from "@/components/academy/coming-soon";
 import { isPhaseLocked } from "@/lib/academy-locks";
 
 export default function Phase3Page() {
-  if (isPhaseLocked("phase-3")) return <PhaseLocked title="Incident Response" summary="Triage and investigation through containment and writing it up." />;
+  if (isPhaseLocked("phase-3")) return <PhaseLocked phase="phase-3" />;
   return (
     <div className="rd">
       <header className="rd-mast">

@@ -15,6 +15,6 @@ export default async function Phase2EntryPage({ params }: { params: Promise<{ sl
   const phase = findPhase("phase-2")!;
   const entry = findEntry("phase-2", slug);
   if (!entry) notFound();
-  if (isPhaseLocked(phase.slug)) return <PhaseLocked title={entry.title} summary={entry.summary} />;
+  if (isPhaseLocked(phase.slug)) return <PhaseLocked phase={phase.slug} />;
   return <PhaseEntry phase={phase} entry={entry} />;
 }

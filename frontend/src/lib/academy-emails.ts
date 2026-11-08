@@ -234,3 +234,33 @@ export function passwordResetEmail(actionLink: string): Built {
     note("If that was not you then ignore this email and your password stays as it is.");
   return { subject: "Reset your PurveX password", html };
 }
+
+/** Sent when a student asks to hear about a phase that is still coming soon. */
+export function phaseInterestEmail(student: Named, phase: { label: string; title: string; points: string[] }, o: string): Built {
+  const url = base(o);
+  const list = phase.points.map((pt) => `&bull; ${esc(pt)}`).join("<br>");
+  const html =
+    pre(`We'll email you the day ${phase.label} opens.`) +
+    h(`You're on the list for ${phase.label}`) +
+    p(`Thanks, ${esc(first(student.name))}. We'll email you the day ${esc(phase.label)}, ${esc(phase.title)}, opens in your Range.`) +
+    p(`Here's what it covers:<br>${list}`) +
+    p("Until then, Phase 1 is the best preparation, because everything in the next phase builds on the environment you set up there.") +
+    button(`${url}/range`, "Keep going in Phase 1") +
+    note("You'll get one email when it opens, and nothing else about this list.");
+  return { subject: `You're on the list for ${phase.label}`, html };
+}
+
+/** Sent once, to everyone on the list, when a phase opens. */
+export function phaseOpenEmail(student: Named, phase: { slug: string; label: string; title: string; points: string[] }, o: string): Built {
+  const url = base(o);
+  const list = phase.points.map((pt) => `&bull; ${esc(pt)}`).join("<br>");
+  const html =
+    pre(`${phase.label} is open in your Range.`) +
+    h(`${phase.label} is open`) +
+    p(`Hi ${esc(first(student.name))}, you asked us to let you know. ${esc(phase.label)}, ${esc(phase.title)}, is now open in your Range.`) +
+    p(`Here's what you'll do:<br>${list}`) +
+    button(`${url}/range/${phase.slug}`, `Start ${phase.label}`) +
+    fallback(`${url}/range/${phase.slug}`, "Or copy this link:") +
+    note("This is the one email you asked for. You won't get more about this list.");
+  return { subject: `${phase.label} is open: ${phase.title}`, html };
+}
