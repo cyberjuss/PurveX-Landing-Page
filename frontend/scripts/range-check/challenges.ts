@@ -67,7 +67,9 @@ const used = new Set(tabs.map((t) => t.file));
 const root = "src/content/academy";
 const walk = (d: string): string[] => fs.readdirSync(d, { withFileTypes: true }).flatMap((x) => (x.isDirectory() ? walk(path.join(d, x.name)) : [path.join(d, x.name)]));
 for (const f of walk(root)) {
-  const rel = path.relative(root, f);
+  // path.relative uses the OS separator (backslashes on Windows), but every
+  // file path in academy-content.ts is written with forward slashes.
+  const rel = path.relative(root, f).split(path.sep).join("/");
   if (rel.endsWith(".md") && !used.has(rel) && !/GUIDE/.test(rel)) add("G. Content file not in the course", rel);
 }
 // H/I. assets and links
