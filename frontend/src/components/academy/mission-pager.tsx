@@ -286,12 +286,12 @@ export function MissionPager({
         </div>
       ) : null}
       {nav && actionHost ? createPortal(nav, actionHost) : nav}
-      {/* Reset and Record share one row under the question. The recorder stays
-          mounted in this one spot from the brief onward, so moving between the
-          brief and the questions never cuts a recording short. */}
-      {(started && !onBrief) || recordLabel ? (
+      {/* Reset and Record share one row under the question, never on the
+          brief itself. Recording can only start once the student has left
+          the brief, so there is no in-progress recording this could cut off. */}
+      {!onBrief && (started || recordLabel) ? (
         <div className="ad-challenge-actions">
-          {started && !onBrief ? (
+          {started ? (
             <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
               Reset challenge
             </button>
