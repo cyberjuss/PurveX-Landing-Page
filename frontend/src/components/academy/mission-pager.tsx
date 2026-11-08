@@ -283,9 +283,6 @@ export function MissionPager({
               </button>
             ) : null}
           </div>
-          {lab.available && (lab.state === "none" || lab.state === "stopped") ? (
-            <p className="ad-brief-start__note">The lab boots while you read question 1.</p>
-          ) : null}
         </div>
       ) : null}
       {nav && actionHost ? createPortal(nav, actionHost) : nav}
