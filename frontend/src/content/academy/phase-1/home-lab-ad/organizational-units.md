@@ -5,7 +5,7 @@
 
 ### Organizational Units (OUs)
 
-An **OU**, or organizational unit, is the folder an account lives in. It's more than a folder, though, because permissions and Group Policy attach to it directly, so the domain uses it both to record which department something belongs to and to apply that department's rules.
+An **OU**, or organizational unit, is the folder an account lives in. It's more than a folder, though, because permissions and Group Policy attach to it directly. The domain uses it both to record which department something belongs to and to apply that department's rules.
 
 At PurveX Financial, each of the five departments is its own OU, with a `Users` sub-OU one level below it. IT also has a `Workstations` sub-OU, so the lab's one client machine sits under IT rather than next to the people.
 
@@ -100,6 +100,13 @@ At PurveX Financial, each of the five departments is its own OU, with a `Users` 
   </div>
 </div>
 
-Every account lives in exactly one OU, and here's the part to hold on to: the OU records where an account lives, not what it can access. That's why `AccessLevels` sits outside `Departments` on purpose. `Server Admins` and `Helpdesk` grant access across the whole domain, which is a different thing from belonging to a department, and keeping them in a folder of their own stops you from mistaking a list of privileges for a team.
+Every account lives in exactly one OU, and here's the part to hold on to: the OU records where an account lives, not what it can access. That's why `AccessLevels` sits outside `Departments` on purpose. `Server Admins` and `Helpdesk` grant access across the whole domain, which is a different thing from belonging to a department. Keeping them in a folder of their own stops you from mistaking a list of privileges for a team.
 
 OUs also let you hand out control in small pieces. For example, Helpdesk could be allowed to reset passwords only for accounts inside `OU=Users,OU=IT,OU=Departments`, leaving the rest of the domain untouched.
+
+```sort
+prompt: Does the account's OU decide this, or its groups?
+level: 1
+The OU decides: Which Group Policy settings reach the account | Which department folder the account lives in | Whose passwords Helpdesk can reset, when control is delegated there
+Its groups decide: Which file shares the account can open | Whether the account holds admin rights
+```

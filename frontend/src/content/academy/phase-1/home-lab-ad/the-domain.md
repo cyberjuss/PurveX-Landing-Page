@@ -5,7 +5,7 @@
 
 ### The database
 
-Active Directory is the database that holds a firm's users, computers and groups. An ordinary Windows Server becomes that database once you install Active Directory Domain Services and promote the server to a domain controller, and from then on it checks every sign-in using a protocol called Kerberos. In this lab, the domain is `purvexfinancial.local`, and until that promotion is finished, the departments and accounts have nowhere to live.
+Active Directory is the database that holds a firm's users, computers and groups. An ordinary Windows Server becomes that database once you install Active Directory Domain Services and promote the server to a domain controller. From then on, it checks every sign-in using a protocol called Kerberos. In this lab, the domain is `purvexfinancial.local`, and until that promotion is finished, the departments and accounts have nowhere to live.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/add-roles.png" alt="Server roles list with Active Directory Domain Services checked" />
@@ -29,7 +29,7 @@ To do that, the directory performs three jobs, and you'll use all three on the d
 Those jobs connect straight back to the three CIA failures from Week 1, and each one shows up in the directory:
 
 - **Confidentiality** fails as a leak when an account in the wrong group can open a door it shouldn't.
-- **Integrity** fails as a lie when an account's group or OU no longer matches what the firm approved, or when a ticket states something untrue, which is why you check against the baseline instead of trusting the request.
+- **Integrity** fails as a lie when an account's group or OU no longer matches what the firm approved, or when a ticket states something untrue. That's why you check against the baseline instead of trusting the request.
 - **Availability** fails as a lockout when a workstation can't find the domain controller, because then nobody signs in even if the directory is correct.
 
 ### Promote the server

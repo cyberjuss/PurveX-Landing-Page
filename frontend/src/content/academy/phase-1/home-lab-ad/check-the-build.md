@@ -24,7 +24,7 @@ Get-ADGroupMember -Identity "IT Admins"
 
 ### If the Script Will Not Run
 
-If the script won't run, the good news is that a handful of errors account for almost every report, and each one is easy to fix once you know which you're looking at.
+If the script won't run, the good news is that a handful of errors account for almost every report. Each one is easy to fix once you know which you're looking at.
 
 <div class="ad-trouble">
 <div class="ad-trouble__item">

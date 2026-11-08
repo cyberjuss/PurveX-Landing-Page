@@ -5,7 +5,7 @@
 
 ### Containers
 
-Before we get to groups, there's one look-alike to watch for. In the console, a **Container** looks just like an OU, because both use a folder icon, but a Container is a different kind of object and the icon will fool you if you judge by appearance.
+Before we get to groups, there's one look-alike to watch for. In the console, a **Container** looks just like an OU, because both use a folder icon. But a Container is a different kind of object, and the icon will fool you if you judge by appearance.
 
 | | Organizational Unit | Container |
 | ----- | ----- | ----- |
@@ -14,10 +14,11 @@ Before we get to groups, there's one look-alike to watch for. In the console, a 
 | Can you create your own in the console? | Yes, anywhere | No, Windows builds the default set |
 | Examples in this domain | `OU=IT`, `OU=Compliance` | `CN=Users`, `CN=Computers` |
 
-The two you'll meet most are the default `Users` and `Computers` folders, which Windows creates as Containers. Since no GPO can link to a Container, an account left there misses every policy linked to an OU, which is why the build script puts every account in a real OU. So if you find someone in a default folder, that account isn't where it belongs.
+The two you'll meet most are the default `Users` and `Computers` folders, which Windows creates as Containers. Since no GPO can link to a Container, an account left there misses every policy linked to an OU. That's why the build script puts every account in a real OU. So if you find someone in a default folder, that account isn't where it belongs.
 
 ```sort
 prompt: Organizational Unit or Container?
+level: 2
 Organizational Unit: A GPO can link to it | It can hold sub-OUs | OU=Compliance
 Container: Windows builds it and you cannot make your own | CN=Computers | CN=Users
 ```

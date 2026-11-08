@@ -69,6 +69,7 @@ Whichever it turns out to be, check the Account tab before you change anything. 
 
 ```sort
 prompt: Riley Kwan calls in. Which fix fits?
+level: 2
 Unlock the account: She remembers her password but mistyped it three times
 Reset and force a change: She has forgotten her password
 Neither, it is disabled: The Account tab shows Account is disabled ticked

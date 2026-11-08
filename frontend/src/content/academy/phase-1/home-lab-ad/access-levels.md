@@ -5,7 +5,7 @@
 
 ### Administrative Roles
 
-Rather than giving one account all the power, PurveX Financial splits administrative access into three levels, and the point of the split is to limit how far a compromised login can reach.
+Rather than giving one account all the power, PurveX Financial splits administrative access into three levels. The point of the split is to limit how far a compromised login can reach.
 
 | Access Level | Controls | Cannot Touch |
 | ----- | ----- | ----- |
@@ -16,8 +16,9 @@ Rather than giving one account all the power, PurveX Financial splits administra
 Reading the table from the bottom up, a Helpdesk login should never touch a server or the Domain Controller. So if you ever see one doing that, the activity doesn't match this table, and that mismatch is where your questions should start.
 
 ```sort
-prompt: Which access level controls each one?
-Level 1 · Domain Admin: The Domain Controller | Active Directory itself
-Level 2 · Server Admin: Application servers | File servers
-Level 3 · Helpdesk: Workstations | Password resets | Local support
+prompt: Requests are waiting. Which level should handle each one?
+level: 2
+Level 1 · Domain Admin: Promote a second domain controller | Change who sits in IT Admins
+Level 2 · Server Admin: Restart the file server after patching | Install an update on the application server
+Level 3 · Helpdesk: Unlock Riley's account | Rejoin a workstation to the domain
 ```

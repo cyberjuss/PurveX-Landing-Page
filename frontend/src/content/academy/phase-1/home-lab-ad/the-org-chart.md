@@ -25,12 +25,14 @@ If those three disagree, stop before you change anything. The chart tells you ho
 
 ```sort
 prompt: Which departments are marked critical?
+level: 1
 Critical: Compliance | Wealth Management | Finance and Accounting
 Not critical: IT | Operations
 ```
 
 ```match
 prompt: Match each department to what it does.
+level: 1
 IT = Runs and supports the company's technology
 Compliance = Ensures the firm meets regulatory requirements, mainly GLBA and SOX
 Wealth Management = Client-facing financial planning for private investors

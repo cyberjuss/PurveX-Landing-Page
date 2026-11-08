@@ -59,3 +59,13 @@ Once the workstation has restarted, check that the domain knows about it. On the
 </figure>
 
 If the name is missing, the join didn't finish. Check the DNS address first, because a wrong DNS server is the most common reason a workstation can't find the domain.
+
+```order
+prompt: Put the workstation join in order.
+level: 1
+Set the workstation's DNS server to the domain controller's IP address
+Join the domain purvexfinancial.local from the Computer Name tab
+Sign in as PURVEXFINANCIAL\Administrator when asked
+Restart the workstation
+Confirm its computer object appears in the directory
+```

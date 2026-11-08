@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Build Out the Directory</h3>
 <p class="ad-brief__ask">You've read how the directory fits together. Can you build each piece of it yourself, in your own lab, and explain why it goes where it does?</p>
-<p>PurveX Financial is growing. A new IT workstation is on its way, Compliance is getting its first laptops, IT has hired a second help desk technician, and a print job needs an identity of its own, so your job this afternoon is to get the directory ready for all of it. Where a question asks you to build something, your lab has to show it before your answer counts.</p>
+<p>PurveX Financial is growing. A new IT workstation is on its way, Compliance is getting its first laptops, IT has hired a second help desk technician, and a print job needs an identity of its own. Your job this afternoon is to get the directory ready for all of it. Where a question asks you to build something, your lab has to show it before your answer counts.</p>
 </div>
 
 <div class="ad-progress">
@@ -11,7 +11,7 @@
 </div>
 
 <div class="ad-mission" data-id="dr-01" data-attempts="0">
-<span class="ad-mission__num">Task 01 · Join a Computer</span>
+<span class="ad-mission__num">Task 01 · Warm-up · Join a Computer</span>
 <h4>Pre-Stage the Workstation</h4>
 <p><strong>Priya Nair · IT · 1:05 PM</strong><br>A new workstation for the IT team, IT-WKS09, arrives tomorrow. I'd like its computer object waiting in the right folder before anyone joins it to the domain, so it picks up IT's settings from the first boot.</p>
 <p><strong>Task:</strong> Create a computer object named <code>IT-WKS09</code> in Departments, IT, Workstations. Then report the default folder a joined computer would have landed in if nobody had pre-staged it.</p>
@@ -55,7 +55,7 @@
 </div>
 
 <div class="ad-mission" data-id="dr-02" data-attempts="0">
-<span class="ad-mission__num">Task 02 · Join a Computer</span>
+<span class="ad-mission__num">Task 02 · Warm-up · Join a Computer</span>
 <h4>Point It at the Domain</h4>
 <p><strong>Priya Nair · IT · 1:12 PM</strong><br>Last time we joined a machine, it failed with "domain not found" even though the domain controller was up. I'd like the DNS setting right on IT-WKS09 before we try again.</p>
 <p><strong>Task:</strong> Report the IP address you'd enter as the Preferred DNS server on a workstation joining your domain.</p>
@@ -94,66 +94,22 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-03" data-attempts="0">
-<span class="ad-mission__num">Task 03 · Organizational Units</span>
-<h4>Give Compliance a Workstations Folder</h4>
-<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>Our first two laptops are being ordered this week. IT, Operations and Wealth Management each have a Workstations folder, and we'd like ours set up the same way.</p>
-<p><strong>Task:</strong> Create an OU named <code>Workstations</code> under Departments, Compliance, and give it a Description. Then report its path, starting from the new OU and ending at Departments.</p>
+<div class="ad-mission" data-id="dr-06" data-attempts="0">
+<span class="ad-mission__num">Task 03 · Warm-up · Accounts</span>
+<h4>Person, Machine or Job?</h4>
+<p><strong>Alex Rivera · IT · 1:48 PM</strong><br>Before Quinn starts, I'd like to be sure Quinn can tell the three kinds of account apart. Which of these is a user object that doesn't represent a person?<br><strong>A</strong> IT-WKS01<br><strong>B</strong> svc-backup-job<br><strong>C</strong> jordan.ellis</p>
+<p><strong>Task:</strong> Choose the user object that stands for a job rather than a person and type its letter.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Give Compliance a Workstations Folder" placeholder="OU=...,OU=...,OU=..." autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{OU=Workstations,OU=Compliance,OU=Departments}" data-accept="OU=Workstations,OU=Compliance,OU=Departments,DC=purvexfinancial,DC=local">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for Person, Machine or Job?" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}" data-accept="svc-backup-job">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A directory path reads from the object outward, the way an address reads from the house to the country. So the new OU comes first and Departments comes last, with <code>OU=</code> in front of each name.</p>
-<ol>
-<li>In Active Directory Users and Computers, expand Departments.</li>
-<li>Right-click Compliance, choose New, then Organizational Unit, and name it <code>Workstations</code>.</li>
-<li>Open the new OU's Properties and fill in the Description, for example "Compliance department workstation computer objects."</li>
-<li>Write the path from Workstations up to Departments, separated by commas.</li>
-</ol>
-<p>In PowerShell:</p>
-<ul>
-<li><code>New-ADOrganizationalUnit -Name "Workstations" -Path "OU=Compliance,OU=Departments,$((Get-ADDomain).DistinguishedName)" -Description "Compliance department workstation computer objects."</code></li>
-</ul>
+<p>Open each one in your directory if you're unsure. Check what kind of object it is first, and then read its name and Description.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="OU=Departments,OU=Compliance,OU=Workstations">That's the right three folders in reverse. A path starts at the object itself and works outward.</div>
-<div class="ad-miss" data-guess="workstations|compliance|compliance-workstations">Give the whole path, with OU= in front of each folder, from Workstations up to Departments.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>GTF{OU=Workstations,OU=Compliance,OU=Departments}</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>Giving every department the same layout means a GPO, a delegation or a script written for one department's Workstations folder works on all of them. Reading a path from the object outward is also how every PowerShell command and every log entry will show it to you.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Create the folder before the laptops arrive, describe what belongs in it, and pre-stage each laptop there, just as you did with IT-WKS09.</p>
-</div>
-</div>
-</div>
-</div>
-
-<div class="ad-mission" data-id="dr-04" data-attempts="0">
-<span class="ad-mission__num">Task 04 · Organizational Units</span>
-<h4>Delegate Only What Helpdesk Needs</h4>
-<p><strong>Devon Brooks · Compliance · 1:28 PM</strong><br>We'd like the Helpdesk group to be able to reset passwords for Compliance staff, and for nobody else's accounts. Where should that permission be granted?<br><strong>A</strong> On the Compliance Users group.<br><strong>B</strong> On the OU <code>OU=Users,OU=Compliance,OU=Departments</code>.<br><strong>C</strong> On the domain itself, so it covers every account.</p>
-<p><strong>Task:</strong> Choose where to delegate the permission and type its letter.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Delegate Only What Helpdesk Needs" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>The Organizational Units tab explained that you can delegate control over a single OU. Ask yourself which option covers Compliance's staff accounts and nothing more.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">A group decides what its members can reach. It isn't where you grant someone control over other accounts. Delegation attaches to the folder those accounts live in.</div>
-<div class="ad-miss" data-guess="c">That would let Helpdesk reset every password in the firm, administrators included. Delegate at the smallest folder that covers the job.</div>
+<div class="ad-miss" data-guess="a|it-wks01">IT-WKS01 isn't a user object at all. It's a computer object, which stands for a machine.</div>
+<div class="ad-miss" data-guess="c|jordan.ellis">jordan.ellis is a person, the Staff Accountant in Finance and Accounting.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -162,18 +118,51 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Delegating on the Compliance Users OU gives Helpdesk exactly the reach the request describes. Granting it at the domain would also let Helpdesk reset an administrator's password. That's one of an attacker's quickest routes to taking over a domain.</p>
+<p>A service account is built like a person's account, but nobody sits behind it. If you treat it like a person, you'll put it in staff groups it shouldn't be in, or disable it during an offboarding sweep and break the job it runs.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Run the Delegation of Control Wizard on that one OU and choose only the reset-password task. Then test it by signing in as a Helpdesk member and trying a reset outside Compliance, which should fail.</p>
+<p>Check the object type, the name and the Description before you change anything. An <code>svc-</code> prefix and a Description naming a job tell you it's a service account.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="dr-08" data-attempts="0">
+<span class="ad-mission__num">Task 04 · Warm-up · Groups</span>
+<h4>OU or Container?</h4>
+<p><strong>Priya Nair · IT · 2:02 PM</strong><br>Someone created a test account in the default Users folder last month. IT links its screen-lock GPO to <code>OU=IT</code>. Does that GPO reach the test account?</p>
+<p><strong>Task:</strong> Type <code>yes</code> or <code>no</code>.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for OU or Container?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The default Users folder is <code>CN=Users</code>. Think about what kind of folder that is and whether it sits anywhere under <code>OU=IT</code>.</p>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="yes">A GPO linked to OU=IT only reaches objects inside OU=IT. CN=Users is a Container directly under the domain, outside OU=IT altogether.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{no}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>An account left in a default Container misses every policy linked to a department OU, so it quietly runs without the screen lock and other settings its department relies on.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Move the account into the right department's Users OU, or remove it if it's a forgotten test account. Make a habit of checking the default folders for anything that shouldn't be there.</p>
 </div>
 </div>
 </div>
 </div>
 
 <div class="ad-mission" data-id="dr-05" data-attempts="0">
-<span class="ad-mission__num">Task 05 · Accounts</span>
+<span class="ad-mission__num">Task 05 · Apply it · Accounts</span>
 <h4>Create the New Hire</h4>
 <p><strong>Alex Rivera · IT · 1:40 PM</strong><br>Quinn Harper starts Monday as our second Help Desk Technician. Please create the account in IT, with the title filled in so the next person can tell what Quinn does.</p>
 <p><strong>Task:</strong> Create the user <code>quinn.harper</code> in Departments, IT, Users, with the title <code>Help Desk Technician</code>. Then report the account's full user logon name, the one with the @ in it.</p>
@@ -218,42 +207,52 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-06" data-attempts="0">
-<span class="ad-mission__num">Task 06 · Accounts</span>
-<h4>Person, Machine or Job?</h4>
-<p><strong>Alex Rivera · IT · 1:48 PM</strong><br>Before Quinn starts, I'd like to be sure Quinn can tell the three kinds of account apart. Which of these is a user object that doesn't represent a person?<br><strong>A</strong> IT-WKS01<br><strong>B</strong> svc-backup-job<br><strong>C</strong> jordan.ellis</p>
-<p><strong>Task:</strong> Choose the user object that stands for a job rather than a person and type its letter.</p>
+<div class="ad-mission" data-id="dr-03" data-attempts="0">
+<span class="ad-mission__num">Task 06 · Apply it · Organizational Units</span>
+<h4>Give Compliance a Workstations Folder</h4>
+<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>Our first two laptops are being ordered this week. IT, Operations and Wealth Management each have a Workstations folder, and we'd like ours set up the same way.</p>
+<p><strong>Task:</strong> Create an OU named <code>Workstations</code> under Departments, Compliance, and give it a Description. Then report its path, starting from the new OU and ending at Departments.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Person, Machine or Job?" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{b}" data-accept="svc-backup-job">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for Give Compliance a Workstations Folder" placeholder="OU=...,OU=...,OU=..." autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{OU=Workstations,OU=Compliance,OU=Departments}" data-accept="OU=Workstations,OU=Compliance,OU=Departments,DC=purvexfinancial,DC=local">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Open each one in your directory if you're unsure. Check what kind of object it is first, and then read its name and Description.</p>
+<p>A directory path reads from the object outward, the way an address reads from the house to the country. So the new OU comes first and Departments comes last, with <code>OU=</code> in front of each name.</p>
+<ol>
+<li>In Active Directory Users and Computers, expand Departments.</li>
+<li>Right-click Compliance, choose New, then Organizational Unit, and name it <code>Workstations</code>.</li>
+<li>Open the new OU's Properties and fill in the Description, for example "Compliance department workstation computer objects."</li>
+<li>Write the path from Workstations up to Departments, separated by commas.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>New-ADOrganizationalUnit -Name "Workstations" -Path "OU=Compliance,OU=Departments,$((Get-ADDomain).DistinguishedName)" -Description "Compliance department workstation computer objects."</code></li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a|it-wks01">IT-WKS01 isn't a user object at all. It's a computer object, which stands for a machine.</div>
-<div class="ad-miss" data-guess="c|jordan.ellis">jordan.ellis is a person, the Staff Accountant in Finance and Accounting.</div>
+<div class="ad-miss" data-guess="OU=Departments,OU=Compliance,OU=Workstations">That's the right three folders in reverse. A path starts at the object itself and works outward.</div>
+<div class="ad-miss" data-guess="workstations|compliance|compliance-workstations">Give the whole path, with OU= in front of each folder, from Workstations up to Departments.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>GTF{b}</code></p>
+<p class="ad-flag__code"><code>GTF{OU=Workstations,OU=Compliance,OU=Departments}</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>A service account is built like a person's account, but nobody sits behind it. If you treat it like a person, you'll put it in staff groups it shouldn't be in, or disable it during an offboarding sweep and break the job it runs.</p>
+<p>Giving every department the same layout means a GPO, a delegation or a script written for one department's Workstations folder works on all of them. Reading a path from the object outward is also how every PowerShell command and every log entry will show it to you.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Check the object type, the name and the Description before you change anything. An <code>svc-</code> prefix and a Description naming a job tell you it's a service account.</p>
+<p>Create the folder before the laptops arrive, describe what belongs in it, and pre-stage each laptop there, just as you did with IT-WKS09.</p>
 </div>
 </div>
 </div>
 </div>
 
 <div class="ad-mission" data-id="dr-07" data-attempts="0">
-<span class="ad-mission__num">Task 07 · Groups</span>
+<span class="ad-mission__num">Task 07 · Apply it · Groups</span>
 <h4>Mirror the Right Peer</h4>
 <p><strong>Alex Rivera · IT · 1:55 PM</strong><br>Quinn does the same job as Priya, so give Quinn the same access Priya has. Please don't copy mine. I hold more than a help desk role needs.</p>
 <p><strong>Task:</strong> Add quinn.harper to the same department group as priya.nair. Then report the group alex.rivera has that Quinn must not get.</p>
@@ -296,41 +295,8 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-08" data-attempts="0">
-<span class="ad-mission__num">Task 08 · Groups</span>
-<h4>OU or Container?</h4>
-<p><strong>Priya Nair · IT · 2:02 PM</strong><br>Someone created a test account in the default Users folder last month. IT links its screen-lock GPO to <code>OU=IT</code>. Does that GPO reach the test account?</p>
-<p><strong>Task:</strong> Type <code>yes</code> or <code>no</code>.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for OU or Container?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>The default Users folder is <code>CN=Users</code>. Think about what kind of folder that is and whether it sits anywhere under <code>OU=IT</code>.</p>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="yes">A GPO linked to OU=IT only reaches objects inside OU=IT. CN=Users is a Container directly under the domain, outside OU=IT altogether.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>GTF{no}</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>An account left in a default Container misses every policy linked to a department OU, so it quietly runs without the screen lock and other settings its department relies on.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Move the account into the right department's Users OU, or remove it if it's a forgotten test account. Make a habit of checking the default folders for anything that shouldn't be there.</p>
-</div>
-</div>
-</div>
-</div>
-
 <div class="ad-mission" data-id="dr-09" data-attempts="0">
-<span class="ad-mission__num">Task 09 · Service Accounts</span>
+<span class="ad-mission__num">Task 08 · Apply it · Service Accounts</span>
 <h4>Create the Service Account</h4>
 <p><strong>Alex Rivera · IT · 2:15 PM</strong><br>We're scheduling a nightly job on IT-WKS01 that clears stuck print jobs between 02:00 and 02:30. It needs its own identity, built the way the Service Accounts tab describes.</p>
 <p><strong>Task:</strong> Create <code>svc-print-queue</code> in the ServiceAccounts OU, with a password that never expires and a Description that names the print job it runs. Then report the account setting that limits what times it's allowed to sign in.</p>
@@ -374,7 +340,7 @@
 </div>
 
 <div class="ad-mission" data-id="dr-10" data-attempts="0">
-<span class="ad-mission__num">Task 10 · Service Accounts</span>
+<span class="ad-mission__num">Task 09 · Stretch · Service Accounts</span>
 <h4>A Job Running Outside Its Window</h4>
 <p><strong>SOC Queue · Alert Review · 2:22 PM</strong><br>The Security log shows an interactive sign-in by <code>svc-print-queue</code> at 2:15 PM. Its Description says it runs from 02:00 to 02:30. What should you make of that?<br><strong>A</strong> It's normal, because service accounts sign in whenever they need to.<br><strong>B</strong> It's a red flag. Find out who or what signed in, and from where, before anything else.<br><strong>C</strong> Widen the account's Logon Hours so the alert stops.</p>
 <p><strong>Task:</strong> Choose the right reading and type its letter.</p>
@@ -407,8 +373,42 @@
 </div>
 </div>
 
+<div class="ad-mission" data-id="dr-04" data-attempts="0">
+<span class="ad-mission__num">Task 10 · Stretch · Organizational Units</span>
+<h4>Delegate Only What Helpdesk Needs</h4>
+<p><strong>Devon Brooks · Compliance · 1:28 PM</strong><br>We'd like the Helpdesk group to be able to reset passwords for Compliance staff, and for nobody else's accounts. Where should that permission be granted?<br><strong>A</strong> On the Compliance Users group.<br><strong>B</strong> On the OU <code>OU=Users,OU=Compliance,OU=Departments</code>.<br><strong>C</strong> On the domain itself, so it covers every account.</p>
+<p><strong>Task:</strong> Choose where to delegate the permission and type its letter.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for Delegate Only What Helpdesk Needs" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>The Organizational Units tab explained that you can delegate control over a single OU. Ask yourself which option covers Compliance's staff accounts and nothing more.</p>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="a">A group decides what its members can reach. It isn't where you grant someone control over other accounts. Delegation attaches to the folder those accounts live in.</div>
+<div class="ad-miss" data-guess="c">That would let Helpdesk reset every password in the firm, administrators included. Delegate at the smallest folder that covers the job.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{b}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Delegating on the Compliance Users OU gives Helpdesk exactly the reach the request describes. Granting it at the domain would also let Helpdesk reset an administrator's password. That's one of an attacker's quickest routes to taking over a domain.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Run the Delegation of Control Wizard on that one OU and choose only the reset-password task. Then test it by signing in as a Helpdesk member and trying a reset outside Compliance, which should fail.</p>
+</div>
+</div>
+</div>
+</div>
+
 <div class="ad-mission" data-id="dr-11" data-attempts="0">
-<span class="ad-mission__num">Task 11 · Group Policy</span>
+<span class="ad-mission__num">Task 11 · Stretch · Group Policy</span>
 <h4>Link the Policy</h4>
 <p><strong>Devon Brooks · Compliance · 2:35 PM</strong><br>Our laptops will need settings of their own, separate from everyone else's. Please create a GPO for them and attach it to the folder you made earlier, so it's ready when the laptops arrive.</p>
 <p><strong>Task:</strong> Create a GPO named <code>PurveX - Compliance Workstations</code> and link it to Departments, Compliance, Workstations. A GPO can link to an OU, to the domain and to one other kind of object. Report that third kind.</p>
@@ -452,7 +452,7 @@
 </div>
 
 <div class="ad-mission ad-mission--capstone" data-id="dr-12" data-attempts="0">
-<span class="ad-mission__num">Task 12 · Group Policy</span>
+<span class="ad-mission__num">Task 12 · Stretch · Group Policy</span>
 <h4>The Password Rule That Will Not Apply</h4>
 <p><strong>Devon Brooks · Compliance · 2:50 PM</strong><br>The auditors want Compliance staff on 16-character passwords, while everyone else stays on the firm's standard. Someone suggested putting a password setting in a GPO linked to <code>OU=Compliance</code>. Will that work?<br><strong>A</strong> Yes. A GPO linked to the OU applies to every account in it.<br><strong>B</strong> No. Domain password policy only applies from the domain level, so use a fine-grained password policy that targets Compliance instead.<br><strong>C</strong> Only if security filtering limits the GPO to Compliance Users.</p>
 <p><strong>Task:</strong> Choose the approach that will work and type its letter.</p>

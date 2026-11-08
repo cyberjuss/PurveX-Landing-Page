@@ -5,7 +5,7 @@
 
 ### User Accounts
 
-A **user account** represents a person in the directory, and `jordan.ellis` is how you'd find Jordan Ellis. It's the object you'll open on most tickets: its folder tells you where the person lives, and its Member Of tab tells you what they can reach. Their title, on the other hand, is just a field on the account, so when a ticket names a person, check the folder and Member Of against The Environment tab rather than trusting the title.
+A **user account** represents a person in the directory, and `jordan.ellis` is how you'd find Jordan Ellis. It's the object you'll open on most tickets: its folder tells you where the person lives, and its Member Of tab tells you what they can reach. Their title, on the other hand, is just a field on the account. So when a ticket names a person, check the folder and Member Of against The Environment tab rather than trusting the title.
 
 ### Computer Objects
 
@@ -14,3 +14,11 @@ Machines get accounts too. A **computer object** represents a machine in the sam
 ### Service Accounts
 
 There's a third kind to know about. A **service account** is a user object that gives an identity to a job, such as a scheduled task, rather than to a person. This lab's is `svc-backup-job`, and because it isn't a person, it doesn't belong in a staff group. So if you find it in `IT Users`, that's leftover access, not someone who works in IT.
+
+```sort
+prompt: Person, machine or job? Sort each object you might open.
+level: 1
+Person: jordan.ellis | maya.okafor
+Machine: IT-WKS01 | OPS-WKS03
+Job: svc-settlements | An account that signs in at 2 AM to run a scheduled report
+```

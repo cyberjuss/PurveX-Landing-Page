@@ -1,6 +1,6 @@
 ### The Environment
 
-This page lists every user account and workstation the build script creates, with the totals at the end. Try to learn the roster well enough that you'd notice if someone were missing, so that if your directory and this page ever disagree, you know to stop and find out why.
+This page lists every user account and workstation the build script creates, with the totals at the end. Try to learn the roster well enough that you'd notice if someone were missing. Then, if your directory and this page ever disagree, you'll know to stop and find out why.
 
 ### Full User Directory
 
@@ -18,7 +18,7 @@ This page lists every user account and workstation the build script creates, wit
 
 Each of the nine users sits in one standard group, with one exception: Alex Rivera also holds IT Admins. That's worth remembering, because unusual activity on Alex's account carries more risk than the same activity on Jordan's.
 
-Notice, too, that a title isn't a group. Priya Nair is a Help Desk Technician, yet she sits in IT Users rather than Helpdesk, so when a ticket names a person, read the account's Member Of list rather than guessing their access from their title.
+Notice, too, that a title isn't a group. Priya Nair is a Help Desk Technician, yet she sits in IT Users rather than Helpdesk. So when a ticket names a person, read the account's Member Of list rather than guessing their access from their title.
 
 ### The Client Workstation
 
@@ -52,3 +52,10 @@ Finally, the Range download also plants the following objects for the Ticket Que
 - A contractor account, `kai.mendes`, and one more staff account, `noah.kim`
 - Three more computer objects: `WM-WKS07`, `OPS-WKS03` and a new laptop that still has to be filed
 - Two DNS records, a firewall rule, a screen lock GPO and a Finance share under `C:\PurveX` on the domain controller
+
+```sort
+prompt: You're checking the directory against this page. Does each finding fit the baseline, or does it need a question?
+level: 3
+Fits the baseline: alex.rivera is in IT Users and IT Admins | IT-WKS01 sits in the IT Workstations folder | jordan.ellis is in Finance Accounting Users
+Needs a question: jordan.ellis has turned up in IT Admins | A Wealth Management user is sitting in the Operations folder | A computer named WM-WKS07 is in the IT Workstations folder
+```

@@ -31,3 +31,12 @@ Bigger changes, like a transfer between departments, take more than an edit. The
 Picture Taylor Osei transferring from Operations to Compliance. You'd move the account to `OU=Users,OU=Compliance,OU=Departments`, then open that OU and confirm Taylor is there. A common mistake is updating the job title without moving the account, which leaves the old department's policies in effect.
 
 Even moving the account is only half of a transfer, though, because the OU sets location and policy, not access. Taylor also needs `Compliance Users` added and `Operations Users` removed in the same change, or the old department's access comes along for the ride. That answers this tab's question: the transfer is only finished when both the folder and Member Of match the new job.
+
+```order
+prompt: Taylor Osei is moving from Operations to Compliance. Put the transfer in order.
+level: 3
+Move the account into OU=Users,OU=Compliance,OU=Departments
+Add Taylor to Compliance Users
+Remove Taylor from Operations Users
+Read the folder and Member Of to confirm both match the new job
+```

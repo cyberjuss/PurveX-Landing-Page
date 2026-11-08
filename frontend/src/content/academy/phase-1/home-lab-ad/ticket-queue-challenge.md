@@ -11,7 +11,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-01" data-attempts="0">
-<span class="ad-mission__num">Ticket 01 · INC-1041 · Low</span>
+<span class="ad-mission__num">Ticket 01 · Warm-up · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
 <p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email. Everyone else on my team has. Can you check my access?</p>
 <p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if she is missing. Then report how many members the group has.</p>
@@ -52,7 +52,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-02" data-attempts="0">
-<span class="ad-mission__num">Ticket 02 · INC-1042 · Low</span>
+<span class="ad-mission__num">Ticket 02 · Warm-up · INC-1042 · Low</span>
 <h4>Locked Out</h4>
 <p><strong>Riley Kwan · Operations · 8:47 AM</strong><br>It will not let me sign in. I have typed my password wrong a few times, so I think I locked myself out. Can you unlock me?</p>
 <p><strong>Task:</strong> Open Riley's account before you take the action she asked for. Restore sign-in if something is blocking her, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
@@ -97,7 +97,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-03" data-attempts="0">
-<span class="ad-mission__num">Ticket 03 · INC-1043 · Medium</span>
+<span class="ad-mission__num">Ticket 03 · Apply it · INC-1043 · Medium</span>
 <h4>New Hire Access</h4>
 <p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today and needs the same access as the rest of the IT team. I also suspect a few old accounts are still sitting in IT Users.</p>
 <p><strong>Task:</strong> Create <code>casey.reed</code> with IT Users only and remove anyone from <code>IT Users</code> who is not a current IT person. Before you delete the leftover intern account, report the ticket number written in its Description.</p>
@@ -142,7 +142,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-04" data-attempts="0">
-<span class="ad-mission__num">Ticket 04 · INC-1044 · Medium</span>
+<span class="ad-mission__num">Ticket 04 · Apply it · INC-1044 · Medium</span>
 <h4>The Backup Account</h4>
 <p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br>Our review of <code>svc-backup-job</code> found no approved run window on the account, so we cannot sign off on it. IT tells us the approved hours were recorded in the directory when the account was set up.</p>
 <p><strong>Task:</strong> Find the approved run window on the folder that holds <code>svc-backup-job</code> and write it on the account's Description. Then type the same window here in the format 00:00-00:00.</p>
@@ -183,7 +183,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-05" data-attempts="0">
-<span class="ad-mission__num">Ticket 05 · INC-1045 · High</span>
+<span class="ad-mission__num">Ticket 05 · Apply it · INC-1045 · High</span>
 <h4>The Transfer That Did Not Happen</h4>
 <p><strong>Human Resources · Transfer notice · 11:20 AM</strong><br>Taylor Osei transferred from Operations to Compliance, effective today. Taylor reports to the Compliance manager now and starts on Compliance work this morning.</p>
 <p><strong>Task:</strong> Move Taylor's account into the Compliance Users folder and swap the department groups. Then report the title still written on <code>taylor.osei</code>, because an HR notice does not update every field.</p>
@@ -225,7 +225,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-11" data-attempts="0">
-<span class="ad-mission__num">Ticket 06 · INC-1047 · Medium</span>
+<span class="ad-mission__num">Ticket 06 · Apply it · INC-1047 · Medium</span>
 <h4>Contractor Offboarding</h4>
 <p><strong>Operations Manager · Operations · 4:40 PM</strong><br>Kai Mendes was a contractor helping the settlements team, and the engagement is now over. We will still need Kai's records for the final invoice review next month.</p>
 <p><strong>Task:</strong> Disable <code>kai.mendes</code> and remove it from <code>Operations Users</code> without deleting the account. Then report the sponsor named in the account's Description.</p>
@@ -272,7 +272,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-12" data-attempts="0">
-<span class="ad-mission__num">Ticket 07 · INC-1048 · Medium</span>
+<span class="ad-mission__num">Ticket 07 · Apply it · INC-1048 · Medium</span>
 <h4>Admin Rights Request</h4>
 <p><strong>Sam Whitfield · Wealth Management · 9:58 AM</strong><br>I need a charting tool installed before a client meeting this afternoon and the IT queue is backed up. A colleague said that if I am in the Server Admins group I can install it myself. Can you add me?</p>
 <p><strong>Task:</strong> Read the Description on <code>Server Admins</code> before you decide. Leave Sam's groups as they are and report the access level the group grants as a number.</p>
@@ -314,7 +314,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-13" data-attempts="0">
-<span class="ad-mission__num">Ticket 08 · INC-1049 · Medium</span>
+<span class="ad-mission__num">Ticket 08 · Apply it · INC-1049 · Medium</span>
 <h4>Audit Finding</h4>
 <p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our quarterly review found a staff account whose password never expires. Policy allows that setting only on service accounts.</p>
 <p><strong>Task:</strong> Find the staff account with Password never expires set and clear the setting without disabling the account. Then report its username.</p>
@@ -359,7 +359,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-14" data-attempts="0">
-<span class="ad-mission__num">Ticket 09 · INC-1050 · Low</span>
+<span class="ad-mission__num">Ticket 09 · Apply it · INC-1050 · Low</span>
 <h4>New Laptop Missing Policies</h4>
 <p><strong>Jordan Ellis · Finance and Accounting · 8:20 AM</strong><br>My new laptop FIN-LT14 is joined to the domain, but I still do not have the Finance drive maps my old one had. Can you take a look?</p>
 <p><strong>Task:</strong> Find where <code>FIN-LT14</code> sits in the directory and move it to Departments → FinanceAccounting → Workstations. Then report the name of the folder it was sitting in.</p>
@@ -404,53 +404,53 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="tq-15" data-attempts="0">
-<span class="ad-mission__num">Ticket 10 · INC-1051 · High</span>
-<h4>Group Cannot Open the Share</h4>
-<p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>IT created a Finance Reports group last week so our team could read the reports share. Jordan and Devon are both in it, but neither of them can open the share.</p>
-<p><strong>Task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members. Then report how many members it has.</p>
+<div class="ad-mission" data-id="tq-25" data-attempts="0">
+<span class="ad-mission__num">Ticket 10 · Apply it · INC-1063 · Low</span>
+<h4>A Workstation Nobody Uses</h4>
+<p><strong>Morgan Lee · Operations · 1:30 PM</strong><br>We are tidying up our asset list. One of the Operations machines in the directory went back to the leasing company months ago, but it still looks active to us. Can you close it off properly?</p>
+<p><strong>Task:</strong> Find the dormant Operations workstation, read its Description, and disable the computer object without deleting it. Then report the ticket number written in the Description.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Group Cannot Open the Share" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for A Workstation Nobody Uses" placeholder="a ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{CTF-TICKET-201}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Only one kind of group can grant permissions, so check the Group type on the General tab.</p>
+<p>Computers live in OUs just as users do, and this one is in the Operations department's Workstations folder.</p>
 <ol>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Expand AccessLevels and open <code>Finance Reports</code>.</li>
-<li>On the General tab, change Group type from Distribution to Security and click Apply.</li>
-<li>Reopen the group and confirm the General tab now reads Security.</li>
-<li>Count the entries on the Members tab.</li>
+<li>Expand Departments, Operations, Workstations.</li>
+<li>Open the computer Properties and read the Description on the General tab.</li>
+<li>Right-click it and choose Disable Account. Do not delete it.</li>
 </ol>
 <p>In PowerShell:</p>
 <ul>
-<li><code>Set-ADGroup "Finance Reports" -GroupCategory Security</code></li>
+<li><code>Get-ADComputer OPS-WKS03 -Properties Description,LastLogonDate | Select-Object Name,Description,LastLogonDate,Enabled</code></li>
+<li><code>Get-ADComputer OPS-WKS03 | Disable-ADAccount</code></li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="security|distribution">That explains the fault. Report how many members the group has as a number.</div>
-<div class="ad-miss" data-guess="#">Count the entries on the Members tab of Finance Reports. Changing the group type does not change who is in it.</div>
+<div class="ad-miss" data-guess="ops-wks03">That is the computer name. The ticket number is written in its Description.</div>
+<div class="ad-miss" data-guess="wm-wks07">WM-WKS07 belongs to Wealth Management and is still in use. Look in the Operations Workstations folder.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>GTF{2}</code></p>
+<p class="ad-flag__code"><code>GTF{CTF-TICKET-201}</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>A distribution group is for email and can't grant access, so every permission set on it did nothing. That matters beyond the inconvenience, because people blocked from files they need start looking for workarounds that skip security.</p>
+<p>A computer object that nobody uses keeps its place in the domain, so a machine that left the building still has an account that can authenticate. Old objects are also a good place for an attacker to hide: a name on the list that nobody questions, because it's always been there.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>The fix is to convert the group to a Security group, keeping its members, and then confirm the share permission names the group.</p>
+<p>So disable it rather than deleting it, which keeps the record in case someone later asks what happened to the asset. Only delete it after a waiting period, once you're sure nothing depended on it.</p>
 </div>
 </div>
 </div>
 </div>
 
 <div class="ad-mission" data-id="tq-16" data-attempts="0">
-<span class="ad-mission__num">Ticket 11 · INC-1052 · High</span>
+<span class="ad-mission__num">Ticket 11 · Apply it · INC-1052 · High</span>
 <h4>Share Will Not Open by Name</h4>
 <p><strong>Riley Kwan · Operations · 8:05 AM</strong><br>None of us can open the shared drive at \\files this morning. Typing the server's IP address works, but the name times out.</p>
 <p><strong>Task:</strong> Find what the name <code>files</code> resolves to and correct its DNS record so it points at the domain controller, which hosts the shares. Then report the wrong address the record held.</p>
@@ -494,53 +494,8 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="tq-20" data-attempts="0">
-<span class="ad-mission__num">Ticket 12 · INC-1056 · High</span>
-<h4>Payroll Works for Some People</h4>
-<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>The payroll portal at payroll.purvexfinancial.local opens fine for me, but Morgan sitting next to me gets a timeout. When Morgan refreshes a few times it sometimes loads. IT moved payroll to a new server last month.</p>
-<p><strong>Task:</strong> Find why the name <code>payroll</code> resolves differently between attempts and remove the stale record, so the name points only at the domain controller. In this lab the domain controller stands in for the new payroll server. Report the stale record's address.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Payroll Works for Some People" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{192.0.2.80}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>When a name has two A records, DNS hands them out in turn, which is called round robin. So if one of those addresses belongs to a server that no longer exists, every other lookup fails.</p>
-<ol>
-<li>On the domain controller run <code>Resolve-DnsName payroll</code> and look at how many addresses come back.</li>
-<li>Run <code>ipconfig</code> to find the domain controller's own address, then test the other one with <code>Test-NetConnection</code>.</li>
-<li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, then go to Forward Lookup Zones → <code>purvexfinancial.local</code>.</li>
-<li>Two rows are named payroll. Read the Data column and delete only the one holding the address that no longer answers.</li>
-<li>Clients cache answers, so <code>ipconfig /flushdns</code> clears the old address from a machine that still has it.</li>
-</ol>
-<p>In PowerShell:</p>
-<ul>
-<li><code>Get-DnsServerResourceRecord -ZoneName purvexfinancial.local -Name payroll -RRType A</code></li>
-</ul>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="@dcip">That is the domain controller's address, which is the record to keep. Report the address of the record you removed.</div>
-<div class="ad-miss" data-guess="192.0.2.50">That address belongs to the files record. Report the second address that payroll returned.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>GTF{192.0.2.80}</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>The old server's record survived the migration, so roughly every other lookup sent people to a machine that no longer exists. Intermittent failures like this burn hours, because the fault doesn't show up when someone tests it just once.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>So delete the stale record, and flush the cache on any client that still fails. Going forward, removing old records should be part of every server migration, and DNS scavenging can catch the ones people forget.</p>
-</div>
-</div>
-</div>
-</div>
-
 <div class="ad-mission" data-id="tq-17" data-attempts="0">
-<span class="ad-mission__num">Ticket 13 · INC-1053 · High</span>
+<span class="ad-mission__num">Ticket 12 · Apply it · INC-1053 · High</span>
 <h4>Vendor Remote Access Left Open</h4>
 <p><strong>Vendor Management · Vendor offboarding · 9:30 AM</strong><br>Northwind Advisory finished its support engagement last week. While it ran, IT opened remote access on the domain controller so their engineer could connect from home. We are closing out the vendor file now.</p>
 <p><strong>Task:</strong> Find the inbound firewall rule on the domain controller that was opened for the vendor and disable it. Leave the built-in Remote Desktop rules alone, then report the port the vendor rule allowed.</p>
@@ -585,7 +540,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-18" data-attempts="0">
-<span class="ad-mission__num">Ticket 14 · INC-1054 · Medium</span>
+<span class="ad-mission__num">Ticket 13 · Apply it · INC-1054 · Medium</span>
 <h4>Screens That Never Lock</h4>
 <p><strong>Internal Audit · Control test · 3:40 PM</strong><br>Finance workstations are supposed to lock after ten minutes, but every Finance screen we tested stayed open over lunch. Operations staff mentioned their screens lock sooner than they would like.</p>
 <p><strong>Task:</strong> Find the screen lock GPO and link it to the Finance and Accounting OU, then remove its link from the wrong department. Report the name of the OU it was linked to.</p>
@@ -630,8 +585,8 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="tq-19" data-attempts="0">
-<span class="ad-mission__num">Ticket 15 · INC-1055 · Critical</span>
+<div class="ad-mission" data-id="tq-19" data-attempts="0">
+<span class="ad-mission__num">Ticket 14 · Apply it · INC-1055 · Critical</span>
 <h4>The Invoice Nobody Saved</h4>
 <p><strong>Jordan Ellis · Finance and Accounting · 7:50 AM</strong><br>There is a new invoice on our Finance share that nobody remembers saving. I double-clicked it to check the amount and nothing happened.</p>
 <p><strong>Task:</strong> Find the suspicious file in <code>C:\PurveX\Shares\Finance</code> on the domain controller and move it to <code>C:\PurveX\Quarantine</code> without opening it. Then report its full file name with every extension.</p>
@@ -675,8 +630,143 @@
 </div>
 </div>
 
+<div class="ad-mission" data-id="tq-23" data-attempts="0">
+<span class="ad-mission__num">Ticket 15 · Apply it · INC-1061 · Medium</span>
+<h4>The Security Log Runs Out</h4>
+<p><strong>Priya Nair · IT · 4:05 PM</strong><br>I went looking for a sign-in from last week and the Security log does not go back that far any more. It seems to be overwriting itself after a couple of days.</p>
+<p><strong>Task:</strong> Raise the Security log maximum size on the domain controller to at least 512 MB. Then report the size in MB it was set to before you changed it.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for The Security Log Runs Out" placeholder="a number of MB" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{128}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Read the old size before you change it, because once it's raised, the original value is gone.</p>
+<ol>
+<li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>.</li>
+<li>Expand Windows Logs, right-click <strong>Security</strong> and choose Properties.</li>
+<li>Note the current maximum log size, then raise it to 524288 KB or more.</li>
+<li>Leave the policy as overwrite as needed, so the log never stops accepting events.</li>
+</ol>
+<p>In PowerShell, which reports bytes:</p>
+<ul>
+<li><code>Get-WinEvent -ListLog Security | Select-Object MaximumSizeInBytes</code></li>
+<li><code>Limit-EventLog -LogName Security -MaximumSize 512MB</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="512|1024">That is the size you set it to. The ticket asks what it was before.</div>
+<div class="ad-miss" data-guess="134217728|131072">Convert it to whole megabytes and report the number on its own.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{128}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A busy domain controller fills 128 MB in a day or two, so the log quietly destroys its own oldest evidence. That's a real problem, because most intrusions are found weeks after they start, by which point the record of the first day has already been overwritten.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>So raise the size, but treat it as a stopgap. The real answer is to send events off the machine as they happen, because a log that lives only on the host is also a log an attacker can clear.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-15" data-attempts="0">
+<span class="ad-mission__num">Ticket 16 · Stretch · INC-1051 · High</span>
+<h4>Group Cannot Open the Share</h4>
+<p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>IT created a Finance Reports group last week so our team could read the reports share. Jordan and Devon are both in it, but neither of them can open the share.</p>
+<p><strong>Task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members. Then report how many members it has.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for Group Cannot Open the Share" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Only one kind of group can grant permissions, so check the Group type on the General tab.</p>
+<ol>
+<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
+<li>Expand AccessLevels and open <code>Finance Reports</code>.</li>
+<li>On the General tab, change Group type from Distribution to Security and click Apply.</li>
+<li>Reopen the group and confirm the General tab now reads Security.</li>
+<li>Count the entries on the Members tab.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Set-ADGroup "Finance Reports" -GroupCategory Security</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="security|distribution">That explains the fault. Report how many members the group has as a number.</div>
+<div class="ad-miss" data-guess="#">Count the entries on the Members tab of Finance Reports. Changing the group type does not change who is in it.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{2}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>A distribution group is for email and can't grant access, so every permission set on it did nothing. That matters beyond the inconvenience, because people blocked from files they need start looking for workarounds that skip security.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>The fix is to convert the group to a Security group, keeping its members, and then confirm the share permission names the group.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="tq-20" data-attempts="0">
+<span class="ad-mission__num">Ticket 17 · Stretch · INC-1056 · High</span>
+<h4>Payroll Works for Some People</h4>
+<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>The payroll portal at payroll.purvexfinancial.local opens fine for me, but Morgan sitting next to me gets a timeout. When Morgan refreshes a few times it sometimes loads. IT moved payroll to a new server last month.</p>
+<p><strong>Task:</strong> Find why the name <code>payroll</code> resolves differently between attempts and remove the stale record, so the name points only at the domain controller. In this lab the domain controller stands in for the new payroll server. Report the stale record's address.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for Payroll Works for Some People" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{192.0.2.80}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>When a name has two A records, DNS hands them out in turn, which is called round robin. So if one of those addresses belongs to a server that no longer exists, every other lookup fails.</p>
+<ol>
+<li>On the domain controller run <code>Resolve-DnsName payroll</code> and look at how many addresses come back.</li>
+<li>Run <code>ipconfig</code> to find the domain controller's own address, then test the other one with <code>Test-NetConnection</code>.</li>
+<li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, then go to Forward Lookup Zones → <code>purvexfinancial.local</code>.</li>
+<li>Two rows are named payroll. Read the Data column and delete only the one holding the address that no longer answers.</li>
+<li>Clients cache answers, so <code>ipconfig /flushdns</code> clears the old address from a machine that still has it.</li>
+</ol>
+<p>In PowerShell:</p>
+<ul>
+<li><code>Get-DnsServerResourceRecord -ZoneName purvexfinancial.local -Name payroll -RRType A</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="@dcip">That is the domain controller's address, which is the record to keep. Report the address of the record you removed.</div>
+<div class="ad-miss" data-guess="192.0.2.50">That address belongs to the files record. Report the second address that payroll returned.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{192.0.2.80}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>The old server's record survived the migration, so roughly every other lookup sent people to a machine that no longer exists. Intermittent failures like this burn hours, because the fault doesn't show up when someone tests it just once.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>So delete the stale record, and flush the cache on any client that still fails. Going forward, removing old records should be part of every server migration, and DNS scavenging can catch the ones people forget.</p>
+</div>
+</div>
+</div>
+</div>
+
 <div class="ad-mission" data-id="tq-21" data-attempts="0">
-<span class="ad-mission__num">Ticket 16 · INC-1059 · High</span>
+<span class="ad-mission__num">Ticket 18 · Stretch · INC-1059 · High</span>
 <h4>Nothing Stops Password Guessing</h4>
 <p><strong>Priya Nair · IT · 9:40 AM</strong><br>Our insurer sent over a security questionnaire and one question is whether accounts lock after repeated failed sign-ins. I checked and I do not think ours do at all. Can you confirm and sort it if not?</p>
 <p><strong>Task:</strong> Set a domain lockout policy that locks an account after 10 wrong passwords or fewer, for at least 15 minutes, with the count resetting no sooner than 15 minutes. Then report the event ID a domain controller writes when an account is locked out.</p>
@@ -722,7 +812,7 @@
 </div>
 
 <div class="ad-mission" data-id="tq-22" data-attempts="0">
-<span class="ad-mission__num">Ticket 17 · INC-1060 · High</span>
+<span class="ad-mission__num">Ticket 19 · Stretch · INC-1060 · High</span>
 <h4>No Record of What Ran</h4>
 <p><strong>Devon Brooks · Compliance · 2:15 PM</strong><br>We were asked which programs ran on the domain controller last Tuesday and nobody can answer. I was told the information is simply not being collected. If that is right we need it turned on before the next review.</p>
 <p><strong>Task:</strong> Turn on auditing so the domain controller records every process that starts. Then report the event ID that records a new process.</p>
@@ -762,53 +852,8 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="tq-23" data-attempts="0">
-<span class="ad-mission__num">Ticket 18 · INC-1061 · Medium</span>
-<h4>The Security Log Runs Out</h4>
-<p><strong>Priya Nair · IT · 4:05 PM</strong><br>I went looking for a sign-in from last week and the Security log does not go back that far any more. It seems to be overwriting itself after a couple of days.</p>
-<p><strong>Task:</strong> Raise the Security log maximum size on the domain controller to at least 512 MB. Then report the size in MB it was set to before you changed it.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for The Security Log Runs Out" placeholder="a number of MB" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{128}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>Read the old size before you change it, because once it's raised, the original value is gone.</p>
-<ol>
-<li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>.</li>
-<li>Expand Windows Logs, right-click <strong>Security</strong> and choose Properties.</li>
-<li>Note the current maximum log size, then raise it to 524288 KB or more.</li>
-<li>Leave the policy as overwrite as needed, so the log never stops accepting events.</li>
-</ol>
-<p>In PowerShell, which reports bytes:</p>
-<ul>
-<li><code>Get-WinEvent -ListLog Security | Select-Object MaximumSizeInBytes</code></li>
-<li><code>Limit-EventLog -LogName Security -MaximumSize 512MB</code></li>
-</ul>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="512|1024">That is the size you set it to. The ticket asks what it was before.</div>
-<div class="ad-miss" data-guess="134217728|131072">Convert it to whole megabytes and report the number on its own.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>GTF{128}</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>A busy domain controller fills 128 MB in a day or two, so the log quietly destroys its own oldest evidence. That's a real problem, because most intrusions are found weeks after they start, by which point the record of the first day has already been overwritten.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>So raise the size, but treat it as a stopgap. The real answer is to send events off the machine as they happen, because a log that lives only on the host is also a log an attacker can clear.</p>
-</div>
-</div>
-</div>
-</div>
-
-<div class="ad-mission" data-id="tq-24" data-attempts="0">
-<span class="ad-mission__num">Ticket 19 · INC-1062 · High</span>
+<div class="ad-mission ad-mission--capstone" data-id="tq-24" data-attempts="0">
+<span class="ad-mission__num">Ticket 20 · Stretch · INC-1062 · High</span>
 <h4>Admins Under the Same Rules as Everyone</h4>
 <p><strong>Alex Rivera · IT · 10:20 AM</strong><br>The audit flagged that our administrator accounts follow the same password rules as every other user. They want the accounts that can change the domain held to something stronger.</p>
 <p><strong>Task:</strong> Apply a fine-grained password policy of at least 16 characters, locking after 5 wrong passwords or fewer, to the IT administrators group. Then report the name of the group you applied it to.</p>
@@ -848,51 +893,6 @@
 <div>
 <span>What to do</span>
 <p>So apply a stricter policy to the admin group, then check that it took effect by reading the resultant policy on one of those accounts. A policy that exists but applies to nobody is the common mistake here.</p>
-</div>
-</div>
-</div>
-</div>
-
-<div class="ad-mission" data-id="tq-25" data-attempts="0">
-<span class="ad-mission__num">Ticket 20 · INC-1063 · Low</span>
-<h4>A Workstation Nobody Uses</h4>
-<p><strong>Morgan Lee · Operations · 1:30 PM</strong><br>We are tidying up our asset list. One of the Operations machines in the directory went back to the leasing company months ago, but it still looks active to us. Can you close it off properly?</p>
-<p><strong>Task:</strong> Find the dormant Operations workstation, read its Description, and disable the computer object without deleting it. Then report the ticket number written in the Description.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for A Workstation Nobody Uses" placeholder="a ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{CTF-TICKET-201}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>Computers live in OUs just as users do, and this one is in the Operations department's Workstations folder.</p>
-<ol>
-<li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Expand Departments, Operations, Workstations.</li>
-<li>Open the computer Properties and read the Description on the General tab.</li>
-<li>Right-click it and choose Disable Account. Do not delete it.</li>
-</ol>
-<p>In PowerShell:</p>
-<ul>
-<li><code>Get-ADComputer OPS-WKS03 -Properties Description,LastLogonDate | Select-Object Name,Description,LastLogonDate,Enabled</code></li>
-<li><code>Get-ADComputer OPS-WKS03 | Disable-ADAccount</code></li>
-</ul>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="ops-wks03">That is the computer name. The ticket number is written in its Description.</div>
-<div class="ad-miss" data-guess="wm-wks07">WM-WKS07 belongs to Wealth Management and is still in use. Look in the Operations Workstations folder.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>GTF{CTF-TICKET-201}</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>A computer object that nobody uses keeps its place in the domain, so a machine that left the building still has an account that can authenticate. Old objects are also a good place for an attacker to hide: a name on the list that nobody questions, because it's always been there.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>So disable it rather than deleting it, which keeps the record in case someone later asks what happened to the asset. Only delete it after a waiting period, once you're sure nothing depended on it.</p>
 </div>
 </div>
 </div>

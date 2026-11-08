@@ -32,4 +32,13 @@ Since Wealth Management handles so much of that data, it helps to know who it se
 | Trust and estate accounts | Accounts tied to trusts, wills, and estate planning |
 | Retirement-focused clients | Clients nearing or already in retirement |
 
-These clients are the reason Wealth Management is on the critical list, so when you size up a sign-in or group change there, measure it against this table rather than against how urgent the ticket sounds.
+These clients are the reason Wealth Management is on the critical list. So when you size up a sign-in or group change there, measure it against this table rather than against how urgent the ticket sounds.
+
+```match
+prompt: A file turned up on the wrong share. What kind of data is at risk?
+level: 2
+Personal identifying information = A spreadsheet of client names, dates of birth and Social Security numbers
+Account and portfolio data = A report of client holdings and account balances
+Internal financial records = The firm's payroll export for November
+System and access logs = An export of every admin sign-in from last month
+```

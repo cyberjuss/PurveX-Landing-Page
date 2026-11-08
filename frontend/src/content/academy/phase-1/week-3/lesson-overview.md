@@ -20,3 +20,13 @@ This week, we'll take those pieces one at a time, starting with addressing and t
 After that, the challenge puts you on the job, cleaning up after a network change that went wrong in your own lab. Nothing you find there will be labeled "malicious". Instead, you'll be looking for what doesn't fit, and that only works once you know what normal looks like at each layer.
 
 By the end of the week, every conversation in a capture should answer four questions for you. Where is it going? Which port did it use? Did the handshake complete? And could anybody watching the wire read what was said? Those answers tell you whether a conversation deserves more of your attention, and deciding that quickly is most of the job.
+
+```order
+prompt: Every conversation in a capture is built from the same pieces. Put them in the order they come together.
+level: 1
+An address, so the traffic knows where to go
+A reliable connection, set up by the handshake
+A port, which picks the service on the far machine
+A protocol, the rules for what the two sides say
+Encryption, often wrapped around all of it
+```
