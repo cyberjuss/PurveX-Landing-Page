@@ -280,8 +280,23 @@ export const READY_BADGE_ID = "readiness-badge-ready";
  * (pinReadiness, on every progress save), never taken from a browser.
  */
 export const READINESS_BEST_ID = "readiness-best";
+
+/** Levels, worst to best. Lets a floor say "at least this good" as a number. */
+const LEVEL_ORDER: Summary["level"][] = ["none", "progress", "practice", "almost", "ready"];
+const levelRank = (level: Summary["level"]) => LEVEL_ORDER.indexOf(level);
+
+/**
+ * The best level ("Almost Ready", "Keep Practicing", ...) this student has
+ * ever reached, as that level's rank in pts. READY_BADGE_ID already floors
+ * "Ready" this way; this does the same for every tier under it, because the
+ * same problem hits all of them -- new content growing `total` can otherwise
+ * drop "Almost Ready" straight back to "In progress" the moment it ships.
+ * Written by the server alone, same as READINESS_BEST_ID.
+ */
+export const LEVEL_BEST_ID = "readiness-level-best";
+
 /** Rows only the server writes. A browser's copy of these is ignored. */
-export const SERVER_MARKER_IDS: readonly string[] = [READY_BADGE_ID, READINESS_BEST_ID];
+export const SERVER_MARKER_IDS: readonly string[] = [READY_BADGE_ID, READINESS_BEST_ID, LEVEL_BEST_ID];
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
 export const LAB_PASS_IDS = [READY_BADGE_ID] as const;
@@ -487,6 +502,10 @@ export function summarize(results: Results): Summary {
   // under a smaller course did not get worse; the course got bigger. Once
   // earned, Ready floors the level here for good -- see READY_BADGE_ID.
   if (level !== "ready" && hasReadyBadge(results)) level = "ready";
+  // Same floor, every tier under Ready: `finished === total` stops holding
+  // the moment new content ships, which would otherwise drop "Almost Ready"
+  // straight back to "In progress" for a student who did nothing wrong.
+  if (levelRank(level) < levelBest(results)) level = LEVEL_ORDER[levelBest(results)];
   return { overall, accuracy, finished, total, level, skills, focus };
 }
 
@@ -496,15 +515,22 @@ export function readinessBest(results: Results): number {
   return typeof pts === "number" ? pts : 0;
 }
 
+/** The best level this student has ever reached, as a rank. See LEVEL_BEST_ID. */
+export function levelBest(results: Results): number {
+  const pts = results[LEVEL_BEST_ID]?.pts;
+  return typeof pts === "number" ? Math.min(LEVEL_ORDER.length - 1, Math.max(0, Math.round(pts))) : 0;
+}
+
 /**
- * Before a save on the server: record the Readiness score and the Ready level
- * this student has now, so neither can drop later. Only ever raises them.
+ * Before a save on the server: record the Readiness score and the level this
+ * student has now, so neither can drop later. Only ever raises them.
  */
 export function pinReadiness(results: Results): Results {
   const s = summarize(results);
   const out = { ...results };
   if (s.finished > 0 && s.overall > readinessBest(results)) out[READINESS_BEST_ID] = { solved: true, wrong: 0, hint: false, pts: s.overall, at: new Date().toISOString() };
   if (s.level === "ready" && !hasReadyBadge(results)) out[READY_BADGE_ID] = { solved: true, wrong: 0, hint: false, pts: 100, at: new Date().toISOString() };
+  if (s.finished > 0 && levelRank(s.level) > levelBest(results)) out[LEVEL_BEST_ID] = { solved: true, wrong: 0, hint: false, pts: levelRank(s.level), at: new Date().toISOString() };
   return out;
 }
 
@@ -521,7 +547,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
   if (!raw || typeof raw !== "object") return {};
   const out: Results = {};
   for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
-    if (!(id in MISSION_SKILLS || isLabPass(id) || id === READINESS_BEST_ID) || !value || typeof value !== "object") continue;
+    if (!(id in MISSION_SKILLS || isLabPass(id) || id === READINESS_BEST_ID || id === LEVEL_BEST_ID) || !value || typeof value !== "object") continue;
     const v = value as Record<string, unknown>;
     const at = typeof v.at === "string" && !Number.isNaN(new Date(v.at).getTime()) ? new Date(v.at).toISOString() : undefined;
     const flagged = v.flagged === true && v.solved !== true;
@@ -532,7 +558,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
       ...(flagged ? { flagged: true } : {}),
       ...(trustLabOk && v.labOk === true ? { labOk: true } : {}),
       ...(trustLabOk && v.labOk === true && v.labVerified === true ? { labVerified: true } : {}),
-      ...((isLabPass(id) || id === READINESS_BEST_ID) && typeof v.pts === "number" && Number.isFinite(v.pts) ? { pts: Math.min(100, Math.max(0, Math.round(v.pts))) } : {}),
+      ...((isLabPass(id) || id === READINESS_BEST_ID || id === LEVEL_BEST_ID) && typeof v.pts === "number" && Number.isFinite(v.pts) ? { pts: Math.min(100, Math.max(0, Math.round(v.pts))) } : {}),
       ...(at ? { at } : {}),
     };
   }

@@ -13,13 +13,18 @@
  */
 import {
   LAB_SKILLS,
+  LEVEL_BEST_ID,
   MISSION_SKILLS,
+  READINESS_BEST_ID,
   SCORED_SKILLS,
   SCORE_READY,
   SCORE_SOLID,
   itemPoints,
   labPoints,
+  levelBest,
   missionPoints,
+  pinReadiness,
+  readinessBest,
   sanitizeResults,
   skillCompetent,
   skillWeak,
@@ -205,6 +210,45 @@ const unstarted = student({ readiness: { overall: null, accuracy: null, level: "
   const r = rollUp([], NOW);
   t("an empty class does not divide by zero", r.avgReadiness === null && r.students === 0 && r.weakest.length === 0);
 }
+console.log("\n--- the floor: a score and level only ever rise ---");
+// New content, or a phase unlocked and relocked for testing, changes what
+// is counted without the student doing anything wrong. pinReadiness records
+// the peak; summarize must never report below it afterward, however the
+// live numbers would otherwise compute.
+{
+  const peak = pinReadiness(all((id) => clean(id)));
+  eq("a perfect pass pins the readiness best", peak[READINESS_BEST_ID]?.pts, 100);
+  eq("and pins the ready level", peak[LEVEL_BEST_ID]?.pts, 4);
+
+  // Half the missions no longer count toward either side of the ratio --
+  // the same effect on the number as the course growing around a finished
+  // student, simulated by clearing them instead of growing SCORED_SKILLS.
+  const degraded: Results = { ...peak };
+  ids.slice(0, Math.ceil(ids.length / 2)).forEach((id) => delete degraded[id]);
+  const after = summarize(degraded);
+  eq("the overall score does not drop below the pinned best", after.overall, 100);
+  eq("the level does not drop below the pinned best", after.level, "ready");
+}
+{
+  // The same floor one tier down: Almost Ready must not fall back to In
+  // progress once what looks finished right now shifts under the student.
+  const peak = pinReadiness(all(() => ({ solved: true, wrong: 1, hint: false })));
+  eq("an almost-ready pass pins that level", peak[LEVEL_BEST_ID]?.pts, 3);
+  const cleared: Results = { [READINESS_BEST_ID]: peak[READINESS_BEST_ID], [LEVEL_BEST_ID]: peak[LEVEL_BEST_ID] };
+  const after = summarize(cleared);
+  eq("an otherwise-empty transcript still reads at the pinned level", after.level, "almost");
+  t("and at least the pinned score", after.overall >= readinessBest(peak), `${after.overall} vs ${readinessBest(peak)}`);
+}
+{
+  // pinReadiness itself must not lower a marker it is handed alongside a
+  // worse live pass -- the write path, not just the read path.
+  const best = pinReadiness(all((id) => clean(id)));
+  const worseLive = all(() => ({ solved: true, wrong: 3, hint: false }));
+  const stillPinned = pinReadiness({ ...worseLive, [READINESS_BEST_ID]: best[READINESS_BEST_ID], [LEVEL_BEST_ID]: best[LEVEL_BEST_ID] });
+  eq("pinning again with a worse pass does not lower the readiness best", stillPinned[READINESS_BEST_ID]?.pts, 100);
+  eq("or the level best", levelBest(stillPinned), 4);
+}
+
 console.log("\n--- coming-soon phases ---");
 t("a locked phase's missions are not counted toward readiness", Object.keys(SCORED_SKILLS).length <= Object.keys(MISSION_SKILLS).length, `${Object.keys(SCORED_SKILLS).length} of ${Object.keys(MISSION_SKILLS).length}`);
 

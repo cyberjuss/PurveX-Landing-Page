@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { clearClassCookie, isAcademyUnlocked, readClassCookie } from "@/lib/academy-auth";
 import { findClassByCode, joinClass } from "@/lib/academy-classes";
-import { hasReadyBadge, MISSION_SKILLS, pinReadiness, readinessBest, sanitizeResults, SERVER_MARKER_IDS, type Results } from "@/lib/academy-score";
+import { hasReadyBadge, levelBest, MISSION_SKILLS, pinReadiness, readinessBest, sanitizeResults, SERVER_MARKER_IDS, type Results } from "@/lib/academy-score";
 import { loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { sendEmail } from "@/lib/email";
@@ -44,7 +44,10 @@ export async function GET(request: Request) {
   // can only ever rise, so this is safe to run as often as the page loads.
   const results = await loadProgress(student.id);
   const pinned = pinReadiness(results);
-  const raised = readinessBest(pinned) > readinessBest(results) || (hasReadyBadge(pinned) && !hasReadyBadge(results));
+  const raised =
+    readinessBest(pinned) > readinessBest(results) ||
+    (hasReadyBadge(pinned) && !hasReadyBadge(results)) ||
+    levelBest(pinned) > levelBest(results);
   if (raised) await saveProgress(student.id, student.email, pinned);
   return NextResponse.json({ results: raised ? pinned : results });
 }
