@@ -121,13 +121,13 @@ try {
   }
 
   // --- pushing a script update onto a pod whose own self-update never fires -
-  // Start-PurvexSyncLoop only checks every 6 hours of continuous uptime, reset
-  // on every restart, and the idle stop plus the session length mean almost
-  // no session runs that long -- so Range pushes the current script over SSM
-  // instead of waiting on the pod. Three things have to hold: a pod that was
-  // never linked is left alone (no key to write back in), a stale pod is
-  // replaced with the pod's own key kept intact, and a pod already current is
-  // not rewritten on every status poll.
+  // Start-PurvexSyncLoop checks every 6 hours of continuous uptime. That
+  // resets on every restart. The idle stop plus the session length mean
+  // almost no session runs that long. So Range pushes the current script
+  // over SSM instead of waiting on the pod. Three things have to hold:
+  // - a pod that was never linked is left alone (no key to write back in)
+  // - a stale pod is replaced with the pod's own key kept intact
+  // - a pod already current is not rewritten on every status poll
   function scriptUpdateRun(linkedBefore: string | null, url: string, expectKey: string): string {
     const f = join(dir, "update-new.ps1");
     const linked = join(dir, "update-linked.ps1");

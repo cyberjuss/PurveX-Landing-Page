@@ -767,8 +767,8 @@ export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> 
   const linked = Boolean(lab && Date.parse(lab.uploadedAt) >= Date.parse(row.createdAt));
   // Once a pod is reachable and linked, every status poll is a chance to make
   // sure it is not sitting on a script from weeks ago (see "lab script
-  // freshness" below). after() so this never slows the status read down --
-  // the frontend polls this constantly, and the push is throttled anyway.
+  // freshness" below). after() so this never slows the status read down.
+  // The frontend polls this constantly. The push is throttled anyway.
   if (linked && inst.state === "running") after(() => pushLabScriptUpdate(userId).then(() => undefined).catch(() => undefined));
   const map: Record<string, HostedLabState> = { pending: "starting", running: linked ? "ready" : "starting", stopping: "stopping", stopped: "stopped" };
   return { state: map[inst.state] ?? "starting", stopAt: row.stopAt, startedAt, firstBoot: !linked, instanceType: c.instanceType, linux: Boolean(row.linuxInstanceId) };
@@ -1551,42 +1551,43 @@ export async function repairHostedLab(userId: string): Promise<boolean> {
 }
 
 // ---- lab script freshness --------------------------------------------------
-// The script's own self-update (inside Start-PurvexSyncLoop) only checks every
-// 6 hours of continuous uptime, reset on every restart. The idle stop (20
-// minutes by default) and the session length mean almost no session runs that
-// long, so a pod that is ever stopped and resumed -- which is every pod --
-// effectively never updates itself. Pushing the current script over SSM on
-// session start sidesteps that: it works on a pod however old its script is,
-// because it trusts our own server-pinned hash rather than anything already
-// on the pod, so a pod stuck on a copy from before this check even existed
-// still gets fixed.
+// The script's own self-update (inside Start-PurvexSyncLoop) checks every 6
+// hours of continuous uptime. That timer resets on every restart. The default
+// 20-minute idle stop and the session cap mean almost no session runs that
+// long. Every pod gets stopped and resumed eventually. So the self-update
+// effectively never fires.
 //
-// Deliberately does not restart the sync task to make the change live this
-// session: Start-PurvexSyncLoop resets the idle clock and the "ever
-// connected" flag on every start (see Build-Environment.ps1), so forcing a
-// restart mid-session could make an actively-connected student's pod look
-// freshly booted and trip the shorter idle-stop window under them. Writing
-// the file is enough -- the pod picks it up on its own next restart, which
-// happens between every session anyway.
+// Pushing the current script over SSM sidesteps that. It trusts our own
+// server-pinned hash rather than anything already on the pod. That fixes a
+// pod however old its script is -- even one stuck on a copy from before this
+// check existed.
+//
+// This does not restart the sync task. Start-PurvexSyncLoop resets the idle
+// clock and the "ever connected" flag on every start (see
+// Build-Environment.ps1). Forcing a restart mid-session could make an
+// actively-connected student's pod look freshly booted and trip the
+// idle-stop window under them. Writing the file is enough. The pod picks it
+// up on its own next restart.
 
 /**
- * Pure builder for the part that runs after the download: extract this pod's
- * own key from whatever is already linked, substitute it into the freshly
- * downloaded (and by this point hash-verified) script, and write it over the
- * linked copy only if that produces something different. Assumes the caller
- * has already set `$f` (the downloaded file) and `$linked` (the destination)
- * as PowerShell variables -- same convention as verifyDownloaded's pathVar.
- * Exported so check:lab-verify can run the real snippet against fixture
- * files instead of a live pod.
+ * Pure builder for the part that runs after the download:
+ * - extracts this pod's own key from whatever is already linked
+ * - substitutes it into the freshly downloaded (and by now hash-verified) script
+ * - writes it over the linked copy, only if that produces something different
+ *
+ * Assumes the caller has already set `$f` (the downloaded file) and
+ * `$linked` (the destination) as PowerShell variables. Same convention
+ * verifyDownloaded uses for pathVar. Exported so check:lab-verify can run
+ * the real snippet against fixture files instead of a live pod.
  */
 export function applyScriptUpdateCommand(url: string): string {
   return [
     "$new=Get-Content -LiteralPath $f -Raw",
     "$key=''",
     "if(Test-Path $linked){ $sel=Select-String -LiteralPath $linked -Pattern \"'(pvl_[A-Za-z0-9_-]+)'\" | Select-Object -First 1; if($sel){ $key=$sel.Matches[0].Groups[1].Value } }",
-    // No key means this pod was never linked (or the file is not there yet).
+    // No key means this pod was never linked, or the file is not there yet.
     // Writing a copy with an empty key would unlink a pod that currently
-    // works, which is worse than leaving a stale one alone -- so this skips
+    // works. That is worse than leaving a stale one alone. So this skips
     // quietly rather than guessing.
     "if($key){",
     "$keyNeedle = '[string]$PurvexKey = ' + '\"\"'",
@@ -1596,10 +1597,10 @@ export function applyScriptUpdateCommand(url: string): string {
     "$candidate = $new.Replace($keyNeedle, $keyValue).Replace($urlNeedle, $urlValue)",
     "$current = ''",
     "try { $current = Get-Content -LiteralPath $linked -Raw } catch {}",
-    // Line endings and the trailing newline normalised away, the same guard
+    // Line endings and the trailing newline normalised away. Same guard
     // Update-PurvexScript uses: Set-Content adds a trailing newline the
-    // comparison would otherwise never match, and a pod that is already
-    // current should write nothing.
+    // comparison would otherwise never match. A pod that is already current
+    // should write nothing.
     "$sameNow = (($candidate -replace \"`r`n\",\"`n\").TrimEnd(\"`n\")) -eq (($current -replace \"`r`n\",\"`n\").TrimEnd(\"`n\"))",
     "if(-not $sameNow){",
     "$errs=$null",
@@ -1616,9 +1617,9 @@ const lastScriptPushAt = new Map<string, number>();
 const SCRIPT_PUSH_THROTTLE_MS = 30 * 60_000;
 
 /**
- * Replace the pod's on-disk Build-Environment.ps1 with the one currently
- * published, over SSM, rather than waiting on the pod's own self-update loop
- * (see the comment above). Best effort, throttled, fired from
+ * Replace the pod's on-disk Build-Environment.ps1 over SSM with the one
+ * currently published, rather than waiting on the pod's own self-update loop
+ * (see the comment above). Best effort and throttled. Fired from
  * hostedLabStatus once a pod looks reachable.
  */
 export async function pushLabScriptUpdate(userId: string): Promise<boolean> {
