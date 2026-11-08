@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { useRouter } from "next/navigation";
 import { Check, ChevronLeft, ChevronRight, Flag, Wrench } from "lucide-react";
 import { Markdown } from "@/lib/markdown";
-import { CHALLENGE_PATHS, MISSION_CATALOG, challengeAt } from "@/lib/academy-missions";
+import { CHALLENGE_PATHS, HANDS_ON_CHALLENGES, MISSION_CATALOG, challengeAt } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
 import { MissionPager } from "./mission-pager";
 import { ResourcesView } from "./resources-view";
@@ -137,6 +137,8 @@ export function SectionTabs({
   // slide of the one before it. Clicking a tab still opens at the first.
   const [fromNext, setFromNext] = useState(false);
   const current = items[active];
+  const currentChallenge =
+    current.kind === "challenge" ? challengeAt(`/range/${phaseSlug}/${entrySlug}`, slugify(current.label.replace(/^Challenge:\s*/, ""))) : null;
   // Reading sections show as slides. Challenges page their own tickets, and
   // a resources list reads better as one list than split across slides.
   const asDeck = current.kind === "section" && current.label !== "Resources" && isDeckable(current.markdown);
@@ -456,12 +458,8 @@ export function SectionTabs({
           prevSection={prevTrail}
           nextSection={nextTrail}
           actionHost={current.kind === "challenge" ? challengeFoot : undefined}
-          recordLabel={current.kind === "challenge" ? current.label.replace(/^Challenge:\s*/, "") : undefined}
-          recordChallenge={
-            current.kind === "challenge"
-              ? challengeAt(`/range/${phaseSlug}/${entrySlug}`, slugify(current.label.replace(/^Challenge:\s*/, "")))
-              : null
-          }
+          recordLabel={currentChallenge && HANDS_ON_CHALLENGES.has(currentChallenge) ? current.label.replace(/^Challenge:\s*/, "") : undefined}
+          recordChallenge={currentChallenge}
         >
           {current.kind === "section" && current.label === "Resources" ? (
             <ResourcesView markdown={current.markdown} fallback={<Markdown content={current.markdown} />} />

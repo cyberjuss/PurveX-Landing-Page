@@ -898,6 +898,36 @@ export const CHALLENGE_PATHS: Record<
   "access-review": { href: "/range/phase-1/week-4", tab: "the-quarterly-access-review" },
 };
 
+/**
+ * Challenges with at least one mission that needs the student's own lab,
+ * either a change verified against it or an answer read from its live
+ * state. A challenge left out of this set is answerable purely from what
+ * the page already shows, so Record Your Challenge (a screen recording) has
+ * nothing of the student's own work to capture there.
+ *
+ * The grading rules that decide this (missionGate, needsLabForAnswer) live
+ * in server-only modules this file cannot import without breaking the
+ * client bundle that renders the challenge tabs, so the result is a plain
+ * literal here instead. check:range:challenges recomputes it from those
+ * same rules and fails if this list ever drifts from them.
+ */
+export const HANDS_ON_CHALLENGES: ReadonlySet<MissionCatalogEntry["challenge"]> = new Set([
+  "day-one",
+  "ticket-queue",
+  "client-data",
+  "credential-campaign",
+  "phishing-chain",
+  "open-door",
+  "keys-to-the-domain",
+  "turn-on-script-logging",
+  "build-out-directory",
+  "new-hire-week",
+  "weekend-incident-report",
+  "tuesday-after-breach",
+  "network-change",
+  "access-review",
+]);
+
 /** The challenge a page's "Challenge: ..." tab runs, from the page and the tab's slug. */
 export function challengeAt(href: string, tab: string): MissionCatalogEntry["challenge"] | null {
   const hit = (Object.entries(CHALLENGE_PATHS) as [MissionCatalogEntry["challenge"], { href: string; tab: string }][]).find(([, p]) => p.href === href && p.tab === tab);

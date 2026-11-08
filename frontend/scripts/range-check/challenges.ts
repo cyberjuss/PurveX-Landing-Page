@@ -8,10 +8,10 @@ import fs from "fs";
 import path from "path";
 import { loadLesson, phases } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
-import { CHALLENGE_PATHS, MISSION_CATALOG } from "@/lib/academy-missions";
+import { CHALLENGE_PATHS, HANDS_ON_CHALLENGES, MISSION_CATALOG } from "@/lib/academy-missions";
 import { MISSION_SKILLS } from "@/lib/academy-score";
-import { hasMissionKey, missionTickets } from "@/lib/academy-answers";
-import { PLANTED_TICKETS } from "@/lib/academy-mission-lab";
+import { hasMissionKey, missionTickets, needsLabForAnswer } from "@/lib/academy-answers";
+import { missionGate, PLANTED_TICKETS } from "@/lib/academy-mission-lab";
 
 const slug = (l: string) => l.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const out: Record<string, string[]> = {};
@@ -102,6 +102,20 @@ for (const t of chTabs) {
   if (!/Ubuntu/.test(md) || UBUNTU_OK.has(t.file)) continue;
   if (!/hosted lab required|needs the cloud lab|cloud lab required/i.test(md)) add("K. Ubuntu challenge with no hosted-lab note", `${href(t)} "${t.label}"`);
 }
+
+// L. HANDS_ON_CHALLENGES (academy-missions.ts) decides whether Record Your
+// Challenge shows up, and it is a hand-kept literal because the client
+// bundle that reads it cannot import the server-only grading rules that
+// actually decide hands-on-ness. Recomputed here from those rules, so a new
+// mission that needs the lab is not silently left off the list, and the
+// recorder does not stay offered on a challenge that no longer needs one.
+const actuallyHandsOn = new Set(
+  Object.entries(MISSION_CATALOG)
+    .filter(([id]) => missionGate(id) || needsLabForAnswer(id))
+    .map(([, m]) => m.challenge)
+);
+for (const ch of actuallyHandsOn) if (!HANDS_ON_CHALLENGES.has(ch)) add("L. HANDS_ON_CHALLENGES is missing a challenge with lab-gated work", ch);
+for (const ch of HANDS_ON_CHALLENGES) if (!actuallyHandsOn.has(ch)) add("L. HANDS_ON_CHALLENGES lists a challenge with no lab-gated work left", ch);
 
 // Screenshots not taken yet are hidden by markdown.tsx, so they are listed, not failed.
 const placeholders = tabs.flatMap((t) => [...(t.md ?? "").matchAll(/src="([^"]*PLACEHOLDER[^"]*)"/g)].map((m) => `${m[1]} (${t.file})`));
