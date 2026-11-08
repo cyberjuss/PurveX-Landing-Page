@@ -1,7 +1,7 @@
 // Phases students cannot open yet. Remove a slug here to open that phase.
 // A locked phase shows as "Coming soon", with a way to be emailed when it opens
 // (see /academy/api/phase-notify and scripts/notify-phase.mjs).
-export const LOCKED_PHASES: readonly string[] = ["phase-2", "phase-3"];
+export const LOCKED_PHASES: readonly string[] = ["phase-3"];
 
 export const isPhaseLocked = (phaseSlug: string) => LOCKED_PHASES.includes(phaseSlug);
 
