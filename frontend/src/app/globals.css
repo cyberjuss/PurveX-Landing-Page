@@ -5241,6 +5241,15 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-soon p { margin-top: 16px; max-width: 48ch; font-size: var(--ty-lead); line-height: 1.6; color: var(--rd-ink-2); }
 /* A coming-soon phase: what it covers, and the "Notify me" button. */
 .ax-soon__points { margin: 18px 0 0; padding-left: 1.2em; list-style: disc; max-width: 56ch; color: var(--rd-ink-2); line-height: 1.7; }
+
+/* A whole locked phase, centered on the page rather than pinned to the left
+   edge: there is no section nav or progress trail beside it, so a left-
+   aligned block just reads as empty space on the right. */
+.ax-phase-locked { display: flex; flex-direction: column; align-items: center; text-align: center; min-height: 55vh; justify-content: center; }
+.ax-phase-locked .ax-titleblock p,
+.ax-phase-locked .ax-soon p { margin-left: auto; margin-right: auto; }
+.ax-phase-locked .ax-soon { display: flex; flex-direction: column; align-items: center; }
+.ax-phase-locked .ax-soon__points { display: inline-block; text-align: left; margin-left: auto; margin-right: auto; }
 .ax-notify { margin-top: 26px; min-height: 48px; }
 .ax-notify__btn { display: inline-flex; align-items: center; gap: 8px; }
 .ax-notify .ax-notify__fine { margin-top: 10px; font-size: var(--ty-note, 13px); color: var(--rd-ink-3); }

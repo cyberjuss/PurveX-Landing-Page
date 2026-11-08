@@ -19,7 +19,7 @@ export function ComingSoon({ message }: { message: string }) {
 export function PhaseLocked({ phase, title, summary }: { phase: string; title?: string; summary?: string }) {
   const preview = PHASE_PREVIEW[phase];
   return (
-    <div className="rd">
+    <div className="rd ax-phase-locked">
       <header className="rd-mast">
         <div className="ax-titleblock">
           <h1>{title ?? preview?.title}</h1>
