@@ -1,10 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { BadgeCheck, Circle, HelpCircle, Loader2, Square } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { CLIP_AUDIO_BPS, CLIP_MAX_BYTES, CLIP_MAX_SECONDS, CLIP_VIDEO_BPS } from "@/lib/academy-clip-limits";
+
+/** Browser support never changes during a visit, so there is nothing to subscribe to. */
+const noSubscribe = () => () => {};
 
 function slugify(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -25,7 +28,14 @@ type Take = { blob: Blob; seconds: number; recordedAt: string };
 type ClipState = { kind: "idle" } | { kind: "busy" } | { kind: "done" } | { kind: "error"; text: string; upgrade?: boolean };
 
 export function ChallengeRecorder({ label, challenge = null }: { label: string; challenge?: string | null }) {
-  const [supported, setSupported] = useState(false);
+  // Whether this browser can record its screen. The server snapshot is false,
+  // so the server and the first client render agree and React never flags a
+  // hydration mismatch over a button only some browsers can show.
+  const supported = useSyncExternalStore(
+    noSubscribe,
+    () => Boolean(navigator.mediaDevices?.getDisplayMedia) && typeof MediaRecorder !== "undefined",
+    () => false
+  );
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -40,17 +50,6 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
   const streamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<number | null>(null);
-
-  // Checked after mount only, so the server and the first client render
-  // agree (no navigator/MediaRecorder on the server) and React never flags
-  // a hydration mismatch over a button that only some browsers can show.
-  useEffect(() => {
-    setSupported(
-      typeof navigator !== "undefined" &&
-        Boolean(navigator.mediaDevices?.getDisplayMedia) &&
-        typeof MediaRecorder !== "undefined"
-    );
-  }, []);
 
   const stopTimer = useCallback(() => {
     if (timerRef.current !== null) {
