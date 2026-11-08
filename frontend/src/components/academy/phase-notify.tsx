@@ -66,9 +66,7 @@ export function PhaseNotify({ phase }: { phase: string }) {
       <button type="button" className="rd-cta ax-notify__btn" onClick={join} disabled={state === "saving"}>
         <BellRing className="h-4 w-4" aria-hidden /> {state === "saving" ? "Saving…" : "Notify me when it opens"}
       </button>
-      <p className="ax-notify__fine">
-        {message || <>One email{email ? <> to <strong>{email}</strong></> : null}, nothing else.</>}
-      </p>
+      {message && <p className="ax-notify__fine">{message}</p>}
     </div>
   );
 }
