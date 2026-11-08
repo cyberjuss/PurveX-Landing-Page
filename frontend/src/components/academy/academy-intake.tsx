@@ -136,6 +136,7 @@ export function AcademyIntake({
       done,
       // A re-run of the questions without answering the check keeps the old result.
       quick: Object.keys(right).length ? right : ex.quick,
+      quickPick: Object.keys(right).length ? quick : ex.quickPick,
       machine,
       help,
       notes: notes.trim() || undefined,

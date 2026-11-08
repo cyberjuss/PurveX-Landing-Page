@@ -612,3 +612,22 @@ create policy "Students read their own phase interest"
 -- quick check, their machine, how they like help, notes). One jsonb column so
 -- new questions never need a migration. Coach reads it.
 alter table public.academy_profiles add column if not exists extras jsonb not null default '{}'::jsonb;
+
+-- What PurveX Coach has learned about a student, kept between conversations:
+-- misconceptions, strengths, what works when teaching them, their situation,
+-- plans, and where the last conversation stopped. One row per student, a
+-- capped jsonb list of one-line notes. Coach writes it through its remember
+-- and forget tools (src/lib/academy-coach-memory.ts). Written by the server
+-- only; the student can read their own row.
+create table if not exists public.academy_coach_memory (
+  user_id uuid primary key references auth.users (id) on delete cascade,
+  notes jsonb not null default '[]'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.academy_coach_memory enable row level security;
+
+drop policy if exists "Students read their own coach memory" on public.academy_coach_memory;
+create policy "Students read their own coach memory"
+  on public.academy_coach_memory for select
+  using (auth.uid() = user_id);

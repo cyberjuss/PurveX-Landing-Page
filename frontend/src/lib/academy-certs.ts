@@ -403,6 +403,8 @@ export type ProfileExtras = {
   done?: string[];
   /** Quick-check results, by question id: true when they got it right. */
   quick?: Record<string, boolean>;
+  /** The option they picked on each quick-check question, so a miss names the mix-up. */
+  quickPick?: Record<string, number>;
   machine?: Machine;
   help?: HelpStyle;
   notes?: string;
@@ -414,6 +416,16 @@ function doneList(v: unknown, ids: Set<string>): string[] | undefined {
   if (!Array.isArray(v)) return undefined;
   const kept = [...new Set(v.filter((x): x is string => typeof x === "string" && ids.has(x)))];
   return v.length > 0 && kept.length === 0 ? undefined : kept;
+}
+
+function quickPicks(v: unknown): Record<string, number> | undefined {
+  if (!v || typeof v !== "object") return undefined;
+  const out: Record<string, number> = {};
+  for (const q of QUICK_CHECK) {
+    const n = (v as Record<string, unknown>)[q.id];
+    if (Number.isInteger(n) && (n as number) >= 0 && (n as number) < q.options.length) out[q.id] = n as number;
+  }
+  return Object.keys(out).length ? out : undefined;
 }
 
 export function sanitizeExtras(raw: unknown): ProfileExtras {
@@ -428,6 +440,7 @@ export function sanitizeExtras(raw: unknown): ProfileExtras {
     hours: pick(r.hours, HOURS),
     done: doneList(r.done, doneIds),
     quick: Object.keys(quick).length ? quick : undefined,
+    quickPick: quickPicks(r.quickPick),
     machine: pick(r.machine, MACHINES),
     help: pick(r.help, HELP_STYLES),
     notes: typeof r.notes === "string" && r.notes.trim() ? r.notes.replace(/\s+/g, " ").trim().slice(0, 200) : undefined,
