@@ -18,6 +18,7 @@
     "check:lab-verify": "npx -y tsx --tsconfig scripts/lab-verify-check/tsconfig.json scripts/lab-verify-check/check.ts",
     "check:coach-usage": "npx -y tsx --tsconfig scripts/coach-usage/tsconfig.json scripts/coach-usage/check.ts",
     "check:grading": "npx -y tsx --tsconfig scripts/grading-check/tsconfig.json scripts/grading-check/check.ts",
+    "check:quiz": "npx -y tsx --tsconfig scripts/quiz-check/tsconfig.json scripts/quiz-check/check.ts",
     "check:lab-script": "node scripts/check-lab-script.mjs",
     "test:lab-updater": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-lab-updater.ps1",
     "test:coach-limit": "node scripts/test-coach-limit.mjs",
