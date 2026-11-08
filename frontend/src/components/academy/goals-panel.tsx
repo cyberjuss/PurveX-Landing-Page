@@ -7,6 +7,15 @@ import {
   CERT_IDS,
   CERT_STATUSES,
   CERTS,
+  DONE,
+  HELP_STYLES,
+  HOURS,
+  MACHINES,
+  TIMELINES,
+  type Hours,
+  type HelpStyle,
+  type Machine,
+  type Timeline,
   MAX_ROLES,
   ROLES,
   START_LEVELS,
@@ -19,7 +28,6 @@ import {
 import { academyFetch } from "@/lib/academy-client";
 import { daysUntil, passedExamDates, todayLocal } from "@/lib/academy-goals";
 
-type MemoryNote = { id: string; kind: string; label: string; note: string; at: string };
 
 // Every intake answer on one screen, so changing an exam date is one edit,
 // not a walk through all four intake questions. The first-time intake stays
@@ -52,9 +60,13 @@ export function GoalsPanel({
     };
   });
   const closeRef = useRef<HTMLButtonElement>(null);
-  const [notes, setNotes] = useState<MemoryNote[] | null>(null);
-  const [notesError, setNotesError] = useState<string | null>(null);
-  const [forgetting, setForgetting] = useState<string | null>(null);
+  const ex = profile.extras ?? {};
+  const [timeline, setTimeline] = useState<Timeline | undefined>(ex.timeline);
+  const [hours, setHours] = useState<Hours | undefined>(ex.hours);
+  const [done, setDone] = useState<string[]>(ex.done ?? []);
+  const [machine, setMachine] = useState<Machine | undefined>(ex.machine);
+  const [help, setHelp] = useState<HelpStyle | undefined>(ex.help);
+  const [notes, setNotes] = useState(ex.notes ?? "");
   const today = todayLocal();
   const overdue = passedExamDates({ ...profile, certs }, today);
 
@@ -71,45 +83,25 @@ export function GoalsPanel({
     };
   }, [onClose]);
 
-  useEffect(() => {
-    let live = true;
-    academyFetch("/academy/api/coach-memory")
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error())))
-      .then((d: { notes?: MemoryNote[] }) => live && setNotes(d.notes ?? []))
-      .catch(() => live && setNotesError("Couldn't load what Coach remembers."));
-    return () => {
-      live = false;
-    };
-  }, []);
-
-  // A delete takes effect at once. It is the student's data, not a draft
-  // waiting on Save goals.
-  async function forgetNote(id?: string) {
-    if (forgetting) return;
-    if (!id && !window.confirm("Clear everything Coach remembers about you? Coach starts learning again from your next chat.")) return;
-    setForgetting(id ?? "all");
-    setNotesError(null);
-    try {
-      const res = await academyFetch(`/academy/api/coach-memory${id ? `?id=${encodeURIComponent(id)}` : ""}`, { method: "DELETE" });
-      const d = (await res.json().catch(() => ({}))) as { notes?: MemoryNote[]; error?: string };
-      if (!res.ok || !d.notes) throw new Error(d.error);
-      setNotes(d.notes);
-    } catch (err) {
-      setNotesError(err instanceof Error && err.message ? err.message : "Couldn't update Coach's notes. Try again.");
-    } finally {
-      setForgetting(null);
-    }
-  }
-
   const changed =
     JSON.stringify(certs) !== JSON.stringify(profile.certs) ||
     roles.join() !== profile.roles.join() ||
     start !== profile.start ||
     background.trim() !== profile.background ||
-    callMe.trim() !== (profile.callMe ?? "");
+    callMe.trim() !== (profile.callMe ?? "") ||
+    timeline !== ex.timeline ||
+    hours !== ex.hours ||
+    [...done].sort().join() !== [...(ex.done ?? [])].sort().join() ||
+    machine !== ex.machine ||
+    help !== ex.help ||
+    notes.trim() !== (ex.notes ?? "");
 
   function toggleRole(id: RoleId) {
     setRoles((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : prev.length >= MAX_ROLES ? [prev[1], id] : [...prev, id]));
+  }
+
+  function toggleDone(id: string) {
+    setDone((prev) => (prev.includes(id) ? prev.filter((d) => d !== id) : [...prev, id]));
   }
 
   function setCert(id: CertId, next: CertGoal) {
@@ -124,7 +116,19 @@ export function GoalsPanel({
       const res = await academyFetch("/academy/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profile: { certs, otherCerts: profile.otherCerts, roles, start, background, callMe } }),
+        // The screening answers ride along, keeping the quick check, which is
+        // a first-day read and not something to edit.
+        body: JSON.stringify({
+          profile: {
+            certs,
+            otherCerts: profile.otherCerts,
+            roles,
+            start,
+            background,
+            callMe,
+            extras: { ...ex, timeline, hours, done: ex.done || done.length ? done : undefined, machine, help, notes: notes.trim() || undefined },
+          },
+        }),
       });
       const data = (await res.json().catch(() => ({}))) as { profile?: StudentProfile; error?: string };
       if (!res.ok || !data.profile) throw new Error(data.error || "Unable to save your goals. Check your connection and try again.");
@@ -266,45 +270,62 @@ export function GoalsPanel({
             </label>
           </section>
 
-          <section className="gp-sec" aria-labelledby="gp-memory">
-            <div className="gp-sec__head">
-              <h3 id="gp-memory">What Coach remembers</h3>
-              {notes && notes.length > 0 && (
-                <button type="button" className="gp-link" onClick={() => void forgetNote()} disabled={Boolean(forgetting)}>
-                  Clear all
+          <section className="gp-sec">
+            <h3>Job-ready by</h3>
+            <div className="gp-chips" role="radiogroup" aria-label="Job-ready by">
+              {TIMELINES.map((o) => (
+                <button key={o.id} type="button" role="radio" aria-checked={timeline === o.id} className="gp-chip" onClick={() => setTimeline(o.id)}>
+                  {o.label}
                 </button>
-              )}
+              ))}
             </div>
-            <p className="gp-hint">Notes Coach keeps from your chats so it can pick up where you left off. Remove anything that is wrong or that you would rather it forgot.</p>
-            {notesError && (
-              <p className="gp-error" role="alert">
-                {notesError}
-              </p>
-            )}
-            {!notes && !notesError && <Loader2 className="gp-mem__wait h-4 w-4 animate-spin" aria-label="Loading" />}
-            {notes && notes.length === 0 && <p className="gp-mem__empty">Nothing yet. Coach adds notes as it gets to know you.</p>}
-            {notes && notes.length > 0 && (
-              <ul className="gp-mem">
-                {notes.map((n) => (
-                  <li key={n.id} className="gp-mem__row">
-                    <div>
-                      <span className="gp-mem__kind">{n.label}</span>
-                      <p>{n.note}</p>
-                    </div>
-                    <button
-                      type="button"
-                      className="gp-mem__x"
-                      aria-label={`Forget: ${n.note}`}
-                      title="Forget this"
-                      onClick={() => void forgetNote(n.id)}
-                      disabled={Boolean(forgetting)}
-                    >
-                      {forgetting === n.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+          </section>
+          <section className="gp-sec">
+            <h3>Time each week</h3>
+            <div className="gp-chips" role="radiogroup" aria-label="Time each week">
+              {HOURS.map((o) => (
+                <button key={o.id} type="button" role="radio" aria-checked={hours === o.id} className="gp-chip" onClick={() => setHours(o.id)}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className="gp-sec">
+            <h3>Done for real</h3>
+            <p className="gp-hint">Select all that apply.</p>
+            <div className="gp-chips">
+              {DONE.map((o) => (
+                <button key={o.id} type="button" role="checkbox" aria-checked={done.includes(o.id)} className="gp-chip" onClick={() => toggleDone(o.id)}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className="gp-sec">
+            <h3>Lab machine</h3>
+            <div className="gp-chips" role="radiogroup" aria-label="Lab machine">
+              {MACHINES.map((o) => (
+                <button key={o.id} type="button" role="radio" aria-checked={machine === o.id} className="gp-chip" onClick={() => setMachine(o.id)}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className="gp-sec">
+            <h3>When you&apos;re stuck</h3>
+            <div className="gp-chips" role="radiogroup" aria-label="When you're stuck">
+              {HELP_STYLES.map((o) => (
+                <button key={o.id} type="button" role="radio" aria-checked={help === o.id} className="gp-chip" onClick={() => setHelp(o.id)}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className="gp-sec">
+            <label className="gp-field">
+              <span>Anything Coach should know? · Optional</span>
+              <input type="text" maxLength={200} placeholder="e.g. English is my second language, keep answers short" value={notes} onChange={(e) => setNotes(e.target.value)} />
+            </label>
           </section>
         </div>
 
