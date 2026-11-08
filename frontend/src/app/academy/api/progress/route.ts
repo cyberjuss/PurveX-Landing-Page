@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { clearClassCookie, isAcademyUnlocked, readClassCookie } from "@/lib/academy-auth";
 import { findClassByCode, joinClass } from "@/lib/academy-classes";
-import { MISSION_SKILLS, sanitizeResults, SERVER_MARKER_IDS, type Results } from "@/lib/academy-score";
+import { hasReadyBadge, MISSION_SKILLS, pinReadiness, readinessBest, sanitizeResults, SERVER_MARKER_IDS, type Results } from "@/lib/academy-score";
 import { loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { sendEmail } from "@/lib/email";
@@ -37,7 +37,16 @@ export async function GET(request: Request) {
     }
     await clearClassCookie();
   }
-  return NextResponse.json({ results: await loadProgress(student.id) });
+  // The best Readiness score is normally pinned on a write (saveProgress), so
+  // a peak with no write right after it -- content reshuffling which old
+  // missions now count, for one -- was never recorded and could later read
+  // back lower. Pinning here too, on every read, closes that gap: the floor
+  // can only ever rise, so this is safe to run as often as the page loads.
+  const results = await loadProgress(student.id);
+  const pinned = pinReadiness(results);
+  const raised = readinessBest(pinned) > readinessBest(results) || (hasReadyBadge(pinned) && !hasReadyBadge(results));
+  if (raised) await saveProgress(student.id, student.email, pinned);
+  return NextResponse.json({ results: raised ? pinned : results });
 }
 
 export async function PUT(request: Request) {
