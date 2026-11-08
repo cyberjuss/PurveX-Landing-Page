@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, Loader2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, X } from "lucide-react";
 import {
   CERT_STATUSES,
   CERTS,
@@ -67,7 +67,6 @@ export function AcademyIntake({
   onCancel?: () => void;
 }) {
   const [i, setI] = useState(0);
-  const [dir, setDir] = useState<1 | -1>(1);
   const [certs, setCerts] = useState<Partial<Record<CertId, CertGoal>>>(initial?.certs ?? {});
   const [roles, setRoles] = useState<RoleId[]>(initial?.roles ?? []);
   const [start, setStart] = useState<StartLevel | null>(initial?.start ?? null);
@@ -95,7 +94,6 @@ export function AcademyIntake({
   function go(to: number) {
     window.clearTimeout(timer.current);
     setError(null);
-    setDir(to > i ? 1 : -1);
     setI(Math.max(0, Math.min(STEPS.length - 1, to)));
   }
 
@@ -195,163 +193,110 @@ export function AcademyIntake({
               ? Boolean(certs[step]?.status)
               : true;
 
+  // Each screen is a section of the form, a question, and its choices. The
+  // choices are one list for every kind of step, so they look the same and
+  // the keyboard (A, B, C… and Enter) works on all of them.
+  type Choice = { label: string; on: boolean; pick: () => void; tone?: "right" | "wrong" | "answer" };
+  let section = "";
   let title = "";
   let hint: string | null = null;
-  let body: React.ReactNode = null;
+  let multi = false;
+  let choices: Choice[] = [];
+  let extra: React.ReactNode = null;
 
-  if (step === "timeline") {
+  if (step === "roles") {
+    section = "Your goal";
+    title = "Which job are you working toward?";
+    hint = "Pick up to two.";
+    multi = true;
+    choices = ROLES.map((r) => ({ label: r.label, on: roles.includes(r.id), pick: () => toggleRole(r.id) }));
+  } else if (step === "timeline") {
+    section = "Your goal";
     title = "When do you want to be job-ready?";
-    body = (
-      <div className="axq-list" role="radiogroup" aria-label={title}>
-        {TIMELINES.map((t) => (
-          <Option key={t.id} on={timeline === t.id} role="radio" onClick={() => pickAndGo(setTimeline, t.id)}>
-            {t.label}
-          </Option>
-        ))}
-      </div>
-    );
+    choices = TIMELINES.map((t) => ({ label: t.label, on: timeline === t.id, pick: () => pickAndGo(setTimeline, t.id) }));
   } else if (step === "hours") {
+    section = "Your goal";
     title = "How much time can you give it each week?";
     hint = "Be honest. Coach uses it to set a pace you can keep.";
-    body = (
-      <div className="axq-list" role="radiogroup" aria-label={title}>
-        {HOURS.map((h) => (
-          <Option key={h.id} on={hours === h.id} role="radio" onClick={() => pickAndGo(setHours, h.id)}>
-            {h.label}
-          </Option>
-        ))}
-      </div>
-    );
+    choices = HOURS.map((h) => ({ label: h.label, on: hours === h.id, pick: () => pickAndGo(setHours, h.id) }));
   } else if (step === "done") {
+    section = "Experience";
     title = "Which of these have you done for real?";
-    hint = "Tap all that apply";
-    body = (
-      <div className="axq-list">
-        {DONE.map((d) => (
-          <Option key={d.id} on={Boolean(done?.includes(d.id))} role="checkbox" onClick={() => toggleDone(d.id)}>
-            {d.label}
-          </Option>
-        ))}
-        <Option on={done !== undefined && done.length === 0} role="checkbox" onClick={() => toggleDone(NONE_DONE)}>
-          None of these yet
-        </Option>
-      </div>
-    );
+    hint = "Select all that apply.";
+    multi = true;
+    choices = [
+      ...DONE.map((d) => ({ label: d.label, on: Boolean(done?.includes(d.id)), pick: () => toggleDone(d.id) })),
+      { label: "None of these yet", on: done !== undefined && done.length === 0, pick: () => toggleDone(NONE_DONE) },
+    ];
   } else if (quickQ) {
     const n = QUICK_CHECK.indexOf(quickQ) + 1;
     const picked = quick[quickQ.id];
+    const answered = picked !== undefined;
+    section = `Quick check · ${n} of ${QUICK_CHECK.length}`;
     title = quickQ.prompt;
-    hint = `Quick check ${n} of ${QUICK_CHECK.length} · Not graded. It shows Coach where to start.`;
-    body = (
-      <>
-        <div className="axq-list" role="radiogroup" aria-label={`Quick check ${n}`}>
-          {quickQ.options.map((o, k) => (
-            <Option key={o} on={picked === k} role="radio" onClick={() => answerQuick(quickQ.id, k)}>
-              {o}
-            </Option>
-          ))}
+    hint = "Not graded. Your first answer tells Coach where to start.";
+    choices = quickQ.options.map((o, k) => ({
+      label: o,
+      on: picked === k,
+      pick: () => answerQuick(quickQ.id, k),
+      tone: !answered ? undefined : k === quickQ.answer ? (picked === k ? "right" : "answer") : picked === k ? "wrong" : undefined,
+    }));
+    if (answered)
+      extra = (
+        <div className={`axq-note ${picked === quickQ.answer ? "is-right" : "is-wrong"}`} role="status">
+          <span className="axq-note__tag">{picked === quickQ.answer ? "Correct" : "Not quite"}</span>
+          <p>{quickQ.why}</p>
         </div>
-        {picked !== undefined && (
-          <p className={`axq-fb axq-reveal ${picked === quickQ.answer ? "is-right" : "is-wrong"}`} role="status">
-            <strong>{picked === quickQ.answer ? "Right." : "Not quite."}</strong> {quickQ.why}
-          </p>
-        )}
-      </>
-    );
+      );
   } else if (step === "machine") {
+    section = "Setup";
     title = "What will you run your lab on?";
     hint = "The home lab needs a Windows PC. Anything else uses the cloud lab, which runs in a browser tab.";
-    body = (
-      <div className="axq-list" role="radiogroup" aria-label={title}>
-        {MACHINES.map((m) => (
-          <Option key={m.id} on={machine === m.id} role="radio" onClick={() => pickAndGo(setMachine, m.id)}>
-            {m.label}
-          </Option>
-        ))}
-      </div>
-    );
+    choices = MACHINES.map((m) => ({ label: m.label, on: machine === m.id, pick: () => pickAndGo(setMachine, m.id) }));
   } else if (step === "help") {
+    section = "Setup";
     title = "When you're stuck, what helps most?";
-    body = (
-      <div className="axq-list" role="radiogroup" aria-label={title}>
-        {HELP_STYLES.map((h) => (
-          <Option key={h.id} on={help === h.id} role="radio" onClick={() => pickAndGo(setHelp, h.id)}>
-            {h.label}
-          </Option>
-        ))}
-      </div>
-    );
+    choices = HELP_STYLES.map((h) => ({ label: h.label, on: help === h.id, pick: () => pickAndGo(setHelp, h.id) }));
   } else if (step === "secplus" || step === "cysa") {
     const goal = certs[step];
+    section = "Certifications";
     title = CERTS[step].full;
-    hint = "Your current status";
-    body = (
-      <>
-        <div className="axq-list" role="radiogroup" aria-label={CERTS[step].full}>
-          {CERT_STATUSES.map((s) => (
-            <Option key={s.id} on={goal?.status === s.id} role="radio" onClick={() => pickCert(step, s.id)}>
-              {s.label}
-            </Option>
-          ))}
-        </div>
-        {goal?.status === "studying" && (
-          <label className="axq-field axq-reveal">
-            <span>Scheduled exam date · Optional</span>
-            <input
-              type="date"
-              min={todayPlus(0)}
-              max={todayPlus(730)}
-              value={goal.examDate ?? ""}
-              onChange={(e) => setCerts((prev) => ({ ...prev, [step]: { status: "studying", examDate: e.target.value || undefined } }))}
-            />
-          </label>
-        )}
-        {goal?.status === "earned" && (
-          <label className="axq-field axq-reveal">
-            <span>Date earned · Optional</span>
-            <input
-              type="date"
-              max={todayPlus(0)}
-              value={goal.earnedDate ?? ""}
-              onChange={(e) => setCerts((prev) => ({ ...prev, [step]: { status: "earned", earnedDate: e.target.value || undefined } }))}
-            />
-          </label>
-        )}
-      </>
-    );
-  } else if (step === "roles") {
-    title = "Which job are you working toward?";
-    hint = "Pick up to two";
-    body = (
-      <div className="axq-list">
-        {ROLES.map((r) => (
-          <Option key={r.id} on={roles.includes(r.id)} role="checkbox" onClick={() => toggleRole(r.id)}>
-            {r.label}
-          </Option>
-        ))}
-      </div>
-    );
+    hint = "Where are you with it?";
+    choices = CERT_STATUSES.map((st) => ({ label: st.label, on: goal?.status === st.id, pick: () => pickCert(step, st.id) }));
+    if (goal?.status === "studying")
+      extra = (
+        <label className="axq-field">
+          <span>Scheduled exam date · Optional</span>
+          <input
+            type="date"
+            min={todayPlus(0)}
+            max={todayPlus(730)}
+            value={goal.examDate ?? ""}
+            onChange={(e) => setCerts((prev) => ({ ...prev, [step]: { status: "studying", examDate: e.target.value || undefined } }))}
+          />
+        </label>
+      );
+    if (goal?.status === "earned")
+      extra = (
+        <label className="axq-field">
+          <span>Date earned · Optional</span>
+          <input
+            type="date"
+            max={todayPlus(0)}
+            value={goal.earnedDate ?? ""}
+            onChange={(e) => setCerts((prev) => ({ ...prev, [step]: { status: "earned", earnedDate: e.target.value || undefined } }))}
+          />
+        </label>
+      );
   } else {
-    title = "Last thing: a little about you";
-    body = (
-      <>
-        <div className="axq-list" role="radiogroup" aria-label="Starting point">
-          {START_LEVELS.map((s) => (
-            <Option key={s.id} on={start === s.id} role="radio" onClick={() => setStart(s.id)}>
-              {s.label}
-            </Option>
-          ))}
-        </div>
+    section = "About you";
+    title = "Last thing: a little about you.";
+    choices = START_LEVELS.map((st) => ({ label: st.label, on: start === st.id, pick: () => setStart(st.id) }));
+    extra = (
+      <div className="axq-fields">
         <label className="axq-field">
           <span>First name</span>
-          <input
-            type="text"
-            maxLength={40}
-            autoComplete="given-name"
-            placeholder="What should we call you?"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
+          <input type="text" maxLength={40} autoComplete="given-name" placeholder="What should we call you?" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
         </label>
         <label className="axq-field">
           <span>Current role · Optional</span>
@@ -367,7 +312,7 @@ export function AcademyIntake({
             onChange={(e) => setNotes(e.target.value)}
           />
         </label>
-      </>
+      </div>
     );
   }
 
@@ -385,34 +330,82 @@ export function AcademyIntake({
     (step === "machine" && Boolean(machine)) ||
     (step === "help" && Boolean(help));
 
+  // Keyboard: a letter picks that choice, Enter continues. Ignored while typing.
+  const keys = useRef({ choices, showNext, canNext, last, busy });
+  keys.current = { choices, showNext, canNext, last, busy };
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const typing = e.target instanceof HTMLElement && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+      const k = keys.current;
+      if (e.key === "Enter" && k.showNext && k.canNext && !k.busy) {
+        e.preventDefault();
+        if (k.last) void save();
+        else go(i + 1);
+        return;
+      }
+      if (typing || e.key.length !== 1) return;
+      const n = e.key.toUpperCase().charCodeAt(0) - 65;
+      if (n >= 0 && n < k.choices.length) {
+        e.preventDefault();
+        k.choices[n].pick();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const qn = String(i + 1).padStart(2, "0");
   return (
     <section className="axq" aria-label={initial ? "Your goals" : "Before you start"}>
-      <div className="axq-top">
-        {i > 0 ? (
-          <button type="button" className="axq-icon" onClick={() => go(i - 1)} aria-label="Back" disabled={busy}>
-            <ArrowLeft className="h-4 w-4" />
-          </button>
-        ) : onCancel ? (
-          <button type="button" className="axq-icon" onClick={onCancel} aria-label="Close" disabled={busy}>
-            <X className="h-4 w-4" />
-          </button>
-        ) : (
-          <span className="axq-icon" aria-hidden="true" />
-        )}
-        <div className="axq-bar" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={i + 1}>
-          {STEPS.map((s, n) => (
-            <i key={s} className={n <= i ? "is-on" : ""} />
-          ))}
+      <header className="axq-head">
+        <div className="axq-head__row">
+          {i > 0 ? (
+            <button type="button" className="axq-back" onClick={() => go(i - 1)} disabled={busy}>
+              <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Back
+            </button>
+          ) : onCancel ? (
+            <button type="button" className="axq-back" onClick={onCancel} disabled={busy}>
+              <X className="h-3.5 w-3.5" aria-hidden /> Close
+            </button>
+          ) : (
+            <span className="axq-org">PurveX Financial · New hire onboarding</span>
+          )}
+          <span className="axq-count">
+            {qn} / {String(STEPS.length).padStart(2, "0")}
+          </span>
         </div>
-        <span className="axq-count">
-          {i + 1}/{STEPS.length}
-        </span>
-      </div>
+        <div className="axq-rule" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={i + 1}>
+          <i style={{ width: `${((i + 1) / STEPS.length) * 100}%` }} />
+        </div>
+      </header>
 
-      <div key={step} className={`axq-step ${dir > 0 ? "axq-step--fwd" : "axq-step--back"}`}>
+      <div key={step} className="axq-step">
+        <p className="axq-label">
+          <span>Q{qn}</span>
+          {section}
+        </p>
         <h1 className={title.length > 60 ? "is-long" : undefined}>{title}</h1>
         {hint && <p className="axq-hint">{hint}</p>}
-        {body}
+        {choices.length > 0 && (
+          <div className="axq-list" role={multi ? "group" : "radiogroup"} aria-label={title}>
+            {choices.map((c, n) => (
+              <button
+                key={c.label}
+                type="button"
+                role={multi ? "checkbox" : "radio"}
+                aria-checked={c.on}
+                className={`axq-opt${c.on ? " is-on" : ""}${c.tone ? ` is-${c.tone}` : ""}`}
+                onClick={c.pick}
+              >
+                <kbd className="axq-key">{String.fromCharCode(65 + n)}</kbd>
+                <span className="axq-opt__text">{c.label}</span>
+                {c.tone === "answer" && <span className="axq-opt__tag">Correct answer</span>}
+              </button>
+            ))}
+          </div>
+        )}
+        {extra}
       </div>
 
       {error && (
@@ -422,27 +415,21 @@ export function AcademyIntake({
       )}
 
       {showNext && (
-        <button type="button" className="axq-next" disabled={!canNext || busy} onClick={() => (last ? void save() : go(i + 1))}>
-          {busy ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <>
-              {last ? (initial ? "Save changes" : "Enter Range") : "Continue"} <ArrowRight className="h-4 w-4" />
-            </>
-          )}
-        </button>
+        <div className="axq-foot">
+          <span className="axq-enter" aria-hidden>
+            press <kbd>Enter</kbd>
+          </span>
+          <button type="button" className="axq-next" disabled={!canNext || busy} onClick={() => (last ? void save() : go(i + 1))}>
+            {busy ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                {last ? (initial ? "Save changes" : "Enter Range") : "Continue"} <ArrowRight className="h-4 w-4" />
+              </>
+            )}
+          </button>
+        </div>
       )}
     </section>
-  );
-}
-
-function Option({ on, role, onClick, children }: { on: boolean; role: "radio" | "checkbox"; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button type="button" role={role} aria-checked={on} className={`axq-opt${on ? " is-on" : ""}`} onClick={onClick}>
-      <span>{children}</span>
-      <span className="axq-mark" aria-hidden="true">
-        {on && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
-      </span>
-    </button>
   );
 }
