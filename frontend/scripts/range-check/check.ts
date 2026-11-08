@@ -58,7 +58,7 @@ check("period comes off the subscription item", periodEnd(subscription({}, [ends
 check("several items take the latest", periodEnd(subscription({}, [endsAt, endsAt + 864e2])), "2027-01-02T00:00:00.000Z");
 check("no items means no expiry claimed", periodEnd(subscription({}, [])), null);
 
-console.log("\nTelling a $20 Range sale from a $99 Platform sale");
+console.log("\nTelling a $49 Range sale from a $99 Platform sale");
 const RANGE = { purvex_product: "range_pro" };
 const priced = (id: string, metadata: Record<string, string> = {}) =>
   ({
@@ -77,7 +77,7 @@ const invoice = (lines: { price?: string; product?: string }[]) =>
   }) as unknown as Stripe.Invoice;
 
 // Only true with the env var set -- which is the point of checking it here,
-// since an unset STRIPE_RANGE_PRO_PRICE_ID is what would send a $20 renewal
+// since an unset STRIPE_RANGE_PRO_PRICE_ID is what would send a $49 renewal
 // into the Platform's license-issuance email.
 const configured = Boolean(process.env.STRIPE_RANGE_PRO_PRICE_ID);
 if (configured) {
