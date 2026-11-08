@@ -53,8 +53,13 @@ eq("a lab with points reports them", labPoints({ solved: true, wrong: 0, hint: f
 eq("a lab with zero points is finished, not unstarted", labPoints({ solved: true, wrong: 0, hint: false, pts: 0 }), 0);
 eq("an older lab pass scores the legacy figure", labPoints({ solved: true, wrong: 0, hint: false }), 70);
 eq("an unfinished lab is in progress", labPoints({ solved: false, wrong: 0, hint: false }), null);
+// Scored browser labs were retired on 2026-10-31 (each became a real
+// challenge), so LAB_SKILLS is empty today. The lab path is still tested
+// whenever a scored lab exists, and its absence is stated rather than
+// silently skipped.
 const labId = Object.keys(LAB_SKILLS)[0];
-eq("itemPoints routes a lab to labPoints", itemPoints(labId, { solved: true, wrong: 2, hint: false }), 70);
+if (labId) eq("itemPoints routes a lab to labPoints", itemPoints(labId, { solved: true, wrong: 2, hint: false }), 70);
+else t("no scored labs remain, so every readiness item is a mission", Object.keys(LAB_SKILLS).length === 0);
 const missionId = Object.keys(MISSION_SKILLS)[0];
 eq("itemPoints routes a mission to missionPoints", itemPoints(missionId, { solved: true, wrong: 2, hint: false }), 40);
 
@@ -100,15 +105,26 @@ eq("everything at zero is practice", poor.level, "practice");
 // A transcript of labs finished before scoring existed cannot reach 100,
 // which is correct and worth stating once rather than rediscovering.
 const legacy = summarize(all(() => ({ solved: true, wrong: 0, hint: false })));
-t("labs passed before scoring existed score the legacy 70", legacy.overall < 100 && legacy.overall >= 95, String(legacy.overall));
+if (labIds.size > 0) t("labs passed before scoring existed score the legacy 70", legacy.overall < 100 && legacy.overall >= 95, String(legacy.overall));
+else eq("with no scored labs, a transcript of clean first tries is 100", legacy.overall, 100);
 
 console.log("\n--- one weak skill blocks ready ---");
-const weakest = Object.entries({ ...MISSION_SKILLS, ...LAB_SKILLS }).find(([, s]) => s === "logs")?.[0];
-const nearlyPerfect = summarize(
-  all((id) => (id === weakest ? { solved: true, wrong: 3, hint: false } : clean(id)))
-);
-t("a single zeroed mission keeps the level below ready", nearlyPerfect.level !== "ready", nearlyPerfect.level);
-t("and the overall is still high", nearlyPerfect.overall >= SCORE_READY, String(nearlyPerfect.overall));
+// Ready needs every skill at the competent bar, not just a strong total. Zero
+// out the smallest skill: the total stays high, the skill falls to nothing,
+// and the student must not be called ready.
+const skillOf: Record<string, Skill> = { ...MISSION_SKILLS, ...(LAB_SKILLS as Record<string, Skill>) };
+const counts = Object.values(skillOf).reduce<Record<string, number>>((c, s) => ((c[s] = (c[s] ?? 0) + 1), c), {});
+const smallest = Object.entries(counts).sort((a, b) => a[1] - b[1])[0][0] as Skill;
+const oneSkillZeroed = summarize(all((id) => (skillOf[id] === smallest ? { solved: true, wrong: 3, hint: false } : clean(id))));
+t("the total is still above the ready bar", oneSkillZeroed.overall >= SCORE_READY, `${smallest}: ${oneSkillZeroed.overall}`);
+t("a zeroed skill keeps the level below ready", oneSkillZeroed.level !== "ready", oneSkillZeroed.level);
+
+// The opposite case: one slip inside a large skill does not make that skill
+// weak, so it must not cost the student Ready.
+const largest = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+const oneSlipId = Object.keys(skillOf).find((id) => skillOf[id] === largest)!;
+const oneSlip = summarize(all((id) => (id === oneSlipId ? { solved: true, wrong: 3, hint: false } : clean(id))));
+eq("a single zeroed mission in a large skill is still ready", oneSlip.level, "ready");
 
 console.log("\n--- judging a skill ---");
 t("a skill nobody has touched is neither competent nor weak", !skillCompetent({ score: null, rated: false }) && !skillWeak({ score: null, rated: false }));
