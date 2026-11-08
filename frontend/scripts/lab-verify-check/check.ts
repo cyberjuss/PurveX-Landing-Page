@@ -20,7 +20,7 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { firstBootScript, sessionMinutes, shouldStopIdle, verifyDownloaded } from "@/lib/academy-hosted";
+import { applyScriptUpdateCommand, firstBootScript, sessionMinutes, shouldStopIdle, verifyDownloaded } from "@/lib/academy-hosted";
 import { LAB_SCRIPT_HASHES } from "@/lib/lab-script-hashes";
 
 const root = join(import.meta.dirname, "..", "..");
@@ -119,6 +119,62 @@ try {
     t("the key is written in exactly once", /KEYS 1\b/.test(res), (res.match(/KEYS \d+/) ?? [""])[0]);
     t("the url is written in exactly once", /URLS 1\b/.test(res), (res.match(/URLS \d+/) ?? [""])[0]);
   }
+
+  // --- pushing a script update onto a pod whose own self-update never fires -
+  // Start-PurvexSyncLoop only checks every 6 hours of continuous uptime, reset
+  // on every restart, and the idle stop plus the session length mean almost
+  // no session runs that long -- so Range pushes the current script over SSM
+  // instead of waiting on the pod. Three things have to hold: a pod that was
+  // never linked is left alone (no key to write back in), a stale pod is
+  // replaced with the pod's own key kept intact, and a pod already current is
+  // not rewritten on every status poll.
+  function scriptUpdateRun(linkedBefore: string | null, url: string, expectKey: string): string {
+    const f = join(dir, "update-new.ps1");
+    const linked = join(dir, "update-linked.ps1");
+    writeFileSync(f, good, { encoding: "utf8" });
+    try {
+      rmSync(linked, { force: true });
+    } catch {}
+    if (linkedBefore !== null) writeFileSync(linked, linkedBefore, { encoding: "utf8" });
+    const trailer = [
+      "if(Test-Path $linked){",
+      "$after = Get-Content -LiteralPath $linked -Raw",
+      "$e=$null",
+      "[void][System.Management.Automation.Language.Parser]::ParseInput($after, [ref]$null, [ref]$e)",
+      '"EXISTS 1"',
+      'if ($e.Count) { "PARSE-ERRORS " + $e.Count } else { "PARSE-OK" }',
+      `"KEYS " + ([regex]::Matches($after, [regex]::Escape(${JSON.stringify(`'${expectKey}'`)}))).Count`,
+      `"URLS " + ([regex]::Matches($after, [regex]::Escape(${JSON.stringify(`'${url}'`)}))).Count`,
+      '} else { "EXISTS 0" }',
+    ].join("; ");
+    const snippet = [`$f=${JSON.stringify(f)}`, `$linked=${JSON.stringify(linked)}`, applyScriptUpdateCommand(url), trailer].join("; ");
+    return execFileSync("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", snippet], { encoding: "utf8" });
+  }
+
+  const testUrl = "https://purvex.io";
+  const neverLinked = scriptUpdateRun(null, testUrl, "pvl_unused");
+  t("a pod never linked is left alone (no key to write back in)", neverLinked.includes("EXISTS 0"));
+
+  // A stale pod: an older body, its own key and some other url already
+  // written in from whenever it first linked.
+  const stale = good
+    .replace('[string]$PurvexKey = ""', "[string]$PurvexKey = 'pvl_oldkey999'")
+    .replace('[string]$PurvexUrl = ""', "[string]$PurvexUrl = 'https://old.example.com'");
+  const replaced = scriptUpdateRun(stale, testUrl, "pvl_oldkey999");
+  t("a stale pod's script is replaced", replaced.includes("Updated the lab script."));
+  t("the replacement parses", replaced.includes("PARSE-OK"), replaced.split("\n")[0]?.trim());
+  t("the pod's own key is kept, not some other value", /KEYS 1\b/.test(replaced), (replaced.match(/KEYS \d+/) ?? [""])[0]);
+  t("our url is written in exactly once", /URLS 1\b/.test(replaced), (replaced.match(/URLS \d+/) ?? [""])[0]);
+
+  // Already current: exactly what the update would have produced. Run again
+  // and nothing should be written -- every status poll calls this, so a pod
+  // already up to date must not pay for a disk write it does not need.
+  const current = good
+    .replace('[string]$PurvexKey = ""', "[string]$PurvexKey = 'pvl_oldkey999'")
+    .replace('[string]$PurvexUrl = ""', `[string]$PurvexUrl = '${testUrl}'`);
+  const noop = scriptUpdateRun(current, testUrl, "pvl_oldkey999");
+  t("a pod already current is not rewritten", !noop.includes("Updated the lab script."));
+  t("and is still there, unharmed", noop.includes("EXISTS 1") && /KEYS 1\b/.test(noop));
 
   // The needle must match the param default and nothing else in the file.
   const buildSrc = readFileSync(join(scripts, "Build-Environment.ps1"), "utf8");
