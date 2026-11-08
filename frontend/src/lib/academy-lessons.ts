@@ -1,6 +1,7 @@
 import "server-only";
 import { loadLesson, phases, type WeekDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
+import { isPhaseLocked } from "@/lib/academy-locks";
 
 // Searchable course text, so Coach and MCP clients teach from the Academy's
 // own lessons instead of general knowledge. Challenge tabs are left out:
@@ -91,6 +92,8 @@ function build() {
   if (index) return index;
   const chunks: Chunk[] = [];
   for (const phase of phases) {
+    // Coach teaches only what a student can open. A coming-soon phase is left out.
+    if (isPhaseLocked(phase.slug)) continue;
     const entries: WeekDef[] = entriesOf(phase);
     for (const entry of entries) {
       for (const section of entry.sections) {

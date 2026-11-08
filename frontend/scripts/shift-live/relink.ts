@@ -27,7 +27,8 @@ const ssm = new SSMClient({
 
 async function run(instanceId: string, commands: string[]) {
   const out = await ssm.send(new SendCommandCommand({ InstanceIds: [instanceId], DocumentName: "AWS-RunPowerShellScript", TimeoutSeconds: 300, Parameters: { commands } }));
-  const id = out.Command?.CommandId!;
+  const id = out.Command?.CommandId;
+  if (!id) throw new Error(`SSM returned no command id for ${instanceId}`);
   for (let i = 0; i < 40; i += 1) {
     await sleep(3000);
     const inv = await ssm.send(new GetCommandInvocationCommand({ CommandId: id, InstanceId: instanceId })).catch(() => null);

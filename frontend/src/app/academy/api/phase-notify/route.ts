@@ -4,6 +4,7 @@ import { isPhaseLocked, PHASE_PREVIEW } from "@/lib/academy-locks";
 import { phaseInterestEmail } from "@/lib/academy-emails";
 import { sendEmail } from "@/lib/email";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { mailGuard } from "@/lib/auth-guard";
 
 export const runtime = "nodejs";
 
@@ -45,6 +46,9 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (existing) return NextResponse.json({ ok: true, already: true });
 
+  // Removing and re-adding is a way to make the server send mail, so the same
+  // throttle as signup and password reset applies.
+  if (!mailGuard(request, student.email)) return NextResponse.json({ error: "Too many tries. Wait a few minutes." }, { status: 429 });
   const { error } = await supabaseAdmin.from("academy_phase_interest").insert({ user_id: student.id, phase, email: student.email });
   if (error) {
     console.error("academy_phase_interest insert failed", error.message);

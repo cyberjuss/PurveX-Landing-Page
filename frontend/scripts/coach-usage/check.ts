@@ -15,7 +15,6 @@
  * claim, does the next reader see it. Uses a day far in the future so no real
  * allowance is touched, and deletes the row afterwards.
  */
-import { createHash } from "node:crypto";
 import { claimCoachQuestion, readUsage, releaseCoachQuestion } from "@/lib/academy-store";
 
 const DAY = "2099-02-02";
