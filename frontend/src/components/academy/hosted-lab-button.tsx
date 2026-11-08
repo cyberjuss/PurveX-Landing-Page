@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowUpRight, Check, Copy, Eye, EyeOff, Info, LifeBuoy, Loader2, RotateCcw, Server, Waypoints } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
+import { challengeTabHref } from "@/lib/academy-missions";
 import { openHelp } from "@/components/academy/get-help";
 import { LabBriefing, labBriefed, markLabBriefed } from "@/components/academy/lab-briefing";
 import "./hosted-lab.css";
@@ -699,7 +700,7 @@ export function HostedLabMenu() {
           <Info className="h-3 w-3" aria-hidden /> How it works
         </button>
         {state === "ready" && (
-          <Link href="/range/labs/confirm-the-map" className="hl__link">
+          <Link href={challengeTabHref("confirm-the-map")} className="hl__link">
             <Waypoints className="h-3 w-3" aria-hidden /> Map your pod
           </Link>
         )}

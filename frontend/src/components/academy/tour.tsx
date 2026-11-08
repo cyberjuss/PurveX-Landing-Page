@@ -13,7 +13,6 @@ import {
   FileText,
   Flag,
   Flame,
-  FlaskConical,
   Gauge,
   Headset,
   Image,
@@ -25,7 +24,6 @@ import {
   Search,
   Server,
   ShieldAlert,
-  SlidersHorizontal,
   Ticket,
   Timer,
   type LucideIcon,
@@ -201,31 +199,6 @@ const LESSON: Tour = {
   ],
 };
 
-const LABS: Tour = {
-  key: "purvex.tour.labs.v1",
-  when: (p) => p.startsWith("/range/labs"),
-  min: 3,
-  kicker: "Getting started",
-  title: "Labs",
-  tiles: [
-    {
-      icon: Search,
-      title: "Search",
-      body: "Find a lab by name when you already know the one you want.",
-    },
-    {
-      icon: SlidersHorizontal,
-      title: "Filter by skill",
-      body: "The chips narrow the list to one skill, and each carries the number of labs behind it.",
-    },
-    {
-      icon: FlaskConical,
-      title: "One lab, one page",
-      body: "Open a lab and it takes the whole page. Nothing here needs the hosted lab running.",
-    },
-  ],
-};
-
 const REFERENCE: Tour = {
   key: "purvex.tour.reference.v1",
   when: (p) => p.startsWith("/range/reference"),
@@ -328,7 +301,7 @@ const SHIFT: Tour = {
 
 // Most specific first. PORTAL is the fallback for any page in the portal
 // that has no card of its own, so it has to stay last.
-const TOURS: Tour[] = [HOME, DRILLS, LABS, REFERENCE, READINESS, PORTFOLIO, SHIFT, LESSON, PORTAL];
+const TOURS: Tour[] = [HOME, DRILLS, REFERENCE, READINESS, PORTFOLIO, SHIFT, LESSON, PORTAL];
 
 // One welcome, not one per page. Once the portal has shown the tour the first
 // time, this flag stops any other tour from firing on a first visit to drills,

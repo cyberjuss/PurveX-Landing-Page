@@ -94,7 +94,6 @@ export function SectionTabs({
   entrySlug,
   sections,
   quiz,
-  weekLabs,
   challenges,
   troubleshooting,
   prevWeek,
@@ -105,8 +104,6 @@ export function SectionTabs({
   entrySlug: string;
   sections: TabSection[];
   quiz?: Quiz;
-  /** The week's labs, as links. They are pages of their own now, not tabs. */
-  weekLabs?: { slug: string; title: string }[];
   challenges?: TabSection[];
   troubleshooting?: TabSection[];
   prevWeek?: WeekLink | null;
@@ -177,7 +174,7 @@ export function SectionTabs({
   const scenesByTab = useMemo(() => weekScenes(deckTabs), [deckTabs]);
   const tabScenes = asDeck ? scenesByTab[deckTabs.findIndex((s) => s.label === current.label)] : undefined;
   const { setPlace } = useCoach();
-  const { isLabDone, setLastStop } = useAcademyProgress();
+  const { setLastStop } = useAcademyProgress();
   useEffect(() => {
     setPlace(current.kind === "challenge" ? { kind: current.kind, title: current.label } : null);
     return () => setPlace(null);
@@ -346,21 +343,11 @@ export function SectionTabs({
     : prevWeek
       ? { label: prevWeek.label, go: () => router.push(prevWeek.href) }
       : null;
-  // The quiz is the last tab now that labs have pages of their own, so the
-  // forward control pointed at the next week and walked a student straight
-  // past the labs that finish this one. While any of them is unfinished, the
-  // first of them is what "next" means.
-  const labAfterQuiz =
-    current.kind === "quiz"
-      ? (weekLabs ?? []).find((l) => !isLabDone(phaseSlug, entrySlug, slugify(l.title))) ?? null
+  const nextTrail: TrailLink | null = nextItem
+    ? { label: nextItem.label, go: () => goTo(active + 1) }
+    : nextWeek
+      ? { label: nextWeek.label, go: () => router.push(nextWeek.href) }
       : null;
-  const nextTrail: TrailLink | null = labAfterQuiz
-    ? { label: labAfterQuiz.title, go: () => router.push(`/range/labs/${labAfterQuiz.slug}`) }
-    : nextItem
-      ? { label: nextItem.label, go: () => goTo(active + 1) }
-      : nextWeek
-        ? { label: nextWeek.label, go: () => router.push(nextWeek.href) }
-        : null;
   useEffect(() => {
     const apply = () => setActive(indexForHash(window.location.hash, items));
     apply();
@@ -415,7 +402,7 @@ export function SectionTabs({
 
   const panel =
     current.kind === "quiz" ? (
-      <QuizBlock quiz={quiz!} actionHost={quizFoot} nextBeyond={nextTrail} weekLabs={weekLabs} />
+      <QuizBlock quiz={quiz!} actionHost={quizFoot} nextBeyond={nextTrail} />
     ) : (
       <>
         {current.kind === "section" && HOSTED_SETUP_TABS.has(current.label) && <HostedLabSetupNote />}

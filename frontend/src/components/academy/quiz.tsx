@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { QUIZ_PASS_PERCENT, quizPassed, type Quiz } from "@/content/academy/quizzes";
@@ -15,14 +14,11 @@ export function QuizBlock({
   quiz,
   actionHost,
   nextBeyond,
-  weekLabs,
 }: {
   quiz: Quiz;
   actionHost?: HTMLElement | null;
   /** Where the week goes next, offered on the pass screen once nothing is left. */
   nextBeyond?: TrailLink | null;
-  /** This week's labs. Pages of their own, so the hand-off is a link out. */
-  weekLabs?: { slug: string; title: string }[];
 }) {
   const { recordQuizPass, requirements } = useAcademyProgress();
   // Picks are saved to the account as they are made, so leaving mid-quiz and
@@ -57,12 +53,7 @@ export function QuizBlock({
   const left = submitted && passed
     ? requirements(quiz.phaseSlug, quiz.weekSlug).filter((r) => r.label !== "Quiz" && !r.done)
     : [];
-  const plain = (label: string) => label.replace(/^(Lab|Challenge|Troubleshooting):\s*/, "");
-  // The first lab they have not finished, matched by title because that is what
-  // the requirement list carries. Falls back to the week's first lab, so a
-  // student who somehow has no match is still handed somewhere real.
-  const undone = new Set(left.map((r) => plain(r.label)));
-  const nextLab = (weekLabs ?? []).find((l) => undone.has(l.title)) ?? (weekLabs ?? [])[0] ?? null;
+  const plain = (label: string) => label.replace(/^(Challenge|Troubleshooting):\s*/, "");
 
   // The account's copy can arrive after the quiz is on screen. Use it, unless the student has started.
   useEffect(
@@ -200,16 +191,10 @@ export function QuizBlock({
               <p className="ax-quiz__left">
                 {left.length === 1 ? "One more to finish the week." : `${left.length} more to finish the week.`}
               </p>
-              {nextLab ? (
-                <Link href={`/range/labs/${nextLab.slug}`} className="ax-quiz__go">
-                  {nextLab.title}
-                </Link>
-              ) : (
-                nextBeyond && (
-                  <button type="button" className="ax-quiz__go" onClick={nextBeyond.go}>
-                    {plain(nextBeyond.label)}
-                  </button>
-                )
+              {nextBeyond && (
+                <button type="button" className="ax-quiz__go" onClick={nextBeyond.go}>
+                  {plain(nextBeyond.label)}
+                </button>
               )}
             </>
           ) : (

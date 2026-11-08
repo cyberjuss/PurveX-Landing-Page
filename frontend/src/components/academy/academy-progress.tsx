@@ -25,10 +25,6 @@ export function slugify(label: string) {
   return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-function labKey(phaseSlug: string, entrySlug: string, labSlug: string) {
-  return `${phaseSlug}:${entrySlug}:${labSlug}`;
-}
-
 /** One thing a week needs before it counts as complete. */
 export interface Requirement {
   label: string;
@@ -95,12 +91,10 @@ function countEntries(phases: PhaseDef[]) {
 
 interface AcademyProgressContextValue {
   isComplete: (phaseSlug: string, entrySlug: string) => boolean;
-  /** What a week or Home Lab needs: its quiz, its labs and its challenges. Empty when it has none. */
+  /** What a week or Home Lab needs: its quiz and its challenges. Empty when it has none. */
   requirements: (phaseSlug: string, entrySlug: string) => Requirement[];
   /** A phase is complete once every challenge in it is solved. */
   isPhaseComplete: (phaseSlug: string) => boolean;
-  recordLabDone: (phaseSlug: string, entrySlug: string, labSlug: string) => void;
-  isLabDone: (phaseSlug: string, entrySlug: string, labSlug: string) => boolean;
   hasPassedQuiz: (phaseSlug: string, entrySlug: string) => boolean;
   recordQuizPass: (phaseSlug: string, entrySlug: string) => void;
   toggleComplete: (phaseSlug: string, entrySlug: string) => void;
@@ -277,9 +271,6 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
         const key = entryKey(phase.slug, entry.slug);
         const list: Requirement[] = [];
         if (findQuiz(phase.slug, entry.slug)) list.push({ label: "Quiz", done: quizPasses.has(key) });
-        for (const s of entry.sections.filter((s) => s.label.startsWith("Lab:"))) {
-          list.push({ label: s.label, done: labsDone.has(labKey(phase.slug, entry.slug, slugify(s.label.replace(/^Lab:\s*/, "")))) });
-        }
         for (const c of entryChallenges(phase.slug, entry)) list.push({ label: c.label, done: labsDone.has(challengeMark(c.key)) || challengeDone(c.key, results) });
         map.set(key, list);
       }
@@ -287,7 +278,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
     return map;
   }, [phases, quizPasses, labsDone, results]);
 
-  // A week marks itself complete once its quiz, labs and challenges are all done.
+  // A week marks itself complete once its quiz and challenges are all done.
   // Nothing is ever unmarked here, so earlier progress stays.
   useEffect(() => {
     if (!loaded) return;
@@ -331,11 +322,6 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
       isComplete: (phaseSlug, entrySlug) => completed.has(entryKey(phaseSlug, entrySlug)),
       requirements: (phaseSlug, entrySlug) => reqs.get(entryKey(phaseSlug, entrySlug)) ?? [],
       isPhaseComplete: (phaseSlug) => phaseDone.has(phaseSlug),
-      recordLabDone: (phaseSlug, entrySlug, labSlug) => {
-        const key = labKey(phaseSlug, entrySlug, labSlug);
-        setLabsDone((prev) => (prev.has(key) ? prev : new Set([...prev, key])));
-      },
-      isLabDone: (phaseSlug, entrySlug, labSlug) => labsDone.has(labKey(phaseSlug, entrySlug, labSlug)),
       hasPassedQuiz: (phaseSlug, entrySlug) => quizPasses.has(entryKey(phaseSlug, entrySlug)),
       recordQuizPass: (phaseSlug, entrySlug) => {
         const key = entryKey(phaseSlug, entrySlug);
@@ -380,7 +366,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
       completedCount: [...completed].filter((key) => !isPhaseLocked(key.split(":")[0])).length,
       totalCount,
     }),
-    [completed, quizPasses, labsDone, reqs, phaseDone, lastStop, totalCount]
+    [completed, quizPasses, reqs, phaseDone, lastStop, totalCount]
   );
 
   return <AcademyProgressContext.Provider value={value}>{children}</AcademyProgressContext.Provider>;

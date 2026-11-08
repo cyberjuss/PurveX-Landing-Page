@@ -3,20 +3,20 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, FlaskConical, Hammer } from "lucide-react";
+import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, Hammer } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
-import { entriesOf, labLinksOf } from "@/lib/academy-entries";
+import { entriesOf } from "@/lib/academy-entries";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
 
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
-  const { isComplete, isPhaseComplete, isLabDone, requirements, completedCount, totalCount } = useAcademyProgress();
-  // What the reader chose for each group (a phase, a Home Lab list, a Labs
-  // list): open or closed. A group with no choice follows the page, open when
-  // you are inside it. This used to store "the opposite of the default", so a
-  // phase opened by hand from elsewhere flipped shut the moment you went into
-  // it. Now a choice is a plain open or closed.
+  const { isComplete, isPhaseComplete, requirements, completedCount, totalCount } = useAcademyProgress();
+  // What the reader chose for each group (a phase or a Home Lab list): open
+  // or closed. A group with no choice follows the page, open when you are
+  // inside it. This used to store "the opposite of the default", so a phase
+  // opened by hand from elsewhere flipped shut the moment you went into it.
+  // Now a choice is a plain open or closed.
   const [chosen, setChosen] = useState<Record<string, boolean>>({});
   const openOf = (key: string, inside: boolean) => (key in chosen ? chosen[key] : inside);
   const toggle = (key: string, isOpen: boolean) => setChosen((prev) => ({ ...prev, [key]: !isOpen }));
@@ -292,92 +292,6 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           </div>
         );
 
-        // Labs are their own section beside the Home Lab, not a list tacked on
-        // the end of it. They are a different kind of work: the home lab is an
-        // evening of building, a lab is a task you finish in twenty minutes.
-        const phaseLabs = labLinksOf([phase]);
-        // Grouped under the week that assigns them. Five labs from three weeks
-        // in one flat list told a student on week 2 nothing about which two
-        // were theirs. Course order is already the order labLinksOf returns.
-        const labWeeks: { entrySlug: string; label: string; labs: typeof phaseLabs }[] = [];
-        for (const lab of phaseLabs) {
-          const group = labWeeks.find((g) => g.entrySlug === lab.entrySlug);
-          if (group) group.labs.push(lab);
-          // "Week 2 -- Encryption & Hashing" is too long for the rail, and the
-          // part before the dash is the part that locates it.
-          else labWeeks.push({ entrySlug: lab.entrySlug, label: lab.entryTitle.split("—")[0].trim() || lab.entryTitle, labs: [lab] });
-        }
-        const labsListKey = `${phase.slug}:labslist`;
-        const labsListOpen = openOf(labsListKey, phaseLabs.some((l) => pathname === `/range/labs/${l.slug}`));
-        const labsListSection = phaseLabs.length > 0 && (
-          <div>
-            <div
-              className={`ax-subhead flex w-full items-center justify-between gap-2 font-mono text-[12px] font-bold uppercase tracking-[0.1em] transition ${
-                labsListOpen || pathname === "/range/labs" ? "text-[var(--rd-accent)]" : "text-[var(--rd-ink-3)]"
-              }`}
-            >
-              <Link
-                href="/range/labs"
-                onClick={onNavigate}
-                aria-current={pathname === "/range/labs" ? "page" : undefined}
-                className="flex min-w-0 flex-1 items-center gap-1.5 hover:text-[var(--rd-accent)]"
-              >
-                <FlaskConical className="h-3 w-3 shrink-0" aria-hidden />
-                <span className="truncate">Labs</span>
-              </Link>
-              <button
-                type="button"
-                onClick={() => toggle(labsListKey, labsListOpen)}
-                aria-expanded={labsListOpen}
-                aria-label={labsListOpen ? "Hide the list of labs" : "Show the list of labs"}
-                className="-m-1 p-1 hover:text-[var(--rd-accent)]"
-              >
-                <ChevronDown className={`h-3 w-3 shrink-0 transition-transform duration-300 ${labsListOpen ? "" : "-rotate-90"}`} />
-              </button>
-            </div>
-            <div
-              className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(.16,1,.3,1)] ${
-                labsListOpen ? "mt-2.5 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-              }`}
-            >
-              {/* One wrapper, so the grid has a single row to collapse. The week
-                  groups inside it would otherwise land in auto-sized implicit
-                  rows that 0fr never touches, which left a gap under a closed
-                  Labs section. */}
-              <div className="min-h-0 overflow-hidden">
-              {labWeeks.map((group) => (
-              <Fragment key={group.entrySlug}>
-              <p className="ax-labweek">{group.label}</p>
-              <ul className="ax-list flex flex-col overflow-hidden">
-                {group.labs.map((lab) => {
-                  const href = `/range/labs/${lab.slug}`;
-                  // The same tick a finished week gets. Without it this list,
-                  // which is now the way into every lab, was the one place in
-                  // the rail that said nothing about where a student is.
-                  const labDone = isLabDone(lab.phaseSlug, lab.entrySlug, slugify(lab.title));
-                  return (
-                    <li key={lab.slug}>
-                      <Link
-                        href={href}
-                        onClick={onNavigate}
-                        className={`ax-week${pathname === href ? " ax-week--on" : ""}`}
-                      >
-                        {pathname === href && <span className="ax-week__bar" aria-hidden />}
-                        <span className="ax-week__name truncate">{lab.title}</span>
-                        {labDone && (
-                          <Check className="ax-week__tick h-4 w-4" strokeWidth={2.5} aria-label="Complete" />
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-              </Fragment>
-              ))}
-              </div>
-            </div>
-          </div>
-        );
         return (
           <Fragment key={phase.slug}>
           <div>
@@ -419,15 +333,14 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
               }`}
             >
               {/* One child, so the row animation has a single thing to
-                  measure. The weeks, Labs, Company and Challenges all sit in
-                  it, spaced by this flex gap rather than each section's own
-                  margin, so the four read as evenly spaced whichever of them
-                  is actually present for a given phase. */}
+                  measure. The weeks, Company and Challenges all sit in it,
+                  spaced by this flex gap rather than each section's own
+                  margin, so they read as evenly spaced whichever of them is
+                  actually present for a given phase. */}
               <div className="flex min-h-0 flex-col gap-[10px] overflow-hidden">
                 <ul className="ax-list flex flex-col">
                   {phase.weeks.map(row)}
                 </ul>
-                {labsListSection}
                 {labSection}
                 {challengesSection}
               </div>
