@@ -19,6 +19,8 @@ import {
 import { academyFetch } from "@/lib/academy-client";
 import { daysUntil, passedExamDates, todayLocal } from "@/lib/academy-goals";
 
+type MemoryNote = { id: string; kind: string; label: string; note: string; at: string };
+
 // Every intake answer on one screen, so changing an exam date is one edit,
 // not a walk through all four intake questions. The first-time intake stays
 // a step-by-step flow.
@@ -50,6 +52,9 @@ export function GoalsPanel({
     };
   });
   const closeRef = useRef<HTMLButtonElement>(null);
+  const [notes, setNotes] = useState<MemoryNote[] | null>(null);
+  const [notesError, setNotesError] = useState<string | null>(null);
+  const [forgetting, setForgetting] = useState<string | null>(null);
   const today = todayLocal();
   const overdue = passedExamDates({ ...profile, certs }, today);
 
@@ -65,6 +70,36 @@ export function GoalsPanel({
       window.removeEventListener("keydown", onKey);
     };
   }, [onClose]);
+
+  useEffect(() => {
+    let live = true;
+    academyFetch("/academy/api/coach-memory")
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error())))
+      .then((d: { notes?: MemoryNote[] }) => live && setNotes(d.notes ?? []))
+      .catch(() => live && setNotesError("Couldn't load what Coach remembers."));
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  // A delete takes effect at once. It is the student's data, not a draft
+  // waiting on Save goals.
+  async function forgetNote(id?: string) {
+    if (forgetting) return;
+    if (!id && !window.confirm("Clear everything Coach remembers about you? Coach starts learning again from your next chat.")) return;
+    setForgetting(id ?? "all");
+    setNotesError(null);
+    try {
+      const res = await academyFetch(`/academy/api/coach-memory${id ? `?id=${encodeURIComponent(id)}` : ""}`, { method: "DELETE" });
+      const d = (await res.json().catch(() => ({}))) as { notes?: MemoryNote[]; error?: string };
+      if (!res.ok || !d.notes) throw new Error(d.error);
+      setNotes(d.notes);
+    } catch (err) {
+      setNotesError(err instanceof Error && err.message ? err.message : "Couldn't update Coach's notes. Try again.");
+    } finally {
+      setForgetting(null);
+    }
+  }
 
   const changed =
     JSON.stringify(certs) !== JSON.stringify(profile.certs) ||
@@ -229,6 +264,47 @@ export function GoalsPanel({
                 onChange={(e) => setCallMe(e.target.value)}
               />
             </label>
+          </section>
+
+          <section className="gp-sec" aria-labelledby="gp-memory">
+            <div className="gp-sec__head">
+              <h3 id="gp-memory">What Coach remembers</h3>
+              {notes && notes.length > 0 && (
+                <button type="button" className="gp-link" onClick={() => void forgetNote()} disabled={Boolean(forgetting)}>
+                  Clear all
+                </button>
+              )}
+            </div>
+            <p className="gp-hint">Notes Coach keeps from your chats so it can pick up where you left off. Remove anything that is wrong or that you would rather it forgot.</p>
+            {notesError && (
+              <p className="gp-error" role="alert">
+                {notesError}
+              </p>
+            )}
+            {!notes && !notesError && <Loader2 className="gp-mem__wait h-4 w-4 animate-spin" aria-label="Loading" />}
+            {notes && notes.length === 0 && <p className="gp-mem__empty">Nothing yet. Coach adds notes as it gets to know you.</p>}
+            {notes && notes.length > 0 && (
+              <ul className="gp-mem">
+                {notes.map((n) => (
+                  <li key={n.id} className="gp-mem__row">
+                    <div>
+                      <span className="gp-mem__kind">{n.label}</span>
+                      <p>{n.note}</p>
+                    </div>
+                    <button
+                      type="button"
+                      className="gp-mem__x"
+                      aria-label={`Forget: ${n.note}`}
+                      title="Forget this"
+                      onClick={() => void forgetNote(n.id)}
+                      disabled={Boolean(forgetting)}
+                    >
+                      {forgetting === n.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </div>
 

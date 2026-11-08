@@ -331,3 +331,33 @@
 /* Goals row in the account menu. A dot flags an exam date that has passed. */
 [data-ax-account] .ax-account__dot { width: 7px; height: 7px; margin-left: 2px; border-radius: 50%; background: #d93a3f; }
 [data-ax-account][data-theme="dark"] .ax-account__dot { background: #fca5a5; }
+
+/* What Coach remembers: plain rows, a kind label above each note, and an
+   x to forget it. Deletes apply at once, outside Save goals. */
+.ad-drawer .gp-link {
+  border: 0; padding: 0; background: none; font: inherit;
+  font-size: var(--ty-small); font-weight: 600; color: var(--dr-ink-3);
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+.ad-drawer .gp-link:hover { color: var(--dr-alert); }
+.ad-drawer .gp-link:disabled { opacity: 0.4; cursor: default; }
+.ad-drawer .gp-mem { list-style: none; margin: 12px 0 0; padding: 0; border-top: 1px solid var(--dr-line); }
+.ad-drawer .gp-mem__row {
+  display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: start;
+  padding: 10px 0; border-bottom: 1px solid var(--dr-line);
+}
+.ad-drawer .gp-mem__kind {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-micro); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--dr-ink-3);
+}
+.ad-drawer .gp-mem__row p { margin: 3px 0 0; font-size: var(--ty-note); line-height: 1.45; color: var(--dr-ink); overflow-wrap: anywhere; }
+.ad-drawer .gp-mem__x {
+  display: inline-grid; place-items: center; width: 28px; height: 28px;
+  border: 1px solid transparent; background: none; color: var(--dr-ink-3); cursor: pointer;
+}
+.ad-drawer .gp-mem__x:hover { border-color: var(--dr-line); color: var(--dr-alert); }
+.ad-drawer .gp-mem__x:focus-visible, .ad-drawer .gp-link:focus-visible { outline: 2px solid var(--dr-accent); outline-offset: 2px; }
+.ad-drawer .gp-mem__x:disabled { opacity: 0.4; cursor: default; }
+.ad-drawer .gp-mem__empty { margin: 10px 0 0; font-size: var(--ty-small); color: var(--dr-ink-3); }
+.ad-drawer .gp-mem__wait { margin-top: 10px; color: var(--dr-ink-3); }

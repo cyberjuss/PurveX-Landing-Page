@@ -113,6 +113,13 @@ export async function forget(userId: string, input: Record<string, unknown>): Pr
   return JSON.stringify(ok ? { forgotten: true } : { error: "could not update notes" });
 }
 
+/** The student's own delete, from the Goals panel. No id clears every note. */
+export async function dropNotes(userId: string, id?: string): Promise<CoachNote[] | null> {
+  const notes = await loadMemory(userId);
+  const next = id ? notes.filter((n) => n.id !== id) : [];
+  return (await storeMemory(userId, next)) ? next : null;
+}
+
 function ago(at: string) {
   const days = Math.floor((Date.now() - Date.parse(at)) / 86_400_000);
   return !Number.isFinite(days) || days < 1 ? "today" : days < 2 ? "yesterday" : days < 60 ? `${days}d ago` : `${Math.floor(days / 30)}mo ago`;
