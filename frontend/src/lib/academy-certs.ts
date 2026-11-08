@@ -317,9 +317,9 @@ export const START_LEVELS: { id: StartLevel; label: string; blurb: string }[] = 
 
 export const CERT_STATUSES: { id: CertStatus; label: string }[] = [
   { id: "earned", label: "Certified" },
-  { id: "studying", label: "Actively preparing" },
-  { id: "planning", label: "Planning to pursue" },
-  { id: "none", label: "Not at this time" },
+  { id: "studying", label: "Currently studying" },
+  { id: "planning", label: "Planning to study" },
+  { id: "none", label: "Not planned" },
 ];
 
 export type CertGoal = { status: CertStatus; /** YYYY-MM-DD, only when studying. */ examDate?: string; /** YYYY-MM-DD, only when earned. */ earnedDate?: string };
@@ -332,35 +332,35 @@ export type Machine = "win" | "mac" | "chromebook" | "unsure";
 export type HelpStyle = "hint" | "walk" | "example";
 export const TIMELINES: { id: Timeline; label: string }[] = [
   { id: "3m", label: "Within 3 months" },
-  { id: "6m", label: "In 3 to 6 months" },
-  { id: "12m", label: "Within the year" },
-  { id: "open", label: "No deadline, learning at my own pace" },
+  { id: "6m", label: "3 to 6 months" },
+  { id: "12m", label: "6 to 12 months" },
+  { id: "open", label: "No set timeline" },
 ];
 export const HOURS: { id: Hours; label: string }[] = [
-  { id: "lt3", label: "Under 3 hours a week" },
-  { id: "3-6", label: "3 to 6 hours a week" },
-  { id: "6-10", label: "6 to 10 hours a week" },
-  { id: "10+", label: "10 or more hours a week" },
+  { id: "lt3", label: "Less than 3 hours" },
+  { id: "3-6", label: "3 to 6 hours" },
+  { id: "6-10", label: "6 to 10 hours" },
+  { id: "10+", label: "More than 10 hours" },
 ];
 /** Things a student has done in real life. More honest than rating yourself. */
 export const DONE: { id: string; label: string }[] = [
-  { id: "tickets", label: "Worked a ticket queue" },
+  { id: "tickets", label: "Worked in a ticketing system" },
   { id: "ad-reset", label: "Reset a password in Active Directory" },
   { id: "powershell", label: "Used PowerShell" },
-  { id: "vm", label: "Built a virtual machine" },
-  { id: "eventlogs", label: "Read Windows event logs" },
+  { id: "vm", label: "Set up a virtual machine" },
+  { id: "eventlogs", label: "Reviewed Windows event logs" },
   { id: "wireshark", label: "Used Wireshark" },
 ];
 export const MACHINES: { id: Machine; label: string }[] = [
-  { id: "win", label: "A Windows PC with 16 GB of memory or more" },
-  { id: "mac", label: "A Mac" },
-  { id: "chromebook", label: "A Chromebook or tablet" },
+  { id: "win", label: "Windows PC (16 GB RAM or more)" },
+  { id: "mac", label: "Mac" },
+  { id: "chromebook", label: "Chromebook or tablet" },
   { id: "unsure", label: "Not sure" },
 ];
 export const HELP_STYLES: { id: HelpStyle; label: string }[] = [
-  { id: "hint", label: "Give me a hint so I can try again" },
-  { id: "walk", label: "Walk me through it step by step" },
-  { id: "example", label: "Show me a worked example" },
+  { id: "hint", label: "A hint" },
+  { id: "walk", label: "Step-by-step instructions" },
+  { id: "example", label: "A worked example" },
 ];
 /** Four first-day tickets. Not graded: the misses tell Coach where to start. */
 export const QUICK_CHECK: { id: string; topic: string; prompt: string; options: string[]; answer: number; why: string }[] = [

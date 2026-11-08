@@ -207,27 +207,26 @@ export function AcademyIntake({
 
   if (step === "roles") {
     section = "Your goal";
-    title = "Which job are you working toward?";
-    hint = "Pick up to two.";
+    title = "What role are you working toward?";
+    hint = "Choose up to two.";
     multi = true;
     choices = ROLES.map((r) => ({ label: r.label, on: roles.includes(r.id), pick: () => toggleRole(r.id) }));
   } else if (step === "timeline") {
     section = "Your goal";
-    title = "When do you want to be job-ready?";
+    title = "When would you like to be job-ready?";
     choices = TIMELINES.map((t) => ({ label: t.label, on: timeline === t.id, pick: () => pickAndGo(setTimeline, t.id) }));
   } else if (step === "hours") {
     section = "Your goal";
-    title = "How much time can you give it each week?";
-    hint = "Be honest. Coach uses it to set a pace you can keep.";
+    title = "How many hours per week can you study?";
     choices = HOURS.map((h) => ({ label: h.label, on: hours === h.id, pick: () => pickAndGo(setHours, h.id) }));
   } else if (step === "done") {
     section = "Experience";
-    title = "Which of these have you done for real?";
+    title = "Which of these have you done before?";
     hint = "Select all that apply.";
     multi = true;
     choices = [
       ...DONE.map((d) => ({ label: d.label, on: Boolean(done?.includes(d.id)), pick: () => toggleDone(d.id) })),
-      { label: "None of these yet", on: done !== undefined && done.length === 0, pick: () => toggleDone(NONE_DONE) },
+      { label: "None of these", on: done !== undefined && done.length === 0, pick: () => toggleDone(NONE_DONE) },
     ];
   } else if (quickQ) {
     const n = QUICK_CHECK.indexOf(quickQ) + 1;
@@ -235,7 +234,7 @@ export function AcademyIntake({
     const answered = picked !== undefined;
     section = `Quick check · ${n} of ${QUICK_CHECK.length}`;
     title = quickQ.prompt;
-    hint = "Not graded. Your first answer tells Coach where to start.";
+    hint = "This is not graded.";
     choices = quickQ.options.map((o, k) => ({
       label: o,
       on: picked === k,
@@ -251,18 +250,18 @@ export function AcademyIntake({
       );
   } else if (step === "machine") {
     section = "Setup";
-    title = "What will you run your lab on?";
-    hint = "The home lab needs a Windows PC. Anything else uses the cloud lab, which runs in a browser tab.";
+    title = "What computer will you use?";
+    hint = "The home lab requires a Windows PC. Other devices use the cloud lab in your browser.";
     choices = MACHINES.map((m) => ({ label: m.label, on: machine === m.id, pick: () => pickAndGo(setMachine, m.id) }));
   } else if (step === "help") {
     section = "Setup";
-    title = "When you're stuck, what helps most?";
+    title = "When you're stuck, what helps you most?";
     choices = HELP_STYLES.map((h) => ({ label: h.label, on: help === h.id, pick: () => pickAndGo(setHelp, h.id) }));
   } else if (step === "secplus" || step === "cysa") {
     const goal = certs[step];
     section = "Certifications";
     title = CERTS[step].full;
-    hint = "Where are you with it?";
+    hint = "What is your status?";
     choices = CERT_STATUSES.map((st) => ({ label: st.label, on: goal?.status === st.id, pick: () => pickCert(step, st.id) }));
     if (goal?.status === "studying")
       extra = (
@@ -291,7 +290,7 @@ export function AcademyIntake({
       );
   } else {
     section = "About you";
-    title = "Last thing: a little about you.";
+    title = "Tell us about yourself.";
     choices = START_LEVELS.map((st) => ({ label: st.label, on: start === st.id, pick: () => setStart(st.id) }));
     extra = (
       <div className="axq-fields">
@@ -304,7 +303,7 @@ export function AcademyIntake({
           <input type="text" maxLength={280} placeholder="e.g. Retail manager, student, veteran" value={background} onChange={(e) => setBackground(e.target.value)} />
         </label>
         <label className="axq-field">
-          <span>Anything Coach should know? · Optional</span>
+          <span>Anything else we should know? · Optional</span>
           <input
             type="text"
             maxLength={200}

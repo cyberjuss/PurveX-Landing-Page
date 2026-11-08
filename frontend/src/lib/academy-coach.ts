@@ -267,7 +267,7 @@ export function teachingProfile(profile: StudentProfile): string {
     const total = weeks && x.hours ? Math.round(weeks * HOURS_MID[x.hours]) : null;
     const tight = (x.timeline === "3m" && (x.hours === "lt3" || x.hours === "3-6")) || (x.timeline === "6m" && x.hours === "lt3");
     lines.push(
-      `Time: ${[t ? `wants to be job-ready ${t.toLowerCase()}` : "", h ? h.toLowerCase() : ""].filter(Boolean).join(", ")}.${
+      `Time: ${[t ? `timeline to be job-ready: ${t.toLowerCase()}` : "", h ? `can study ${h.toLowerCase()} a week` : ""].filter(Boolean).join(", ")}.${
         total !== null ? ` That is roughly ${total} hours in all.` : ""
       } Size every suggestion to it: a ${x.hours === "lt3" ? "20-minute" : x.hours === "3-6" ? "45-minute" : "one-hour"} block is a normal session for them.${
         tight ? " That goal is tight for those hours. Say so once, kindly, then help them spend the hours on what hiring managers test." : ""

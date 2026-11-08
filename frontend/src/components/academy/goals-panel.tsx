@@ -150,7 +150,7 @@ export function GoalsPanel({
 
           <section className="gp-sec">
             <h3>Target role</h3>
-            <p className="gp-hint">Pick up to two.</p>
+            <p className="gp-hint">Choose up to two.</p>
             <div className="gp-chips">
               {ROLES.map((r) => (
                 <button key={r.id} type="button" role="checkbox" aria-checked={roles.includes(r.id)} className="gp-chip" onClick={() => toggleRole(r.id)}>
@@ -267,8 +267,8 @@ export function GoalsPanel({
           </section>
 
           <section className="gp-sec">
-            <h3>Job-ready by</h3>
-            <div className="gp-chips" role="radiogroup" aria-label="Job-ready by">
+            <h3>Timeline</h3>
+            <div className="gp-chips" role="radiogroup" aria-label="Timeline">
               {TIMELINES.map((o) => (
                 <button key={o.id} type="button" role="radio" aria-checked={timeline === o.id} className="gp-chip" onClick={() => setTimeline(o.id)}>
                   {o.label}
@@ -277,8 +277,8 @@ export function GoalsPanel({
             </div>
           </section>
           <section className="gp-sec">
-            <h3>Time each week</h3>
-            <div className="gp-chips" role="radiogroup" aria-label="Time each week">
+            <h3>Hours per week</h3>
+            <div className="gp-chips" role="radiogroup" aria-label="Hours per week">
               {HOURS.map((o) => (
                 <button key={o.id} type="button" role="radio" aria-checked={hours === o.id} className="gp-chip" onClick={() => setHours(o.id)}>
                   {o.label}
@@ -287,7 +287,7 @@ export function GoalsPanel({
             </div>
           </section>
           <section className="gp-sec">
-            <h3>Done for real</h3>
+            <h3>Experience</h3>
             <p className="gp-hint">Select all that apply.</p>
             <div className="gp-chips">
               {DONE.map((o) => (
@@ -298,8 +298,8 @@ export function GoalsPanel({
             </div>
           </section>
           <section className="gp-sec">
-            <h3>When you&apos;re stuck</h3>
-            <div className="gp-chips" role="radiogroup" aria-label="When you're stuck">
+            <h3>Preferred help</h3>
+            <div className="gp-chips" role="radiogroup" aria-label="Preferred help">
               {HELP_STYLES.map((o) => (
                 <button key={o.id} type="button" role="radio" aria-checked={help === o.id} className="gp-chip" onClick={() => setHelp(o.id)}>
                   {o.label}
@@ -309,7 +309,7 @@ export function GoalsPanel({
           </section>
           <section className="gp-sec">
             <label className="gp-field">
-              <span>Anything Coach should know? · Optional</span>
+              <span>Anything else we should know? · Optional</span>
               <input type="text" maxLength={200} placeholder="e.g. English is my second language, keep answers short" value={notes} onChange={(e) => setNotes(e.target.value)} />
             </label>
           </section>
