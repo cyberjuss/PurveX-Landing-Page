@@ -10,11 +10,9 @@ import {
   DONE,
   HELP_STYLES,
   HOURS,
-  MACHINES,
   TIMELINES,
   type Hours,
   type HelpStyle,
-  type Machine,
   type Timeline,
   MAX_ROLES,
   ROLES,
@@ -64,7 +62,6 @@ export function GoalsPanel({
   const [timeline, setTimeline] = useState<Timeline | undefined>(ex.timeline);
   const [hours, setHours] = useState<Hours | undefined>(ex.hours);
   const [done, setDone] = useState<string[]>(ex.done ?? []);
-  const [machine, setMachine] = useState<Machine | undefined>(ex.machine);
   const [help, setHelp] = useState<HelpStyle | undefined>(ex.help);
   const [notes, setNotes] = useState(ex.notes ?? "");
   const today = todayLocal();
@@ -92,7 +89,6 @@ export function GoalsPanel({
     timeline !== ex.timeline ||
     hours !== ex.hours ||
     [...done].sort().join() !== [...(ex.done ?? [])].sort().join() ||
-    machine !== ex.machine ||
     help !== ex.help ||
     notes.trim() !== (ex.notes ?? "");
 
@@ -126,7 +122,7 @@ export function GoalsPanel({
             start,
             background,
             callMe,
-            extras: { ...ex, timeline, hours, done: ex.done || done.length ? done : undefined, machine, help, notes: notes.trim() || undefined },
+            extras: { ...ex, timeline, hours, done: ex.done || done.length ? done : undefined, help, notes: notes.trim() || undefined },
           },
         }),
       });
@@ -296,16 +292,6 @@ export function GoalsPanel({
             <div className="gp-chips">
               {DONE.map((o) => (
                 <button key={o.id} type="button" role="checkbox" aria-checked={done.includes(o.id)} className="gp-chip" onClick={() => toggleDone(o.id)}>
-                  {o.label}
-                </button>
-              ))}
-            </div>
-          </section>
-          <section className="gp-sec">
-            <h3>Lab machine</h3>
-            <div className="gp-chips" role="radiogroup" aria-label="Lab machine">
-              {MACHINES.map((o) => (
-                <button key={o.id} type="button" role="radio" aria-checked={machine === o.id} className="gp-chip" onClick={() => setMachine(o.id)}>
                   {o.label}
                 </button>
               ))}
