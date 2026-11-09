@@ -55,11 +55,11 @@ const AUDIENCES: Audience[] = [
     steps: [
       "Book a short call",
       "Get a class passcode",
-      "Students build their labs",
+      "Students open their labs",
       "Track every student",
     ],
     footLabel: "What your program gets",
-    foot: ["Labs run on students' own computers", "One course for every student", "A progress report per student"],
+    foot: ["Labs run in the cloud for every student", "One course for every student", "A progress report per student"],
   },
   {
     key: "employers",

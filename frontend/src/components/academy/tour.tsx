@@ -178,7 +178,7 @@ const LESSON: Tour = {
     {
       icon: LayoutList,
       title: "Tabs across the top",
-      body: "Reading sections first, then any lab or challenge, then the quiz at the end.",
+      body: "Reading sections first, then the week's challenge, then the quiz at the end.",
     },
     {
       icon: CheckSquare,

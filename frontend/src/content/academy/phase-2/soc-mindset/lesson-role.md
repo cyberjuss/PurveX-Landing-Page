@@ -8,7 +8,7 @@ Most SOCs split that watching between three tiers:
 - **Tier 2** takes an escalation and goes deeper. It scopes what the account or host touched across the network.
 - **Tier 3** does not wait for the queue at all. It hunts for attacker behavior nothing has flagged yet. When it finds a gap, it builds the detection that should have caught it.
 
-It's worth knowing that the tiers aren't separated by how much someone knows. A good Tier 1 analyst and a Tier 3 analyst are often using the same investigation mindset this module teaches. What changes is the scope. Tier 1 asks whether the alert in front of them makes sense. Tier 3 asks what pattern across the whole environment nobody has built a detection for yet.
+It's worth knowing that the tiers aren't separated by how much someone knows. A good Tier 1 analyst and a Tier 3 analyst are often using the same investigation mindset this week teaches. What changes is the scope. Tier 1 asks whether the alert in front of them makes sense. Tier 3 asks what pattern across the whole environment nobody has built a detection for yet.
 
 ```sort
 prompt: Sort each task by the tier that typically owns it.

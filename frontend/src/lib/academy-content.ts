@@ -58,8 +58,8 @@ const phase1Weeks: WeekDef[] = [
       { label: "Risk", file: "phase-1/week-1/lesson-risk.md" },
       { label: "How It All Connects", file: "phase-1/week-1/lesson-connects.md" },
       { label: "Tools You'll Use", file: "phase-1/week-1/lesson-tools.md" },
-      { label: "Resources", file: "phase-1/week-1/resources.md" },
       { label: "Challenge: The Weekend Incident Report", file: "phase-1/week-1/challenge-weekend-incidents.md" },
+      { label: "Resources", file: "phase-1/week-1/resources.md" },
     ],
   },
   {
@@ -73,8 +73,8 @@ const phase1Weeks: WeekDef[] = [
       { label: "Encryption and Keys", file: "phase-1/week-2/lesson-encryption.md" },
       { label: "Storing Passwords", file: "phase-1/week-2/lesson-passwords.md" },
       { label: "Tools You'll Use", file: "phase-1/week-2/lesson-tools.md" },
-      { label: "Resources", file: "phase-1/week-2/resources.md" },
       { label: "Challenge: Tuesday After the Breach", file: "phase-1/week-2/challenge-tuesday-after-breach.md" },
+      { label: "Resources", file: "phase-1/week-2/resources.md" },
     ],
   },
   {
@@ -95,7 +95,7 @@ const phase1Weeks: WeekDef[] = [
   },
   {
     slug: "week-4",
-    title: "Week 4 — Authentication & Authorization & Access Control",
+    title: "Week 4 — Authentication, Authorization & Access Control",
     summary: "Prove who someone is, give them only what their job needs, and check it on every request. Then break an app that forgot to.",
     sections: [
       { label: "Overview", file: "phase-1/week-4/lesson-overview.md" },
@@ -202,9 +202,10 @@ const phase2Weeks: WeekDef[] = [
       { label: "Types of Malware", file: "phase-2/week-1/lesson-types.md" },
       { label: "How Malware Gets In", file: "phase-2/week-1/lesson-delivery.md" },
       { label: "Working a Malware Alert", file: "phase-2/week-1/lesson-response.md" },
-      { label: "Tools Analysts Use", file: "phase-2/week-1/lesson-tools.md" },
+      { label: "Tools You'll Use", file: "phase-2/week-1/lesson-tools.md" },
       { label: "Challenge: Prove the Signature Match, Then Find Its Limit", file: "phase-2/week-1/challenge-trigger-a-real-detection.md" },
       { label: "Challenge: Follow the Process Tree to What Keeps It Alive", file: "phase-2/week-1/challenge-read-a-process-tree.md" },
+      { label: "Resources", file: "phase-2/week-1/resources.md" },
     ],
   },
   {
@@ -215,6 +216,7 @@ const phase2Weeks: WeekDef[] = [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
       { label: "Challenge: One Timeline, Two Machines", file: "phase-2/week-2/challenge-one-timeline-two-machines.md" },
       { label: "Challenge: Keep What a Process Launch Alone Throws Away", file: "phase-2/week-2/challenge-turn-on-script-logging.md" },
+      { label: "Resources", file: "phase-2/week-2/resources.md" },
     ],
   },
   // These two replace the old empty "week-3" (SIEM Basics) and "week-4"
@@ -222,7 +224,7 @@ const phase2Weeks: WeekDef[] = [
   // student progress to preserve -- safe to retire rather than renumber.
   {
     slug: "baselines-thresholds",
-    title: "Week 4 — Baselines & Thresholds & Zero Trust",
+    title: "Week 4 — Baselines, Thresholds & Zero Trust",
     summary: "Map your own lab's network, tell an outlier from a baseline, place MITRE ATT&CK on attacker behavior you've already seen, and learn what a detection threshold actually costs in either direction.",
     sections: [
       { label: "Overview", file: "phase-2/baselines-thresholds/overview.md" },

@@ -3,9 +3,9 @@
 <p>When a SIEM fires, can you check the host and the account against the log before you decide what happened?</p>
 </div>
 
-### Log Analysis Fundamentals
+### Overview
 
-In Phase 1, you learned to check Active Directory before working a help desk ticket. This week turns to the other half of the desk, the alerts. When one fires, you read three things before anything else:
+Last week you worked a malware alert on a single endpoint. This week turns to the logs behind every alert, so that when one fires, you read three things before anything else:
 
 - the host
 - the account

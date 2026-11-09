@@ -1,4 +1,4 @@
-### Sources for this module's facts
+### Sources for this week's facts
 
 - **The three-tier SOC analyst structure (Tier 1 triage, Tier 2 investigation, Tier 3 threat hunting):** these titles and duties are not formally standardized by one body; this lesson draws the common industry framing from [Wiz: Tier 1 SOC Analysts, Responsibilities and Career Path](https://www.wiz.io/academy/cloud-careers/soc-analyst-tier-1) and [Radiant Security: SOC Tier 1 vs Tier 2 vs Tier 3](https://radiantsecurity.ai/learn/soc-tier-1-vs-tier-2-vs-tier-3)
 - **2021 Trend Micro survey: 51% of SOC teams overwhelmed by alert volume, 70% say it affects their home lives emotionally:** [Trend Micro: 70% of SOC Teams Emotionally Overwhelmed by Security Alert Volume](https://newsroom.trendmicro.com/2021-05-25-70-Of-SOC-Teams-Emotionally-Overwhelmed-By-Security-Alert-Volume)

@@ -3,7 +3,7 @@
 
 Many detections work by counting something, such as failed sign-ins per account per hour, files read per minute or processes started per host. Each of them needs a number that decides when the counting turns into an alert, and that number is the threshold. Setting it is a genuine trade-off rather than a technical afterthought. If you set it too low, the detection fires on routine behavior and buries real incidents in noise, which is the alert fatigue problem you met in Week 1. If you set it too high, a real attack slips underneath it without anyone noticing.
 
-There's no universal right number, because the answer depends on your own environment's baseline. Three failed sign-ins in an hour might be an ordinary typo rate for a busy help desk, yet a clear signal on an account that has never failed a sign-in before. That's why the classification lesson in SOC Mindset and this module's baseline lesson come first. You can't set a sensible threshold on data you haven't looked at.
+There's no universal right number, because the answer depends on your own environment's baseline. Three failed sign-ins in an hour might be an ordinary typo rate for a busy help desk, yet a clear signal on an account that has never failed a sign-in before. That's why the classification lesson in SOC Mindset and this week's baseline lesson come first. You can't set a sensible threshold on data you haven't looked at.
 
 A single scenario makes the trade-off concrete. Say a sign-in detection counts failed attempts per account per hour, and you're choosing between a threshold of 3 and a threshold of 10.
 

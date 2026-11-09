@@ -46,7 +46,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The exact number matters less than landing in the band that balances the two costs. Set it too low and the help desk drowns in lockout tickets from real users. Set it too high and a password-guessing script gets dozens of tries before the account locks. It's the same trade-off you met in this module's threshold lesson, only measured in lockouts instead of alerts.</p>
+<p>The exact number matters less than landing in the band that balances the two costs. Set it too low and the help desk drowns in lockout tickets from real users. Set it too high and a password-guessing script gets dozens of tries before the account locks. It's the same trade-off you met in this week's threshold lesson, only measured in lockouts instead of alerts.</p>
 </div>
 <div>
 <span>What to do</span>

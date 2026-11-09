@@ -39,7 +39,7 @@ const FEATURES: Item[] = [
   { Icon: IconSchedule, title: "Daily drills", body: "One question a day from their lab, plus a timed round of five." },
   { Icon: IconChecks, title: "Weekly challenge", body: "A capture the flag puzzle built from their own lab." },
   { Icon: IconMic, title: "Interview and resume prep", body: "Scored mock interviews, plus resume lines built from proven work." },
-  { Icon: IconEvidence, title: "Readiness report", body: "Four job skills scored, with what to work on next." },
+  { Icon: IconEvidence, title: "Readiness report", body: "Seven job skills scored, with what to work on next." },
 ];
 
 
@@ -128,7 +128,7 @@ const TIERS: {
     perks: [
       "Every lesson, including each new phase",
       "The whole Ticket Queue and every challenge",
-      "Five labs that run in your browser",
+      "A daily drill, plus a timed round of five",
       "Your readiness score from day one",
       "No card. No trial clock.",
     ],
@@ -146,7 +146,7 @@ const TIERS: {
       "Your own cloud lab in a browser tab",
       "A real Windows domain built just for you",
       "An AI coach that reads your lab and never hands you the answer",
-      "A Proof Profile any employer can verify",
+      "A Proof Profile with your screenshots and recorded solves",
       "Cancel in one click",
     ],
     cta: "Get Pro",
@@ -191,7 +191,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section tp-proof" id="proof">
         <div className="pg-head">
           <h2>Proof employers can check</h2>
-          <p>Every student gets a shareable portfolio of work confirmed in their own lab, and a credential ID any employer can verify.</p>
+          <p>Every student gets a shareable portfolio of work confirmed in their own lab, and a credential ID any employer can verify. They add screenshots of their work and record themselves solving challenges, so an employer can watch the skill, not just read about it.</p>
         </div>
         <div className="tp-proof__grid" data-r>
           <figure className="tp-proof__shot">
@@ -242,7 +242,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section tp-pricing" id="pricing">
         <div className="pg-head">
           <h2>Start free. Go Pro when you want the job.</h2>
-          <p>Every lesson is free, forever. Pro adds the cloud lab, the coach, and the proof an employer can check.</p>
+          <p>Every lesson is free, including each new phase as it opens. Pro adds the cloud lab, the coach, and the proof an employer can check.</p>
         </div>
         <ul className="tp-tiers" data-r>
           {TIERS.map((t) => (

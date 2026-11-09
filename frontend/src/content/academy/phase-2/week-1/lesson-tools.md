@@ -1,4 +1,4 @@
-### Tools Analysts Use Against Malware
+### Tools You'll Use
 <!-- art: terminal -->
 
 Verify, Contain, Preserve and Escalate describe what you do, but not what you click. In practice, a handful of tools carry almost every step of that response, and knowing what each one does, and doesn't do, is what turns the framework into real work.

@@ -178,18 +178,21 @@ list instead.
 ## Structure of an overview tab
 
 The page already prints the week's title and summary above the content, so an
-overview never repeats them. Its first heading stays "Overview", matching the
-tab label in academy-content.ts.
+overview never repeats them. It opens with the week's essential question, and
+its first heading stays "Overview", matching the tab label in
+academy-content.ts.
 
 ```
+<div class="academy-question">
+<span class="academy-question__tag">Essential Question</span>
+<p>The one question the week teaches the student to answer.</p>
+</div>
+
 ### Overview
 
-Four to six paragraphs. What the week covers, why the work matters, what is
-hard about it, and what the reader can do by the end.
-
-### Questions Answered in This Week
-
-- One question per section the week teaches.
+A few paragraphs. What the week covers, why the work matters, what is hard
+about it, and what the reader can do by the end. A list can carry the topics
+the week covers.
 ```
 
 Every later tab opens with its own `###` heading and then runs as prose.

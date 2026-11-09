@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Build the Detection That Would Have Caught It</h3>
-<p class="ad-brief__ask">You disabled <code>WindowsDiagnosticsSync</code> by hand in Week 1. The rule that let it call out is still open. Build the standing detection, then close what you left behind.</p>
+<p class="ad-brief__ask">You disabled <code>WindowsDiagnosticsSync</code> by hand in Week 2. The rule that let it call out is still open. Build the standing detection, then close what you left behind.</p>
 <p>Hosted lab required, with the domain controller reachable.</p>
 </div>
 
@@ -12,7 +12,7 @@
 
 <div class="ad-mission" data-id="tr-01" data-attempts="0">
 <span class="ad-mission__num">T · Technique · INC-1150 · Medium</span>
-<p><strong>Detection Engineering · Theo Walsh · 10:00 AM</strong><br>You found this by hand in Week 1. Theo Walsh doesn't want another one-off manual hunt the next time it happens, so they want a standing detection for it.</p>
+<p><strong>Detection Engineering · Theo Walsh · 10:00 AM</strong><br>You found this by hand in Week 2. Theo Walsh doesn't want another one-off manual hunt the next time it happens, so they want a standing detection for it.</p>
 <p><strong>Task:</strong> Name the ATT&CK technique ID this detection hunts. Use the same format as the lesson: <code>T####.###</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the ATT&CK technique ID" placeholder="T####.###" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -23,7 +23,7 @@
 <p>You've already named this technique twice, once while reading <code>WindowsDiagnosticsSync</code> in your own lab and again in the Credential Campaign's scheduled-task finding.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="t1110.003|t1110.001">That's a credential-guessing technique from Phase 2 Week 1's campaign. A scheduled task with no owner that keeps relaunching is a different technique.</div>
+<div class="ad-miss" data-guess="t1110.003|t1110.001">That's a credential-guessing technique like the Password Spraying example in Week 4's ATT&CK lesson. A scheduled task with no owner that keeps relaunching is a different technique.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -156,7 +156,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The task object itself still exists, because disabling it in Week 1 removed only its ability to fire, not its definition. Read <code>PT15M</code> as a Period of Time of 15 Minutes.</p>
+<p>The task object itself still exists, because disabling it in Week 2 removed only its ability to fire, not its definition. Read <code>PT15M</code> as a Period of Time of 15 Minutes.</p>
 <ol>
 <li>Open PowerShell on the domain controller.</li>
 <li><code>Get-ScheduledTask -TaskName "WindowsDiagnosticsSync"</code> confirms it is still there and now Disabled.</li>
@@ -211,7 +211,7 @@
 
 <div class="ad-mission ad-mission--capstone" data-id="tr-08" data-attempts="0">
 <span class="ad-mission__num">Close What's Still Open · INC-1150 · High</span>
-<p><strong>Detection Review · Theo Walsh · 11:10 AM</strong><br>Disabling <code>WindowsDiagnosticsSync</code> in Week 1 stopped the task, but it never touched the outbound rule that let it reach <code>203.0.113.77:4444</code> in the first place. That rule is still enabled on your domain controller right now.</p>
+<p><strong>Detection Review · Theo Walsh · 11:10 AM</strong><br>Disabling <code>WindowsDiagnosticsSync</code> in Week 2 stopped the task, but it never touched the outbound rule that let it reach <code>203.0.113.77:4444</code> in the first place. That rule is still enabled on your domain controller right now.</p>
 <p><strong>Task:</strong> Find the outbound rule named <code>Windows Update Assistant Network</code> and disable it, then run <code>Get-NetFirewallRule -DisplayName "Windows Update Assistant Network" | Select-Object Enabled</code> and type what it now reports.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the firewall rule's Enabled state after disabling it" placeholder="True or False" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -235,7 +235,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A standing KQL detection and a disabled task both leave the door itself unlocked. The rule that let <code>WindowsDiagnosticsSync</code> reach out was never part of the Week 1 fix, so it stayed open through every mission in this challenge until you closed it just now. Writing the detection was the engineering half of this ticket, and closing the rule is what ends it.</p>
+<p>A standing KQL detection and a disabled task both leave the door itself unlocked. The rule that let <code>WindowsDiagnosticsSync</code> reach out was never part of the Week 2 fix, so it stayed open through every mission in this challenge until you closed it just now. Writing the detection was the engineering half of this ticket, and closing the rule is what ends it.</p>
 </div>
 </div>
 </div>

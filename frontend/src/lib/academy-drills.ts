@@ -414,12 +414,12 @@ type Alert = { title: string; prompt: string; evidence: string[]; answer: string
 const ALERTS: Alert[] = [
   {
     title: "Login after failures",
-    prompt: "Finance account m.chen normally signs in from the office, 9 to 5. What is the first move?",
+    prompt: "Finance account jordan.ellis normally signs in from the office, 9 to 5. What is the first move?",
     evidence: [
-      "02:03:11  4625  FAIL  m.chen  from 185.220.101.7  bad password",
-      "02:03:19  4625  FAIL  m.chen  from 185.220.101.7  bad password",
-      "02:03:26  4625  FAIL  m.chen  from 185.220.101.7  bad password",
-      "02:03:41  4624  OK    m.chen  from 185.220.101.7  network logon",
+      "02:03:11  4625  FAIL  jordan.ellis  from 185.220.101.7  bad password",
+      "02:03:19  4625  FAIL  jordan.ellis  from 185.220.101.7  bad password",
+      "02:03:26  4625  FAIL  jordan.ellis  from 185.220.101.7  bad password",
+      "02:03:41  4624  OK    jordan.ellis  from 185.220.101.7  network logon",
     ],
     answer: "Contain the account and keep the log evidence",
     wrong: ["Delete the account so the attacker is gone", "Close it. The user mistyped a password", "Reboot the domain controller"],
@@ -429,11 +429,11 @@ const ALERTS: Alert[] = [
     title: "Many accounts, one source",
     prompt: "One workstation tried five different accounts in three seconds. What does this look like?",
     evidence: [
-      "09:14:02  4625  FAIL  a.rivera     from 10.4.8.22",
-      "09:14:03  4625  FAIL  p.nair       from 10.4.8.22",
-      "09:14:03  4625  FAIL  d.brooks     from 10.4.8.22",
-      "09:14:04  4625  FAIL  m.lee        from 10.4.8.22",
-      "09:14:04  4625  FAIL  s.whitfield  from 10.4.8.22",
+      "09:14:02  4625  FAIL  alex.rivera    from 10.4.8.22",
+      "09:14:03  4625  FAIL  priya.nair     from 10.4.8.22",
+      "09:14:03  4625  FAIL  devon.brooks   from 10.4.8.22",
+      "09:14:04  4625  FAIL  morgan.lee     from 10.4.8.22",
+      "09:14:04  4625  FAIL  sam.whitfield  from 10.4.8.22",
     ],
     answer: "Password spraying from that host. Isolate it and escalate",
     wrong: ["Five people forgot their passwords at once", "A normal morning sign-in rush", "A broken keyboard on the workstation"],
@@ -442,7 +442,7 @@ const ALERTS: Alert[] = [
   {
     title: "Expected 2 AM login",
     prompt: "A successful 2 AM login for an IT admin. What do you do?",
-    evidence: ["02:07:40  4624  OK  a.rivera  from IT-WKS01 (VPN)", "Change ticket CHG-2207: a.rivera on-call patching window 02:00 to 03:00"],
+    evidence: ["02:07:40  4624  OK  alex.rivera  from IT-WKS01 (VPN)", "Change ticket CHG-2207: alex.rivera on-call patching window 02:00 to 03:00"],
     answer: "Match it to the change ticket and close it as expected",
     wrong: ["Disable the account right away", "Escalate it as a confirmed breach", "Ignore it. Admins are always fine"],
     explain: "Check the claim against the record before you act. The login falls inside an approved window on the admin's own workstation.",
@@ -450,7 +450,7 @@ const ALERTS: Alert[] = [
   {
     title: "Normal lockout",
     prompt: "Jamie is at her own desk at 8:40 AM and is locked out after five bad passwords. First step?",
-    evidence: ["08:41:10  4625  FAIL  j.torres  from WM-WKS04  bad password (x5)", "08:42:02  4740  LOCKED  j.torres"],
+    evidence: ["08:41:10  4625  FAIL  jamie.torres  from WM-WKS04  bad password (x5)", "08:42:02  4740  LOCKED  jamie.torres"],
     answer: "Verify who is calling, unlock the account, and reset the password if needed",
     wrong: ["Open a major incident", "Wipe her workstation", "Add her to IT Admins so it stops"],
     explain: "One user, her own machine, normal hours. This is a help desk fix, not an incident. Verify identity first.",

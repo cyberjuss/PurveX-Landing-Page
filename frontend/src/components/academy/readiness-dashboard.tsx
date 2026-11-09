@@ -94,9 +94,9 @@ const WORK: Record<Summary["skills"][number]["key"], string> = {
   directory: "walk Departments and AccessLevels until you can find an object without searching",
   troubleshooting: "open the account first and see if the caller is actually right",
   security: "start The Credential Campaign and read the log before you change anything",
-  logs: "open the Read the Sign-In Log lab and count before you name a pattern",
-  access: "open the Who Can Open This? lab and check both share and NTFS permissions",
-  risk: "open the Risk Assessment and Triage lab and score likelihood and impact before you rank",
+  logs: "work the Ticket Queue and count the sign-in events before you name a pattern",
+  access: "start The Quarterly Access Review in Week 4 and check both share and NTFS permissions",
+  risk: "start The Weekend Incident Report in Week 1 and score likelihood and impact before you rank",
 };
 
 function verdict(s: Summary) {
@@ -117,12 +117,12 @@ function verdict(s: Summary) {
     return `You are competent in ${strongNames}, and you can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
   }
   if (strong.length === 0 && weak.length === 0) {
-    return `You have started, but no competency has enough work finished to rate yet. Finish at least half the missions and labs in one to get a rating.${next}`;
+    return `You have started, but no competency has enough work finished to rate yet. Finish at least half the missions in one to get a rating.${next}`;
   }
   const parts: string[] = [];
   if (strong.length) parts.push(`You are competent in ${strongNames}, and you can ${joinNames(can)}.`);
   if (weak.length) parts.push(`${weakNames} still need${weak.length === 1 ? "s" : ""} work.`);
-  if (!weak.length) parts.push("Finish the remaining missions and labs so this is a full rating.");
+  if (!weak.length) parts.push("Finish the remaining missions so this is a full rating.");
   return parts.join(" ") + next;
 }
 
@@ -370,6 +370,7 @@ export function ReadinessDashboard() {
             </div>
           );
         })}
+        {LAB_CATALOG.length > 0 && (
         <div className="rd-log">
           <div className="rd-log__head">
             <button type="button" className="rd-log__toggle" onClick={() => toggleLog("labs")} aria-expanded={logOpen("labs")}>
@@ -409,10 +410,11 @@ export function ReadinessDashboard() {
           </ol>
           )}
         </div>
+        )}
       </section>
 
       <footer className="rd-foot">
-        <span>Scores update the moment you submit a mission or finish a lab.</span>
+        <span>Scores update the moment you submit a mission.</span>
         {s.finished > 0 && (
           <button type="button" onClick={reset}>
             Reset evaluation

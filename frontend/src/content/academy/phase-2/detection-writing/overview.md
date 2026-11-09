@@ -5,7 +5,7 @@
 
 ### Overview
 
-In a SOC, the finished product of all this thinking is a written detection query. In this module, you'll turn everything you've learned so far into one:
+In a SOC, the finished product of all this thinking is a written detection query. This week, you'll turn everything you've learned so far into one:
 
 - The investigation mindset
 - The baseline

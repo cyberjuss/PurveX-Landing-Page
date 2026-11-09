@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import TrainingPage, { type CourseOutline } from "@/components/purvex-landing-page/training-page";
 import { phases } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
+import { isPhaseLocked } from "@/lib/academy-locks";
 
 const title = "Cybersecurity Training";
 const description =
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 
 // The syllabus is read from the same content the Academy portal serves, so
 // the marketing page cannot drift from the course. Only titles, lesson names,
-// and whether a week has lessons yet cross over; lesson files stay server-side.
+// and whether a week is open yet cross over; lesson files stay server-side.
 const SKIP = new Set(["Overview", "Resources"]);
 
 function outline(): CourseOutline {
@@ -26,7 +27,8 @@ function outline(): CourseOutline {
     entries: entriesOf(p).map((w) => ({
       title: w.title.replace(" — ", ": "),
       summary: w.summary,
-      live: w.sections.length > 0,
+      // A locked phase reads "coming soon" here, as it does in the portal.
+      live: !isPhaseLocked(p.slug) && w.sections.length > 0,
       lessons: w.sections.map((s) => s.label.replace(/ — .*$/, "")).filter((l) => !SKIP.has(l)),
     })),
   }));

@@ -113,7 +113,7 @@ export function cohortEndingEmail(student: Named, ended: boolean, o: string): Bu
     ) +
     p("Range Pro is $49 a month and keeps all of it: your own cloud lab in a browser tab, the coach that reads your lab, and a Proof Profile any employer can verify.") +
     button(`${url}/range/upgrade`, "Get Range Pro") +
-    p("Prefer to stay free? You keep every lesson, every challenge, the Ticket Queue and the in-browser labs. Nothing you have finished goes away.") +
+    p("Prefer to stay free? You keep every lesson, every challenge, the Ticket Queue and the daily drill. Nothing you have finished goes away.") +
     note("Cancel in one click, any time.") +
     fallback(`${url}/range/upgrade`, "Or open this link:");
   return { subject: ended ? "Your PurveX cohort access has ended" : "Your PurveX cohort access ends in a week", html };

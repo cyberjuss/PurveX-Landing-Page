@@ -3,7 +3,7 @@
 <p>When an endpoint alert says "malware," can you tell what kind it is and how it got in before it spreads?</p>
 </div>
 
-### Malware
+### Overview
 
 Malware is any software written to do harm, such as stealing data or holding it for ransom. Since most incidents an analyst sees start with malware, knowing the common kinds and how they behave is the first step to responding well.
 

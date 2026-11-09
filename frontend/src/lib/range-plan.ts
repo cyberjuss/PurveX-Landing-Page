@@ -13,7 +13,7 @@ import type { AcademyStudent } from "@/lib/academy-student";
 //   admin        -- ACADEMY_ADMIN_EMAILS, plus the RANGE_PRO_EMAILS comp list
 //
 // Explore is everyone else: every lesson, every challenge, the whole Ticket
-// Queue and the five browser labs, with no cloud lab, no coach and no Proof
+// Queue and the daily drill, with no cloud lab, no coach and no Proof
 // Profile.
 
 export type RangePlan = "free" | "pro";
