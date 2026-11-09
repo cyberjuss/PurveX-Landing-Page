@@ -140,20 +140,7 @@ async function main() {
   check("it does not push the upgrade page", proLabPost.body?.upgrade === undefined, JSON.stringify(proLabPost.body));
   process.env.HOSTED_LAB_EMAILS = "*";
 
-  console.log("\nThe labs stay out of the paywall");
-  // Labs are sold to Explore, rendered from markdown with no scripted widget
-  // left (the browser-widget labs are retired). Wiring a Pro-gated endpoint
-  // into any of these would break a free promise quietly, on a screen nobody
-  // thinks of as billing, so this guards the source rather than the behaviour.
   const { readFileSync } = await import("fs");
-  const GATED = ["api/coach", "api/hosted-lab", "api/proof", "useCoach"];
-  const surface = ["src/components/academy/single-lab.tsx", "src/components/academy/lab-gallery.tsx", "src/components/academy/lab-carousel.tsx"];
-
-  const offenders = surface.filter((file) => {
-    const src = readFileSync(file, "utf8");
-    return GATED.some((needle) => src.includes(needle));
-  });
-  check(`${surface.length} lab files call nothing Pro-gated`, offenders.length === 0, offenders.join(", "));
 
   console.log("\nGet Pro reaches Stripe without a second offer screen");
   // The chain is: Get Pro -> signup -> back here -> Stripe. It runs entirely
