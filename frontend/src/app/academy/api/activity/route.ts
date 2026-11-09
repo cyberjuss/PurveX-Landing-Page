@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 // The page reports which tab the student has open, and the step inside a
 // browser lab, so Coach and MCP clients know where they are.
 
-const tabName = (label: string) => label.replace(/^(Lab|Challenge|Troubleshooting):\s*/, "");
+const tabName = (label: string) => label.replace(/^(Challenge|Troubleshooting):\s*/, "");
 
 /**
  * Where this student last was, read back.

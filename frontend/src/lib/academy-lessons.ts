@@ -130,10 +130,10 @@ const out = (c: Chunk) => ({
   text: c.text.length > MAX_TEXT ? `${c.text.slice(0, MAX_TEXT)} …` : c.text,
 });
 
-/** The whole of one lesson tab, in order, matched by its label with or without the "Lab:" prefix. */
+/** The whole of one lesson tab, in order, matched by its label with or without the "Challenge:"/"Troubleshooting:" prefix. */
 function bySection(name: string) {
-  const want = slug(name.replace(/^(Lab|Challenge|Troubleshooting):\s*/i, ""));
-  return build().chunks.filter((c) => slug(c.section.replace(/^(Lab|Troubleshooting):\s*/i, "")) === want);
+  const want = slug(name.replace(/^(Challenge|Troubleshooting):\s*/i, ""));
+  return build().chunks.filter((c) => slug(c.section.replace(/^(Challenge|Troubleshooting):\s*/i, "")) === want);
 }
 
 export function searchLessons(query: string, section = "", limit = 4) {

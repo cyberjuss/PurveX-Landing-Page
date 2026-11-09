@@ -25,7 +25,15 @@ To put those principles into practice, permissions are almost never given to peo
 - Changing somebody's job becomes a matter of changing their groups.
 - You can read what an account can do from its memberships, rather than hunting through every system.
 
-At PurveX, there's one standard group per department: `IT Users`, `Compliance Users`, `Wealth Management Users`, `Operations Users` and `Finance Accounting Users`. On top of those, `IT Admins` adds admin rights beyond `IT Users`.
+At PurveX, there's one standard group per department:
+
+- `IT Users`
+- `Compliance Users`
+- `Wealth Management Users`
+- `Operations Users`
+- `Finance Accounting Users`
+
+On top of those, `IT Admins` adds admin rights beyond `IT Users`.
 
 Admin rights get the same careful treatment. Rather than being granted as one block, administrative power is split into three levels, so that the most dangerous rights sit with the fewest people. As you read the table, notice that the line each level must never cross matters just as much as what it controls.
 
