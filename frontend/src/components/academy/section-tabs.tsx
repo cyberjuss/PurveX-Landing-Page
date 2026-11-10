@@ -423,23 +423,6 @@ export function SectionTabs({
           />
         ) : (
         <>
-        {current.kind === "challenge" && challengeItems.length > 1 && (
-          <nav className="ax-challtabs" aria-label="Challenges">
-            {challengeItems.map((c, ci) => {
-              const i = challengeStart + ci;
-              return (
-                <button
-                  key={c.label}
-                  type="button"
-                  className={`ax-challtab${active === i ? " ax-challtab--on" : ""}`}
-                  onClick={() => goTo(i)}
-                >
-                  {c.label}
-                </button>
-              );
-            })}
-          </nav>
-        )}
         <MissionPager
           key={current.label}
           prevSection={prevTrail}
