@@ -118,12 +118,6 @@ export function SectionTabs({
   const challengeItems: Item[] = (challenges ?? []).map((c) => ({ kind: "challenge", label: c.label, markdown: c.markdown }));
   const troubleshootingItems: Item[] = (troubleshooting ?? []).map((t) => ({ kind: "troubleshooting", label: t.label, markdown: t.markdown }));
   const items = [...numberedItems, ...challengeItems, ...troubleshootingItems];
-  // Where the challenges sit in `items` -- always one contiguous run, since
-  // they are appended as a block. A week with several of them used to show
-  // one top-level tab per challenge, which is how the strip grew to eight or
-  // nine tabs on some weeks. They now share one "Challenges" tab, with a
-  // pill row inside it to reach any individual one.
-  const challengeStart = numberedItems.length;
 
   const router = useRouter();
   const [active, setActive] = useState(0);
@@ -217,9 +211,11 @@ export function SectionTabs({
       document.removeEventListener("visibilitychange", onHide);
     };
   }, [phaseSlug, entrySlug, current.kind, current.label]);
-  // The strip's own buttons: every numbered section and troubleshooting
-  // item keeps its own tab, but the whole run of challenges collapses into
-  // one "Challenges" tab, active whenever the current item is a challenge.
+  // The strip's own buttons: every numbered section and troubleshooting item
+  // keeps its own tab. Challenges have no tab of their own here -- reached
+  // from the sidebar's own Challenges list instead -- so a hash link to one
+  // still opens it (indexForHash still matches challenge items), it is just
+  // not a button in this strip.
   const visibleTabs: {
     key: string;
     label: string;
@@ -230,18 +226,7 @@ export function SectionTabs({
     numberIndex?: number;
   }[] = [];
   items.forEach((item, i) => {
-    if (item.kind === "challenge") {
-      if (i !== challengeStart) return;
-      visibleTabs.push({
-        key: "challenges",
-        label: "Challenges",
-        icon: "challenge",
-        isActive: current.kind === "challenge",
-        isDone: false,
-        onClick: () => goTo(current.kind === "challenge" ? active : challengeStart),
-      });
-      return;
-    }
+    if (item.kind === "challenge") return;
     visibleTabs.push({
       key: item.label,
       label: item.label,
