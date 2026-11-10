@@ -1,6 +1,7 @@
 import { after, NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import {
+  beginReset,
   canUseHostedLab,
   extendHostedLab,
   hostedLabLink,
@@ -13,7 +14,7 @@ import {
   linuxCredentials,
   LabHoursSpentError,
   PodSlotsFullError,
-  resetHostedLab,
+  resetProgress,
   startHostedLab,
   stopDueHostedLabs,
   stopOrphanedHostedLabs,
@@ -68,9 +69,16 @@ async function statusPayload(userId: string) {
   // the panel, and a start that succeeded must not report a failure because the
   // month's minutes could not be read.
   const [status, hours] = await Promise.all([hostedLabStatus(userId), labHours(userId).catch(() => null)]);
+  // A reset running in the background (see beginReset) has nothing to show in
+  // `status` -- the instance stays "running" the whole time, in place -- so
+  // this is the only place the panel finds out one is underway, or that the
+  // last one failed.
+  const reset = resetProgress(userId);
   return {
     available: true,
     ...status,
+    ...(reset.resetting ? { resetting: true } : {}),
+    ...(reset.error ? { error: reset.error } : {}),
     hoursUsed: hours ? Math.round(hours.used) : 0,
     // Minutes as well: a twenty-minute session rounds to nothing in hours, and
     // the panel shows a clock.
@@ -136,7 +144,7 @@ export async function POST(request: Request) {
     if (action === "start") await startHostedLab(student.id);
     else if (action === "stop") await stopHostedLab(student.id);
     else if (action === "extend") await extendHostedLab(student.id);
-    else if (action === "reset") await resetHostedLab(student.id);
+    else if (action === "reset") beginReset(student.id);
     else if (action === "open") {
       const url = await hostedLabLink(student.id);
       if (!url) return NextResponse.json({ error: "The lab is not running yet. Start it first." }, { status: 409 });

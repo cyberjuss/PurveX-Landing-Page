@@ -17,7 +17,10 @@ import "./hosted-lab.css";
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
 /** notEnabled: this account is Pro, but cloud labs are not switched on for it yet. */
-type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; minutesUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number; idleStopMinutes?: number; idleReadyMinutes?: number };
+// resetting: a reset is replanting the lab in place. The instance itself
+// stays "running" throughout (see resetInPlace), so this is the only signal
+// that one is underway -- state alone would say nothing changed.
+type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; resetting?: boolean; hoursUsed?: number; minutesUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number; idleStopMinutes?: number; idleReadyMinutes?: number };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -51,7 +54,7 @@ function schedulePoll() {
 function set(patch: Partial<Snapshot>) {
   snap = { ...snap, ...patch };
   listeners.forEach((l) => l());
-  const moving = snap.status?.state === "starting" || snap.status?.state === "stopping";
+  const moving = snap.status?.state === "starting" || snap.status?.state === "stopping" || Boolean(snap.status?.resetting);
   if (moving && !poll) {
     movingSince = Date.now();
     schedulePoll();
@@ -139,7 +142,7 @@ export function useHostedLab() {
     if (!snap.status) void load();
   }, []);
   const state: State = s.status?.state ?? "none";
-  const moving = state === "starting" || state === "stopping";
+  const moving = state === "starting" || state === "stopping" || Boolean(s.status?.resetting);
   // Always a promise, so a caller can wait for the start it asked for instead
   // of guessing when it landed.
   const primary = (): Promise<void> => (state === "ready" ? open() : state === "none" || state === "stopped" ? act("start") : Promise.resolve());
@@ -592,8 +595,9 @@ export function HostedLabMenu() {
   // pods is a single machine.
   const bothMachines = state === "none" ? true : Boolean(status.linux);
   const legacySingle = state !== "none" && !status.linux;
-  const note =
-    state === "ready"
+  const note = status.resetting
+    ? "Resetting your lab — this can take a few minutes. You can leave this page; it keeps going."
+    : state === "ready"
       ? status.stopAt ? `Stops at ${clock(status.stopAt)}.` : "Running."
       : state === "starting" || state === "stopped" || state === "stopping"
         ? null
@@ -687,8 +691,10 @@ export function HostedLabMenu() {
             type="button"
             className="hl__link hl__link--warn"
             // Not disabled while starting: a boot that hangs is exactly when
-            // someone needs this, and it terminates the instances by id.
-            disabled={busy}
+            // someone needs this, and it terminates the instances by id. A
+            // reset already running is different -- a second one would fire
+            // a second replant command at the same lab, so that one blocks.
+            disabled={busy || Boolean(status.resetting)}
             onClick={() => {
               if (window.confirm("Reset your lab? You get a fresh PurveX Financial. Everything you changed in the lab is gone. Your Range progress stays.")) void act("reset");
             }}

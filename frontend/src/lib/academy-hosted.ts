@@ -1092,6 +1092,48 @@ async function ssmFinished(commandId: string, instanceId: string, budgetMs: numb
   return false;
 }
 
+// resetHostedLab can run for minutes: resetInPlace alone waits up to 6 for
+// the agent, up to 8 for the replant command, then polls up to 90s more for
+// the lab to confirm it landed, and the full-replace fallback boots a pod
+// from scratch. None of that fits inside an API route's own time limit, so
+// the route fires it and returns, and the panel polls this instead of the
+// response to know when it is done -- the same shape Start already uses,
+// where the route starts the machine and the panel watches it come up.
+const resetState = new Map<string, { until: number; error?: string }>();
+// Comfortably above resetInPlace's own worst case, so a reset that is
+// genuinely still working is never cut off by this clock first. If a reset
+// hangs past it, the panel just stops showing it as in progress rather than
+// waiting forever on one that will never report back.
+const RESET_MAX_MS = 17 * 60_000;
+
+/** Starts a lab reset in the background. Returns immediately; the route
+ *  reports progress through resetProgress on the next status read instead of
+ *  waiting for this to finish. */
+export function beginReset(userId: string): void {
+  resetState.set(userId, { until: Date.now() + RESET_MAX_MS });
+  after(() =>
+    resetHostedLab(userId)
+      .then(() => resetState.delete(userId))
+      .catch((err) => {
+        console.error("hosted lab reset failed", userId, err instanceof Error ? err.message : err);
+        resetState.set(userId, { until: Date.now() + 60_000, error: err instanceof Error ? err.message : "Could not reset the lab. Try again." });
+      })
+  );
+}
+
+/** Whether a reset beginReset started is still running, for the status
+ *  payload to show instead of going quiet while it works. Self-clears after
+ *  RESET_MAX_MS so a reset that never reports back does not wedge the panel. */
+export function resetProgress(userId: string): { resetting: boolean; error?: string } {
+  const s = resetState.get(userId);
+  if (!s) return { resetting: false };
+  if (Date.now() > s.until) {
+    resetState.delete(userId);
+    return { resetting: false };
+  }
+  return s.error ? { resetting: false, error: s.error } : { resetting: true };
+}
+
 /** A clean pod from the image. The old machines and everything the student
  *  changed in them are gone. The pod slot goes back to the pool and is claimed
  *  again by the new pod, so resetting does not use slots up. */
