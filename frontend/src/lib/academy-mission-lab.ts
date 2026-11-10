@@ -64,7 +64,7 @@ const MISSION_LAB = {
   ),
   "tq-14": G(
     [{ c: { t: "computerAt", name: "FIN-LT14", ou: "OU=Workstations,OU=FinanceAccounting,OU=Departments" }, label: "FIN-LT14 is in Departments, FinanceAccounting, Workstations" }],
-    { ous: ["OU=Workstations,OU=FinanceAccounting,OU=Departments"] }
+    { ous: ["OU=Workstations,OU=FinanceAccounting,OU=Departments"], computers: ["FIN-LT14"] }
   ),
   "tq-15": G([{ c: { t: "group", name: "Finance Reports", category: "Security" }, label: "Finance Reports is a Security group" }], { groups: ["Finance Reports"] }),
   // Hardening tickets. Nothing is planted for these: the domain ships this
