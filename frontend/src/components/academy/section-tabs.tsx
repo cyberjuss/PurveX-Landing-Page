@@ -219,7 +219,10 @@ export function SectionTabs({
   }, [phaseSlug, entrySlug, current.kind, current.label]);
   // The strip's own buttons: every numbered section and troubleshooting
   // item keeps its own tab, but the whole run of challenges collapses into
-  // one "Challenges" tab, active whenever the current item is a challenge.
+  // one tab, active whenever the current item is a challenge. That tab reads
+  // as the open challenge's own name while you're in it (so the strip says
+  // "Operation Day One", not just "Challenges"), and falls back to the group
+  // name when you're reading something else and none of them is "current".
   const visibleTabs: {
     key: string;
     label: string;
@@ -234,7 +237,7 @@ export function SectionTabs({
       if (i !== challengeStart) return;
       visibleTabs.push({
         key: "challenges",
-        label: "Challenges",
+        label: current.kind === "challenge" ? current.label : "Challenges",
         icon: "challenge",
         isActive: current.kind === "challenge",
         isDone: false,
