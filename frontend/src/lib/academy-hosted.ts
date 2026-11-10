@@ -11,6 +11,7 @@ import {
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
 import { DescribeInstanceInformationCommand, GetCommandInvocationCommand, SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { LAB_SCRIPT_HASHES } from "@/lib/lab-script-hashes";
 import {
   addLabMinutes,
@@ -243,10 +244,23 @@ export function canUseHostedLab(email: string | null): boolean {
   return emails.includes("*") || Boolean(email && emails.includes(email.toLowerCase()));
 }
 
+// Neither client below set a request timeout, so a single AWS call that hung
+// (a network blip on their side, a slow retry) sat on the socket until this
+// whole route's 30-second budget ran out, and a Lambda killed mid-call never
+// gets a clean error back to the browser -- the student just sees "Could not
+// reach Range." A short, bounded timeout turns that silent hang into a fast,
+// catchable failure instead, which every caller here already handles.
+const awsRequestHandler = () => new NodeHttpHandler({ connectionTimeout: 3_000, requestTimeout: 5_000 });
+
 let client: EC2Client | null = null;
 function ec2() {
   const c = cfg();
-  client ??= new EC2Client({ region: c.region, credentials: { accessKeyId: c.accessKeyId, secretAccessKey: c.secretAccessKey } });
+  client ??= new EC2Client({
+    region: c.region,
+    credentials: { accessKeyId: c.accessKeyId, secretAccessKey: c.secretAccessKey },
+    maxAttempts: 2,
+    requestHandler: awsRequestHandler(),
+  });
   return client;
 }
 
@@ -1284,7 +1298,12 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
 let ssmClient: SSMClient | null = null;
 function ssm() {
   const c = cfg();
-  ssmClient ??= new SSMClient({ region: c.region, credentials: { accessKeyId: c.accessKeyId, secretAccessKey: c.secretAccessKey } });
+  ssmClient ??= new SSMClient({
+    region: c.region,
+    credentials: { accessKeyId: c.accessKeyId, secretAccessKey: c.secretAccessKey },
+    maxAttempts: 2,
+    requestHandler: awsRequestHandler(),
+  });
   return ssmClient;
 }
 
