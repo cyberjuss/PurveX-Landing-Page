@@ -95,6 +95,7 @@ export function SectionTabs({
   sections,
   quiz,
   challenges,
+  allChallenges,
   troubleshooting,
   prevWeek,
   nextWeek,
@@ -105,6 +106,10 @@ export function SectionTabs({
   sections: TabSection[];
   quiz?: Quiz;
   challenges?: TabSection[];
+  /** Every challenge in the whole phase, not just this page's -- lets the
+   *  challenge strip switch to one on another page instead of only the ones
+   *  that happen to live here. See PhaseChallenge in academy-content.ts. */
+  allChallenges: { label: string; entrySlug: string; href: string }[];
   troubleshooting?: TabSection[];
   prevWeek?: WeekLink | null;
   nextWeek?: WeekLink | null;
@@ -124,6 +129,18 @@ export function SectionTabs({
   // nine tabs on some weeks. They now share one "Challenges" tab, with a
   // pill row inside it to reach any individual one.
   const challengeStart = numberedItems.length;
+
+  // The pill row inside the Challenges tab, widened to every challenge in the
+  // phase. One on this page switches the tab in place like it always did;
+  // one on another page navigates there, so the row works as a jump list
+  // across the whole phase instead of only the challenges this entry has.
+  let challengeLocalIndex = 0;
+  const challengeTabs = allChallenges.map((c) => {
+    const here = c.entrySlug === entrySlug;
+    const index = here ? challengeStart + challengeLocalIndex : -1;
+    if (here) challengeLocalIndex++;
+    return { ...c, here, index };
+  });
 
   const router = useRouter();
   const [active, setActive] = useState(0);
@@ -426,21 +443,18 @@ export function SectionTabs({
           />
         ) : (
         <>
-        {current.kind === "challenge" && challengeItems.length > 1 && (
+        {current.kind === "challenge" && challengeTabs.length > 1 && (
           <nav className="ax-challtabs" aria-label="Challenges">
-            {challengeItems.map((c, ci) => {
-              const i = challengeStart + ci;
-              return (
-                <button
-                  key={c.label}
-                  type="button"
-                  className={`ax-challtab${active === i ? " ax-challtab--on" : ""}`}
-                  onClick={() => goTo(i)}
-                >
-                  {c.label}
-                </button>
-              );
-            })}
+            {challengeTabs.map((c) => (
+              <button
+                key={`${c.entrySlug}:${c.label}`}
+                type="button"
+                className={`ax-challtab${c.here && active === c.index ? " ax-challtab--on" : ""}`}
+                onClick={() => (c.here ? goTo(c.index) : router.push(c.href))}
+              >
+                {c.label}
+              </button>
+            ))}
           </nav>
         )}
         <MissionPager
