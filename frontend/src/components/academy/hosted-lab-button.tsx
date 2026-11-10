@@ -41,6 +41,18 @@ const POLL_FAST_MS = 2_500;
 const POLL_SLOW_MS = 10_000;
 const FAST_WINDOW_MS = 60_000;
 
+// The server's own "a reset is running" flag lives in a serverless function's
+// memory, which does not reliably survive between one request and the next --
+// a cold start between two polls loses it, the button looks clickable again,
+// and a second reset fires on top of the first. This client-side clock does
+// not depend on the server remembering anything: once a reset is accepted,
+// Reset stays locked for this long no matter what any later poll reports.
+// Comfortably under resetProgress's own ceiling, so the two agree once this
+// one lifts; the server's flag can still extend the lock past this if a slow
+// reset is genuinely still going.
+const RESET_LOCK_MS = 6 * 60_000;
+let resetLockedUntil = 0;
+
 function schedulePoll() {
   if (poll) window.clearInterval(poll);
   const fast = Date.now() - movingSince < FAST_WINDOW_MS;
@@ -53,6 +65,13 @@ function schedulePoll() {
 
 function set(patch: Partial<Snapshot>) {
   snap = { ...snap, ...patch };
+  // Folded into status here, in the one place that already reads the clock
+  // outside a component, rather than in a hook -- so every consumer just
+  // reads status.resetting as one flag and never touches Date.now() itself,
+  // which React's purity rule (rightly) refuses in a render body.
+  if (Date.now() < resetLockedUntil && snap.status && !snap.status.resetting) {
+    snap = { ...snap, status: { ...snap.status, resetting: true } };
+  }
   listeners.forEach((l) => l());
   const moving = snap.status?.state === "starting" || snap.status?.state === "stopping" || Boolean(snap.status?.resetting);
   if (moving && !poll) {
@@ -89,6 +108,12 @@ async function act(action: "start" | "stop" | "extend" | "reset") {
     const data = await r.json();
     if (!r.ok) set({ error: data.error ?? "Something went wrong." });
     else {
+      // Locked here, client-side, the moment the reset is accepted -- not
+      // left to the server's resetting flag, which a cold start can drop
+      // before the actual reset is anywhere near done. A second reset fired
+      // while the first is still replanting the same lab is worse than a
+      // button that stays disabled a little longer than it strictly needs to.
+      if (action === "reset") resetLockedUntil = Date.now() + RESET_LOCK_MS;
       set({ status: { available: true, ...data } });
       // A start that answers with a lab still sitting at "none" leaves nothing
       // moving, so nothing polls and the panel goes on showing Offline. One
@@ -142,11 +167,15 @@ export function useHostedLab() {
     if (!snap.status) void load();
   }, []);
   const state: State = s.status?.state ?? "none";
-  const moving = state === "starting" || state === "stopping" || Boolean(s.status?.resetting);
+  // The client-side reset lock (see resetLockedUntil) is already folded into
+  // status.resetting by set(), the one place outside a component that reads
+  // the clock, so this just reads the flag like any other synced field.
+  const resetting = Boolean(s.status?.resetting);
+  const moving = state === "starting" || state === "stopping" || resetting;
   // Always a promise, so a caller can wait for the start it asked for instead
   // of guessing when it landed.
   const primary = (): Promise<void> => (state === "ready" ? open() : state === "none" || state === "stopped" ? act("start") : Promise.resolve());
-  return { ...s, state, waiting: s.busy || moving, primary, available: Boolean(s.status?.available), locked: Boolean(s.status?.locked), notEnabled: Boolean(s.status?.notEnabled) };
+  return { ...s, state, resetting, waiting: s.busy || moving, primary, available: Boolean(s.status?.available), locked: Boolean(s.status?.locked), notEnabled: Boolean(s.status?.notEnabled) };
 }
 
 /** For code outside React (the answer check): does this student have a hosted lab, and start it. */
@@ -569,7 +598,7 @@ function LinuxSignIn() {
 }
 
 export function HostedLabMenu() {
-  const { status, state, waiting, busy, error, primary } = useHostedLab();
+  const { status, state, waiting, busy, error, primary, resetting } = useHostedLab();
   // "start" stands in front of the first start; "read" is the same briefing
   // reopened from the footer link once they have been through it.
   const [brief, setBrief] = useState<null | "start" | "read">(null);
@@ -595,7 +624,7 @@ export function HostedLabMenu() {
   // pods is a single machine.
   const bothMachines = state === "none" ? true : Boolean(status.linux);
   const legacySingle = state !== "none" && !status.linux;
-  const note = status.resetting
+  const note = resetting
     ? "Resetting your lab — this can take a few minutes. You can leave this page; it keeps going."
     : state === "ready"
       ? status.stopAt ? `Stops at ${clock(status.stopAt)}.` : "Running."
@@ -694,7 +723,7 @@ export function HostedLabMenu() {
             // someone needs this, and it terminates the instances by id. A
             // reset already running is different -- a second one would fire
             // a second replant command at the same lab, so that one blocks.
-            disabled={busy || Boolean(status.resetting)}
+            disabled={busy || resetting}
             onClick={() => {
               if (window.confirm("Reset your lab? You get a fresh PurveX Financial. Everything you changed in the lab is gone. Your Range progress stays.")) void act("reset");
             }}
