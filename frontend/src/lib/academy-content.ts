@@ -327,29 +327,3 @@ export function findEntry(phaseSlug: string, entrySlug: string): WeekDef | undef
 export function firstAvailableEntry(phase: PhaseDef): WeekDef | undefined {
   return entriesOf(phase).find((e) => e.sections.length > 0);
 }
-
-export type PhaseChallenge = { label: string; entrySlug: string; href: string };
-
-// A plain copy of academy-progress.tsx's slugify: that file is "use client",
-// and this one is server-only, so sharing the one-liner is not worth crossing
-// the boundary for.
-const slugify = (label: string) => label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-/**
- * Every "Challenge:" section in a phase, in course order (weeks first, then
- * home labs), as a link to the page and anchor it lives on. Mirrors how
- * academy-sidebar.tsx builds its own Challenges section. Used to widen the
- * in-page challenge strip (section-tabs.tsx) into a jump list across the
- * whole phase, not just the challenges the current entry happens to have.
- */
-export function phaseChallenges(phase: PhaseDef): PhaseChallenge[] {
-  const out: PhaseChallenge[] = [];
-  for (const entry of [...phase.weeks, ...(phase.homeLabs ?? [])]) {
-    for (const s of entry.sections) {
-      if (!s.label.startsWith("Challenge:")) continue;
-      const label = s.label.replace(/^Challenge:\s*/, "");
-      out.push({ label, entrySlug: entry.slug, href: `/range/${phase.slug}/${entry.slug}#${slugify(label)}` });
-    }
-  }
-  return out;
-}

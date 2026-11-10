@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { stripAnswers } from "@/lib/academy-answers";
-import { loadLesson, phaseChallenges, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
+import { loadLesson, type ContentSection, type WeekDef, type PhaseDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
 import { extractEssentialQuestion } from "@/lib/markdown";
@@ -115,7 +115,6 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
                 sections={otherSections.map((s) => ({ label: s.label, markdown: s.markdown! }))}
                 quiz={quiz}
                 challenges={challengeSections.map((s) => ({ label: s.label.replace(/^Challenge:\s*/, ""), markdown: s.markdown! }))}
-                allChallenges={phaseChallenges(phase)}
                 troubleshooting={troubleshootingSections.map((s) => ({ label: s.label.replace(/^Troubleshooting:\s*/, ""), markdown: s.markdown! }))}
                 prevWeek={prevEntry ? { label: prevEntry.title, href: `/range/${phase.slug}/${prevEntry.slug}` } : null}
                 nextWeek={nextEntry ? { label: nextEntry.title, href: `/range/${phase.slug}/${nextEntry.slug}` } : null}
