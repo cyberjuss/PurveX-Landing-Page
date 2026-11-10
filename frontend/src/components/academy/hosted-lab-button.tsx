@@ -624,9 +624,8 @@ export function HostedLabMenu() {
   // pods is a single machine.
   const bothMachines = state === "none" ? true : Boolean(status.linux);
   const legacySingle = state !== "none" && !status.linux;
-  const note = resetting
-    ? "Resetting your lab — this can take a few minutes. You can leave this page; it keeps going."
-    : state === "ready"
+  const note =
+    state === "ready"
       ? status.stopAt ? `Stops at ${clock(status.stopAt)}.` : "Running."
       : state === "starting" || state === "stopped" || state === "stopping"
         ? null
