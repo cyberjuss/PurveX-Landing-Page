@@ -499,7 +499,6 @@ function StopTracker() {
           {mm}:{ss}
         </em>
       </p>
-      <p className="hl__note">Can take a few minutes. Safe to leave.</p>
     </div>
   );
 }
