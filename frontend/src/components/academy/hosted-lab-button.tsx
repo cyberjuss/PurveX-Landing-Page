@@ -755,11 +755,11 @@ export function HostedLabMenu() {
           </button>
         )}
         <button type="button" className="hl__link" onClick={() => setBrief("read")}>
-          <Info className="h-3 w-3" aria-hidden /> How it works
+          <Info className="h-3 w-3" aria-hidden /> Functionality
         </button>
         {state === "ready" && (
           <button type="button" className="hl__link" onClick={() => setShowMap(true)}>
-            <Waypoints className="h-3 w-3" aria-hidden /> How it connects
+            <Waypoints className="h-3 w-3" aria-hidden /> Integration
           </button>
         )}
         <button type="button" className="hl__link hl__link--end" onClick={() => openHelp("lab")}>
