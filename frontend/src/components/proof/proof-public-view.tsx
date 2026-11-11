@@ -237,7 +237,7 @@ export function ProofPublicView({
           <h2>Hands-on experience</h2>
           <p className="pp-note">
             {first} completed this work in a live Active Directory environment modeled on a wealth-management firm. Each task was checked automatically in their own lab.
-            {data.items.some((it) => it.verified) && " Tasks marked Verified by Range came from a pod Range built and tracked for this student, not a report they typed in themselves."}
+            {data.items.some((it) => it.verified) && " Tasks marked Verified by Range came from a pod Range built, not a self-report."}
             {data.lastLabCheck && ` Last checked ${day(data.lastLabCheck)}.`}
           </p>
           <ul className="pp-jobs">
@@ -249,7 +249,7 @@ export function ProofPublicView({
                     <h3>
                       {it.title}
                       {it.verified && (
-                        <span className="pp-verified" title="Came from a pod Range built and tracked for this student">
+                        <span className="pp-verified" title="From a pod Range built, not a self-report">
                           <svg viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z" />
                             <path d="M8.5 12l2.5 2.5 4.5-5" />
