@@ -90,7 +90,7 @@
 <div class="ad-mission" data-id="w2-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Hashing · High · INC-1058 · INC-1091</span>
 <h4>Catch the Altered Download</h4>
-<p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>"The breach notice says to update the VPN client today. I found three download mirrors of version 2.4.1 in the IT share. IT published a checksum next to them. Which one is safe to install?"</p>
+<p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>"The breach notice says to update the VPN client today, so I grabbed version 2.4.1 from the IT share, except there are three different mirrors of it, each with a checksum IT posted next to it. Which one's actually safe to install?"</p>
 <p><strong>Task:</strong> Answer Riley. Find out which mirror isn't safe to install, quarantine it, and report its file name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Download" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
