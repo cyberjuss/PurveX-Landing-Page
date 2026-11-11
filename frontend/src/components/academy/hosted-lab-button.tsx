@@ -474,7 +474,10 @@ function StopTracker() {
   return (
     <div className="hl__track" aria-live="polite">
       <p className="hl__eta">
-        <span>Saving your lab</span>
+        <span className="hl__eta-label">
+          <i className="hl__eta-spin" aria-hidden />
+          Saving your lab
+        </span>
         <em>Safe to leave</em>
       </p>
       {/* No percentage to show here: the save runs in AWS whether or not anyone
@@ -495,7 +498,10 @@ function ResetTracker() {
   return (
     <div className="hl__track" aria-live="polite">
       <p className="hl__eta">
-        <span>Resetting your lab</span>
+        <span className="hl__eta-label">
+          <i className="hl__eta-spin" aria-hidden />
+          Resetting your lab
+        </span>
         <em>Can take a few minutes</em>
       </p>
       <div className="hl__bar hl__bar--indeterminate" role="progressbar" aria-label="Resetting your lab">

@@ -169,6 +169,12 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__eta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0; font-size: var(--ty-note); color: var(--hl-ink-3); font-variant-numeric: tabular-nums; }
 .hl .hl__eta span { font-weight: 650; color: var(--hl-ink); }
 .hl .hl__eta em { flex: none; font-style: normal; }
+/* Stopping and resetting have no step list to carry a spinner the way
+   starting's does, so their own eta line carries one instead -- the same
+   mark, not a different one, for the same "something is working" meaning. */
+.hl .hl__eta-label { display: inline-flex; align-items: center; gap: 9px; }
+.hl .hl__eta-spin { flex: none; width: 13px; height: 13px; border: 1.5px solid var(--hl-wait); border-radius: 50%; border-top-color: transparent; animation: hl-spin 0.9s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .hl .hl__eta-spin { animation: none; border-style: dashed; } }
 
 /* Footer */
 .hl__foot { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 4px; }
