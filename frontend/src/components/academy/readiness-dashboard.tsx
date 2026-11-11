@@ -254,7 +254,15 @@ export function ReadinessDashboard() {
         </div>
         <div className="rd-ledger">
           {s.skills.map((k) => {
-            const tone = toneOfScore(k.score);
+            // A score averages only finished missions, so one lucky solve out
+            // of a 25-mission skill reads as a mathematically perfect 100 --
+            // rated (at least half the bucket done) is what says that number
+            // means anything yet. Shown here exactly like a skill with
+            // nothing finished at all, not as an earned grade still waiting
+            // on a caveat nobody reads: same "--", same neutral bar, until
+            // there is enough of it to trust.
+            const shown = k.rated ? k.score : null;
+            const tone = toneOfScore(shown);
             return (
               <div key={k.key} className={`rd-row ${focusKey === k.key ? "rd-row--focus" : ""}`}>
                 <div className="rd-row__name">
@@ -268,13 +276,13 @@ export function ReadinessDashboard() {
                   </span>
                 </div>
                 <div className="rd-scale">
-                  <div className={`rd-scale__fill rd-bg-${tone}`} style={{ width: `${k.score ?? 0}%` }} />
+                  <div className={`rd-scale__fill rd-bg-${tone}`} style={{ width: `${shown ?? 0}%` }} />
                   <i style={{ left: "65%" }} data-mark="Almost · 65" />
                   <i style={{ left: "85%" }} data-mark="Ready · 85" />
                 </div>
                 <p className={`rd-row__score rd-text-${tone}`}>
-                  {k.score === null ? "—" : k.score}
-                  {k.score !== null && <small>%</small>}
+                  {shown === null ? "—" : shown}
+                  {shown !== null && <small>%</small>}
                 </p>
                 <button
                   type="button"
