@@ -150,7 +150,20 @@ export async function POST(request: Request) {
   }
   try {
     if (action === "start") await startHostedLab(student.id);
-    else if (action === "stop") await stopHostedLab(student.id);
+    // Not awaited. stopPod makes up to a handful of sequential AWS calls --
+    // one describe plus up to two stop attempts (hibernate, then a plain
+    // fallback) per machine in the pod -- and that chain, on top of the
+    // status read this request already builds below, is what has timed the
+    // whole request out in production (confirmed in Vercel's own runtime
+    // errors: 30s and 300s task timeouts on this route). The student doesn't
+    // need to wait on it: the instance's own state is what the next status
+    // poll reads anyway, same as idle-stop already defers this same call.
+    else if (action === "stop")
+      after(() =>
+        stopHostedLab(student.id).catch((err) =>
+          console.error("hosted lab stop failed", student.id, err instanceof Error ? err.message : err)
+        )
+      );
     else if (action === "extend") await extendHostedLab(student.id);
     else if (action === "reset") await beginReset(student.id);
     else if (action === "open") {
