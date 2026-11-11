@@ -25,7 +25,14 @@ import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+// beginReset's after() callback runs resetHostedLab in the background, which
+// the function's own comments say can take minutes: up to 6 waiting for the
+// SSM agent, up to 8 for the replant command, then up to 90s confirming it
+// landed. after() still counts against this route's own maxDuration, so at
+// 30s (every other route here uses 60) that background work was being killed
+// before it ever reached AWS -- confirmed live: zero "Range lab reset" SSM
+// commands ever showed up despite students reporting resets that hang.
+export const maxDuration = 300;
 
 // The lab button: status, start, open in the browser, extend, stop, reset.
 
