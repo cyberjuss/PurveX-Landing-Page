@@ -265,11 +265,3 @@ html[data-academy-theme="dark"] .hl-chip__bad { background: #f87171; }
   .hl-pop, .hl-lab--wait svg, .hl .hl__steps li.is-now i { animation: none; }
 }
 
-/* The note under the stopping bar: what the wait is, and that it costs nothing. */
-
-/* Saving your lab...: no percentage to show, so a short segment sweeps the
-   track instead of filling it, on the same bar the start tracker uses. */
-.hl .hl__bar--indeterminate { position: relative; }
-.hl .hl__bar--indeterminate span { position: absolute; top: 0; bottom: 0; width: 32%; background: var(--hl-wait); animation: hl-sweep 1.3s ease-in-out infinite; }
-@keyframes hl-sweep { 0% { left: -32%; } 100% { left: 100%; } }
-@media (prefers-reduced-motion: reduce) { .hl .hl__bar--indeterminate span { animation: none; left: 0; width: 100%; opacity: 0.35; } }
