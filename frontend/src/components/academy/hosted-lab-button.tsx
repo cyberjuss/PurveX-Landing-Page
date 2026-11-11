@@ -499,7 +499,7 @@ function StopTracker() {
           {mm}:{ss}
         </em>
       </p>
-      <p className="hl__note">Windows is writing its memory to disk so the next Resume is fast, which can take a few minutes, and it's safe to leave and come back while it finishes.</p>
+      <p className="hl__note">Saving memory to disk so Resume stays fast can take a few minutes, so it's safe to leave.</p>
     </div>
   );
 }
