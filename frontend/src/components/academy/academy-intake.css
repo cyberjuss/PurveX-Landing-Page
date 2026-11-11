@@ -1,7 +1,7 @@
-/* Intake: an internal onboarding form, one question per screen.
-   Square, quiet and typographic, in the same register as the rest of Range:
-   mono labels, a single progress rule, lettered choices you can also pick
-   from the keyboard. Nothing bounces. */
+/* Intake: an internal onboarding form, one question per screen. A card grid
+   per step -- icon, title, an answer you can still pick by keyboard (A, B,
+   C…) -- in the same register as the rest of Range: mono labels, tabular
+   step counter, nothing that bounces past a quiet hover lift. */
 .axq { max-width: 600px; margin: 0 auto; padding-top: 4px; }
 
 /* Header: who is asking, where you are, one thin rule for progress. */
@@ -15,11 +15,17 @@
 .axq-note__tag,
 .axq-opt__tag { font-family: var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; text-transform: uppercase; }
 .axq-org { font-size: 11px; font-weight: 600; color: var(--rd-ink-3); }
-.axq-count { font-size: 11px; font-weight: 600; color: var(--rd-ink-3); font-variant-numeric: tabular-nums; }
+.axq-count { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; color: var(--rd-ink-3); font-variant-numeric: tabular-nums; }
+.axq-hi { font-family: var(--font-sans, inherit); letter-spacing: normal; text-transform: none; font-size: 13px; font-weight: 600; color: var(--rd-ink); }
 .axq-back { display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; border: 0; background: none; font-size: 13px; font-weight: 600; color: var(--rd-ink-2); cursor: pointer; }
 .axq-back:hover:not(:disabled) { color: var(--rd-ink); }
-.axq-rule { position: relative; height: 2px; margin-top: 12px; background: var(--rd-line); }
-.axq-rule i { position: absolute; inset: 0 auto 0 0; background: var(--rd-accent); transition: width 0.35s var(--ax-ease); }
+
+/* Progress: one pill per step, not one rule filling in -- with 17 short
+   screens, seeing them tick by one at a time reads better than a sliver of a
+   bar moving. */
+.axq-progress { display: flex; gap: 4px; margin-top: 12px; }
+.axq-progress i { flex: 1; height: 6px; border-radius: 999px; background: var(--rd-line); transition: background 0.25s var(--ax-ease); }
+.axq-progress i.is-done { background: var(--rd-accent); }
 
 /* The question. */
 .axq-step { animation: axq-in 0.22s ease-out both; }
@@ -30,26 +36,56 @@
 .axq h1.is-long { font-size: clamp(20px, 3.4vw, 24px); line-height: 1.35; }
 .axq-hint { margin: 10px 0 0; max-width: 52ch; font-size: 15px; line-height: 1.55; color: var(--rd-ink-3); }
 
-/* Choices: one bordered list, rows separated by hairlines. */
-.axq-list { display: grid; margin-top: 28px; border: 1px solid var(--rd-line); }
-.axq-opt { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; min-height: 54px; padding: 12px 16px; border: 0; border-top: 1px solid var(--rd-line); background: none; text-align: left; font-size: 15.5px; font-weight: 500; line-height: 1.4; color: var(--rd-ink); cursor: pointer; transition: background 0.15s; -webkit-tap-highlight-color: transparent; }
-.axq-opt:first-child { border-top: 0; }
-.axq-opt:hover { background: color-mix(in srgb, var(--rd-ink) 3%, transparent); }
-.axq-opt:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: -2px; }
-.axq-opt::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: transparent; }
-.axq-opt.is-on { background: color-mix(in srgb, var(--rd-accent) 6%, transparent); }
-.axq-opt.is-on::before { background: var(--rd-accent); }
-.axq-opt__text { flex: 1; }
-.axq-key { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 24px; height: 24px; border: 1px solid var(--rd-line); font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 700; color: var(--rd-ink-3); background: var(--rd-paper, transparent); }
-.axq-opt.is-on .axq-key { border-color: var(--rd-accent); background: var(--rd-accent); color: #fff; }
+/* Choices: a card grid, two up, each with an icon, a title, and an optional
+   line of context -- the depth and rounding called for in
+   feedback-academy-card-design, not a flat bordered list. */
+.axq-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 28px; }
+@media (max-width: 560px) { .axq-list { grid-template-columns: 1fr; } }
+.axq-opt {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 16px;
+  border: 1.5px solid var(--rd-line);
+  border-radius: 14px;
+  background: var(--rd-paper, #fff);
+  text-align: left;
+  font: inherit;
+  color: var(--rd-ink);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(16, 25, 46, 0.04), 0 14px 32px -28px rgba(16, 25, 46, 0.18);
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.axq-opt:hover { border-color: color-mix(in srgb, var(--rd-accent) 45%, var(--rd-line)); transform: translateY(-1px); }
+.axq-opt:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
+.axq-opt.is-on { border-color: var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 6%, transparent); }
+
+.axq-opt__icon { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 10px; background: color-mix(in srgb, var(--rd-accent) 14%, transparent); color: var(--rd-accent); transition: background 0.15s, color 0.15s; }
+.axq-opt.is-on .axq-opt__icon { background: var(--rd-accent); color: #fff; }
+
+.axq-opt__body { flex: 1; display: grid; gap: 3px; padding-top: 2px; min-width: 0; }
+.axq-opt__title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; font-weight: 650; line-height: 1.35; }
+.axq-opt__desc { font-size: 12.5px; line-height: 1.45; color: var(--rd-ink-3); }
+
+.axq-opt__check { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 20px; height: 20px; margin-top: 2px; border: 1.5px solid var(--rd-line); border-radius: 999px; color: #fff; transition: border-color 0.15s, background 0.15s; }
+.axq-opt__check.is-box { border-radius: 6px; }
+.axq-opt.is-on .axq-opt__check { border-color: var(--rd-accent); background: var(--rd-accent); }
+
+/* The keyboard shortcut still works (A, B, C…); the badge just steps back
+   into the corner so the icon can carry the card instead. */
+.axq-key { position: absolute; top: 6px; left: 8px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 9px; font-weight: 700; color: var(--rd-ink-3); opacity: 0.4; }
 
 /* Quick check: the right and wrong choices, and a resolution note. */
-.axq-opt.is-right::before { background: #0f9f6e; }
-.axq-opt.is-right .axq-key { border-color: #0f9f6e; background: #0f9f6e; color: #fff; }
-.axq-opt.is-wrong::before { background: var(--rd-bad, #d93a3f); }
-.axq-opt.is-wrong .axq-key { border-color: var(--rd-bad, #d93a3f); background: var(--rd-bad, #d93a3f); color: #fff; }
-.axq-opt.is-answer::before { background: #0f9f6e; }
-.axq-opt.is-answer .axq-key { border-color: #0f9f6e; color: #0f9f6e; }
+.axq-opt.is-right { border-color: #0f9f6e; }
+.axq-opt.is-right .axq-opt__check { border-color: #0f9f6e; background: #0f9f6e; }
+.axq-opt.is-wrong { border-color: var(--rd-bad, #d93a3f); }
+.axq-opt.is-wrong .axq-opt__check { border-color: var(--rd-bad, #d93a3f); background: var(--rd-bad, #d93a3f); }
+.axq-opt.is-answer { border-color: #0f9f6e; }
+.axq-opt.is-answer .axq-opt__check { border-color: #0f9f6e; background: transparent; color: #0f9f6e; }
 .axq-opt__tag { flex: none; font-size: 10px; font-weight: 700; color: #0f9f6e; }
 .axq-note { display: grid; gap: 6px; margin-top: 16px; padding: 12px 16px; border-left: 3px solid; background: color-mix(in srgb, var(--rd-ink) 3%, transparent); }
 .axq-note.is-right { border-color: #0f9f6e; }
@@ -75,7 +111,7 @@
 .axq-foot { display: flex; align-items: center; justify-content: flex-end; gap: 16px; margin-top: 28px; }
 .axq-enter { font-size: 10.5px; font-weight: 600; color: var(--rd-ink-3); }
 .axq-enter kbd { margin: 0 2px; padding: 1px 5px; border: 1px solid var(--rd-line); font: inherit; }
-.axq-next { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 22px; border: 0; border-radius: 0; background: var(--rd-accent); font-size: 14.5px; font-weight: 650; color: #fff; cursor: pointer; transition: opacity 0.15s, background 0.15s; }
+.axq-next { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--rd-accent); font-size: 14.5px; font-weight: 650; color: #fff; cursor: pointer; transition: opacity 0.15s, background 0.15s; }
 .axq-next:hover:not(:disabled) { background: color-mix(in srgb, var(--rd-accent) 86%, #000); }
 .axq-next:disabled { opacity: 0.35; cursor: default; }
 @media (hover: none) { .axq-enter { display: none; } }

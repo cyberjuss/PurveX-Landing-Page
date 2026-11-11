@@ -1,7 +1,47 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BadgeCheck,
+  BookOpen,
+  Briefcase,
+  CalendarClock,
+  CalendarPlus,
+  CalendarRange,
+  Check,
+  Clock,
+  Clock3,
+  Clock9,
+  Compass,
+  Eye,
+  FileText,
+  GraduationCap,
+  Headset,
+  HelpCircle,
+  KeyRound,
+  Laptop,
+  Laptop2,
+  Lightbulb,
+  ListOrdered,
+  Loader2,
+  type LucideIcon,
+  Activity,
+  MinusCircle,
+  Monitor,
+  Rocket,
+  Server,
+  ShieldCheck,
+  Siren,
+  Sprout,
+  SquareTerminal,
+  Tablet,
+  Ticket,
+  Timer,
+  TrendingUp,
+  X,
+} from "lucide-react";
 import {
   CERT_STATUSES,
   CERTS,
@@ -52,6 +92,19 @@ const NONE_DONE = "none";
 const ADVANCE_MS = 260;
 
 const todayPlus = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+
+// One icon per answer, so a step reads as a grid of cards rather than a bare
+// list of labels. Kept local to this file: it is a presentation detail of
+// this one screen, not something the rest of the Academy needs off
+// academy-certs.ts's shared option lists.
+const ROLE_ICONS: Record<RoleId, LucideIcon> = { "help-desk": Headset, sysadmin: Server, "soc-analyst": Eye, "cyber-analyst": ShieldCheck, "ir-analyst": Siren };
+const START_ICONS: Record<StartLevel, LucideIcon> = { new: Sprout, some: TrendingUp, working: Briefcase };
+const TIMELINE_ICONS: Record<Timeline, LucideIcon> = { "3m": Rocket, "6m": CalendarClock, "12m": CalendarRange, open: Compass };
+const HOURS_ICONS: Record<Hours, LucideIcon> = { lt3: Clock, "3-6": Clock3, "6-10": Clock9, "10+": Timer };
+const DONE_ICONS: Record<string, LucideIcon> = { tickets: Ticket, "ad-reset": KeyRound, powershell: SquareTerminal, vm: Monitor, eventlogs: FileText, wireshark: Activity };
+const MACHINE_ICONS: Record<Machine, LucideIcon> = { win: Laptop, mac: Laptop2, chromebook: Tablet, unsure: HelpCircle };
+const HELP_ICONS: Record<HelpStyle, LucideIcon> = { hint: Lightbulb, walk: ListOrdered, example: BookOpen };
+const CERT_STATUS_ICONS: Record<CertStatus, LucideIcon> = { earned: BadgeCheck, studying: GraduationCap, planning: CalendarPlus, none: MinusCircle };
 
 // The questions every student answers before the Academy opens, one per
 // screen. Coach, the daily drill and the missions read the answers. Also used
@@ -197,7 +250,7 @@ export function AcademyIntake({
   // Each screen is a section of the form, a question, and its choices. The
   // choices are one list for every kind of step, so they look the same and
   // the keyboard (A, B, C… and Enter) works on all of them.
-  type Choice = { label: string; on: boolean; pick: () => void; tone?: "right" | "wrong" | "answer" };
+  type Choice = { label: string; on: boolean; pick: () => void; tone?: "right" | "wrong" | "answer"; icon?: LucideIcon; desc?: string };
   let section = "";
   let title = "";
   let hint: string | null = null;
@@ -210,23 +263,23 @@ export function AcademyIntake({
     title = "What role are you working toward?";
     hint = "Choose up to two.";
     multi = true;
-    choices = ROLES.map((r) => ({ label: r.label, on: roles.includes(r.id), pick: () => toggleRole(r.id) }));
+    choices = ROLES.map((r) => ({ label: r.label, on: roles.includes(r.id), pick: () => toggleRole(r.id), icon: ROLE_ICONS[r.id], desc: r.blurb }));
   } else if (step === "timeline") {
     section = "Your goal";
     title = "When would you like to be job-ready?";
-    choices = TIMELINES.map((t) => ({ label: t.label, on: timeline === t.id, pick: () => pickAndGo(setTimeline, t.id) }));
+    choices = TIMELINES.map((t) => ({ label: t.label, on: timeline === t.id, pick: () => pickAndGo(setTimeline, t.id), icon: TIMELINE_ICONS[t.id] }));
   } else if (step === "hours") {
     section = "Your goal";
     title = "How many hours per week can you study?";
-    choices = HOURS.map((h) => ({ label: h.label, on: hours === h.id, pick: () => pickAndGo(setHours, h.id) }));
+    choices = HOURS.map((h) => ({ label: h.label, on: hours === h.id, pick: () => pickAndGo(setHours, h.id), icon: HOURS_ICONS[h.id] }));
   } else if (step === "done") {
     section = "Experience";
     title = "Which of these have you done before?";
     hint = "Select all that apply.";
     multi = true;
     choices = [
-      ...DONE.map((d) => ({ label: d.label, on: Boolean(done?.includes(d.id)), pick: () => toggleDone(d.id) })),
-      { label: "None of these", on: done !== undefined && done.length === 0, pick: () => toggleDone(NONE_DONE) },
+      ...DONE.map((d) => ({ label: d.label, on: Boolean(done?.includes(d.id)), pick: () => toggleDone(d.id), icon: DONE_ICONS[d.id] })),
+      { label: "None of these", on: done !== undefined && done.length === 0, pick: () => toggleDone(NONE_DONE), icon: MinusCircle },
     ];
   } else if (quickQ) {
     const n = QUICK_CHECK.indexOf(quickQ) + 1;
@@ -252,17 +305,17 @@ export function AcademyIntake({
     section = "Setup";
     title = "What computer will you use?";
     hint = "The home lab requires a Windows PC. Other devices use the cloud lab in your browser.";
-    choices = MACHINES.map((m) => ({ label: m.label, on: machine === m.id, pick: () => pickAndGo(setMachine, m.id) }));
+    choices = MACHINES.map((m) => ({ label: m.label, on: machine === m.id, pick: () => pickAndGo(setMachine, m.id), icon: MACHINE_ICONS[m.id] }));
   } else if (step === "help") {
     section = "Setup";
     title = "When you're stuck, what helps you most?";
-    choices = HELP_STYLES.map((h) => ({ label: h.label, on: help === h.id, pick: () => pickAndGo(setHelp, h.id) }));
+    choices = HELP_STYLES.map((h) => ({ label: h.label, on: help === h.id, pick: () => pickAndGo(setHelp, h.id), icon: HELP_ICONS[h.id] }));
   } else if (step === "secplus" || step === "cysa") {
     const goal = certs[step];
     section = "Certifications";
     title = CERTS[step].full;
     hint = "What is your status?";
-    choices = CERT_STATUSES.map((st) => ({ label: st.label, on: goal?.status === st.id, pick: () => pickCert(step, st.id) }));
+    choices = CERT_STATUSES.map((st) => ({ label: st.label, on: goal?.status === st.id, pick: () => pickCert(step, st.id), icon: CERT_STATUS_ICONS[st.id] }));
     if (goal?.status === "studying")
       extra = (
         <label className="axq-field">
@@ -291,7 +344,7 @@ export function AcademyIntake({
   } else {
     section = "About you";
     title = "Tell us about yourself.";
-    choices = START_LEVELS.map((st) => ({ label: st.label, on: start === st.id, pick: () => setStart(st.id) }));
+    choices = START_LEVELS.map((st) => ({ label: st.label, on: start === st.id, pick: () => setStart(st.id), icon: START_ICONS[st.id], desc: st.blurb }));
     extra = (
       <div className="axq-fields">
         <label className="axq-field">
@@ -373,10 +426,15 @@ export function AcademyIntake({
           )}
           <span className="axq-count">
             {qn} / {String(STEPS.length).padStart(2, "0")}
+            {/* Only once a name has actually been typed, on the step that asks for it --
+                nothing upstream fabricates a greeting for a name we don't have yet. */}
+            {step === "start" && firstName.trim() && <span className="axq-hi">Hi {firstName.trim().split(/\s+/)[0]} 👋</span>}
           </span>
         </div>
-        <div className="axq-rule" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={i + 1}>
-          <i style={{ width: `${((i + 1) / STEPS.length) * 100}%` }} />
+        <div className="axq-progress" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={i + 1}>
+          {STEPS.map((_, n) => (
+            <i key={n} className={n <= i ? "is-done" : undefined} />
+          ))}
         </div>
       </header>
 
@@ -389,20 +447,37 @@ export function AcademyIntake({
         {hint && <p className="axq-hint">{hint}</p>}
         {choices.length > 0 && (
           <div className="axq-list" role={multi ? "group" : "radiogroup"} aria-label={title}>
-            {choices.map((c, n) => (
-              <button
-                key={c.label}
-                type="button"
-                role={multi ? "checkbox" : "radio"}
-                aria-checked={c.on}
-                className={`axq-opt${c.on ? " is-on" : ""}${c.tone ? ` is-${c.tone}` : ""}`}
-                onClick={c.pick}
-              >
-                <kbd className="axq-key">{String.fromCharCode(65 + n)}</kbd>
-                <span className="axq-opt__text">{c.label}</span>
-                {c.tone === "answer" && <span className="axq-opt__tag">Correct answer</span>}
-              </button>
-            ))}
+            {choices.map((c, n) => {
+              const Icon = c.icon;
+              const checked = c.on || c.tone === "answer";
+              return (
+                <button
+                  key={c.label}
+                  type="button"
+                  role={multi ? "checkbox" : "radio"}
+                  aria-checked={c.on}
+                  className={`axq-opt${c.on ? " is-on" : ""}${c.tone ? ` is-${c.tone}` : ""}`}
+                  onClick={c.pick}
+                >
+                  <kbd className="axq-key">{String.fromCharCode(65 + n)}</kbd>
+                  {Icon && (
+                    <span className="axq-opt__icon">
+                      <Icon className="h-5 w-5" aria-hidden />
+                    </span>
+                  )}
+                  <span className="axq-opt__body">
+                    <span className="axq-opt__title">
+                      {c.label}
+                      {c.tone === "answer" && <span className="axq-opt__tag">Correct answer</span>}
+                    </span>
+                    {c.desc && <span className="axq-opt__desc">{c.desc}</span>}
+                  </span>
+                  <span className={`axq-opt__check${multi ? " is-box" : ""}`} aria-hidden>
+                    {checked && <Check className="h-3.5 w-3.5" />}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         )}
         {extra}
