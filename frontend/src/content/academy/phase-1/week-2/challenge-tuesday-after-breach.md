@@ -145,10 +145,12 @@
 <p>With no salt, the same password always produces the same hash. So you can hash every word in the list and look for a match, which is what an attacker holding this table would do.</p>
 <ol>
 <li>On your lab's domain controller, open <code>C:\PurveX\Shares\IT\exported-hashes.txt</code> and find the two accounts with the same hash.</li>
-<li>Hash each word in <code>common-passwords.txt</code> with SHA-256 and find the one that matches.</li>
+<li>Open CyberChef, and paste the whole contents of <code>common-passwords.txt</code> into Input, one word per line.</li>
+<li>Add Fork, then SHA2 set to 256 below it. Fork hashes every line on its own instead of the whole block as one value.</li>
+<li>Read down the Output for the line whose hash matches the one from the table. That word is the password.</li>
 <li>For both accounts, open the account in Active Directory Users and Computers, and on the Account tab tick User must change password at next logon.</li>
 </ol>
-<p>In PowerShell:</p>
+<p>In PowerShell, the same hashing and matching in one command:</p>
 <ul>
 <li><code>$t = Import-Csv C:\PurveX\Shares\IT\exported-hashes.txt; $sha = [Security.Cryptography.SHA256]::Create(); Get-Content C:\PurveX\Shares\IT\common-passwords.txt | ForEach-Object { $w = $_; $h = -join ($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($w)) | ForEach-Object { $_.ToString("x2") }); $t | Where-Object sha256 -eq $h | ForEach-Object { "$($_.account) uses $w" } }</code></li>
 <li><code>"taylor.osei", "jordan.ellis" | ForEach-Object { Set-ADUser $_ -ChangePasswordAtLogon $true }</code></li>
