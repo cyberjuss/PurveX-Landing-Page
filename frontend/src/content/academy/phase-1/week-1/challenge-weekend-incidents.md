@@ -54,7 +54,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="w1-04" data-attempts="0">
+<div class="ad-mission" data-id="w1-04" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 02 · Warm-up · Vulnerabilities and Threats · INC-1090</span>
 <h4>Weakness or Threat?</h4>
 <p><strong>Alex Rivera · IT · 8:24 AM</strong><br>I'm writing up the client export for Compliance. Which of these describes it correctly?<br><strong>A</strong> The vulnerability is the Operations staff, and the threat is the client file.<br><strong>B</strong> The vulnerability is client data stored where Operations can read it, and the threat is anyone using an Operations account, a curious colleague or an attacker who has stolen one.<br><strong>C</strong> The vulnerability is the CSV file format, and the threat is Wealth Management.</p>
@@ -179,7 +179,7 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="w1-05" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="w1-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 05 · Stretch · Risk · Report to the CISO · INC-1090</span>
 <h4>Rank the Weekend</h4>
 <p><strong>CISO · 9:30 AM</strong><br>Looking back at 8:15, when all three tickets were open at once, which one should have been escalated first?<br><strong>A</strong> The client export, because client data was exposed.<br><strong>B</strong> The altered wire, because $9,800 was due to leave the firm at noon to an account nobody approved, and a sent wire is hard to get back.<br><strong>C</strong> The blocked file shares, because they affected the most people.</p>

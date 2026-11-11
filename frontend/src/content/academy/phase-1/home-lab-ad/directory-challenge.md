@@ -94,7 +94,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-06" data-attempts="0">
+<div class="ad-mission" data-id="dr-06" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 03 · Warm-up · Accounts</span>
 <h4>Person, Machine or Job?</h4>
 <p><strong>Alex Rivera · IT · 1:48 PM</strong><br>Before Quinn starts, I'd like to be sure Quinn can tell the three kinds of account apart. Which of these is a user object that doesn't represent a person?<br><strong>A</strong> IT-WKS01<br><strong>B</strong> svc-backup-job<br><strong>C</strong> jordan.ellis</p>
@@ -128,7 +128,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-08" data-attempts="0">
+<div class="ad-mission" data-id="dr-08" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 04 · Warm-up · Groups</span>
 <h4>OU or Container?</h4>
 <p><strong>Priya Nair · IT · 2:02 PM</strong><br>Someone created a test account in the default Users folder last month. IT links its screen-lock GPO to <code>OU=IT</code>. Does that GPO reach the test account?</p>
@@ -339,7 +339,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-10" data-attempts="0">
+<div class="ad-mission" data-id="dr-10" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 09 · Stretch · Service Accounts</span>
 <h4>A Job Running Outside Its Window</h4>
 <p><strong>SOC Queue · Alert Review · 2:22 PM</strong><br>The Security log shows an interactive sign-in by <code>svc-print-queue</code> at 2:15 PM. Its Description says it runs from 02:00 to 02:30. What should you make of that?<br><strong>A</strong> It's normal, because service accounts sign in whenever they need to.<br><strong>B</strong> It's a red flag. Find out who or what signed in, and from where, before anything else.<br><strong>C</strong> Widen the account's Logon Hours so the alert stops.</p>
@@ -373,7 +373,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-04" data-attempts="0">
+<div class="ad-mission" data-id="dr-04" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 10 · Stretch · Organizational Units</span>
 <h4>Delegate Only What Helpdesk Needs</h4>
 <p><strong>Devon Brooks · Compliance · 1:28 PM</strong><br>We'd like the Helpdesk group to be able to reset passwords for Compliance staff, and for nobody else's accounts. Where should that permission be granted?<br><strong>A</strong> On the Compliance Users group.<br><strong>B</strong> On the OU <code>OU=Users,OU=Compliance,OU=Departments</code>.<br><strong>C</strong> On the domain itself, so it covers every account.</p>
@@ -451,7 +451,7 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="dr-12" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="dr-12" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 12 · Stretch · Group Policy</span>
 <h4>The Password Rule That Will Not Apply</h4>
 <p><strong>Devon Brooks · Compliance · 2:50 PM</strong><br>The auditors want Compliance staff on 16-character passwords, while everyone else stays on the firm's standard. Someone suggested putting a password setting in a GPO linked to <code>OU=Compliance</code>. Will that work?<br><strong>A</strong> Yes. A GPO linked to the OU applies to every account in it.<br><strong>B</strong> No. Domain password policy only applies from the domain level, so use a fine-grained password policy that targets Compliance instead.<br><strong>C</strong> Only if security filtering limits the GPO to Compliance Users.</p>

@@ -96,7 +96,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dk-03" data-attempts="0">
+<div class="ad-mission" data-id="dk-03" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Call 03 · Warm-up · Unlock or Reset · Tuesday · INC-1094</span>
 <h4>Locked, Not Forgotten</h4>
 <p><strong>Maya Okafor · Wealth Management · Tuesday · 8:52 AM</strong><br>I know my new password, I promise. Caps Lock was on and I typed it wrong a few times, and now it says my account is locked.<br><strong>A</strong> Reset the password and force another change.<br><strong>B</strong> Unlock the account and leave the password alone.<br><strong>C</strong> Enable the account.</p>
@@ -341,7 +341,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dk-09" data-attempts="0">
+<div class="ad-mission" data-id="dk-09" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Call 09 · Stretch · Read the Account · Friday · INC-1094</span>
 <h4>Which Last Logon to Trust</h4>
 <p><strong>Alex Rivera · IT · Friday · 9:00 AM</strong><br>Next year we're adding a second domain controller. After that, which attribute should Quinn read to see when an account last signed in anywhere in the domain, accepting that it can lag a little?<br><strong>A</strong> <code>lastLogon</code><br><strong>B</strong> <code>lastLogonTimestamp</code><br><strong>C</strong> <code>whenCreated</code></p>

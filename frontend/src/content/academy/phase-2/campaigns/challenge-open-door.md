@@ -263,7 +263,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="od-08" data-attempts="0">
+<div class="ad-mission" data-id="od-08" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 5 · Write-Up · Medium</span>
 <h4>No Delivery and No Problem</h4>
 <p><strong>SOC Lead · Final write-up · 11:45 AM</strong><br>This campaign never had a Delivery stage. No file or email arrived, and there was nothing to hash.<br><strong>A</strong> That means the Kill Chain model does not apply here.<br><strong>B</strong> An attacker who is already inside the network does not need to deliver anything, because the open rule itself was the way in.<br><strong>C</strong> This must be a false positive, since every real intrusion involves Delivery.</p>
@@ -293,7 +293,7 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="od-09" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="od-09" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 6 · Write-Up · Medium</span>
 <h4>Three Campaigns and One Rule That Would Have Stopped Them All</h4>
 <p><strong>SOC Lead · Quarterly summary · 2:00 PM</strong><br>This phase's three campaigns used three different ways in: a wide password spray, a phishing attachment and a forgotten firewall rule. Yet all three ended up planting a scheduled task that needed to phone home.</p>

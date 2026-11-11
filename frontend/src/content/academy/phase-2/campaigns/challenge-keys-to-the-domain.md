@@ -188,7 +188,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="rk-06" data-attempts="0">
+<div class="ad-mission" data-id="rk-06" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 2 · Actions on Objectives · T1003.006 DCSync · INC-1080 · High</span>
 <h4>Know What You Are Looking For</h4>
 <p><strong>IT Lead · Hardening review · 2:05 PM</strong><br>Auditing is on, so now you need the one detail that separates a real DCSync request from a domain controller's own replication traffic.<br><strong>A</strong> The account name, since only administrators ever appear in event 4662.<br><strong>B</strong> The access mask, Control Access (0x100), combined with the account not being a known domain controller.<br><strong>C</strong> The time of day, since replication only happens overnight.</p>
@@ -288,7 +288,7 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="rk-09" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="rk-09" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 4 · Write-Up · Medium</span>
 <h4>Two Techniques and No Malware</h4>
 <p><strong>SOC Lead · Final write-up · 2:30 PM</strong><br>You've worked four campaigns this phase. Three of them needed something delivered or guessed to get started, but this one needed neither.</p>

@@ -298,7 +298,7 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="pc-10" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="pc-10" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 6 · Write-Up · Medium</span>
 <h4>Two Chains and One Pattern</h4>
 <p><strong>SOC Lead · Final write-up · 10:30 AM</strong><br>This phase ran two separate campaigns. One opened with a password spray, and this one opened with a phishing attachment.</p>

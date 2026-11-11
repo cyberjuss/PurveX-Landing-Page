@@ -10,7 +10,7 @@
 <span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
 </div>
 
-<div class="ad-mission" data-id="w4-02" data-attempts="0">
+<div class="ad-mission" data-id="w4-02" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Finding 01 · Warm-up · Authentication · Executive Request · INC-1093</span>
 <h4>The MFA Exemption Request</h4>
 <p><strong>CFO · 8:45 AM</strong><br>The MFA prompts slow me down when I'm approving payments between meetings. Can IT turn MFA off for the executive team? We're careful with our passwords.<br><strong>A</strong> Agree. Executives are busy, and their passwords are long.<br><strong>B</strong> Keep MFA on, and offer a faster method, such as number matching on the phone app or a hardware key. Executives who approve payments are exactly who attackers phish.<br><strong>C</strong> Turn MFA off, but make executives change their password every month instead.</p>
@@ -215,7 +215,7 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="w4-05" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="w4-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Finding 06 · Stretch · Broken Access Control · Client Portal · INC-1093</span>
 <h4>Change One Number in the URL</h4>
 <p><strong>Client complaint · 2:00 PM</strong><br>A client signed in to the PurveX client portal and viewed their statement at <code>/statements?client=1042</code>. Out of curiosity they changed it to <code>1043</code> and saw another client's statement. What failed, and what's the fix?<br><strong>A</strong> Authentication failed, so the fix is to add MFA to the portal.<br><strong>B</strong> Broken access control. The server must check, on every request, that the signed-in client owns the statement being asked for.<br><strong>C</strong> Encryption failed, so the fix is to turn on HTTPS.</p>
