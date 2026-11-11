@@ -116,8 +116,6 @@ html[data-academy-theme="dark"] .hl-note,
 }
 @keyframes hl-secret-in { from { opacity: 0; transform: translateY(-3px); } }
 @media (prefers-reduced-motion: reduce) { .hl .hl__creds__secret { animation: none; } }
-.hl .hl__creds__why { margin: 6px 0 0; font-size: var(--ty-micro); line-height: 1.4; color: var(--hl-ink-3); }
-.hl .hl__creds__why code { font-size: var(--ty-micro); color: var(--hl-ink-2); }
 .hl .hl__creds__btn {
   display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 2px 12px;
   border: 1px solid var(--hl-line); background: none; color: var(--hl-ink-2);

@@ -593,12 +593,6 @@ function LinuxSignIn() {
         )}
       </p>
       {creds && <code className="hl__creds__secret">{creds.password}</code>}
-      {creds && (
-        <p className="hl__creds__why">
-          User <code>student</code>. The desktop is already signed in. This hides itself in a
-          minute and a half.
-        </p>
-      )}
       {err && <p className="hl__creds__err" role="alert">{err}</p>}
     </div>
   );
