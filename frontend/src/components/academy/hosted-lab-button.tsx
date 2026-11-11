@@ -740,13 +740,19 @@ export function HostedLabMenu() {
           <button
             type="button"
             className="hl__link hl__link--warn"
-            // Not disabled while starting: a boot that hangs is exactly when
-            // someone needs this, and it terminates the instances by id. A
-            // reset already running is different -- a second one would fire
-            // a second replant command at the same lab, so that one blocks.
+            // Not disabled while starting: the button stays reachable for
+            // someone who thinks a boot has hung. The server itself now
+            // no-ops a reset asked for mid first-boot -- it is already
+            // getting a clean rebuild from that very boot, and queuing an
+            // in-place reset on top would run its wipe step concurrently
+            // with the script still building the objects it deletes.
             disabled={busy || resetting}
             onClick={() => {
-              if (window.confirm("Reset your lab? You get a fresh PurveX Financial. Everything you changed in the lab is gone. Your Range progress stays.")) void act("reset");
+              const ask =
+                state === "starting"
+                  ? "Your lab is still building for the first time, so resetting now won't do anything until it finishes. If it seems stuck, use Help instead. Try anyway?"
+                  : "Reset your lab? You get a fresh PurveX Financial. Everything you changed in the lab is gone. Your Range progress stays.";
+              if (window.confirm(ask)) void act("reset");
             }}
           >
             <RotateCcw className="h-3 w-3" aria-hidden /> Reset

@@ -1098,6 +1098,15 @@ const RESET_MAX_MS = 17 * 60_000;
 /** Starts a lab reset. Returns once the first step is recorded; advanceReset
  *  (called from the status route on every poll) does the actual work. */
 export async function beginReset(userId: string): Promise<void> {
+  // A pod still mid first boot (state "starting": EC2 running but not yet
+  // linked, or not yet running at all) is already getting a clean rebuild
+  // from that boot script. Queuing an in-place reset on top of it would run
+  // Remove-Environment.ps1 concurrently with the very script building the
+  // objects it deletes -- a race that can leave the directory half built.
+  // Confirmed live: a reset fired on a pod the previous reset had just
+  // replaced, seconds after it relaunched.
+  const status = await hostedLabStatus(userId).catch(() => null);
+  if (status?.state === "starting") return;
   await saveResetState(userId, { step: "starting", startedAt: new Date().toISOString() }, null);
 }
 
