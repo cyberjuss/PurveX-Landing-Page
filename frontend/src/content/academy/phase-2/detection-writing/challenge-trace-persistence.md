@@ -47,7 +47,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>In the lesson's Reference step, you scoped <code>SigninLogs</code> with <code>where TimeGenerated > ago(24h)</code>. Use the same shape here, just with a longer window.</p>
+<p>In the lesson's Reference step, you scoped <code>SecurityEvent</code> with <code>where TimeGenerated > ago(24h)</code>. Use the same shape here, just with a longer window.</p>
 <p><code>ago()</code> takes a duration, and this one needs to be measured in days rather than hours.</p>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -75,7 +75,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The lesson counted failed sign-ins per account per hour with <code>summarize FailedCount = count() by UserPrincipalName, bin(TimeGenerated, 1h)</code>. This time, you're counting launches per device per day.</p>
+<p>The lesson counted distinct accounts touched per source per hour with <code>summarize TargetedAccounts = dcount(TargetUserName) by IpAddress, bin(TimeGenerated, 1h)</code>. This time, you're counting launches per device per day.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="dcount">A spray needed <code>dcount</code> to count the distinct accounts hit from one source. This is the opposite shape, a single device with a plain count, so you aren't counting anything distinct.</div>
@@ -95,7 +95,7 @@
 
 <div class="ad-mission" data-id="tr-04" data-attempts="0">
 <span class="ad-mission__num">C · Condition · INC-1150 · Medium</span>
-<p><strong>Task:</strong> A task relaunching every 15 minutes produces roughly 96 hidden-window launches a day. An analyst running one script by hand a few times a day should never come close. The lesson's own Condition step named its threshold first with <code>let threshold = 5;</code>, then applied it with <code>where FailedCount > threshold</code>. Using 20 as the threshold here, type only the <code>let</code> line that names it.</p>
+<p><strong>Task:</strong> A task relaunching every 15 minutes produces roughly 96 hidden-window launches a day. An analyst running one script by hand a few times a day should never come close. The lesson's own Condition step named its threshold first with <code>let threshold = 5;</code>, then applied it with <code>where TargetedAccounts > threshold</code>. Using 20 as the threshold here, type only the <code>let</code> line that names it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the let threshold line" placeholder="let threshold = ...;" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{let threshold = 20;}" data-accept="let threshold=20;|let threshold=20">Submit</button>
@@ -114,7 +114,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The 20 isn't borrowed from a blog post. It sits well below a true 15-minute relaunch, which comes to about 96 a day, and well above anything a person running a script by hand a few times would produce. That's the same reasoning the lesson used to justify 5 failed sign-ins an hour for Password Spraying. The rest of the query then reads <code>where LaunchCount > threshold</code>, matching the lesson's <code>where FailedCount > threshold</code>.</p>
+<p>The 20 isn't borrowed from a blog post. It sits well below a true 15-minute relaunch, which comes to about 96 a day, and well above anything a person running a script by hand a few times would produce. That's the same reasoning the lesson used to justify 5 distinct accounts touched an hour for Password Spraying. The rest of the query then reads <code>where LaunchCount > threshold</code>, matching the lesson's <code>where TargetedAccounts > threshold</code>.</p>
 </div>
 </div>
 </div>

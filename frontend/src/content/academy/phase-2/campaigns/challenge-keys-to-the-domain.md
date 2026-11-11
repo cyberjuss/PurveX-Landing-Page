@@ -42,7 +42,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>0x17 is RC4, a fast encryption type that can be broken. Attacker tools request RC4 on purpose, because an RC4 ticket can be cracked offline against the account's password hash, while an AES ticket resists that far better. CISA names this exact pattern, T1558.003, as one of the two most common ways a single foothold turns into full domain control.</p>
+<p>0x17 is RC4, a fast encryption type that can be broken. Attacker tools request RC4 on purpose, because an RC4 ticket can be cracked offline against the account's password hash, while an AES ticket resists that far better. CISA and its Five Eyes partners list Kerberoasting among the most common techniques they see turn a single foothold into full domain control.</p>
 </div>
 </div>
 </div>
@@ -191,7 +191,7 @@
 <div class="ad-mission" data-id="rk-06" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 2 · Actions on Objectives · T1003.006 DCSync · INC-1080 · High</span>
 <h4>Know What You Are Looking For</h4>
-<p><strong>IT Lead · Hardening review · 2:05 PM</strong><br>Auditing is on, so now you need the one detail that separates a real DCSync request from a domain controller's own replication traffic.<br><strong>A</strong> The account name, since only administrators ever appear in event 4662.<br><strong>B</strong> The access mask, Control Access (0x100), combined with the account not being a known domain controller.<br><strong>C</strong> The time of day, since replication only happens overnight.</p>
+<p><strong>IT Lead · Hardening review · 2:05 PM</strong><br>Auditing is on, so now you need the one detail that separates a real DCSync request from a domain controller's own replication traffic.<br><strong>A</strong> The account name, since only administrators ever appear in event 4662.<br><strong>B</strong> The access mask, Control Access (0x100), naming the replication-change rights in the event's Properties, combined with the account not being a known domain controller.<br><strong>C</strong> The time of day, since replication only happens overnight.</p>
 <p><strong>Task:</strong> Choose the detail that distinguishes the two, and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Know What You Are Looking For" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -212,7 +212,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every real domain controller replicates under its own computer account, so that's the first thing a defender rules out. The signal is a Control Access request carrying this exact right from anything else, whether a user account, a server or a workstation. Before you escalate, check for the common legitimate exceptions, such as Azure AD Connect.</p>
+<p>Every real domain controller replicates under its own computer account, so that's the first thing a defender rules out. Control Access (0x100) alone isn't enough by itself, since ordinary, unrelated operations carry that same right too. The real signal is that access mask together with the Properties field naming the two replication rights, DS-Replication-Get-Changes and DS-Replication-Get-Changes-All, requested by anything other than a domain controller's own computer account, whether a user account, a server or a workstation. Before you escalate, check for the common legitimate exceptions, such as Azure AD Connect.</p>
 </div>
 </div>
 </div>

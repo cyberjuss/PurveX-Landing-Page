@@ -28,10 +28,10 @@ Check whether the file is still there. If it has already disappeared, Defender c
 Start-MpScan -ScanType CustomScan -ScanPath "C:\Users\Public\eicar-test.com"
 ```
 
-Whichever way it went, Defender keeps a record of what it found, and that record is what you'll read next.
+Whichever way it went, Defender keeps a record of what it found, but that record only carries a numeric threat ID. Look the ID up in Defender's own threat catalog to get the name back.
 
 ```powershell
-Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
+Get-MpThreatCatalog -ThreatID (Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatID) | Select-Object -ExpandProperty ThreatName
 ```
 
 <div class="ad-mission" data-id="mw2-03" data-attempts="0">
@@ -43,7 +43,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Run <code>Get-MpThreatDetection</code> exactly as shown and read the ThreatName property it prints.</p>
+<p>Run the command exactly as shown. <code>Get-MpThreatDetection</code> only ever records a numeric ThreatID, so the command looks that ID up in <code>Get-MpThreatCatalog</code>, which is where the actual ThreatName lives.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="eicar">Give the full threat name Defender printed, not just the file's own common nickname.</div>

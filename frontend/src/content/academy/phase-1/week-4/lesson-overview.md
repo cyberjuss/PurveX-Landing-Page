@@ -37,7 +37,7 @@ Access control = Enforces that decision on every single request
 prompt: Match each breach to the way in.
 level: 1
 Colonial Pipeline = A VPN account with a leaked password and no MFA
-MGM Resorts = A caller talked the help desk into resetting an employee's MFA
+MGM Resorts = A caller reportedly talked the help desk into resetting an employee's MFA
 First American Financial = Changing one number in a web address, with no check on the visitor
 ```
 

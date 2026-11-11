@@ -387,7 +387,7 @@
 <ol>
 <li><code>summarize</code> starts the aggregation.</li>
 <li><code>dcount(TargetUserName)</code> counts distinct accounts touched, not total events.</li>
-<li><code>by IPAddress, bin(TimeGenerated, 5m)</code> groups by source and a 5-minute window, so a slow trickle across hours does not falsely match.</li>
+<li><code>by IpAddress, bin(TimeGenerated, 5m)</code> groups by source and a 5-minute window, so a slow trickle across hours does not falsely match.</li>
 </ol>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -396,7 +396,7 @@
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>summarize AccountCount = dcount(TargetUserName) by IPAddress, bin(TimeGenerated, 5m)</code></p>
+<p class="ad-flag__code"><code>summarize AccountCount = dcount(TargetUserName) by IpAddress, bin(TimeGenerated, 5m)</code></p>
 </div>
 <div>
 <span>Why it matters</span>
