@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { academyFetch, READINESS_PATH, RESULTS_CHANGED_EVENT, RESULTS_UPDATED_EVENT } from "@/lib/academy-client";
+import { useIsRangePro } from "./use-range-plan";
 import { loadResults, saveResults, type MissionResult } from "@/lib/academy-score";
 import { useHostedLab } from "./hosted-lab-button";
 import { TrailDock } from "./trail-dock";
@@ -51,6 +52,10 @@ export function MissionPager({
   const [started, setStarted] = useState(false);
   // A hosted lab starts from the brief, so it boots while the student reads question 1.
   const lab = useHostedLab();
+  // Explore can't publish a Proof Profile, so recording toward one is a dead
+  // end for them -- the control shows for Pro only, same gate as the clip
+  // upload itself already enforces server-side.
+  const isPro = useIsRangePro();
 
   const missions = useCallback(() => Array.from(root.current?.querySelectorAll<HTMLElement>(".ad-mission") ?? []), []);
   const brief = useCallback(() => root.current?.querySelector<HTMLElement>(".ad-brief") ?? null, []);
@@ -128,7 +133,7 @@ export function MissionPager({
   const done = solved.filter(Boolean).length;
   const isLast = at === total - 1;
   const paging = total >= 2;
-  const showRecord = Boolean(recordLabel) && (handsOn[at] ?? true);
+  const showRecord = isPro && Boolean(recordLabel) && (handsOn[at] ?? true);
 
   // Leaving an unsolved question going forward flags it for Coach. Going
   // back does not. Solving later clears the flag.
