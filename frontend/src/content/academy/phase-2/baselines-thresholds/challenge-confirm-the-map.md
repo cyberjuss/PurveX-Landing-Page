@@ -20,11 +20,11 @@ Get-NetTCPConnection -State Listen | Sort-Object LocalPort | Select-Object Local
 
 A lesson can tell you what a domain controller is for, but only the machine can tell you what it's running right now on your own pod. Notice that PowerShell isn't asking you to remember anything. It's reading the machine's own state back to you.
 
-Start by finding the five ports you just learned: 53, 88, 389, 445 and 3389. Each of them should be in the list, because each is a real service running on the machine.
+Start by finding the five ports you just learned: 53, 88, 389, 445 and 3389. Each one should be in the list.
 
 ### Read What the Lesson Left Out
 
-A real domain controller listens on more than five ports, though. As you scroll through the rest of the list, you'll see others, perhaps 135, 464, 636, 3268 or 9389, and each of them is a real Windows service with its own job.
+A real domain controller listens on more than five ports, though. Scroll through the rest of the list and you'll see others too: 135, 464, 636, 3268, 9389. Each is a real Windows service with its own job.
 
 <div class="ad-mission" data-id="nm-01" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1147 · Low</span>

@@ -171,7 +171,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Force a change at next logon for everyone in the dump, starting with these two, and ask them not to reuse passwords between work and outside services. A salted, slow hash, like the ones the lesson describes, is what stops one breach from turning into this.</p>
+<p>Force a change at next logon for everyone in the dump, starting with these two, and ask them not to reuse passwords between work and outside services. A salted, slow hash like the one the lesson describes is what stops one breach from turning into this.</p>
 </div>
 </div>
 </div>
@@ -201,7 +201,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encoding hides nothing, encryption with the key beside it hides nothing either, and hashing can't be reversed, so none of them works for a password a script has to use. The secret has to live somewhere that's protected by access control and encryption, not in a text file in a shared folder.</p>
+<p>None of the three protects a password a script has to use. Encoding hides nothing. Encryption with the key sitting beside it hides nothing either. Hashing can't be reversed at all, so a script could never recover the password back out of it. The secret has to live somewhere protected by access control and encryption, not in a text file in a shared folder.</p>
 </div>
 <div>
 <span>What to do</span>

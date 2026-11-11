@@ -162,7 +162,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Five failed sign-ins, each with a different wrong password, isn't a receptionist mistyping. It's someone guessing at an account whose password everyone can see anyway. The log turns "we think it's risky" into evidence the auditors can put in their report.</p>
+<p>Five failed sign-ins against one account isn't a receptionist mistyping once or twice. It's consistent with someone guessing at an account whose password everyone can see anyway. The log turns "we think it's risky" into evidence the auditors can put in their report.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -183,9 +183,9 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A shared account usually gives itself away in its name or its Description. Check the accounts in Departments, Operations, Users.</p>
+<p>A shared account usually gives itself away in its name or its Description. Check the accounts in Departments → Operations → Users.</p>
 <ol>
-<li>In Active Directory Users and Computers, open Departments, Operations, Users.</li>
+<li>In Active Directory Users and Computers, open Departments → Operations → Users.</li>
 <li>Read the Description of each account until you find the shared one.</li>
 <li>Right-click it and choose Disable Account.</li>
 </ol>
@@ -218,7 +218,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="w4-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Finding 06 · Stretch · Broken Access Control · Client Portal · INC-1093</span>
 <h4>Change One Number in the URL</h4>
-<p><strong>Client complaint · 2:00 PM</strong><br>A client signed in to the PurveX client portal and viewed their statement at <code>/statements?client=1042</code>. Out of curiosity they changed it to <code>1043</code> and saw another client's statement. What failed, and what's the fix?<br><strong>A</strong> Authentication failed, so the fix is to add MFA to the portal.<br><strong>B</strong> Broken access control. The server must check, on every request, that the signed-in client owns the statement being asked for.<br><strong>C</strong> Encryption failed, so the fix is to turn on HTTPS.</p>
+<p><strong>Client complaint · 2:00 PM</strong><br>A client signed in to the PurveX client portal and viewed their statement at <code>/statements?client=1042</code>. Out of curiosity, they changed it to <code>1043</code> and saw another client's statement. What failed, and what's the fix?<br><strong>A</strong> Authentication failed, so the fix is to add MFA to the portal.<br><strong>B</strong> Broken access control. The server must check, on every request, that the signed-in client owns the statement being asked for.<br><strong>C</strong> Encryption failed, so the fix is to turn on HTTPS.</p>
 <p><strong>Task:</strong> Choose the failure and the fix and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Change One Number in the URL" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -243,7 +243,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Report it to the portal's developers as a critical issue, with the two URLs as proof, and to Compliance as a possible breach. The fix belongs on the server: check ownership on every request, whatever the address asks for.</p>
+<p>Report it to the portal's developers as a critical issue, with the two URLs as proof. Report it to Compliance too, as a possible breach. The fix belongs on the server: check ownership on every request, whatever the address asks for.</p>
 </div>
 </div>
 </div>

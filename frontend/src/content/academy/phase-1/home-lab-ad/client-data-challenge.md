@@ -48,7 +48,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So record each sensitive file, where it lives and who owns it. Every later decision about access and monitoring will rest on that list.</p>
+<p>Record each sensitive file, where it lives and who owns it. Every later decision about access and monitoring will rest on that list.</p>
 </div>
 </div>
 </div>
@@ -90,7 +90,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So keep the count alongside the file's entry in the data inventory, and update it as the register grows.</p>
+<p>Keep the count alongside the file's entry in the data inventory, and update it as the register grows.</p>
 </div>
 </div>
 </div>
@@ -132,7 +132,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So send the two open reviews to Compliance with their dates, so the documents get chased before the audit rather than during it.</p>
+<p>Send the two open reviews to Compliance with their dates. That way the documents get chased before the audit rather than during it.</p>
 </div>
 </div>
 </div>
@@ -207,7 +207,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So make sure the exception has an owner and a ticket, and that taylor.osei, who reconciled the batch, records how the two trades were resolved.</p>
+<p>Make sure the exception has an owner and a ticket. Taylor Osei, who reconciled the batch, should also record how the two trades were resolved.</p>
 </div>
 </div>
 </div>
@@ -241,11 +241,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A hash is a fingerprint of the file's exact bytes. Change one digit in one client's row and the hash changes completely. A recorded hash lets anyone prove later whether the file is still the one the firm signed off. In fact, if your hash differs from this one, the file on your share has already been changed.</p>
+<p>A hash is a fingerprint of the file's exact bytes. Change one digit in one client's row and the hash changes completely. A recorded hash lets anyone prove later whether the file is still the one the firm signed off. If your hash ever differs from this one, check first whether you ran the command the same way. Once that's ruled out, treat the mismatch as a real change to the file.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So record the hash and the date in the data inventory, and check it on a schedule. Any mismatch without an approved change behind it is an integrity incident.</p>
+<p>Record the hash and the date in the data inventory, and check it on a schedule. Any mismatch without an approved change behind it is an integrity incident.</p>
 </div>
 </div>
 </div>
@@ -281,7 +281,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every account in the domain can read every client's Social Security number. That includes the help desk, Operations and any account an attacker takes over. Only four people need it. This is broken access control, the same failure Week 4 opened with.</p>
+<p>Every account in the domain can read every client's Social Security number. That includes the help desk, Operations and any account an attacker takes over, when only four people actually need it. This is broken access control, the same failure Week 4 opened with.</p>
 </div>
 <div>
 <span>What to do</span>

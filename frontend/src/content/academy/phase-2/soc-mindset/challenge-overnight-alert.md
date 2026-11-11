@@ -46,7 +46,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The account's Description names IT-WKS01 as the only workstation this overnight work is authorized from, yet the alert's sign-in came from REMOTE-SUPPORT4. On the time alone, this sounded exactly like INC-1046, but once you read every field, the record tells a fuller story.</p>
+<p>The account's Description names IT-WKS01 as the only workstation this overnight work is authorized from, yet the alert's sign-in came from REMOTE-SUPPORT4. On the time alone, this looked like routine after-hours maintenance, but once you read every field, the record tells a fuller story.</p>
 </div>
 <div>
 <span>What to do</span>

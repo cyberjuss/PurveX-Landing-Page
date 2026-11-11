@@ -135,7 +135,13 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So the complete fix has three parts: create Casey with IT Users only, remove the service account from the staff group, and delete the intern account. Then confirm the member list shows only current IT staff and Casey.</p>
+<p>The complete fix has three parts:</p>
+<ol>
+<li>Create Casey with IT Users only.</li>
+<li>Remove the service account from the staff group.</li>
+<li>Delete the intern account.</li>
+</ol>
+<p>Then confirm the member list shows only current IT staff and Casey.</p>
 </div>
 </div>
 </div>
@@ -176,7 +182,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So copy the approved window from the ServiceAccounts folder onto the account's Description, and confirm it saved.</p>
+<p>Copy the approved window from the ServiceAccounts folder onto the account's Description, and confirm it saved.</p>
 </div>
 </div>
 </div>
@@ -265,7 +271,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So disable the account and remove its groups on the day the engagement ends. Keep the account itself, so its history is still there for the invoice review and any audit.</p>
+<p>Disable the account and remove its groups on the day the engagement ends. Keep the account itself, though, so its history is still there for the invoice review and any audit.</p>
 </div>
 </div>
 </div>
@@ -307,7 +313,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So deny the request, and route the install to IT through a normal software ticket. The principle to remember is to grant the access a job needs, not the access a shortcut needs.</p>
+<p>Deny the request, and route the install to IT through a normal software ticket. The principle to remember is to grant the access a job needs, not the access a shortcut needs.</p>
 </div>
 </div>
 </div>
@@ -443,7 +449,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So disable it rather than deleting it, which keeps the record in case someone later asks what happened to the asset. Only delete it after a waiting period, once you're sure nothing depended on it.</p>
+<p>Disable it rather than deleting it, which keeps the record in case someone later asks what happened to the asset. Only delete it after a waiting period, once you're sure nothing depended on it.</p>
 </div>
 </div>
 </div>
@@ -533,7 +539,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So disable the rule, and keep it as a record of the change. The lasting lesson is that temporary access should always come with an end date that someone checks.</p>
+<p>Disable the rule, and keep it as a record of the change. The lasting lesson is that temporary access should always come with an end date that someone checks.</p>
 </div>
 </div>
 </div>
@@ -624,7 +630,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So quarantine the file without opening it, keep it as evidence, and escalate with the file name, its timestamp and who opened it. And thank Jordan for reporting it quickly, because people who fear blame stop reporting.</p>
+<p>Quarantine the file without opening it, and keep it as evidence. When you escalate, include three things: the file name, its timestamp, and who opened it. Thank Jordan for reporting it quickly too, because people who fear blame stop reporting.</p>
 </div>
 </div>
 </div>
@@ -669,7 +675,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So raise the size, but treat it as a stopgap. The real answer is to send events off the machine as they happen, because a log that lives only on the host is also a log an attacker can clear.</p>
+<p>Raise the size, but treat it as a stopgap. The real answer is to send events off the machine as they happen, because a log that lives only on the host is also a log an attacker can clear.</p>
 </div>
 </div>
 </div>
@@ -759,7 +765,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So delete the stale record, and flush the cache on any client that still fails. Going forward, removing old records should be part of every server migration, and DNS scavenging can catch the ones people forget.</p>
+<p>Delete the stale record, and flush the cache on any client that still fails. Going forward, removing old records should be part of every server migration, and DNS scavenging can catch the ones people forget.</p>
 </div>
 </div>
 </div>
@@ -805,7 +811,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So set a threshold that stops guessing without locking out real people on a bad morning. Ten tries with a fifteen-minute lock is the usual balance. Then watch for event 4740, so a wave of lockouts is visible as soon as it starts.</p>
+<p>Set a threshold that stops guessing without locking out real people on a bad morning. Ten tries with a fifteen-minute lock is the usual balance. Then watch for event 4740, so a wave of lockouts is visible as soon as it starts.</p>
 </div>
 </div>
 </div>
@@ -846,7 +852,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So turn on Process Creation for success, and keep it on. It's also worth asking about a second setting that adds the command line to the event, because a process name without its arguments often hides what ran.</p>
+<p>Turn on Process Creation for success, and keep it on. It's also worth asking about a second setting that adds the command line to the event, because a process name without its arguments often hides what ran.</p>
 </div>
 </div>
 </div>
@@ -892,7 +898,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So apply a stricter policy to the admin group, then check that it took effect by reading the resultant policy on one of those accounts. A policy that exists but applies to nobody is the common mistake here.</p>
+<p>Apply a stricter policy to the admin group, then check that it took effect by reading the resultant policy on one of those accounts. A policy that exists but applies to nobody is the common mistake here.</p>
 </div>
 </div>
 </div>

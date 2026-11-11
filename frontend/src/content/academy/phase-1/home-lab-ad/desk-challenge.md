@@ -344,7 +344,7 @@
 <div class="ad-mission" data-id="dk-09" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Call 09 · Stretch · Read the Account · Friday · INC-1094</span>
 <h4>Which Last Logon to Trust</h4>
-<p><strong>Alex Rivera · IT · Friday · 9:00 AM</strong><br>Next year we're adding a second domain controller. After that, which attribute should Quinn read to see when an account last signed in anywhere in the domain, accepting that it can lag a little?<br><strong>A</strong> <code>lastLogon</code><br><strong>B</strong> <code>lastLogonTimestamp</code><br><strong>C</strong> <code>whenCreated</code></p>
+<p><strong>Alex Rivera · IT · Friday · 9:00 AM</strong><br>Next year we're adding a second domain controller. After that, which attribute should Quinn read to see when an account last signed in anywhere in the domain? It's fine if the answer can lag a little.<br><strong>A</strong> <code>lastLogon</code><br><strong>B</strong> <code>lastLogonTimestamp</code><br><strong>C</strong> <code>whenCreated</code></p>
 <p><strong>Task:</strong> Choose the attribute that's shared between domain controllers and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Which Last Logon to Trust" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -379,7 +379,7 @@
 <span class="ad-mission__num">Call 10 · Stretch · Close the Week · Friday · INC-1094</span>
 <h4>Close the Transfer</h4>
 <p><strong>Sam Whitfield · Wealth Management · Friday · 4:30 PM</strong><br>Maya says everything works now. Before you close the ticket, can you say what had to be true for the account to count as fixed?<br><strong>A</strong> The Title and the Description match the new role.<br><strong>B</strong> The folder above the account and its Member Of both match the new department.<br><strong>C</strong> The password was reset and the account is unlocked.</p>
-<p><strong>Task:</strong> Confirm Maya's account is in Wealth Management's Users folder, in Wealth Management Users, out of Operations Users and enabled. Then choose what a finished transfer needs and type its letter.</p>
+<p><strong>Task:</strong> Confirm Maya's account sits in Wealth Management's Users folder and group, is out of Operations Users, and is enabled. Then choose what a finished transfer needs and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Close the Transfer" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

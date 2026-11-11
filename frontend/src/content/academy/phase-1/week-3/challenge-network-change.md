@@ -3,7 +3,7 @@
 <h3>The Network Change That Went Wrong</h3>
 <p class="ad-brief__ask">A contractor ran a network change at PurveX Financial over the weekend. It's Monday, and the cleanup they promised never happened. Can you read their change log, find what they left behind, and put it right?</p>
 <p>The contractor's changes are already in your lab, and their change log is in the IT share. Read it the way you would on the job, treating every line as a change that someone now has to check.</p>
-<p>If you haven't yet, install <strong>Nmap</strong> and <strong>Wireshark</strong> on your domain controller from <code>nmap.org/download</code> and <code>wireshark.org/download</code>, and keep the Npcap option ticked, including loopback support, when the installers offer it.</p>
+<p>If you haven't yet, install <strong>Nmap</strong> and <strong>Wireshark</strong> on your domain controller from <code>nmap.org/download</code> and <code>wireshark.org/download</code>. When the installers offer the Npcap option, keep it ticked, loopback support included.</p>
 </div>
 
 <div class="ad-progress">
@@ -66,7 +66,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A connect scan, <code>-sT</code>, completes the three-way handshake with each port. A SYN-ACK back means open, a reset means closed, and silence means something filtered it. <code>-sV</code> also asks each open port what it is. Only scan systems you're authorized to scan, which on the job means a signed-off scope.</p>
+<p>A connect scan, <code>-sT</code>, completes the three-way handshake with each port. A SYN-ACK back means open. A reset means closed. Silence means something filtered it. <code>-sV</code> also asks each open port what it is. Only scan systems you're authorized to scan, which on the job means a signed-off scope.</p>
 <ol>
 <li>Find the domain controller's address with <code>ipconfig</code>.</li>
 <li>Run <code>nmap -sT -sV</code> followed by that address.</li>

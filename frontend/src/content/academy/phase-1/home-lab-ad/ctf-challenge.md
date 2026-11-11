@@ -46,7 +46,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A ticket names a person, not a group, so it's tempting to guess the group from a title or a department name. Guessing like that can add the wrong access, though, and expose files the person should never see.</p>
+<p>A ticket names a person, not a group, so it's tempting to guess the group from a title or a department name instead of reading it off the account. A guess can be wrong, and fixing a folder-access ticket on a wrong guess means touching access that was never the problem.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -132,7 +132,14 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So count only the folders directly under Departments: IT, Compliance, WealthManagement, Operations, and FinanceAccounting.</p>
+<p>Count only the folders directly under Departments:</p>
+<ul>
+<li>IT</li>
+<li>Compliance</li>
+<li>WealthManagement</li>
+<li>Operations</li>
+<li>FinanceAccounting</li>
+</ul>
 </div>
 </div>
 </div>

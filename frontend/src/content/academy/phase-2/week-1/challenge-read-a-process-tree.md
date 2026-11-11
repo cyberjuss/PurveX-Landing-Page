@@ -172,7 +172,7 @@ Disable-ScheduledTask -TaskName "WindowsDiagnosticsSync"
 </div>
 <div>
 <span>What to do</span>
-<p>Before you move on, log what you found and what you disabled, including the address, the task name and the firewall rule. That way, the next person won't have to hunt it all down again.</p>
+<p>Before you move on, log three things: the address, the task name, and the firewall rule. That way, the next person won't have to hunt it all down again.</p>
 </div>
 </div>
 </div>

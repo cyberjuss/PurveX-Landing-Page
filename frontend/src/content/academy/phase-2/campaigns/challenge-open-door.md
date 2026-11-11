@@ -42,7 +42,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Port 445 is SMB, the protocol file shares run on, including the hidden administrative shares, <code>C$</code> and <code>ADMIN$</code>, that MITRE's T1021.002 (SMB/Windows Admin Shares) describes an attacker reaching with a valid account to act as that account elsewhere on the network. Allowing it from Any source lets every machine on that network reach the domain controller's shares with no further check, the administrative ones included.</p>
+<p>Port 445 is SMB, the protocol file shares run on. That includes the hidden administrative shares, <code>C$</code> and <code>ADMIN$</code>, which MITRE's T1021.002 (SMB/Windows Admin Shares) describes an attacker reaching with a valid account to act as that account elsewhere on the network. Allowing it from Any source lets every machine on that network reach the domain controller's shares with no further check, the administrative ones included.</p>
 </div>
 </div>
 </div>

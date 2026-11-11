@@ -14,7 +14,7 @@
 <span class="ad-mission__num">Task 01 · Warm-up · Join a Computer</span>
 <h4>Pre-Stage the Workstation</h4>
 <p><strong>Priya Nair · IT · 1:05 PM</strong><br>A new workstation for the IT team, IT-WKS09, arrives tomorrow. I'd like its computer object waiting in the right folder before anyone joins it to the domain, so it picks up IT's settings from the first boot.</p>
-<p><strong>Task:</strong> Create a computer object named <code>IT-WKS09</code> in Departments, IT, Workstations. Then report the default folder a joined computer would have landed in if nobody had pre-staged it.</p>
+<p><strong>Task:</strong> Create a computer object named <code>IT-WKS09</code> in Departments → IT → Workstations. Then report the default folder a joined computer would have landed in if nobody had pre-staged it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Pre-Stage the Workstation" placeholder="a folder name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{computers}" data-accept="cn=computers|computers-container">Submit</button>
@@ -165,7 +165,7 @@
 <span class="ad-mission__num">Task 05 · Apply it · Accounts</span>
 <h4>Create the New Hire</h4>
 <p><strong>Alex Rivera · IT · 1:40 PM</strong><br>Quinn Harper starts Monday as our second Help Desk Technician. Please create the account in IT, with the title filled in so the next person can tell what Quinn does.</p>
-<p><strong>Task:</strong> Create the user <code>quinn.harper</code> in Departments, IT, Users, with the title <code>Help Desk Technician</code>. Then report the account's full user logon name, the one with the @ in it.</p>
+<p><strong>Task:</strong> Create the user <code>quinn.harper</code> in Departments → IT → Users, with the title <code>Help Desk Technician</code>. Then report the account's full user logon name, the one with the @ in it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Create the New Hire" placeholder="name@domain" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{quinn.harper@purvexfinancial.local}">Submit</button>
@@ -211,7 +211,7 @@
 <span class="ad-mission__num">Task 06 · Apply it · Organizational Units</span>
 <h4>Give Compliance a Workstations Folder</h4>
 <p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>Our first two laptops are being ordered this week. IT, Operations and Wealth Management each have a Workstations folder, and we'd like ours set up the same way.</p>
-<p><strong>Task:</strong> Create an OU named <code>Workstations</code> under Departments, Compliance, and give it a Description. Then report its path, starting from the new OU and ending at Departments.</p>
+<p><strong>Task:</strong> Create an OU named <code>Workstations</code> under Departments → Compliance, and give it a Description. Then report its path, starting from the new OU and ending at Departments.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Give Compliance a Workstations Folder" placeholder="OU=...,OU=...,OU=..." autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{OU=Workstations,OU=Compliance,OU=Departments}" data-accept="OU=Workstations,OU=Compliance,OU=Departments,DC=purvexfinancial,DC=local">Submit</button>
@@ -245,7 +245,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Create the folder before the laptops arrive, describe what belongs in it, and pre-stage each laptop there, just as you did with IT-WKS09.</p>
+<p>Create the folder before the laptops arrive, describe what belongs in it, and pre-stage each laptop there. That's the same thing you did with IT-WKS09.</p>
 </div>
 </div>
 </div>
@@ -411,7 +411,7 @@
 <span class="ad-mission__num">Task 11 · Stretch · Group Policy</span>
 <h4>Link the Policy</h4>
 <p><strong>Devon Brooks · Compliance · 2:35 PM</strong><br>Our laptops will need settings of their own, separate from everyone else's. Please create a GPO for them and attach it to the folder you made earlier, so it's ready when the laptops arrive.</p>
-<p><strong>Task:</strong> Create a GPO named <code>PurveX - Compliance Workstations</code> and link it to Departments, Compliance, Workstations. A GPO can link to an OU, to the domain and to one other kind of object. Report that third kind.</p>
+<p><strong>Task:</strong> Create a GPO named <code>PurveX - Compliance Workstations</code> and link it to Departments → Compliance → Workstations. A GPO can link to an OU, to the domain and to one other kind of object. Report that third kind.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Link the Policy" placeholder="a kind of object" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{site}" data-accept="sites|ad-site|active-directory-site">Submit</button>

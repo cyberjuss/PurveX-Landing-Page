@@ -82,7 +82,14 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Write the finding in the order the lessons gave you: the vulnerability, the threat that could use it, the CIA property that failed, and the impact. Then whoever reads it can act without redoing your work.</p>
+<p>Write the finding in the order the lessons gave you:</p>
+<ol>
+<li>The vulnerability.</li>
+<li>The threat that could use it.</li>
+<li>The CIA property that failed.</li>
+<li>The impact.</li>
+</ol>
+<p>Then whoever reads it can act without redoing your work.</p>
 </div>
 </div>
 </div>
@@ -148,7 +155,7 @@
 <p>A hash changes completely if even one character in the file changes, so a mismatch proves the file was altered. Comparing it line by line with the approved copy shows you where.</p>
 <ol>
 <li>In PowerShell, run <code>Get-FileHash C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv</code> and compare the Hash value it prints with the one saved in <code>Wire_Approvals_Nov.sha256</code> (open that file in Notepad to read it). A mismatch proves the file changed.</li>
-<li>Run <code>Compare-Object (Get-Content C:\PurveX\Archive\Wire_Approvals_Nov.csv) (Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv)</code>. It prints the one line that differs between the two files; the Wire ID is the first value on that line.</li>
+<li>Run <code>Compare-Object (Get-Content C:\PurveX\Archive\Wire_Approvals_Nov.csv) (Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv)</code>. It prints the one line that differs between the two files. The Wire ID is the first value on that line.</li>
 <li>Run <code>Copy-Item C:\PurveX\Archive\Wire_Approvals_Nov.csv C:\PurveX\Shares\Finance\ -Force</code> to restore the approved version, then hash the Finance file again to confirm it now matches.</li>
 </ol>
 <p>In PowerShell, the same three steps in a row:</p>

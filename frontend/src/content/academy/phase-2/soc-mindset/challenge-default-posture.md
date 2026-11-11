@@ -41,7 +41,7 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 </div>
 <div>
 <span>Why it matters</span>
-<p>Outbound traffic follows a blocklist model by default: everything is allowed unless a rule specifically blocks it. In fact, every outbound firewall rule you've seen in this course, including the ones you closed on past tickets, existed to carve an exception out of this same default.</p>
+<p>Outbound traffic follows a blocklist model by default: everything is allowed unless a rule specifically blocks it. Every outbound firewall rule you've seen in this course existed to carve an exception out of that same default, including the ones you closed on past tickets.</p>
 </div>
 </div>
 </div>
