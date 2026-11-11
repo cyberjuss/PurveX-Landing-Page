@@ -758,7 +758,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     const showTip = (wrap: Element, feedback: HTMLElement, text: string) => {
       feedback.textContent = "";
       const lead = document.createElement("strong");
-      lead.textContent = "Not quite. ";
+      lead.textContent = "Not quite";
       feedback.append(lead, text);
       feedback.className = "ad-guess__feedback ad-guess__feedback--tip";
       feedback.setAttribute("role", "status");

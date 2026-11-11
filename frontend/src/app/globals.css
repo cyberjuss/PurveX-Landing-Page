@@ -3830,9 +3830,25 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   white-space: nowrap;
 }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__free { color: var(--rd-ink-3, #8a94a8); }
-.academy-prose .ad-guess__feedback--tip { color: #475569; }
-.academy-prose .ad-guess__feedback--tip strong { color: #b42318; font-weight: 600; }
-.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--tip { color: #c3cddb; }
+/* Boxed like the solved-state reveal (.ad-close), so a wrong answer reads as
+   the same kind of card as a right one -- a label row then the reasoning --
+   instead of one loose sentence. Red in place of the reveal's green. */
+.academy-prose .ad-guess__feedback--tip {
+  padding: 14px 16px;
+  background: color-mix(in srgb, #e5484d 6%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #e5484d 22%, transparent);
+  color: #475569;
+}
+.academy-prose .ad-guess__feedback--tip strong {
+  display: block; margin-bottom: 0.4rem;
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-micro) !important;
+  font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #b42318;
+}
+.academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--tip {
+  background: color-mix(in srgb, #fca5a5 7%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #fca5a5 20%, transparent);
+  color: #c3cddb;
+}
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--tip strong { color: #fca5a5; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--ok { color: #6ee7b7; }
 .academy-bg[data-academy-theme="dark"] .academy-prose .ad-guess__feedback--err { color: #fca5a5; }
