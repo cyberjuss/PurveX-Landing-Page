@@ -48,7 +48,7 @@
 <span class="ad-mission__num">Ticket 02 · Apply it · Encoding · High · INC-1091</span>
 <h4>Decode the Settlement Script</h4>
 <p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I can just send it, right? It's in the IT share.</p>
-<p><strong>Task:</strong> Open <code>settlement-upload.ps1</code> in the IT share, find out what the "encrypted" password really is, and report it.</p>
+<p><strong>Task:</strong> Answer Taylor. Find out whether that password really is encrypted, and report what it is.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Decode the Settlement Script" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Settle-Now-2026!}">Submit</button>
@@ -91,7 +91,7 @@
 <span class="ad-mission__num">Ticket 03 · Apply it · Hashing · High · INC-1058 · INC-1091</span>
 <h4>Catch the Altered Download</h4>
 <p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>The breach notice says to update the VPN client today. I found three download mirrors of version 2.4.1 in the IT share. IT published a checksum next to them. Which one is safe to install?</p>
-<p><strong>Task:</strong> Hash the three mirrors in the IT share and compare each with <code>checksums.txt</code>. Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>, and report its file name.</p>
+<p><strong>Task:</strong> Answer Riley. Find out which mirror isn't safe to install, quarantine it, and report its file name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Download" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{vpn-client-2.4.1-mirror-b.txt}" data-accept="vpn-client-2.4.1-mirror-b|mirror-b.txt|mirror-b">Submit</button>
@@ -134,7 +134,7 @@
 <span class="ad-mission__num">Ticket 04 · Stretch · Storing Passwords · Critical · INC-1058 · INC-1091</span>
 <h4>Crack the Shared Hash</h4>
 <p><strong>Alex Rivera · IT · 10:15 AM</strong><br>The breached vendor stored passwords as plain SHA-256, with no salt. The slice of its user table with PurveX accounts is in the IT share as <code>exported-hashes.txt</code>. Two of our staff have the same hash, which means the same password. Find out what it is, and make sure neither of them keeps using it.</p>
-<p><strong>Task:</strong> Find the two accounts that share a hash and crack it with <code>common-passwords.txt</code>. Then force both accounts to change their password at next logon, and report the password.</p>
+<p><strong>Task:</strong> Answer Alex. Find the password those two accounts share, make sure neither can keep using it, and report the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Crack the Shared Hash" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Winter2026}">Submit</button>
