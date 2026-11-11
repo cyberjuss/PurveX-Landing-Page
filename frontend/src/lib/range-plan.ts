@@ -12,9 +12,11 @@ import type { AcademyStudent } from "@/lib/academy-student";
 //   class        -- on a class roster, so their school pays per seat (Custom)
 //   admin        -- ACADEMY_ADMIN_EMAILS, plus the RANGE_PRO_EMAILS comp list
 //
-// Explore is everyone else: every lesson, every challenge, the whole Ticket
-// Queue and the five browser labs, with no cloud lab, no coach and no Proof
-// Profile.
+// Explore is everyone else: every lesson, every challenge and the whole
+// Ticket Queue, with no cloud lab, no coach and no Proof Profile. ("The five
+// browser labs" named here before were a separate chat-widget system;
+// academy-lab-briefs.ts confirms it's gone and every lab is now ordinary
+// lesson content, same access tier as everything else in Explore.)
 
 export type RangePlan = "free" | "pro";
 export type PlanSource = "subscription" | "class" | "admin" | "none";
