@@ -52,6 +52,24 @@ function schedulePoll() {
   }, fast ? POLL_FAST_MS : POLL_SLOW_MS);
 }
 
+// A tab left in the background long enough gets frozen by the browser (Page
+// Lifecycle), which halts setInterval outright rather than merely slowing
+// it -- so a reset or a start left running in a tab nobody is looking at can
+// sit exactly where it was for as long as the tab stays hidden, no matter how
+// quickly advanceReset could otherwise have moved it forward. One poll the
+// moment the tab is visible again catches it straight back up, and set()
+// already restarts the interval on its own once that poll reports anything
+// still moving. Guarded so Fast Refresh in dev does not wire this twice.
+if (typeof document !== "undefined") {
+  const w = window as typeof window & { __purvexLabVisibilityWired?: boolean };
+  if (!w.__purvexLabVisibilityWired) {
+    w.__purvexLabVisibilityWired = true;
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") void load();
+    });
+  }
+}
+
 function set(patch: Partial<Snapshot>) {
   snap = { ...snap, ...patch };
   listeners.forEach((l) => l());
