@@ -493,6 +493,25 @@ function StopTracker() {
   );
 }
 
+// An in-place reset never stops the instance -- state stays "ready" the
+// whole time it is replanting the directory -- so without this, the panel
+// looked completely idle for however long the reset took. Takes precedence
+// over the state-based trackers below: resetting can be true alongside any
+// of "ready", "stopped" (resumed first) or "starting" (replaced instead).
+function ResetTracker() {
+  return (
+    <div className="hl__track" aria-live="polite">
+      <p className="hl__eta">
+        <span>Resetting your lab</span>
+        <em>Can take a few minutes</em>
+      </p>
+      <div className="hl__bar hl__bar--indeterminate" role="progressbar" aria-label="Resetting your lab">
+        <span />
+      </div>
+    </div>
+  );
+}
+
 /** The lab menu the lab icon opens on each mission: status, open, stop, start. */
 /**
  * The Ubuntu box's local sign-in.
@@ -667,8 +686,13 @@ export function HostedLabMenu() {
         </p>
       )}
 
-      {state === "starting" && <StartTracker status={status} />}
-      {state === "stopping" && <StopTracker />}
+      {resetting ? (
+        <ResetTracker />
+      ) : state === "starting" ? (
+        <StartTracker status={status} />
+      ) : state === "stopping" ? (
+        <StopTracker />
+      ) : null}
 
       <div className="hl__foot">
         {note && <p className="hl__note">{note}</p>}
