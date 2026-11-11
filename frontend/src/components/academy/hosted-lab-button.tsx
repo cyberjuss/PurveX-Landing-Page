@@ -759,7 +759,7 @@ export function HostedLabMenu() {
         </button>
         {state === "ready" && (
           <button type="button" className="hl__link" onClick={() => setShowMap(true)}>
-            <Waypoints className="h-3 w-3" aria-hidden /> Map your pod
+            <Waypoints className="h-3 w-3" aria-hidden /> How it connects
           </button>
         )}
         <button type="button" className="hl__link hl__link--end" onClick={() => openHelp("lab")}>
