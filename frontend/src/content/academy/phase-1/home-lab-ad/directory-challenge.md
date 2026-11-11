@@ -118,11 +118,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A service account is built like a person's account, but nobody sits behind it. If you treat it like a person, you'll put it in staff groups it shouldn't be in, or disable it during an offboarding sweep and break the job it runs.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Check the object type, the name and the Description before you change anything. An <code>svc-</code> prefix and a Description naming a job tell you it's a service account.</p>
+<p>Check the object type, the name and Description before you change anything: a service account is built like a person's but nobody sits behind it, so treating it like one risks putting it in the wrong group or disabling it and breaking the job it runs.</p>
 </div>
 </div>
 </div>
@@ -151,11 +147,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An account left in a default Container misses every policy linked to a department OU, so it quietly runs without the screen lock and other settings its department relies on.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Move the account into the right department's Users OU, or remove it if it's a forgotten test account. Make a habit of checking the default folders for anything that shouldn't be there.</p>
+<p>An account left in a default Container misses every policy linked to a department OU, so move it into the right department's Users OU, or remove it if it's a forgotten test account.</p>
 </div>
 </div>
 </div>
@@ -363,11 +355,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The whole point of giving a service account a narrow window is that activity outside it means something. An interactive sign-in hours away from the job's window often means someone found the password and is using it as their own.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Find the machine and the logon type behind the sign-in, and ask whoever owns the job whether anyone ran it by hand. If nobody can explain it, reset the password and escalate.</p>
+<p>An interactive sign-in hours away from the job's window often means someone found the password, so find out who signed in and why, and reset the password if nobody can explain it.</p>
 </div>
 </div>
 </div>
@@ -397,11 +385,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Delegating on the Compliance Users OU gives Helpdesk exactly the reach the request describes. Granting it at the domain would also let Helpdesk reset an administrator's password. That's one of an attacker's quickest routes to taking over a domain.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Run the Delegation of Control Wizard on that one OU and choose only the reset-password task. Then test it by signing in as a Helpdesk member and trying a reset outside Compliance, which should fail.</p>
+<p>Delegate on the Compliance Users OU with the Delegation of Control Wizard, since granting it at the domain would let Helpdesk reset an administrator's password too, one of an attacker's quickest routes to taking over a domain.</p>
 </div>
 </div>
 </div>
@@ -475,11 +459,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A password setting in an OU-linked GPO shows up in the console as if it were working, yet it never changes a domain account's password rules. An auditor would find Compliance still on the old standard, while your notes said otherwise.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Create a fine-grained password policy with the stricter rules and apply it to the Compliance Users group. Then confirm it with <code>Get-ADUserResultantPasswordPolicy</code> on one Compliance account.</p>
+<p>A password setting in an OU-linked GPO never actually changes a domain account's password rules, so create a fine-grained password policy for Compliance Users instead and confirm it with <code>Get-ADUserResultantPasswordPolicy</code>.</p>
 </div>
 </div>
 </div>

@@ -78,18 +78,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Getting the two apart tells you what you can fix. You can't remove every curious colleague or every stolen password, but you can remove the weakness by keeping client data where only its own department can reach it.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Write the finding in the order the lessons gave you:</p>
-<ol>
-<li>The vulnerability.</li>
-<li>The threat that could use it.</li>
-<li>The CIA property that failed.</li>
-<li>The impact.</li>
-</ol>
-<p>Then whoever reads it can act without redoing your work.</p>
+<p>Getting the two apart tells you what you can actually fix, since you can't remove every curious colleague or stolen password, but you can remove the weakness by keeping client data where only its own department can reach it.</p>
 </div>
 </div>
 </div>
@@ -210,11 +199,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The altered wire was almost certain to cause harm, the harm was due in under four hours, and money sent to the wrong account is very hard to recover. The loudest ticket, the outage, carried the least lasting damage. Risk is about likelihood and impact, not about how many phones are ringing.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Escalate the wire to Finance leadership first, then handle the client export with Compliance, while IT clears the outage alongside. Write down why you ranked them that way, so the order can be defended later.</p>
+<p>The altered wire carried the most certain, soonest, and hardest-to-reverse harm of the three, so escalate it to Finance leadership first and work the rest alongside it.</p>
 </div>
 </div>
 </div>

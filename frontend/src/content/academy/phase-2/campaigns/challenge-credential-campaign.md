@@ -292,7 +292,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Disable the account and isolate the machine, and keep the logs while you do it. Bear in mind that containing the session now doesn't undo whatever twelve minutes of admin access may already have been used for. So the next thing to check is whether anything was planted on the domain controller while that session was live.</p>
+<p>Disable the account and isolate the machine while keeping the logs, since containing the session now doesn't undo whatever those twelve minutes of admin access were already used for.</p>
 </div>
 </div>
 </div>
@@ -400,7 +400,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A spray and a brute force both fill a log with 4625 events, and only counting distinct accounts, rather than total failures, tells them apart. To finish the query, the Condition step adds a threshold, <code>| where AccountCount >= 5</code>, and the Escalation step names who gets paged. If a detection can't explain its own aggregate logic, nobody will be able to tune it later.</p>
+<p>A spray and a brute force both fill a log with 4625 events, and only counting distinct accounts, rather than total failures, tells them apart.</p>
 </div>
 </div>
 </div>
@@ -429,7 +429,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Actions on Objectives is where an attacker finally does what they came for, whether that's stealing data, destroying it or using the access for fraud. This campaign was stopped at Command and Control, one stage short, and that wasn't luck. Containing a session, closing a rule and unlocking an account within the same hour is what kept the last and most damaging stage of the chain from ever being reached.</p>
+<p>Actions on Objectives is where an attacker finally does what they came for, and this campaign was stopped one stage short of it because containment happened within the same hour.</p>
 </div>
 </div>
 </div>

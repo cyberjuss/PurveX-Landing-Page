@@ -120,11 +120,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Resetting when an unlock would do creates a new temporary password for no reason, and every one of those is a credential that someone other than the owner has seen.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Open the Account tab, tick Unlock account and click Apply. Then check that Account is disabled isn't ticked, because a disabled account stays shut whatever else you fix.</p>
+<p>Resetting when an unlock would do creates a new temporary password for no reason, so just tick Unlock account on the Account tab and confirm Account is disabled isn't also checked.</p>
 </div>
 </div>
 </div>
@@ -365,11 +361,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Reading <code>lastLogon</code> from just one domain controller can make an active account look dormant, or a dormant one look active. Either mistake leads to a wrong decision about disabling it.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Use <code>lastLogonTimestamp</code> for "has this been used in the last few weeks?" When you need the exact time, read <code>lastLogon</code> from every domain controller and take the latest.</p>
+<p>Use <code>lastLogonTimestamp</code> for a quick check on recent activity, since reading <code>lastLogon</code> from just one domain controller can make an active account look dormant or a dormant one look active, and only pull <code>lastLogon</code> from every domain controller when you need the exact time.</p>
 </div>
 </div>
 </div>

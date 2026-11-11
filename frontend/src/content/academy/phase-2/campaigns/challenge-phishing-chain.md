@@ -321,7 +321,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Two different ways in, credential guessing and a phishing attachment, ended at the same chokepoint: a firewall rule that let a task reach outside the firm. This campaign got one stage further than the first, far enough to stage a file for exfiltration. But once that rule was disabled, neither attacker could get anything they touched out of the network. Delivery and Exploitation differed, yet both chains lost their exit in the same place. When a domain controller can't talk freely to the internet, every attacker's last step has to pass through the same narrow, closely watched door.</p>
+<p>Credential guessing and a phishing attachment got in two different ways, but both chains lost their exit at the same chokepoint: once the outbound rule was disabled, neither attacker could get anything they touched back out of the network.</p>
 </div>
 </div>
 </div>

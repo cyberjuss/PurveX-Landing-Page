@@ -34,11 +34,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encryption is only as strong as the way its key is handed out. A caller on an unknown number, a deadline and a request for the key is how attackers talk their way past disk encryption. The morning after a breach is when they try.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Verify the caller through a channel you already trust, then read the key. Log the request in the ticket, because a recovery key that was given out should be rotated once the laptop is back in IT's hands.</p>
+<p>Verify Sam through a channel you already trust before reading the key, since an unknown number and a deadline is exactly how attackers talk their way past disk encryption, and log the request so the key gets rotated once the laptop is back in IT's hands.</p>
 </div>
 </div>
 </div>
@@ -201,11 +197,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>None of the three protects a password a script has to use. Encoding hides nothing. Encryption with the key sitting beside it hides nothing either. Hashing can't be reversed at all, so a script could never recover the password back out of it. The secret has to live somewhere protected by access control and encryption, not in a text file in a shared folder.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Move the credential into a vault or a managed service account, change the exposed password with the vendor, and remove the old script from the share. Then search the other shares for the same pattern, because a script like this is rarely the only one.</p>
+<p>A vault or a managed service account is the only one of these three that actually keeps the password out of the script, so move it there and rotate the exposed password with the vendor.</p>
 </div>
 </div>
 </div>

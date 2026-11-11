@@ -287,7 +287,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The Cyber Kill Chain is a way of thinking about a sequence, not a checklist every attacker has to complete. With a misconfigured trust boundary, an attacker can skip straight past Reconnaissance, Weaponization and Delivery, because being inside the network has already done their job. Part of reading an attack correctly is knowing which stages it skipped.</p>
+<p>The Cyber Kill Chain describes a typical sequence, not a checklist every attacker has to complete, so a misconfigured trust boundary can let an attacker skip straight past Reconnaissance, Weaponization and Delivery since being inside the network already did their job.</p>
 </div>
 </div>
 </div>
@@ -315,7 +315,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A domain controller rarely has a real reason to make new outbound connections on its own. If outbound traffic had been limited to a known allowlist, all three campaigns would have broken at Command and Control, whichever door each one used to get in. The Exploitation was different every time, but the chokepoint was the same. That's no coincidence, because it's where a domain controller's normal behavior makes an attacker's traffic stand out the most.</p>
+<p>A domain controller rarely has a real reason to make new outbound connections on its own, so an outbound allowlist would have broken all three campaigns at Command and Control, whichever door each one used to get in.</p>
 </div>
 </div>
 </div>

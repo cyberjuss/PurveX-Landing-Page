@@ -212,7 +212,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every real domain controller replicates under its own computer account, so that's the first thing a defender rules out. Control Access (0x100) alone isn't enough by itself, since ordinary, unrelated operations carry that same right too. The real signal is that access mask together with the Properties field naming the two replication rights, DS-Replication-Get-Changes and DS-Replication-Get-Changes-All. That combination has to come from something other than a domain controller's own computer account: a user account, a server or a workstation all count. Before you escalate, check for the common legitimate exceptions, such as Azure AD Connect.</p>
+<p>The real signal is Control Access (0x100) together with the Properties field naming DS-Replication-Get-Changes and DS-Replication-Get-Changes-All, requested by anything other than a domain controller's own computer account, since 0x100 alone also covers ordinary, unrelated operations.</p>
 </div>
 </div>
 </div>
@@ -310,7 +310,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Any domain user can ask for a service ticket, and any domain controller can ask another for replication data. Both are trusted, intended behavior. That's why CISA's guide spends less time on exploits and more on the handful of signs that separate a feature's normal use from its abuse: an encryption type, an access mask, a requester that isn't a domain controller.</p>
+<p>Both Kerberoasting and DCSync abuse intended behavior rather than a bug, so spotting them comes down to small signs like an encryption type or an access mask, not an exploit to patch.</p>
 </div>
 </div>
 </div>

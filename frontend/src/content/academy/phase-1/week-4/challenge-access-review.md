@@ -34,11 +34,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The people who can approve payments are the first target of business email compromise. Exempting them from MFA would leave the firm's most valuable accounts protected by a password alone.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Say no to the exemption, and fix the real complaint instead by moving the executives to a quicker method. Phishing-resistant options such as passkeys or hardware keys are both faster and safer.</p>
+<p>The people who can approve payments are the first target of business email compromise, so say no to the exemption and fix the real complaint with a faster, phishing-resistant method like passkeys or a hardware key.</p>
 </div>
 </div>
 </div>
@@ -239,11 +235,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Authentication worked, but the server never checked authorization. Anyone signed in could read any client's statement just by counting. This is the top risk in OWASP's list, and at a financial firm it's a reportable breach of client data.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Report it to the portal's developers as a critical issue, with the two URLs as proof. Report it to Compliance too, as a possible breach. The fix belongs on the server: check ownership on every request, whatever the address asks for.</p>
+<p>Authentication worked but the server never checked authorization, letting anyone signed in read any client's statement just by counting, so report it to the developers as critical and to Compliance as a possible breach.</p>
 </div>
 </div>
 </div>
