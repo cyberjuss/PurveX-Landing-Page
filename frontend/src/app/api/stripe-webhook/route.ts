@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { sendEmail } from "@/lib/email";
+import { throttle } from "@/lib/auth-guard";
 import {
   checkoutIsRangePro,
   handleRangeCheckout,
@@ -51,6 +52,22 @@ function escapeHtml(value: string): string {
 export async function POST(request: NextRequest) {
   if (!stripe || !STRIPE_WEBHOOK_SECRET) {
     console.error("[stripe-webhook] STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET not configured.");
+    // An alert, not just a log line: this exact silence is what hid dead
+    // fulfilment for weeks last time, because the 200 below means Stripe
+    // never sees a failure to complain about either -- its own "deliveries
+    // are failing" email never fires for this case, so this one has to.
+    // Throttled to once an hour per process so a retried or repeatedly
+    // probed endpoint doesn't also flood the inbox on top of everything else.
+    if (OWNER_NOTIFICATION_EMAIL && throttle("stripe-webhook-misconfigured", 1, 60 * 60_000)) {
+      await sendEmail(
+        OWNER_NOTIFICATION_EMAIL,
+        "PurveX: Stripe webhook secrets missing",
+        `<p>The Stripe webhook just received an event with <code>STRIPE_SECRET_KEY</code> or
+        <code>STRIPE_WEBHOOK_SECRET</code> unset in this environment. Every payment since this started is
+        going unrecorded -- nobody is granted what they paid for. Check Vercel's environment variables for
+        this project.</p>`
+      ).catch(() => {});
+    }
     // 200, not 500: an unconfigured webhook shouldn't make Stripe retry
     // forever. The real fix is setting the env vars, not a retry storm.
     return NextResponse.json({ error: "Webhook not configured" }, { status: 200 });

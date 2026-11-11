@@ -1,5 +1,3 @@
-import type { NextRequest } from "next/server";
-
 // Guards for the three endpoints that send mail without a session: sign-up,
 // password reset and resend-confirmation. All three take an email and a
 // redirect from an unauthenticated request body, so both have to be checked
@@ -67,9 +65,12 @@ export function throttle(key: string, max: number, windowMs: number): boolean {
   return true;
 }
 
-/** The caller, as far as the proxy will say. Only ever used as a throttle key. */
-export function clientKey(request: Request | NextRequest): string {
-  const fwd = request.headers.get("x-forwarded-for") ?? "";
+/** The caller, as far as the proxy will say. Only ever used as a throttle key.
+ *  Takes anything with a `.headers.get`, not just a `Request`, so a server
+ *  action can pass the read-only headers `next/headers` hands back instead of
+ *  needing a real `Request` object it was never given one of. */
+export function clientKey(source: { headers: Pick<Headers, "get"> }): string {
+  const fwd = source.headers.get("x-forwarded-for") ?? "";
   return fwd.split(",")[0].trim() || "unknown";
 }
 
