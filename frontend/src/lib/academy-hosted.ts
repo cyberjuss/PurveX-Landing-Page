@@ -1329,6 +1329,8 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
               "ignore-cert": "true",
               "resize-method": "display-update",
               "enable-wallpaper": "true",
+              "disable-copy": "true",
+              "disable-paste": "true",
             },
           },
         }
@@ -1354,6 +1356,8 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
           "enable-font-smoothing": "true",
           "disable-audio": "true",
           "enable-drive": "false",
+          "disable-copy": "true",
+          "disable-paste": "true",
           "server-layout": "en-us-qwerty",
         },
       },
