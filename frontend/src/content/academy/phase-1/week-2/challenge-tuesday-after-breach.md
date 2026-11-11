@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Tuesday After the Breach</h3>
 <p class="ad-brief__ask">Last night, a training vendor that PurveX staff use announced a breach. This morning the IT desk is full of tickets that come down to one question. Is this encoded, encrypted or hashed, and what does that mean we have to do?</p>
-<p>Everything the tickets mention is waiting in the IT share on your domain controller. Work them in order, because each one leans on the one before it.</p>
+<p>Everything the tickets mention is waiting in the IT share on your domain controller. They're separate calls from the same morning, not one chain, but the last one circles back to the script you check in Ticket 02.</p>
 </div>
 
 <div class="ad-progress">
@@ -47,7 +47,7 @@
 <div class="ad-mission" data-id="w2-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · Apply it · Encoding · High · INC-1091</span>
 <h4>Decode the Settlement Script</h4>
-<p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I can just send it, right? It's in the IT share.</p>
+<p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>"The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I can just send it, right? It's in the IT share."</p>
 <p><strong>Task:</strong> Answer Taylor. Find out whether that password really is encrypted, and report what it is.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Decode the Settlement Script" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -90,7 +90,7 @@
 <div class="ad-mission" data-id="w2-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Hashing · High · INC-1058 · INC-1091</span>
 <h4>Catch the Altered Download</h4>
-<p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>The breach notice says to update the VPN client today. I found three download mirrors of version 2.4.1 in the IT share. IT published a checksum next to them. Which one is safe to install?</p>
+<p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>"The breach notice says to update the VPN client today. I found three download mirrors of version 2.4.1 in the IT share. IT published a checksum next to them. Which one is safe to install?"</p>
 <p><strong>Task:</strong> Answer Riley. Find out which mirror isn't safe to install, quarantine it, and report its file name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Download" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -133,7 +133,7 @@
 <div class="ad-mission" data-id="w2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Stretch · Storing Passwords · Critical · INC-1058 · INC-1091</span>
 <h4>Crack the Shared Hash</h4>
-<p><strong>Alex Rivera · IT · 10:15 AM</strong><br>The breached vendor stored passwords as plain SHA-256, with no salt. The slice of its user table with PurveX accounts is in the IT share as <code>exported-hashes.txt</code>. Two of our staff have the same hash, which means the same password. Find out what it is, and make sure neither of them keeps using it.</p>
+<p><strong>Alex Rivera · IT · 10:15 AM</strong><br>"The breached vendor stored passwords as plain SHA-256, with no salt. I pulled the slice of its user table with PurveX accounts into <code>exported-hashes.txt</code> in the IT share, and two of our staff come back with the exact same hash. Same hash with no salt means the same password. Can you tell who, and what it is, before anyone else reuses it?"</p>
 <p><strong>Task:</strong> Answer Alex. Find the password those two accounts share, make sure neither can keep using it, and report the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Crack the Shared Hash" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -177,7 +177,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 05 · Stretch · Wrap-up · Report to the IT Lead · INC-1091</span>
 <h4>Fix the Script for Good</h4>
-<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>Back to the settlement script from this morning. Operations still needs it to run every night. What's the right fix?<br><strong>A</strong> Encrypt the password properly with AES, and keep the key in the same script so it can decrypt it at run time.<br><strong>B</strong> Take the password out of the script, store it in a secrets vault or run the job under a managed service account, and change the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so nobody can read it.</p>
+<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>"Back to the settlement script from this morning. Operations still needs it to run every night. What's the right fix?"<br><strong>A</strong> Encrypt the password properly with AES, and keep the key in the same script so it can decrypt it at run time.<br><strong>B</strong> Take the password out of the script, store it in a secrets vault or run the job under a managed service account, and change the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so nobody can read it.</p>
 <p><strong>Task:</strong> Choose the fix and type its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Fix the Script for Good" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
