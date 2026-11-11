@@ -6,7 +6,13 @@
 .ls {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  /* Above every other portal overlay (the lab menu popover at 90, the
+     briefing/pod map/tour at 95, review-card at 96) except Help (120),
+     which stays reachable no matter what. This was 60, below all of them,
+     which is why opening the lab menu popover while a build was running
+     showed its compact status floating on top of this takeover instead of
+     behind it -- the same progress shown twice, out of sync, at once. */
+  z-index: 97;
   display: grid;
   place-items: center;
   padding: 24px;
