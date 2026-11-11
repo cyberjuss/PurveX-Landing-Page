@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Database, Loader2, Monitor, X } from "lucide-react";
+import { Database, Globe, Loader2, Monitor, ShieldCheck, X, type LucideIcon } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import "./pod-map.css";
 
@@ -39,13 +39,25 @@ function useNetwork() {
   return { net, error };
 }
 
+/** A bigger, illustrated version of the portal's usual tinted-square mark: a
+ *  soft glow behind the icon and a slow ring around it, the same stage
+ *  treatment lesson art gets, scaled down to a node in a diagram instead of
+ *  a whole slide. */
+function Glyph({ Icon, tone }: { Icon: LucideIcon; tone?: "accent" | "good" }) {
+  return (
+    <span className={`pm__glyph${tone ? ` pm__glyph--${tone}` : ""}`} aria-hidden>
+      <span className="pm__glyph-glow" />
+      <span className="pm__glyph-ring" />
+      <Icon className="h-6 w-6" />
+    </span>
+  );
+}
+
 function PodNode({ node }: { node: Node }) {
   const Icon = node.role === "dc" ? Database : Monitor;
   return (
     <div className="pm__node">
-      <span className="pm__mark" aria-hidden>
-        <Icon className="h-[18px] w-[18px]" />
-      </span>
+      <Glyph Icon={Icon} tone="accent" />
       <div>
         <em>{node.role === "dc" ? "DC" : "DESKTOP"}</em>
         <strong>{node.label}</strong>
@@ -105,16 +117,41 @@ export function PodMap({ onClose }: { onClose: () => void }) {
           </p>
         ) : (
           <>
-            <div className="pm__rack">
-              {dc && <PodNode node={dc} />}
-              {desktop && (
-                <div className="pm__link" aria-hidden="true">
-                  <span className="pm__wire" />
-                  <span className="pm__pulse" />
-                  <em>purvexfinancial.local</em>
+            <div className="pm__stage">
+              <div className="pm__tier">
+                <Glyph Icon={Globe} />
+                <span className="pm__tier-label">Internet</span>
+              </div>
+              <div className="pm__flow pm__flow--v" aria-hidden="true">
+                <span className="pm__wire pm__wire--v" />
+                <span className="pm__pulse pm__pulse--v" />
+              </div>
+              <div className="pm__tier">
+                <Glyph Icon={ShieldCheck} tone="good" />
+                <span className="pm__tier-label">Firewall</span>
+                {net.firewall.length > 0 && (
+                  <em className="pm__tier-count">
+                    {net.firewall.length} rule{net.firewall.length === 1 ? "" : "s"}
+                  </em>
+                )}
+              </div>
+              <div className="pm__flow pm__flow--v" aria-hidden="true">
+                <span className="pm__wire pm__wire--v" />
+                <span className="pm__pulse pm__pulse--v" />
+              </div>
+              <div className="pm__pod">
+                <p className="pm__pod-label">purvexfinancial.local</p>
+                <div className="pm__rack">
+                  {dc && <PodNode node={dc} />}
+                  {desktop && (
+                    <div className="pm__link" aria-hidden="true">
+                      <span className="pm__wire" />
+                      <span className="pm__pulse" />
+                    </div>
+                  )}
+                  {desktop && <PodNode node={desktop} />}
                 </div>
-              )}
-              {desktop && <PodNode node={desktop} />}
+              </div>
             </div>
 
             {(net.dns.length > 0 || net.firewall.length > 0) && (
