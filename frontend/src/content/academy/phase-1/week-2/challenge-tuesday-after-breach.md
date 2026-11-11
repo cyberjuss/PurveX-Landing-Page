@@ -101,10 +101,10 @@
 <p>A file's SHA-256 changes completely if even one character changes, so the genuine copies all produce exactly the published value, and an altered copy produces something else.</p>
 <ol>
 <li>On your lab's domain controller, read the published value in <code>C:\PurveX\Shares\IT\checksums.txt</code>.</li>
-<li>Hash each <code>vpn-client-2.4.1-mirror-*.txt</code> file and compare.</li>
+<li>In PowerShell, run <code>Get-FileHash C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-a.txt</code>, then the same command on mirror-b and mirror-c, and compare each Hash value to the one in checksums.txt.</li>
 <li>Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>. Moving keeps it as evidence.</li>
 </ol>
-<p>In PowerShell:</p>
+<p>In PowerShell, checking all three mirrors in one command:</p>
 <ul>
 <li><code>Get-FileHash C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-*.txt | Select-Object Path, Hash</code></li>
 <li><code>Move-Item C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-b.txt C:\PurveX\Quarantine\</code></li>
