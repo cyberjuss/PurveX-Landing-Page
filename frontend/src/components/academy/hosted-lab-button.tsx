@@ -499,7 +499,7 @@ function StopTracker() {
           {mm}:{ss}
         </em>
       </p>
-      <p className="hl__note">Saving memory to disk so Resume stays fast can take a few minutes, so it's safe to leave.</p>
+      <p className="hl__note">Can take a few minutes. Safe to leave.</p>
     </div>
   );
 }
