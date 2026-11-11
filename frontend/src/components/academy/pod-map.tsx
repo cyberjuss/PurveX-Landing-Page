@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Database, Globe, Loader2, Monitor, ShieldCheck, X, type LucideIcon } from "lucide-react";
+import { Database, Globe, Loader2, Monitor, Route, ShieldCheck, X, type LucideIcon } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import "./pod-map.css";
 
@@ -43,7 +43,7 @@ function useNetwork() {
  *  soft glow behind the icon and a slow ring around it, the same stage
  *  treatment lesson art gets, scaled down to a node in a diagram instead of
  *  a whole slide. */
-function Glyph({ Icon, tone }: { Icon: LucideIcon; tone?: "accent" | "good" }) {
+function Glyph({ Icon, tone }: { Icon: LucideIcon; tone?: "accent" | "good" | "muted" }) {
   return (
     <span className={`pm__glyph${tone ? ` pm__glyph--${tone}` : ""}`} aria-hidden>
       <span className="pm__glyph-glow" />
@@ -119,7 +119,7 @@ export function PodMap({ onClose }: { onClose: () => void }) {
           <>
             <div className="pm__stage">
               <div className="pm__tier">
-                <Glyph Icon={Globe} />
+                <Glyph Icon={Globe} tone="muted" />
                 <span className="pm__tier-label">Internet</span>
               </div>
               <div className="pm__flow pm__flow--v" aria-hidden="true">
@@ -158,7 +158,12 @@ export function PodMap({ onClose }: { onClose: () => void }) {
               <div className="pm__lists">
                 {net.dns.length > 0 && (
                   <div className="pm__list">
-                    <p className="pm__list-title">DNS</p>
+                    <p className="pm__list-title">
+                      <span className="pm__list-mark" aria-hidden>
+                        <Route className="h-3 w-3" />
+                      </span>
+                      DNS
+                    </p>
                     <ul>
                       {net.dns.map((d) => (
                         <li key={d.name}>
@@ -171,7 +176,12 @@ export function PodMap({ onClose }: { onClose: () => void }) {
                 )}
                 {net.firewall.length > 0 && (
                   <div className="pm__list">
-                    <p className="pm__list-title">Firewall</p>
+                    <p className="pm__list-title">
+                      <span className="pm__list-mark" aria-hidden>
+                        <ShieldCheck className="h-3 w-3" />
+                      </span>
+                      Firewall
+                    </p>
                     <ul>
                       {net.firewall.map((f) => (
                         <li key={f.name}>
