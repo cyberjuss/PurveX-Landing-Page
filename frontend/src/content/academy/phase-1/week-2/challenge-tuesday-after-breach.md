@@ -133,7 +133,8 @@
 <div class="ad-mission" data-id="w2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Stretch · Storing Passwords · Critical · INC-1058 · INC-1091</span>
 <h4>Crack the Shared Hash</h4>
-<p><strong>Alex Rivera · IT · 10:15 AM</strong><br>"The breached vendor stored passwords as plain SHA-256, with no salt. I pulled the slice of its user table with PurveX accounts into <code>exported-hashes.txt</code> in the IT share, and two of our staff come back with the exact same hash. Same hash with no salt means the same password. Can you tell who, and what it is, before anyone else reuses it?"</p>
+<p><strong>Alex Rivera · IT · 10:15 AM</strong><br>"The breached vendor stored passwords as plain SHA-256, with no salt. I pulled the slice of its user table with PurveX accounts into <code>exported-hashes.txt</code> in the IT share, and two of our staff come back with the exact same hash.</p>
+<p>Same hash with no salt means the same password. Can you tell who, and what it is, before anyone else reuses it?"</p>
 <p><strong>Task:</strong> Answer Alex. Find the password those two accounts share, make sure neither can keep using it, and report the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Crack the Shared Hash" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
