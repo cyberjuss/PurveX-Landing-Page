@@ -36,6 +36,7 @@ import {
 } from "@/lib/academy-store";
 import { isRangePro } from "@/lib/range-plan";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { throttle } from "@/lib/auth-guard";
 
 // Hosted labs: each student's own two-machine pod in AWS. A Windows domain
 // controller cloned from the image lab-environment/hosted builds, and an Ubuntu
@@ -626,13 +627,28 @@ export function linuxCloudInit(dcIp: string, password: string): string {
 
 // ---- AWS ------------------------------------------------------------------
 
+// AWS writes this as e.g. "User initiated (2026-11-11 18:00:00 GMT)". The
+// parenthesised part is the only clock that says when the CURRENT state
+// began, which is what lets hostedLabStatus notice a stop that has been
+// "stopping" for far longer than hibernate ever legitimately takes.
+function parseStateTransition(reason: string | undefined): number | null {
+  const m = reason?.match(/\(([^)]+)\)/);
+  const ms = m ? Date.parse(m[1]) : NaN;
+  return Number.isFinite(ms) ? ms : null;
+}
+
 async function describe(instanceId: string) {
   const out = await ec2().send(new DescribeInstancesCommand({ InstanceIds: [instanceId] }));
   const inst = out.Reservations?.[0]?.Instances?.[0];
   // LaunchTime is when this machine last started, which is the only clock an
   // orphan sweep can trust: the row it is judging is the row that is wrong.
   return inst
-    ? { state: inst.State?.Name ?? "unknown", privateIp: inst.PrivateIpAddress ?? null, startedAt: inst.LaunchTime ? inst.LaunchTime.getTime() : null }
+    ? {
+        state: inst.State?.Name ?? "unknown",
+        privateIp: inst.PrivateIpAddress ?? null,
+        startedAt: inst.LaunchTime ? inst.LaunchTime.getTime() : null,
+        stateSince: parseStateTransition(inst.StateTransitionReason),
+      }
     : null;
 }
 
@@ -761,6 +777,14 @@ function podInstanceIds(row: HostedLabRow): string[] {
   return [row.instanceId, row.linuxInstanceId].filter((id): id is string => Boolean(id) && id !== POD_RESERVED);
 }
 
+// A hibernate write can legitimately run several minutes, but one has now
+// been observed wedged past 18 minutes with its console output frozen at
+// the 6-minute mark -- AWS-side, not anything this app's own request timing
+// could cause. Past this ceiling, force a plain stop (no hibernate) instead
+// of leaving the student staring at "Saving your lab" with nothing ever
+// catching it, the same gap RESET_MAX_MS already closed for a stuck reset.
+const STOP_MAX_MS = 12 * 60_000;
+
 export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> {
   const c = cfg();
   const none: HostedLabStatus = { state: "none", stopAt: null, startedAt: null, firstBoot: false, instanceType: c.instanceType, linux: false };
@@ -787,6 +811,18 @@ export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> 
   // freshness" below). after() so this never slows the status read down.
   // The frontend polls this constantly. The push is throttled anyway.
   if (linked && inst.state === "running") after(() => pushLabScriptUpdate(userId).then(() => undefined).catch(() => undefined));
+  if (inst.state === "stopping" && inst.stateSince && Date.now() - inst.stateSince > STOP_MAX_MS) {
+    // Throttled per instance so a student leaving the panel open polling
+    // every few seconds doesn't resend this on every single read.
+    if (throttle(`force-stop:${row.instanceId}`, 1, 60_000)) {
+      const id = row.instanceId;
+      after(() =>
+        ec2()
+          .send(new StopInstancesCommand({ InstanceIds: [id], Force: true }))
+          .catch((err) => console.error("forced stop (stuck hibernate) failed", id, err instanceof Error ? err.message : err))
+      );
+    }
+  }
   const map: Record<string, HostedLabState> = { pending: "starting", running: linked ? "ready" : "starting", stopping: "stopping", stopped: "stopped" };
   return { state: map[inst.state] ?? "starting", stopAt: row.stopAt, startedAt, firstBoot: !linked, instanceType: c.instanceType, linux: Boolean(row.linuxInstanceId) };
 }
