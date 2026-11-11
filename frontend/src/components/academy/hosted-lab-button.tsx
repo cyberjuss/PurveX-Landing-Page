@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
 import { ArrowUpRight, Check, Copy, Eye, EyeOff, Info, LifeBuoy, Loader2, RotateCcw, Server, Waypoints } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
-import { challengeTabHref } from "@/lib/academy-missions";
 import { openHelp } from "@/components/academy/get-help";
 import { LabBriefing, labBriefed, markLabBriefed } from "@/components/academy/lab-briefing";
+import { PodMap } from "@/components/academy/pod-map";
 import "./hosted-lab.css";
 
 // The student's own hosted domain controller: a button in the header and a
@@ -613,6 +612,7 @@ export function HostedLabMenu() {
   // "start" stands in front of the first start; "read" is the same briefing
   // reopened from the footer link once they have been through it.
   const [brief, setBrief] = useState<null | "start" | "read">(null);
+  const [showMap, setShowMap] = useState(false);
   const now = useMinuteTick(state === "ready");
   if (!status?.available) return null;
   // Nobody should meet a live Windows domain cold. The first start goes
@@ -750,9 +750,9 @@ export function HostedLabMenu() {
           <Info className="h-3 w-3" aria-hidden /> How it works
         </button>
         {state === "ready" && (
-          <Link href={challengeTabHref("confirm-the-map")} className="hl__link">
+          <button type="button" className="hl__link" onClick={() => setShowMap(true)}>
             <Waypoints className="h-3 w-3" aria-hidden /> Map your pod
-          </Link>
+          </button>
         )}
         <button type="button" className="hl__link hl__link--end" onClick={() => openHelp("lab")}>
           <LifeBuoy className="h-3 w-3" aria-hidden /> Help
@@ -774,6 +774,7 @@ export function HostedLabMenu() {
           }}
         />
       )}
+      {showMap && <PodMap onClose={() => setShowMap(false)} />}
     </section>
   );
 }
