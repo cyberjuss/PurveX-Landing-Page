@@ -170,8 +170,12 @@ export async function POST(request: Request) {
       // really said rather than whatever the browser claims it said.
       const receipt = sealReceipt({ userId: student.id, question: message, reply: text, model, mode: "lab", lab: place.lab });
       return NextResponse.json({ reply: text, remaining: left, limit, model, bonus, receipt });
-    } catch {
-      // Our outage, so it costs them nothing.
+    } catch (err) {
+      // Our outage, so it costs them nothing. Logged first: this used to be a
+      // bare catch, so every failure here -- a bad key, a rate limit, a real
+      // model-side error -- looked identical from outside and needed a
+      // manual API call against Anthropic directly to tell apart.
+      console.error("coach lab turn failed", err instanceof Error ? err.message : err);
       await Promise.all([releaseCoachQuestion(student.id, day), releaseLabCoachQuestion(student.id, place.lab, day)]);
       return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
     }
@@ -197,7 +201,8 @@ export async function POST(request: Request) {
     });
     const receipt = sealReceipt({ userId: student.id, question: message, reply: text, model, mode: String(body.mode ?? ""), lab: place?.lab ?? null });
     return NextResponse.json({ reply: text, remaining: left, limit, model, bonus, receipt });
-  } catch {
+  } catch (err) {
+    console.error("coach turn failed", err instanceof Error ? err.message : err);
     if (!charged.any) await releaseCoachQuestion(student.id, day);
     return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
   }
