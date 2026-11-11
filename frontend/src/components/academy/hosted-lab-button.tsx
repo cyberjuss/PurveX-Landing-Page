@@ -472,10 +472,22 @@ function StartTracker({ status }: { status: Status }) {
 }
 
 // Stopping hibernates the domain controller: its memory is written to disk so
-// the next Resume takes about half a minute instead of five. That write takes
-// a few minutes and runs in AWS whether or not anyone watches, so the tracker
-// says the student can go, not how long they have been waiting.
+// the next Resume takes about half a minute instead of five. That write runs
+// in AWS whether or not anyone watches, and on a real pod it can run past
+// what "a few minutes" suggests -- confirmed against a live instance still
+// hibernating 7 minutes in, nothing hung, nothing erroring. A bare spinner
+// over that long reads as broken, so this counts the wait up instead of
+// hiding it, and says plainly that the length is normal.
 function StopTracker() {
+  const [seenAt] = useState(() => Date.now());
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(t);
+  }, []);
+  const elapsed = Math.max(0, Math.floor((now - seenAt) / 1000));
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
+  const ss = String(elapsed % 60).padStart(2, "0");
   return (
     <div className="hl__track" aria-live="polite">
       <p className="hl__eta">
@@ -483,7 +495,11 @@ function StopTracker() {
           <i className="hl__eta-spin" aria-hidden />
           Saving your lab
         </span>
+        <em>
+          {mm}:{ss}
+        </em>
       </p>
+      <p className="hl__note">Windows is writing its memory to disk so the next Resume is fast. This can run a few minutes. Safe to leave and come back.</p>
     </div>
   );
 }
