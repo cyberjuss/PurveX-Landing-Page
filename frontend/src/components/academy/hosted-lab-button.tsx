@@ -111,8 +111,13 @@ async function act(action: "start" | "stop" | "extend" | "reset") {
       // A start that answers with a lab still sitting at "none" leaves nothing
       // moving, so nothing polls and the panel goes on showing Offline. One
       // re-read a few seconds later picks up a machine AWS was not ready to
-      // describe at the moment the start returned.
+      // describe at the moment the start returned. A stop has the same race
+      // the other way: if AWS's own state read still says "running" the
+      // instant StopInstances returns, the panel settles back on Online with
+      // nothing polling, and sits there until something else happens to
+      // trigger a re-check.
       if (action === "start" && snap.status?.state !== "starting" && snap.status?.state !== "ready") window.setTimeout(() => void load(), 5_000);
+      if (action === "stop" && snap.status?.state !== "stopping" && snap.status?.state !== "stopped") window.setTimeout(() => void load(), 5_000);
     }
   } catch {
     set({ error: "Could not reach Range. Try again." });
