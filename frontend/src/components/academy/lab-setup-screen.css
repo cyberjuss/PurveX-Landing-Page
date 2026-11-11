@@ -45,6 +45,26 @@
 /* Left aligned throughout. A centred heading over a left aligned list of steps
    is what made this look assembled rather than composed. */
 .ls__inner { position: relative; z-index: 1; width: min(34rem, 100%); }
+/* This is the one hero this screen has, same category as the explainer, so
+   it gets the same wash the rest of the portal's floating surfaces share --
+   off the top edge of the content block, not the viewport, since the block
+   is centred rather than pinned to the top. var(--ls-accent) rather than
+   the shared --rd-accent: that token lives under .academy-bg, which this
+   portal (to <body>) is not inside. */
+.ls__inner::before {
+  content: "";
+  position: absolute;
+  top: -14%;
+  left: 50%;
+  width: 140%;
+  height: 55%;
+  transform: translateX(-50%);
+  z-index: -1;
+  background: radial-gradient(ellipse at 50% 0%,
+    color-mix(in srgb, var(--ls-accent) var(--sf-wash-strength), transparent),
+    transparent var(--sf-wash-stop));
+  pointer-events: none;
+}
 
 .ls__brand { display: flex; align-items: center; gap: 10px; margin: 0 0 56px; }
 .ls__brand img { display: block; }
@@ -52,7 +72,7 @@
 .ls__brand i { width: 1px; height: 18px; background: var(--ls-line); }
 .ls__brand b { font-size: var(--ty-note); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ls-ink-3); }
 
-.ls__title { margin: 0; font-family: var(--font-display); font-size: clamp(1.9rem, 3.6vw, 2.6rem); font-weight: 700; letter-spacing: -0.025em; color: var(--ls-ink); }
+.ls__title { margin: 0; font-family: var(--font-display); font-size: var(--ty-page); font-weight: 700; letter-spacing: -0.025em; color: var(--ls-ink); }
 .ls__lede { margin: 16px 0 40px; max-width: 40ch; font-size: var(--ty-lead); line-height: 1.6; color: var(--ls-ink-2); }
 
 /* Thin, because it is a status line and not the subject of the screen. */
