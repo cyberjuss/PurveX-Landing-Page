@@ -481,16 +481,14 @@ function StopTracker() {
   return (
     <div className="hl__track" aria-live="polite">
       <p className="hl__eta">
-        <span>
-          Saving your lab
-          <i className="hl__dots" aria-hidden>
-            <b>.</b>
-            <b>.</b>
-            <b>.</b>
-          </i>
-        </span>
+        <span>Saving your lab</span>
         <em>Safe to leave</em>
       </p>
+      {/* No percentage to show here: the save runs in AWS whether or not anyone
+          watches, so the bar only says work is happening, not how much is left. */}
+      <div className="hl__bar hl__bar--indeterminate" role="progressbar" aria-label="Saving your lab">
+        <span />
+      </div>
     </div>
   );
 }
