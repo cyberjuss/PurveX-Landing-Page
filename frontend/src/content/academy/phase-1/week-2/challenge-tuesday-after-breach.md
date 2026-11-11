@@ -10,7 +10,7 @@
 <span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
 </div>
 
-<div class="ad-mission" data-id="w2-03" data-attempts="0">
+<div class="ad-mission" data-id="w2-03" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 01 · Warm-up · Encryption · Medium · INC-1091</span>
 <h4>The Recovery Key Call</h4>
 <p><strong>Phone call · 8:30 AM</strong><br>"Hi, it's Sam Whitfield from Wealth Management. My laptop rebooted for an update and now there's a blue BitLocker screen asking for a 48-digit key. I'm calling from my personal phone and I have a client in ten minutes. Can you just read me the key?"<br><strong>A</strong> Read the key out straight away. The client meeting can't wait.<br><strong>B</strong> Confirm it's really Sam first, for example by calling back on the number in the directory or checking with Sam's manager, then give the key.<br><strong>C</strong> Tell Sam the data can't be recovered and the laptop has to be wiped.</p>
@@ -174,7 +174,7 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 05 · Stretch · Wrap-up · Report to the IT Lead · INC-1091</span>
 <h4>Fix the Script for Good</h4>
 <p><strong>Alex Rivera · IT · 11:00 AM</strong><br>Back to the settlement script from this morning. Operations still needs it to run every night. What's the right fix?<br><strong>A</strong> Encrypt the password properly with AES, and keep the key in the same script so it can decrypt it at run time.<br><strong>B</strong> Take the password out of the script, store it in a secrets vault or run the job under a managed service account, and change the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so nobody can read it.</p>

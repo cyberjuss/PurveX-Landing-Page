@@ -42,6 +42,11 @@ export function MissionPager({
   const [step, setStep] = useState(0);
   const [solved, setSolved] = useState<boolean[]>([]);
   const [flagged, setFlagged] = useState<boolean[]>([]);
+  // Whether each ticket is worth recording: a challenge can mix a judgment
+  // call, answerable from the text on screen, with tickets that send the
+  // student into the lab's files or tools. A mission opts out with
+  // data-hands-on="false"; anything else in a hands-on challenge defaults in.
+  const [handsOn, setHandsOn] = useState<boolean[]>([]);
   const [strip, setStrip] = useState<HTMLElement | null>(null);
   const [started, setStarted] = useState(false);
   // A hosted lab starts from the brief, so it boots while the student reads question 1.
@@ -59,8 +64,10 @@ export function MissionPager({
     const stored = loadResults();
     const marks = list.length < 2 ? [] : list.map((m) => m.classList.contains("ad-mission--solved"));
     const flags = list.length < 2 ? [] : list.map((m) => Boolean(stored[m.getAttribute("data-id") || ""]?.flagged) && !m.classList.contains("ad-mission--solved"));
+    const hands = list.length < 2 ? [] : list.map((m) => m.getAttribute("data-hands-on") !== "false");
     setSolved((prev) => (prev.length === marks.length && prev.every((v, i) => v === marks[i]) ? prev : marks));
     setFlagged((prev) => (prev.length === flags.length && prev.every((v, i) => v === flags[i]) ? prev : flags));
+    setHandsOn((prev) => (prev.length === hands.length && prev.every((v, i) => v === hands[i]) ? prev : hands));
     const any = list.some((m) => Boolean(stored[m.getAttribute("data-id") || ""]));
     setStarted((prev) => (prev === any ? prev : any));
     const b = Boolean(brief());
@@ -121,6 +128,7 @@ export function MissionPager({
   const done = solved.filter(Boolean).length;
   const isLast = at === total - 1;
   const paging = total >= 2;
+  const showRecord = Boolean(recordLabel) && (handsOn[at] ?? true);
 
   // Leaving an unsolved question going forward flags it for Coach. Going
   // back does not. Solving later clears the flag.
@@ -289,14 +297,14 @@ export function MissionPager({
       {/* Reset and Record share one row under the question, never on the
           brief itself. Recording can only start once the student has left
           the brief, so there is no in-progress recording this could cut off. */}
-      {!onBrief && (started || recordLabel) ? (
+      {!onBrief && (started || showRecord) ? (
         <div className="ad-challenge-actions">
           {started ? (
             <button type="button" className="ad-challenge-reset" onClick={resetChallenge}>
               Reset challenge
             </button>
           ) : null}
-          {recordLabel ? <ChallengeRecorder label={recordLabel} challenge={recordChallenge ?? null} /> : null}
+          {showRecord ? <ChallengeRecorder label={recordLabel as string} challenge={recordChallenge ?? null} /> : null}
         </div>
       ) : null}
     </div>
