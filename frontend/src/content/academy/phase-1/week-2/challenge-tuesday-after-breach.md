@@ -57,7 +57,7 @@
 <div class="ad-hint__text">
 <p>Analysts decode values like this in CyberChef, the free tool from GCHQ that runs in the browser. A value made only of the digits 0 to 9 and the letters a to f is usually hex. Undo one layer at a time until you can read it.</p>
 <ol>
-<li>Open <code>C:\PurveX\Shares\IT\settlement-upload.ps1</code> and copy the value of <code>$Password</code>.</li>
+<li>On your lab's domain controller, open <code>C:\PurveX\Shares\IT\settlement-upload.ps1</code> and copy the value of <code>$Password</code>.</li>
 <li>Open CyberChef at <code>gchq.github.io/CyberChef</code> and paste the value into Input.</li>
 <li>Drag in From Hex. If the output still isn't readable and ends in <code>=</code>, add From Base64 below it.</li>
 </ol>
@@ -100,7 +100,7 @@
 <div class="ad-hint__text">
 <p>A file's SHA-256 changes completely if even one character changes, so the genuine copies all produce exactly the published value, and an altered copy produces something else.</p>
 <ol>
-<li>Read the published value in <code>C:\PurveX\Shares\IT\checksums.txt</code>.</li>
+<li>On your lab's domain controller, read the published value in <code>C:\PurveX\Shares\IT\checksums.txt</code>.</li>
 <li>Hash each <code>vpn-client-2.4.1-mirror-*.txt</code> file and compare.</li>
 <li>Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>. Moving keeps it as evidence.</li>
 </ol>
@@ -143,7 +143,7 @@
 <div class="ad-hint__text">
 <p>With no salt, the same password always produces the same hash. So you can hash every word in the list and look for a match, which is what an attacker holding this table would do.</p>
 <ol>
-<li>Open <code>exported-hashes.txt</code> and find the two accounts with the same hash.</li>
+<li>On your lab's domain controller, open <code>C:\PurveX\Shares\IT\exported-hashes.txt</code> and find the two accounts with the same hash.</li>
 <li>Hash each word in <code>common-passwords.txt</code> with SHA-256 and find the one that matches.</li>
 <li>For both accounts, open the account in Active Directory Users and Computers, and on the Account tab tick User must change password at next logon.</li>
 </ol>
