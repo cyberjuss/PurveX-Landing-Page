@@ -257,12 +257,16 @@ export function ReadinessDashboard() {
             // A score averages only finished missions, so one lucky solve out
             // of a 25-mission skill reads as a mathematically perfect 100 --
             // rated (at least half the bucket done) is what says that number
-            // means anything yet. Shown here exactly like a skill with
-            // nothing finished at all, not as an earned grade still waiting
-            // on a caveat nobody reads: same "--", same neutral bar, until
-            // there is enough of it to trust.
+            // means anything yet. The number stays "--" until then, so
+            // nothing here claims a grade it hasn't earned, but the bar
+            // still shows real movement: how much of the bucket is done, in
+            // the portal's own "in progress" accent rather than a graded
+            // red/yellow/green, so a started skill doesn't read as an
+            // untouched one.
             const shown = k.rated ? k.score : null;
-            const tone = toneOfScore(shown);
+            const inProgress = !k.rated && k.done > 0;
+            const tone = k.rated ? toneOfScore(shown) : inProgress ? "live" : "none";
+            const barPct = k.rated ? (shown ?? 0) : inProgress ? Math.round((k.done / k.total) * 100) : 0;
             return (
               <div key={k.key} className={`rd-row ${focusKey === k.key ? "rd-row--focus" : ""}`}>
                 <div className="rd-row__name">
@@ -276,7 +280,7 @@ export function ReadinessDashboard() {
                   </span>
                 </div>
                 <div className="rd-scale">
-                  <div className={`rd-scale__fill rd-bg-${tone}`} style={{ width: `${shown ?? 0}%` }} />
+                  <div className={`rd-scale__fill rd-bg-${tone}`} style={{ width: `${barPct}%` }} />
                   <i style={{ left: "65%" }} data-mark="Almost · 65" />
                   <i style={{ left: "85%" }} data-mark="Ready · 85" />
                 </div>
