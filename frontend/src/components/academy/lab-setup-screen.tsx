@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { Check, Database, Loader2, Network, Server, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
+import { Database, Network, Server, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
 import { useHostedLab } from "./hosted-lab-button";
 import "./lab-setup-screen.css";
 
@@ -88,6 +88,11 @@ export function LabSetupScreen() {
   // of it.
   if (typeof document === "undefined") return null;
 
+  const CurrentIcon = steps[current].icon;
+  // A circle, not a bar: the circumference a stroke travels at r=86.
+  const r = 86;
+  const circumference = 2 * Math.PI * r;
+
   return createPortal(
     <div className="ls" data-academy-theme={theme} role="status" aria-live="polite">
       <div className="ls__inner">
@@ -98,43 +103,52 @@ export function LabSetupScreen() {
           <b>Range</b>
         </p>
 
-        <h1 className="ls__title">Building your environment</h1>
-        <p className="ls__lede">A Windows domain controller and an Ubuntu desktop, built for you alone.</p>
-
-        <div className="ls__bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)} aria-label="Setup progress">
-          <span style={{ width: `${pct}%` }} />
+        <div
+          className="ls__stage"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(pct)}
+          aria-label="Setup progress"
+        >
+          <svg className="ls__ring" viewBox="0 0 192 192" aria-hidden="true">
+            <circle className="ls__ring-spin" cx="96" cy="96" r={r + 14} />
+            <circle className="ls__ring-track" cx="96" cy="96" r={r} />
+            <circle
+              className="ls__ring-fill"
+              cx="96"
+              cy="96"
+              r={r}
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference * (1 - pct / 100)}
+            />
+          </svg>
+          <div className="ls__stage-core">
+            <CurrentIcon key={current} aria-hidden="true" />
+            <em>{Math.round(pct)}%</em>
+          </div>
         </div>
 
-        <ol className="ls__steps">
-          {steps.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <li key={s.label} className={i < current ? "is-done" : i === current ? "is-now" : ""}>
-                <span className="ls__mark" aria-hidden="true">
-                  {i < current ? <Check /> : i === current ? <Loader2 className="ls__spin" /> : <Icon />}
-                </span>
-                {s.label}
-              </li>
-            );
-          })}
-        </ol>
+        <p className="ls__kicker">Building your environment</p>
+        <h1 key={current} className="ls__title">{steps[current].label}</h1>
 
-        <p className="ls__eta">
-          {/* A first build is usually about five minutes, but Active Directory
-              can be slow to come up and the whole thing can run to twenty.
-              Saying "almost there" for a quarter of an hour reads as broken. */}
-          <span>
+        <div className="ls__foot">
+          <p className="ls__eta">
+            {/* A first build is usually about five minutes, but Active Directory
+                can be slow to come up and the whole thing can run to twenty.
+                Saying "almost there" for a quarter of an hour reads as broken. */}
             {elapsed <= total
               ? `About ${left} min left`
               : firstBoot
-                ? "Taking longer than usual. Building a lab for the first time can run to 20 minutes."
+                ? "Taking longer than usual. Can run to 20 minutes the first time."
                 : "Almost there. Running the last checks."}
-          </span>
-          <em>
-            {String(Math.min(current + 1, steps.length)).padStart(2, "0")}
-            <i>/{String(steps.length).padStart(2, "0")}</i>
-          </em>
-        </p>
+          </p>
+          <div className="ls__dots" aria-hidden="true">
+            {steps.map((s, i) => (
+              <span key={s.label} className={i < current ? "is-done" : i === current ? "is-now" : ""} />
+            ))}
+          </div>
+        </div>
 
         <button type="button" className="ls__hide" onClick={() => setHidden(true)}>
           <X aria-hidden="true" /> Keep reading while it builds
