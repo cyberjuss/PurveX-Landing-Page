@@ -594,6 +594,67 @@ export async function saveHostedLab(userId: string, row: HostedLabRow) {
 }
 
 /**
+ * An in-place reset's own progress, stepped forward a bit at a time by
+ * whichever request happens to poll the lab next (see advanceReset in
+ * academy-hosted.ts), rather than by one long-running call. Persisted so any
+ * serverless instance can pick up where the last one left off, which a plain
+ * in-memory flag cannot promise.
+ */
+export type HostedLabResetState = {
+  step: "starting" | "waiting_ssm" | "running_command" | "waiting_command" | "confirming";
+  startedAt: string;
+  commandId?: string;
+  commandDoneAt?: string;
+  /** The lab snapshot's own uploadedAt right before the replant command ran,
+   *  so landing can tell a fresher snapshot from the one already there. */
+  snapshotSince?: string;
+};
+const memoryReset = new Map<string, HostedLabResetState>();
+
+export async function loadResetState(userId: string): Promise<HostedLabResetState | null> {
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("reset_state").eq("user_id", userId).maybeSingle();
+    if (error) {
+      console.error("academy_hosted_labs reset_state read failed", error.message);
+      return null;
+    }
+    return (data?.reset_state as HostedLabResetState | null) ?? null;
+  }
+  return memoryReset.get(userId) ?? null;
+}
+
+/**
+ * Writes the next reset step, but only if the row's current step still
+ * matches `expectedStep` (null meaning "no reset in progress"). Returns
+ * whether the write took. A caller that loses this race has already been
+ * overtaken by another request advancing the same reset, so it takes no AWS
+ * action of its own that round -- which is what stops two overlapping polls
+ * from both starting the instance, or both sending the replant command.
+ */
+export async function saveResetState(
+  userId: string,
+  next: HostedLabResetState | null,
+  expectedStep: HostedLabResetState["step"] | null
+): Promise<boolean> {
+  if (supabaseAdmin) {
+    let q = supabaseAdmin.from("academy_hosted_labs").update({ reset_state: next });
+    q = expectedStep ? q.eq("reset_state->>step", expectedStep) : q.is("reset_state", null);
+    const { data, error } = await q.eq("user_id", userId).select("user_id");
+    if (error) {
+      console.error("academy_hosted_labs reset_state write failed", error.message);
+      return false;
+    }
+    return (data ?? []).length > 0;
+  }
+  const current = memoryReset.get(userId) ?? null;
+  const matches = expectedStep === null ? current === null : current?.step === expectedStep;
+  if (!matches) return false;
+  if (next) memoryReset.set(userId, next);
+  else memoryReset.delete(userId);
+  return true;
+}
+
+/**
  * Ends the session by clearing its stop time, and only if that time is still
  * the one the caller read. Returns whether this call is the one that cleared
  * it, which is what gives it the right to hand the unused hours back.

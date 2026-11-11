@@ -1,6 +1,7 @@
 import { after, NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import {
+  advanceReset,
   beginReset,
   canUseHostedLab,
   extendHostedLab,
@@ -14,7 +15,6 @@ import {
   linuxCredentials,
   LabHoursSpentError,
   PodSlotsFullError,
-  resetProgress,
   startHostedLab,
   stopDueHostedLabs,
   stopOrphanedHostedLabs,
@@ -25,14 +25,7 @@ import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
-// beginReset's after() callback runs resetHostedLab in the background, which
-// the function's own comments say can take minutes: up to 6 waiting for the
-// SSM agent, up to 8 for the replant command, then up to 90s confirming it
-// landed. after() still counts against this route's own maxDuration, so at
-// 30s (every other route here uses 60) that background work was being killed
-// before it ever reached AWS -- confirmed live: zero "Range lab reset" SSM
-// commands ever showed up despite students reporting resets that hang.
-export const maxDuration = 300;
+export const maxDuration = 60;
 
 // The lab button: status, start, open in the browser, extend, stop, reset.
 
@@ -76,11 +69,19 @@ async function statusPayload(userId: string) {
   // the panel, and a start that succeeded must not report a failure because the
   // month's minutes could not be read.
   const [status, hours] = await Promise.all([hostedLabStatus(userId), labHours(userId).catch(() => null)]);
-  // A reset running in the background (see beginReset) has nothing to show in
-  // `status` -- the instance stays "running" the whole time, in place -- so
-  // this is the only place the panel finds out one is underway, or that the
-  // last one failed.
-  const reset = resetProgress(userId);
+  // advanceReset both moves an in-progress reset forward by one step and
+  // says whether one is still running -- `status` has nothing to show for
+  // it, since an in-place reset leaves the instance "running" throughout.
+  // A thrown LabHoursSpentError/LabUsageUnreadableError becomes a message
+  // here rather than a failed request: a reset's own failure is something
+  // the next poll reports, not something this read should itself fail on.
+  const reset = await advanceReset(userId).catch((err) => ({
+    resetting: false,
+    error:
+      err instanceof LabHoursSpentError || err instanceof LabUsageUnreadableError
+        ? err.message
+        : "Could not reset the lab. Try again.",
+  }));
   return {
     available: true,
     ...status,
@@ -151,7 +152,7 @@ export async function POST(request: Request) {
     if (action === "start") await startHostedLab(student.id);
     else if (action === "stop") await stopHostedLab(student.id);
     else if (action === "extend") await extendHostedLab(student.id);
-    else if (action === "reset") beginReset(student.id);
+    else if (action === "reset") await beginReset(student.id);
     else if (action === "open") {
       const url = await hostedLabLink(student.id);
       if (!url) return NextResponse.json({ error: "The lab is not running yet. Start it first." }, { status: 409 });

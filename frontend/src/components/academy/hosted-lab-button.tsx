@@ -18,8 +18,9 @@ type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
 /** notEnabled: this account is Pro, but cloud labs are not switched on for it yet. */
 // resetting: a reset is replanting the lab in place. The instance itself
-// stays "running" throughout (see resetInPlace), so this is the only signal
-// that one is underway -- state alone would say nothing changed.
+// stays "running" throughout (see advanceReset in academy-hosted.ts), so
+// this is the only signal that one is underway -- state alone would say
+// nothing changed. Persisted server-side, so it is accurate on every poll.
 type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; resetting?: boolean; hoursUsed?: number; minutesUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number; idleStopMinutes?: number; idleReadyMinutes?: number };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
@@ -41,18 +42,6 @@ const POLL_FAST_MS = 2_500;
 const POLL_SLOW_MS = 10_000;
 const FAST_WINDOW_MS = 60_000;
 
-// The server's own "a reset is running" flag lives in a serverless function's
-// memory, which does not reliably survive between one request and the next --
-// a cold start between two polls loses it, the button looks clickable again,
-// and a second reset fires on top of the first. This client-side clock does
-// not depend on the server remembering anything: once a reset is accepted,
-// Reset stays locked for this long no matter what any later poll reports.
-// Comfortably under resetProgress's own ceiling, so the two agree once this
-// one lifts; the server's flag can still extend the lock past this if a slow
-// reset is genuinely still going.
-const RESET_LOCK_MS = 6 * 60_000;
-let resetLockedUntil = 0;
-
 function schedulePoll() {
   if (poll) window.clearInterval(poll);
   const fast = Date.now() - movingSince < FAST_WINDOW_MS;
@@ -65,13 +54,6 @@ function schedulePoll() {
 
 function set(patch: Partial<Snapshot>) {
   snap = { ...snap, ...patch };
-  // Folded into status here, in the one place that already reads the clock
-  // outside a component, rather than in a hook -- so every consumer just
-  // reads status.resetting as one flag and never touches Date.now() itself,
-  // which React's purity rule (rightly) refuses in a render body.
-  if (Date.now() < resetLockedUntil && snap.status && !snap.status.resetting) {
-    snap = { ...snap, status: { ...snap.status, resetting: true } };
-  }
   listeners.forEach((l) => l());
   const moving = snap.status?.state === "starting" || snap.status?.state === "stopping" || Boolean(snap.status?.resetting);
   if (moving && !poll) {
@@ -108,12 +90,6 @@ async function act(action: "start" | "stop" | "extend" | "reset") {
     const data = await r.json();
     if (!r.ok) set({ error: data.error ?? "Something went wrong." });
     else {
-      // Locked here, client-side, the moment the reset is accepted -- not
-      // left to the server's resetting flag, which a cold start can drop
-      // before the actual reset is anywhere near done. A second reset fired
-      // while the first is still replanting the same lab is worse than a
-      // button that stays disabled a little longer than it strictly needs to.
-      if (action === "reset") resetLockedUntil = Date.now() + RESET_LOCK_MS;
       set({ status: { available: true, ...data } });
       // A start that answers with a lab still sitting at "none" leaves nothing
       // moving, so nothing polls and the panel goes on showing Offline. One
