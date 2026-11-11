@@ -478,7 +478,6 @@ function StopTracker() {
           <i className="hl__eta-spin" aria-hidden />
           Saving your lab
         </span>
-        <em>Safe to leave</em>
       </p>
     </div>
   );
