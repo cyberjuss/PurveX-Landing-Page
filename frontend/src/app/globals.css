@@ -3838,6 +3838,9 @@ p.ad-cmd, li.ad-cmd { position: relative; }
   background: color-mix(in srgb, #e5484d 6%, transparent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, #e5484d 22%, transparent);
   color: #475569;
+  /* The label below is pinned to --ty-micro on its own, so raising this only
+     grows the reasoning text, matching the solved reveal's own body size. */
+  font-size: var(--ty-note) !important;
 }
 .academy-prose .ad-guess__feedback--tip strong {
   display: block; margin-bottom: 0.4rem;
