@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Database, Network, Server, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
@@ -50,6 +50,7 @@ function usePortalTheme(): "light" | "dark" {
 export function LabSetupScreen() {
   const { status, state } = useHostedLab();
   const theme = usePortalTheme();
+  const gradId = useId();
   const [hidden, setHidden] = useState(false);
   const starting = state === "starting";
 
@@ -112,6 +113,12 @@ export function LabSetupScreen() {
           aria-label="Setup progress"
         >
           <svg className="ls__ring" viewBox="0 0 192 192" aria-hidden="true">
+            <defs>
+              <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="var(--ls-accent-2)" />
+                <stop offset="100%" stopColor="var(--ls-accent)" />
+              </linearGradient>
+            </defs>
             <circle className="ls__ring-spin" cx="96" cy="96" r={r + 14} />
             <circle className="ls__ring-track" cx="96" cy="96" r={r} />
             <circle
@@ -119,6 +126,7 @@ export function LabSetupScreen() {
               cx="96"
               cy="96"
               r={r}
+              stroke={`url(#${gradId})`}
               strokeDasharray={circumference}
               strokeDashoffset={circumference * (1 - pct / 100)}
             />

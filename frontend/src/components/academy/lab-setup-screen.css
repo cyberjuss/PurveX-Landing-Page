@@ -25,6 +25,7 @@
   --ls-dot: rgba(255, 255, 255, 0.09);
   --ls-tile: rgba(255, 255, 255, 0.05);
   --ls-accent: #9a8cff;
+  --ls-accent-2: #d9ceff;
   --ls-good: #34d399;
 }
 .ls[data-academy-theme="light"] {
@@ -36,6 +37,7 @@
   --ls-dot: rgba(16, 25, 46, 0.11);
   --ls-tile: rgba(15, 23, 42, 0.04);
   --ls-accent: #5546e0;
+  --ls-accent-2: #8a7aff;
   --ls-good: #0f9f6e;
 }
 /* The portal's own dot grid, and nothing else behind the content. */
@@ -60,14 +62,14 @@
 .ls__inner::before {
   content: "";
   position: absolute;
-  top: -14%;
+  top: -22%;
   left: 50%;
-  width: 140%;
-  height: 55%;
+  width: 180%;
+  height: 75%;
   transform: translateX(-50%);
   z-index: -1;
   background: radial-gradient(ellipse at 50% 0%,
-    color-mix(in srgb, var(--ls-accent) var(--sf-wash-strength), transparent),
+    color-mix(in srgb, var(--ls-accent) calc(var(--sf-wash-strength) * 1.4), transparent),
     transparent var(--sf-wash-stop));
   pointer-events: none;
 }
@@ -82,16 +84,15 @@
    percentage resting at its centre. Replaces a bar, a four-row checklist and
    a footer line with one object -- what a bar plus a list could only ever
    gesture at piece by piece, a filling circle says at a glance. */
-.ls__stage { position: relative; display: grid; place-items: center; width: 184px; height: 184px; margin-bottom: 36px; }
+.ls__stage { position: relative; display: grid; place-items: center; width: 220px; height: 220px; margin-bottom: 40px; }
 .ls__ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
 .ls__ring circle { fill: none; }
-.ls__ring-track { stroke: var(--ls-tile); stroke-width: 5; }
+.ls__ring-track { stroke: var(--ls-tile); stroke-width: 4; }
 .ls__ring-fill {
-  stroke: var(--ls-accent);
   stroke-width: 5;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.9s var(--ax-ease);
-  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--ls-accent) 55%, transparent));
+  animation: ls-glow 3.2s var(--ax-ease) infinite;
 }
 /* A faint ring, loose around the real one, turning on its own -- ambient
    motion while the real progress is deterministic. Same device as a lesson
@@ -103,20 +104,20 @@
   opacity: 0.4;
   animation: ls-spin 7s linear infinite;
 }
-.ls__stage-core { position: relative; z-index: 1; display: grid; justify-items: center; gap: 8px; }
-.ls__stage-core svg { width: 34px; height: 34px; color: var(--ls-accent); animation: ls-pop var(--ax-dur-slow) var(--ax-ease) both; }
+.ls__stage-core { position: relative; z-index: 1; display: grid; justify-items: center; gap: 10px; }
+.ls__stage-core svg { width: 38px; height: 38px; color: var(--ls-accent); animation: ls-pop var(--ax-dur-slow) var(--ax-ease) both; }
 .ls__stage-core em {
-  font-style: normal; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small);
-  font-variant-numeric: tabular-nums; color: var(--ls-ink-3);
+  font-style: normal; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note);
+  font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: 0.02em; color: var(--ls-ink-2);
 }
 
 .ls__kicker { margin: 0 0 10px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ls-ink-3); }
 .ls__title { margin: 0; min-height: 1.2em; font-family: var(--font-display); font-size: var(--ty-h1); font-weight: 700; letter-spacing: -0.02em; color: var(--ls-ink); animation: ls-pop var(--ax-dur-slow) var(--ax-ease) both; }
 
-.ls__foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 28px; }
+.ls__foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 32px; }
 .ls__eta { margin: 0; font-size: var(--ty-note); color: var(--ls-ink-3); }
-.ls__dots { display: flex; gap: 6px; }
-.ls__dots span { width: 6px; height: 6px; background: var(--ls-tile); box-shadow: inset 0 0 0 1px var(--ls-line); transition: background var(--ax-dur), box-shadow var(--ax-dur); }
+.ls__dots { display: flex; width: 76px; gap: 5px; }
+.ls__dots span { flex: 1; height: 4px; border-radius: 999px; background: var(--ls-tile); box-shadow: inset 0 0 0 1px var(--ls-line); transition: background var(--ax-dur), box-shadow var(--ax-dur); }
 .ls__dots span.is-done { background: var(--ls-good); box-shadow: none; }
 .ls__dots span.is-now { background: var(--ls-accent); box-shadow: none; }
 
@@ -131,9 +132,15 @@
 @keyframes ls-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ls-spin { to { transform: rotate(360deg); } }
 @keyframes ls-pop { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+/* A slow breathing glow on the fill, the one place this screen plays past a
+   micro-interaction -- same restraint as a lesson slide's stage. */
+@keyframes ls-glow {
+  0%, 100% { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--ls-accent) 50%, transparent)); }
+  50% { filter: drop-shadow(0 0 20px color-mix(in srgb, var(--ls-accent) 70%, transparent)); }
+}
 @media (prefers-reduced-motion: reduce) {
   .ls { animation: none; }
   .ls__ring-spin { animation: none; }
-  .ls__ring-fill { transition: none; }
+  .ls__ring-fill { transition: none; animation: none; filter: drop-shadow(0 0 12px color-mix(in srgb, var(--ls-accent) 55%, transparent)); }
   .ls__stage-core svg, .ls__title { animation: none; }
 }
