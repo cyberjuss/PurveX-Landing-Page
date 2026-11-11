@@ -1197,7 +1197,13 @@ export async function advanceReset(userId: string): Promise<{ resetting: boolean
           if (await saveResetState(userId, null, activeStep)) return replaceAfterReset(userId, row);
           return { resetting: true };
         }
-        await saveResetState(userId, { ...rs, step: "waiting_command", snapshotSince, commandId }, activeStep);
+        // Checked like every other write above: "running_command" is a dead
+        // end on its own (see that case below), so losing this write stranded
+        // a reset there until RESET_MAX_MS gave up on it -- a command Range
+        // had already sent to the pod, with no record left of it to confirm.
+        if (!(await saveResetState(userId, { ...rs, step: "waiting_command", snapshotSince, commandId }, activeStep))) {
+          if (await saveResetState(userId, null, activeStep)) return replaceAfterReset(userId, row);
+        }
         return { resetting: true };
       }
 
