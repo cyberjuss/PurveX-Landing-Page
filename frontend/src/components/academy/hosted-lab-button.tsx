@@ -502,11 +502,7 @@ function ResetTracker() {
           <i className="hl__eta-spin" aria-hidden />
           Resetting your lab
         </span>
-        <em>Can take a few minutes</em>
       </p>
-      <div className="hl__bar hl__bar--indeterminate" role="progressbar" aria-label="Resetting your lab">
-        <span />
-      </div>
     </div>
   );
 }
