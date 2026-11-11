@@ -40,7 +40,9 @@
   --ls-accent-2: #8a7aff;
   --ls-good: #0f9f6e;
 }
-/* The portal's own dot grid, and nothing else behind the content. */
+/* The portal's own dot grid. Reaches most of the frame now, fading only at
+   the far edges, so a wide screen reads as one considered surface rather
+   than a small card floating in an empty rectangle. */
 .ls::before {
   content: "";
   position: absolute;
@@ -48,11 +50,11 @@
   pointer-events: none;
   background-image: radial-gradient(var(--ls-dot) 2px, transparent 2px);
   background-size: 26px 26px;
-  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
+  mask-image: radial-gradient(ellipse 100% 90% at 50% 30%, black, transparent 90%);
 }
 /* Left aligned throughout. A centred heading over a left aligned list of steps
    is what made this look assembled rather than composed. */
-.ls__inner { position: relative; z-index: 1; width: min(34rem, 100%); }
+.ls__inner { position: relative; z-index: 1; width: min(38rem, 100%); }
 /* This is the one hero this screen has, same category as the explainer, so
    it gets the same wash the rest of the portal's floating surfaces share --
    off the top edge of the content block, not the viewport, since the block
@@ -116,8 +118,8 @@
 
 .ls__foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 32px; }
 .ls__eta { margin: 0; font-size: var(--ty-note); color: var(--ls-ink-3); }
-.ls__dots { display: flex; width: 76px; gap: 5px; }
-.ls__dots span { flex: 1; height: 4px; border-radius: 999px; background: var(--ls-tile); box-shadow: inset 0 0 0 1px var(--ls-line); transition: background var(--ax-dur), box-shadow var(--ax-dur); }
+.ls__dots { display: flex; width: 84px; gap: 6px; }
+.ls__dots span { flex: 1; height: 5px; border-radius: 999px; background: var(--ls-tile); box-shadow: inset 0 0 0 1px var(--ls-line); transition: background var(--ax-dur), box-shadow var(--ax-dur); }
 .ls__dots span.is-done { background: var(--ls-good); box-shadow: none; }
 .ls__dots span.is-now { background: var(--ls-accent); box-shadow: none; }
 
