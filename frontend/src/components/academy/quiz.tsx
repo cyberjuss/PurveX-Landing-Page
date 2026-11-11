@@ -45,6 +45,7 @@ export function QuizBlock({
   const passed = quizPassed(score, total);
   const passMark = Math.ceil((QUIZ_PASS_PERCENT / 100) * total);
   const isCorrect = selected === q.correctIndex;
+  const answered = selected !== null;
 
   // What the week still wants after the quiz. The week marks itself complete
   // once every one of these is done, so passing the quiz is the middle of the
@@ -93,7 +94,7 @@ export function QuizBlock({
   }
 
   function selectOption(optionIndex: number) {
-    if (submitted) return;
+    if (submitted || answered) return;
     touched.current = true;
     setAnswers((prev) => prev.map((a, i) => (i === at ? optionIndex : a)));
   }
@@ -150,14 +151,14 @@ export function QuizBlock({
         <div className="ax-quiz__opts">
           {q.options.map((option, oi) => {
             const isSelected = selected === oi;
-            const showCorrect = submitted && oi === q.correctIndex;
-            const showWrong = submitted && isSelected && oi !== q.correctIndex;
+            const showCorrect = answered && oi === q.correctIndex;
+            const showWrong = answered && isSelected && oi !== q.correctIndex;
             return (
               <button
                 key={oi}
                 type="button"
                 onClick={() => selectOption(oi)}
-                disabled={submitted}
+                disabled={submitted || answered}
                 className={`ax-quiz__opt ${
                   showCorrect ? "ax-quiz__opt--ok" : showWrong ? "ax-quiz__opt--bad" : isSelected ? "ax-quiz__opt--on" : ""
                 }`}
@@ -168,7 +169,7 @@ export function QuizBlock({
             );
           })}
         </div>
-        {submitted && (
+        {answered && (
           <div className="ax-quiz__note">
             <strong className={isCorrect ? "rd-text-good" : ""}>{isCorrect ? "Correct" : "Explanation"}</strong>
             {q.explanation}

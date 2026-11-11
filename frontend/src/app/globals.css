@@ -5334,7 +5334,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-quiz__opt--ok { color: var(--rd-good); }
 .ax-quiz__opt--bad { color: var(--rd-bad); }
 .ax-quiz__letter { flex-shrink: 0; width: 22px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-small); font-weight: 700; color: var(--rd-ink-3); }
-.ax-quiz__opt--on .ax-quiz__letter, .ax-quiz__opt--ok .ax-quiz__letter { color: inherit; }
+.ax-quiz__opt--on .ax-quiz__letter, .ax-quiz__opt--ok .ax-quiz__letter, .ax-quiz__opt--bad .ax-quiz__letter { color: inherit; }
 .ax-quiz__note { margin-top: 14px; padding-top: 4px; border: none; font-size: var(--ty-body); line-height: 1.55; color: var(--rd-ink-2); }
 .ax-quiz__note strong { display: block; margin-bottom: 4px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); letter-spacing: 0.14em; text-transform: uppercase; }
 .ax-quiz__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 0 4px; }
