@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Database, Network, Server, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
@@ -50,7 +50,6 @@ function usePortalTheme(): "light" | "dark" {
 export function LabSetupScreen() {
   const { status, state } = useHostedLab();
   const theme = usePortalTheme();
-  const gradId = useId();
   const [hidden, setHidden] = useState(false);
   const starting = state === "starting";
 
@@ -89,11 +88,6 @@ export function LabSetupScreen() {
   // of it.
   if (typeof document === "undefined") return null;
 
-  const CurrentIcon = steps[current].icon;
-  // A circle, not a bar: the circumference a stroke travels at r=86.
-  const r = 86;
-  const circumference = 2 * Math.PI * r;
-
   return createPortal(
     <div className="ls" data-academy-theme={theme} role="status" aria-live="polite">
       <div className="ls__inner">
@@ -104,59 +98,50 @@ export function LabSetupScreen() {
           <b>Range</b>
         </p>
 
+        <p className="ls__kicker">Building your environment</p>
+        <h1 className="ls__title">
+          <span className="ls__prompt" aria-hidden="true">&gt;</span>
+          <span key={current} className="ls__title-text">{steps[current].label}</span>
+          <span className="ls__cursor" aria-hidden="true" />
+        </h1>
+
         <div
-          className="ls__stage"
+          className="ls__meter"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={Math.round(pct)}
           aria-label="Setup progress"
         >
-          <svg className="ls__ring" viewBox="0 0 192 192" aria-hidden="true">
-            <defs>
-              <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="var(--ls-accent-2)" />
-                <stop offset="100%" stopColor="var(--ls-accent)" />
-              </linearGradient>
-            </defs>
-            <circle className="ls__ring-spin" cx="96" cy="96" r={r + 14} />
-            <circle className="ls__ring-track" cx="96" cy="96" r={r} />
-            <circle
-              className="ls__ring-fill"
-              cx="96"
-              cy="96"
-              r={r}
-              stroke={`url(#${gradId})`}
-              strokeDasharray={circumference}
-              strokeDashoffset={circumference * (1 - pct / 100)}
-            />
-          </svg>
-          <div className="ls__stage-core">
-            <CurrentIcon key={current} aria-hidden="true" />
-            <em>{Math.round(pct)}%</em>
+          <div className="ls__meter-track">
+            <div className="ls__meter-fill" style={{ width: `${pct}%` }} />
           </div>
+          <em className="ls__meter-pct">{Math.round(pct)}%</em>
         </div>
 
-        <p className="ls__kicker">Building your environment</p>
-        <h1 key={current} className="ls__title">{steps[current].label}</h1>
+        <ul className="ls__log" aria-hidden="true">
+          {steps.map((s, i) => {
+            const Icon = s.icon;
+            const rowState = i < current ? "done" : i === current ? "now" : "pending";
+            return (
+              <li key={s.label} className={`ls__log-row is-${rowState}`}>
+                <Icon aria-hidden="true" />
+                <span>{s.label}</span>
+              </li>
+            );
+          })}
+        </ul>
 
-        <div className="ls__foot">
-          <p className="ls__eta">
-            {/* A first build is usually about five minutes, but Active Directory
-                can be slow to come up and the whole thing can run to twenty.
-                Saying "almost there" for a quarter of an hour reads as broken. */}
-            {elapsed <= total
-              ? `About ${left} min left`
-              : firstBoot
-                ? "Taking longer than usual. Can run to 20 minutes the first time."
-                : "Almost there. Running the last checks."}
-          </p>
-          <div className="ls__dots" aria-hidden="true">
-            {steps.map((s, i) => (
-              <span key={s.label} className={i < current ? "is-done" : i === current ? "is-now" : ""} />
-            ))}
-          </div>
-        </div>
+        <p className="ls__eta">
+          {/* A first build is usually about five minutes, but Active Directory
+              can be slow to come up and the whole thing can run to twenty.
+              Saying "almost there" for a quarter of an hour reads as broken. */}
+          {elapsed <= total
+            ? `About ${left} min left`
+            : firstBoot
+              ? "Taking longer than usual. Can run to 20 minutes the first time."
+              : "Almost there. Running the last checks."}
+        </p>
 
         <button type="button" className="ls__hide" onClick={() => setHidden(true)}>
           <X aria-hidden="true" /> Keep reading while it builds

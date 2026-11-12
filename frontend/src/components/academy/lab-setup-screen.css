@@ -82,46 +82,52 @@
 .ls__brand i { width: 1px; height: 18px; background: var(--ls-line); }
 .ls__brand b { font-size: var(--ty-note); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ls-ink-3); }
 
-/* The one hero: a ring that fills as the build does, a swapped icon and a
-   percentage resting at its centre. Replaces a bar, a four-row checklist and
-   a footer line with one object -- what a bar plus a list could only ever
-   gesture at piece by piece, a filling circle says at a glance. */
-.ls__stage { position: relative; display: grid; place-items: center; width: 220px; height: 220px; margin-bottom: 40px; }
-.ls__ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
-.ls__ring circle { fill: none; }
-.ls__ring-track { stroke: var(--ls-tile); stroke-width: 4; }
-.ls__ring-fill {
-  stroke-width: 5;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 0.9s var(--ax-ease);
-  animation: ls-glow 3.2s var(--ax-ease) infinite;
-}
-/* A faint ring, loose around the real one, turning on its own -- ambient
-   motion while the real progress is deterministic. Same device as a lesson
-   slide's slow ring: a sweep, so linear is correct and left alone. */
-.ls__ring-spin {
-  stroke: var(--ls-accent);
-  stroke-width: 1;
-  stroke-dasharray: 1 11;
-  opacity: 0.4;
-  animation: ls-spin 7s linear infinite;
-}
-.ls__stage-core { position: relative; z-index: 1; display: grid; justify-items: center; gap: 10px; }
-.ls__stage-core svg { width: 38px; height: 38px; color: var(--ls-accent); animation: ls-pop var(--ax-dur-slow) var(--ax-ease) both; }
-.ls__stage-core em {
-  font-style: normal; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note);
-  font-variant-numeric: tabular-nums; font-weight: 600; letter-spacing: 0.02em; color: var(--ls-ink-2);
-}
-
 .ls__kicker { margin: 0 0 10px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ls-ink-3); }
-.ls__title { margin: 0; min-height: 1.2em; font-family: var(--font-display); font-size: var(--ty-h1); font-weight: 700; letter-spacing: -0.02em; color: var(--ls-ink); animation: ls-pop var(--ax-dur-slow) var(--ax-ease) both; }
 
-.ls__foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 32px; }
+/* The one hero: a single line reading like a command that just ran, not a
+   dial filling up. A ring says "wait, watch the shape"; a line says "here is
+   what is happening right now" -- closer to what this screen actually is,
+   and closer to the terminal this audience already lives in. */
+.ls__title {
+  display: flex; align-items: baseline; gap: 10px; margin: 0 0 32px; min-height: 1.2em;
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-h1); font-weight: 600;
+  letter-spacing: -0.01em; color: var(--ls-ink);
+}
+.ls__prompt { color: var(--ls-accent); font-weight: 700; }
+.ls__title-text { animation: ls-line-in var(--ax-dur-slow) var(--ax-ease) both; }
+.ls__cursor { width: 10px; height: 0.9em; background: var(--ls-accent); animation: ls-blink 1s step-end infinite; }
+
+/* A thin meter, not a dial: the percentage sits beside it in the same
+   monospace the title uses, so the whole top of the screen reads as one
+   readout instead of a UI chrome element. */
+.ls__meter { display: flex; align-items: center; gap: 14px; margin: 0 0 28px; }
+.ls__meter-track { flex: 1; height: 3px; border-radius: 999px; background: var(--ls-tile); overflow: hidden; }
+.ls__meter-fill {
+  height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--ls-accent-2), var(--ls-accent));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ls-accent) 55%, transparent);
+  transition: width 0.9s var(--ax-ease);
+}
+.ls__meter-pct {
+  font-style: normal; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note);
+  font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ls-ink-2); min-width: 3ch; text-align: right;
+}
+
+/* The step list as a log, not a stepper: no numbered badges, no borders,
+   just what has run, what is running, and what has not -- told the way a
+   real boot sequence tells it. */
+.ls__log { display: flex; flex-direction: column; gap: 11px; margin: 0 0 36px; padding: 0; list-style: none; }
+.ls__log-row {
+  display: flex; align-items: center; gap: 10px; font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-note); color: var(--ls-ink-3); transition: color var(--ax-dur), opacity var(--ax-dur);
+}
+.ls__log-row svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--ls-ink-3); opacity: 0.55; }
+.ls__log-row.is-pending { opacity: 0.45; }
+.ls__log-row.is-done { color: var(--ls-ink-2); }
+.ls__log-row.is-done svg { color: var(--ls-good); opacity: 1; }
+.ls__log-row.is-now { color: var(--ls-ink); font-weight: 600; }
+.ls__log-row.is-now svg { color: var(--ls-accent); opacity: 1; animation: ls-pulse 1.6s ease-in-out infinite; }
+
 .ls__eta { margin: 0; font-size: var(--ty-note); color: var(--ls-ink-3); }
-.ls__dots { display: flex; width: 84px; gap: 6px; }
-.ls__dots span { flex: 1; height: 5px; border-radius: 999px; background: var(--ls-tile); box-shadow: inset 0 0 0 1px var(--ls-line); transition: background var(--ax-dur), box-shadow var(--ax-dur); }
-.ls__dots span.is-done { background: var(--ls-good); box-shadow: none; }
-.ls__dots span.is-now { background: var(--ls-accent); box-shadow: none; }
 
 .ls__hide {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 36px; border: 0; background: none;
@@ -132,17 +138,13 @@
 .ls__hide svg { width: 12px; height: 12px; }
 
 @keyframes ls-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes ls-spin { to { transform: rotate(360deg); } }
-@keyframes ls-pop { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
-/* A slow breathing glow on the fill, the one place this screen plays past a
-   micro-interaction -- same restraint as a lesson slide's stage. */
-@keyframes ls-glow {
-  0%, 100% { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--ls-accent) 50%, transparent)); }
-  50% { filter: drop-shadow(0 0 20px color-mix(in srgb, var(--ls-accent) 70%, transparent)); }
-}
+@keyframes ls-line-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ls-blink { 50% { opacity: 0; } }
+@keyframes ls-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 @media (prefers-reduced-motion: reduce) {
   .ls { animation: none; }
-  .ls__ring-spin { animation: none; }
-  .ls__ring-fill { transition: none; animation: none; filter: drop-shadow(0 0 12px color-mix(in srgb, var(--ls-accent) 55%, transparent)); }
-  .ls__stage-core svg, .ls__title { animation: none; }
+  .ls__title-text { animation: none; }
+  .ls__cursor { animation: none; }
+  .ls__meter-fill { transition: none; }
+  .ls__log-row.is-now svg { animation: none; }
 }
