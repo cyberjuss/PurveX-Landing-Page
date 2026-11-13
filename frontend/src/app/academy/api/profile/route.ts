@@ -2,7 +2,11 @@ import { after, NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { sanitizeProfile } from "@/lib/academy-certs";
 import { ensureRoleBrief } from "@/lib/academy-role-research";
+import { isClassMember } from "@/lib/academy-classes";
+import { rangeWelcomeEmail } from "@/lib/academy-emails";
+import { markEmailOnce } from "@/lib/academy-email-log";
 import { readProfile, saveProfile } from "@/lib/academy-store";
+import { sendEmail } from "@/lib/email";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -47,5 +51,17 @@ export async function PUT(request: Request) {
   // Research the roles after the student is on their way. Coach uses general knowledge until it lands.
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (apiKey) after(() => Promise.all(profile.roles.map((role) => ensureRoleBrief(apiKey, role))).then(() => undefined));
+  // A welcome, with the Range Discord in it, once per account, the first time
+  // onboarding is finished. A class student already got their class's welcome.
+  const student = a.student;
+  const origin = new URL(request.url).origin;
+  if (saved && student.email) {
+    after(async () => {
+      if (await isClassMember(student.id).catch(() => true)) return;
+      if (!(await markEmailOnce(student.id, "range-welcome"))) return;
+      const mail = rangeWelcomeEmail({ name: profile.callMe || student.name, email: student.email }, origin);
+      await sendEmail(student.email!, mail.subject, mail.html).catch(() => false);
+    });
+  }
   return NextResponse.json({ profile, saved });
 }

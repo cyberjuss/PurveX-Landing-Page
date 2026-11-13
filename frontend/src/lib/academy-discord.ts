@@ -48,6 +48,15 @@ export function finishedChallenge(before: Results, after: Results, missionId: st
   return done(after) && !done(before) ? key : null;
 }
 
+/** Every challenge this student has finished, each mission in it solved. */
+export function finishedChallenges(r: Results): ChallengeKey[] {
+  const keys = [...new Set(Object.values(MISSION_CATALOG).map((m) => m.challenge))];
+  return keys.filter((k) => {
+    const ids = missionsOf(k);
+    return ids.length > 0 && ids.every((id) => r[id]?.solved);
+  });
+}
+
 /**
  * A first name that is safe to post: letters, spaces, hyphens and
  * apostrophes, at most 24 characters. A student types this, so nothing that

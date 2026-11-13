@@ -3,7 +3,7 @@ import { checkGuess, hasMissionKey, missFeedback, missionReveal, needsLabForAnsw
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { labGate } from "@/lib/academy-mission-gate";
 import type { MissionResult } from "@/lib/academy-score";
-import { finishedChallenge, postWin } from "@/lib/academy-discord";
+import { challengeTitle, discordWinsConfigured, finishedChallenge, finishedChallenges, postWin } from "@/lib/academy-discord";
 import { loadLabState, loadProfile, loadProgress, saveProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
@@ -55,17 +55,23 @@ export async function POST(request: Request) {
   // for a student who opted in. After the response, so Discord being slow
   // or down never holds up their answer.
   const finished = correct ? finishedChallenge(before, results, id) : null;
+  // A student who has not opted in is asked once, on the first challenge they
+  // ever finish: the moment they most want to show someone. Nothing is posted
+  // unless they say yes (/academy/api/share-win).
+  let shareWin: { challenge: string; title: string } | null = null;
   if (finished) {
-    after(async () => {
-      const profile = await loadProfile(student.id).catch(() => null);
-      if (profile?.extras?.shareWins) await postWin(profile.callMe || student.name || "", finished);
-    });
+    const profile = await loadProfile(student.id).catch(() => null);
+    if (profile?.extras?.shareWins) after(() => postWin(profile.callMe || student.name || "", finished).then(() => undefined));
+    else if (discordWinsConfigured() && finishedChallenges(before).length === 0) {
+      shareWin = { challenge: finished, title: challengeTitle(finished) };
+    }
   }
   return NextResponse.json({
     correct,
     result: next,
     reveal: earned(next) ? missionReveal(id) : null,
     feedback: correct ? null : missFeedback(id, guess, lab),
+    ...(shareWin ? { shareWin } : {}),
   });
 }
 

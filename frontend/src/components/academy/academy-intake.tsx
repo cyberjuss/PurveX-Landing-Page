@@ -67,6 +67,7 @@ import {
   type Timeline,
 } from "@/lib/academy-certs";
 import { academyFetch, DEV_PREVIEW } from "@/lib/academy-client";
+import { DiscordLogo } from "@/components/purvex-landing-page/discord-logo";
 import { updateDisplayName } from "@/lib/portal-auth";
 // Imported here, not in globals.css, so the styles always arrive with the component.
 import "./academy-intake.css";
@@ -138,6 +139,24 @@ export function AcademyIntake({
   const [firstName, setFirstName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The last screen of a first-time onboarding: join the Range Discord. Shown
+  // once the answers are saved, and only when Discord linking is set up and
+  // this account is not linked yet.
+  const [discordReady, setDiscordReady] = useState(false);
+  const [joinAsk, setJoinAsk] = useState<StudentProfile | null>(null);
+  const [joinBusy, setJoinBusy] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
+  useEffect(() => {
+    if (initial || DEV_PREVIEW) return;
+    let live = true;
+    academyFetch("/academy/api/discord")
+      .then((r) => (r.ok ? (r.json() as Promise<{ configured?: boolean; linked?: unknown }>) : null))
+      .then((d) => live && setDiscordReady(Boolean(d?.configured && !d.linked)))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, [initial]);
   const timer = useRef<number | undefined>(undefined);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
@@ -224,7 +243,9 @@ export function AcademyIntake({
       });
       const data = (await res.json().catch(() => ({}))) as { profile?: StudentProfile; error?: string };
       if (!res.ok || !data.profile) throw new Error(data.error || "We couldn't save your answers. Please try again.");
-      onSaved(data.profile);
+      // Busy stays on while the Discord screen shows, so Enter cannot save twice.
+      if (discordReady && !initial) setJoinAsk(data.profile);
+      else onSaved(data.profile);
     } catch (err) {
       setError(err instanceof Error ? err.message : "We couldn't save your answers. Please try again.");
       setBusy(false);
@@ -401,6 +422,57 @@ export function AcademyIntake({
   });
 
   const qn = String(i + 1).padStart(2, "0");
+
+  // Discord's own sign-in, which also adds them to the server. Their answers
+  // are already saved, so leaving for Discord loses nothing, and they come
+  // back to Range when it is done.
+  async function connectDiscord() {
+    setJoinBusy(true);
+    setJoinError(null);
+    const res = await academyFetch("/academy/api/discord", { method: "POST" }).catch(() => null);
+    const body = res?.ok ? ((await res.json()) as { url?: string }) : null;
+    if (body?.url) window.location.assign(body.url);
+    else {
+      setJoinBusy(false);
+      setJoinError("Could not reach Discord. Try again, or skip and connect later from Goals.");
+    }
+  }
+
+  if (joinAsk) {
+    return (
+      <div className="axq">
+        <div className="axq-step">
+          <p className="axq-label">
+            <span>✓</span>
+            You&rsquo;re all set
+          </p>
+          <div className="axq-discord">
+            <DiscordLogo size={28} />
+          </div>
+          <h1>Join the Range Discord</h1>
+          <p className="axq-hint">
+            Students help each other there: hints when you&rsquo;re stuck, help getting your lab running, and a new ticket every Friday.
+            Connect your Discord account and you&rsquo;re in. If you go Pro, your Pro role and channels follow by themselves.
+          </p>
+          {joinError && (
+            <p className="axq-error" role="alert">
+              {joinError}
+            </p>
+          )}
+          <div className="axq-foot">
+            <button type="button" className="axq-skip" onClick={() => onSaved(joinAsk)} disabled={joinBusy}>
+              Skip for now
+            </button>
+            <button type="button" className="axq-next axq-next--discord" onClick={() => void connectDiscord()} disabled={joinBusy}>
+              {joinBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <DiscordLogo size={18} />}
+              Connect Discord
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <section className="axq" aria-label={initial ? "Your goals" : "Before you start"}>
       <header className="axq-head">

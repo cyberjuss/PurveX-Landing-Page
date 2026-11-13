@@ -108,3 +108,11 @@
   .axq-step { animation: none; }
   .axq-rule i { transition: none; }
 }
+
+/* The last screen of a first-time onboarding: join the Range Discord. */
+.axq-discord { display: inline-grid; place-items: center; width: 52px; height: 52px; margin: 4px 0 18px; border-radius: 14px; background: #5865F2; color: #fff; }
+.axq-next--discord { background: #5865F2; }
+.axq-next--discord:hover:not(:disabled) { background: #4752c4; }
+.axq-skip { margin-right: auto; padding: 0; border: 0; background: none; font-size: 14px; font-weight: 600; color: var(--rd-ink-2); cursor: pointer; }
+.axq-skip:hover:not(:disabled) { color: var(--rd-ink); }
+.axq-skip:disabled { opacity: 0.5; cursor: default; }
