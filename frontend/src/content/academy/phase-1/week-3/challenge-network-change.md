@@ -14,7 +14,7 @@
 <div class="ad-mission" data-id="w3-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · Warm-up · TCP/IP · High · CHG-3301 · INC-1092</span>
 <h4>Fix the Portal's Address</h4>
-<p><strong>Jordan Ellis · Finance · 8:20 AM</strong><br>The intranet portal will not load for anyone in Finance this morning. It worked on Friday. The browser simply spins and gives up.</p>
+<p><strong>Jordan Ellis · Finance · 8:20 AM</strong><br>The intranet portal stopped loading for everyone in Finance this morning, even though it worked fine on Friday. Every browser just spins and eventually gives up.</p>
 <p><strong>Task:</strong> Find out what address <code>portal</code> resolves to, compare it with the change log, and point the record at the portal's new home. Then report the address it was stuck on.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Fix the Portal's Address" placeholder="an IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
