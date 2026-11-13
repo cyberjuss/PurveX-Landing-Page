@@ -176,8 +176,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 05 · Stretch · Wrap-up · Report to the IT Lead · INC-1091</span>
 <h4>Fix the Script for Good</h4>
-<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>"Back to the settlement script from this morning. Operations still needs it to run every night. What's the right fix?"<br><strong>A</strong> Encrypt the password properly with AES, and keep the key in the same script so it can decrypt it at run time.<br><strong>B</strong> Take the password out of the script, store it in a secrets vault or run the job under a managed service account, and change the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so nobody can read it.</p>
-<p><strong>Task:</strong> Choose the fix and type its letter.</p>
+<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>"Following up on the settlement script from this morning. Operations still needs it to run every night. What is the correct remediation?"<br><strong>A</strong> Encrypt the password with AES, and keep the key in the same script so it can decrypt at run time.<br><strong>B</strong> Remove the password from the script, store it in a secrets vault or run the job under a managed service account, and rotate the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so no one can read it.</p>
+<p><strong>Task:</strong> Select the correct remediation and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Fix the Script for Good" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
