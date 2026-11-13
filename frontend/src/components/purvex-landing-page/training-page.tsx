@@ -7,6 +7,7 @@ import {
   Server, ShieldCheck, ShieldHalf, Siren, type LucideIcon,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
+import { DiscordLogo } from "./discord-logo";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 import { TrainingHero } from "./training-hero";
@@ -246,15 +247,18 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 
       <section className="pg-section tp-features" id="community">
         <div className="tp-features__head">
+          <span className="tp-discord-badge" aria-hidden="true">
+            <DiscordLogo size={26} />
+          </span>
           <h2>Learn alongside the Range</h2>
           <p>The Range has its own Discord. Ask for a hint, get your lab running, and share the wins with people working the same tickets.</p>
           {DISCORD_URL ? (
             <a href={DISCORD_URL} target="_blank" rel="noreferrer" className="tp-link">
-              Join the Range Discord <ArrowRight size={14} />
+              <DiscordLogo size={16} /> Join the Range Discord <ArrowRight size={14} />
             </a>
           ) : (
             <Link href="/range" className="tp-link">
-              Start free to join <ArrowRight size={14} />
+              <DiscordLogo size={16} /> Start free to join <ArrowRight size={14} />
             </Link>
           )}
         </div>
@@ -369,6 +373,12 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           transition: gap .25s var(--ease);
         }
         .tp-link:hover { gap: 11px }
+        /* Discord's mark on its own blurple tile, the way Discord shows it. */
+        .tp-discord-badge {
+          display: inline-grid; place-items: center; width: 44px; height: 44px; margin-bottom: 16px;
+          border-radius: 12px; background: #5865F2; color: #fff;
+          box-shadow: 0 6px 18px -8px rgba(88, 101, 242, .7);
+        }
         .tp-feature-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px }
         .tp-feature-list li { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; padding: 22px 0; border-top: 1px solid var(--border) }
         .tp-feature-list i {
