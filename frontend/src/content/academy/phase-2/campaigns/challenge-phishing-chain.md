@@ -22,12 +22,12 @@
 </div>
 <div class="ad-hint__text">
 <p>A wrong password and a nonexistent account fail for different reasons, and Windows records which of the two happened.</p>
-<ol>
+<ul>
 <li>Open Event Viewer, Windows Logs → Security, and filter for Event ID 4625.</li>
 <li>Open a few and read the Status code in the Failure Information section.</li>
 <li><code>0xC000006A</code> means the account exists and the password was wrong. <code>0xC0000064</code> means the account does not exist at all.</li>
 <li>Count the distinct account names behind the <code>0xC0000064</code> rows.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-WinEvent -LogName Security -FilterHashtable @{Id=4625} -MaxEvents 50 | Format-List TimeCreated, Message</code></li>
@@ -61,10 +61,10 @@
 </div>
 <div class="ad-hint__text">
 <p>A file name with two extensions is often a program dressed up as a document. Windows goes by the last extension, not the one in the middle of the name.</p>
-<ol>
+<ul>
 <li>Open File Explorer, go to the View tab, and tick File name extensions if it is not already on.</li>
 <li>Open <code>C:\PurveX\Shares\WealthManagement</code> and read every file's full name.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ChildItem C:\PurveX\Shares\WealthManagement | Select-Object Name</code></li>
@@ -98,11 +98,11 @@
 </div>
 <div class="ad-hint__text">
 <p>SHA-256 produces a 256-bit value, written as 64 hexadecimal characters, and that's true of every file you hash with it, this one included.</p>
-<ol>
+<ul>
 <li>On the domain controller, open PowerShell and run <code>Get-FileHash "C:\PurveX\Shares\WealthManagement\Q3_Rebalance_Summary.pdf.exe" -Algorithm SHA256</code>.</li>
 <li>Copy the Hash value it prints.</li>
 <li>Paste that exact value into VirusTotal's search bar and press enter. Read what comes back.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="128|160">Those bit lengths belong to MD5 and SHA-1, but this command used SHA-256. Check the algorithm you ran.</div>
@@ -132,11 +132,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A task built to blend in will have a name that sounds like routine Office activity, so read what it runs, not just what it's called.</p>
-<ol>
+<ul>
 <li>Open Task Scheduler with Win+R and <code>taskschd.msc</code>.</li>
 <li>Open Task Scheduler Library and sort by Name.</li>
 <li>Find the task nobody recognizes, then open its Actions tab to see what it runs.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ScheduledTask | Where-Object TaskPath -eq "\" | Select-Object TaskName, State</code></li>
@@ -169,12 +169,12 @@
 </div>
 <div class="ad-hint__text">
 <p>You already have the address from the task's Actions tab. This step is about watching the connection attempt happen, not just reading about it.</p>
-<ol>
+<ul>
 <li>Open Wireshark and start capturing on the domain controller's main interface.</li>
 <li>In the filter bar, type <code>ip.addr == 203.0.113.91</code> and press Enter.</li>
 <li>Wait. The task fires on a 15-minute cycle, so this may take a few minutes.</li>
 <li>When a packet appears, open it and read Transmission Control Protocol → Destination Port in the Packet Details pane.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="8080|4444">Those ports belong to a beacon from another campaign this phase, and that one is already closed. Capture this task's own connection instead.</div>
@@ -204,11 +204,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Both the task's Actions tab and your capture named the port, so find the outbound rule that allows traffic to it.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Outbound Rules and sort by Group to find the PurveX Lab rules.</li>
 <li>Read each rule's Remote Port against what you captured, then right-click the rule and choose Disable Rule.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Group "PurveX Lab" -Direction Outbound | Where-Object DisplayName -like "*Telemetry*" | Disable-NetFirewallRule</code></li>
@@ -241,11 +241,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Every other file on this share belongs to IT's own work, so look for the one that doesn't fit.</p>
-<ol>
+<ul>
 <li>Open <code>C:\PurveX\Shares\IT</code> in File Explorer.</li>
 <li>Read every file name. IT's own files are about mirrors, checksums and hashes from earlier work.</li>
 <li>Find the one named like an archive, not like anything IT produces.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ChildItem C:\PurveX\Shares\IT | Select-Object Name, LastWriteTime</code></li>
@@ -278,10 +278,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Moving the file keeps it as evidence, whereas deleting it would destroy something the review still needs.</p>
-<ol>
+<ul>
 <li>On the domain controller, open PowerShell and change to <code>C:\PurveX\Shares\IT</code>.</li>
 <li>Move the file with <code>Move-Item staged-export.zip C:\PurveX\Quarantine</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">

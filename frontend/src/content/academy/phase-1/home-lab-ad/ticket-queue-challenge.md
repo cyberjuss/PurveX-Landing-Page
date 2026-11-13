@@ -22,13 +22,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Company-wide mail comes from a firm-wide group rather than a department group, so look in AccessLevels and read each group's Description.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open the group whose Description mentions company-wide announcements.</li>
 <li>On the Members tab, add <code>jamie.torres</code> if she is missing and click Apply.</li>
 <li>Reopen the group after Apply and count the Members tab, including Jamie.</li>
 <li>Type that number here.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="jamie-torres|all-employees">Report how many members the group has as a number.</div>
@@ -63,13 +63,13 @@
 </div>
 <div class="ad-hint__text">
 <p>A caller describes a symptom, but it's the Account tab that shows you the cause. Keep in mind that locked out and disabled are separate settings, each with its own fix.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>riley.kwan</code>.</li>
 <li>Open the account and go to the Account tab. Check both Unlock account and Account is disabled.</li>
 <li>The Unlock account box is grayed out when nothing is locked. Read that as a finding and keep going.</li>
 <li>Fix the setting that is blocking her, then submit the cause rather than the word she used.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser riley.kwan -Properties LockedOut, Enabled | Select-Object Name, LockedOut, Enabled</code></li>
@@ -108,14 +108,14 @@
 </div>
 <div class="ad-hint__text">
 <p>Create Casey in Departments → IT → Users and copy the groups of a current IT person. While you're in IT Users, remember that a leftover intern and a service account don't belong in a staff group.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>Departments</code> → <code>IT</code> → <code>Users</code> and create <code>casey.reed</code> there.</li>
 <li>The wizard refuses a simple password, so give Casey a long one with mixed case and a number.</li>
 <li>Open the Members tab of <code>IT Users</code> and open each name that is not a current IT person.</li>
 <li>Copy the ticket number out of the intern's Description before you delete the account, because deleting it takes the answer with it.</li>
 <li>Delete the intern, then remove the service account from the group without deleting it.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="inc-1043">That is the queue number on this ticket. Report the reference written in the intern account's Description.</div>
@@ -159,13 +159,13 @@
 </div>
 <div class="ad-hint__text">
 <p>The account's own Description says the window isn't set, so look one level up. The approved hours are recorded on the OU directly above the account.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Use Find on the domain to locate <code>svc-backup-job</code> and note the folder that holds it.</li>
 <li>Open that OU's Properties and read its Description.</li>
 <li>Write the window into the account's Description on the General tab and click Apply.</li>
 <li>Copy it exactly as the folder writes it, including the colons and the dash. The lab check reads that line, so a reworded window fails.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="window-not-set">That is the account's current Description. The approved hours are on the folder that holds the account.</div>
@@ -200,13 +200,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Moving the account brings the right Group Policy with it, because policy follows the folder. Groups don't move with the account, though, so you have to change those yourself. And the title is a separate field again, on the General tab.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click <code>taylor.osei</code> and choose Move, then select Departments → Compliance → Users.</li>
 <li>Use Move rather than dragging. A dragged account can land on the folder above the one you meant.</li>
 <li>On the Member Of tab, add <code>Compliance Users</code> and remove <code>Operations Users</code>.</li>
 <li>Open the General tab and type the Title you see, not the department HR named.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="compliance|compliance-analyst|compliance-officer|regulatory-analyst">That is where HR says Taylor works now. Type the Title field on taylor.osei exactly as it is written.</div>
@@ -242,13 +242,13 @@
 </div>
 <div class="ad-hint__text">
 <p>When someone leaves, their account is disabled rather than deleted, so that its history stays available to auditors.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>kai.mendes</code>.</li>
 <li>Open the account and read the sponsor in Description on the General tab.</li>
 <li>Remove <code>Operations Users</code> on the Member Of tab. Then right-click the account and choose Disable Account.</li>
 <li>The account icon gains a small down arrow once it is disabled. That is the confirmation.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Remove-ADGroupMember "Operations Users" -Members kai.mendes</code></li>
@@ -289,13 +289,13 @@
 </div>
 <div class="ad-hint__text">
 <p>A request names the access someone wants, but the group's Description tells you what that access really covers. Read it before you decide.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Server Admins</code>.</li>
 <li>Read Description on the General tab and compare it with what Sam needs.</li>
 <li>Do not add Sam. If you added him while reading the group, remove him again before you submit.</li>
 <li>Type the access level from the Description here.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="no|deny|denied">Leaving Sam's groups alone is right. Report the access level number from the Description on Server Admins.</div>
@@ -331,12 +331,12 @@
 </div>
 <div class="ad-hint__text">
 <p>When you search for this setting, you'll also find <code>svc-backup-job</code>, which is allowed to keep it. The account you want belongs to a person.</p>
-<ol>
+<ul>
 <li>Run the search below in PowerShell on the domain controller.</li>
 <li>Skip the service account and note the person's username.</li>
 <li>Open that account in Active Directory Users and Computers and go to the Account tab.</li>
 <li>Account options is a list that scrolls. Clear Password never expires there and click Apply.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Search-ADAccount -PasswordNeverExpires -UsersOnly | Select-Object Name, SamAccountName</code></li>
@@ -376,13 +376,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Think about where a computer lands when it joins the domain without a chosen OU. It goes into a default container, and no Group Policy linked to an OU can reach it there.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> and look inside the default folders until you find <code>FIN-LT14</code>.</li>
 <li>A folder that looks empty is usually the view filter. View → Filter Options, show all types of objects.</li>
 <li>Right-click the laptop and choose Move, then select Departments → FinanceAccounting → Workstations.</li>
 <li>Press F5 if the move does not show. The console keeps the view it drew first.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADComputer FIN-LT14).DistinguishedName</code></li>
@@ -422,12 +422,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Computers live in OUs just as users do, and this one is in the Operations department's Workstations folder.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand Departments, Operations, Workstations.</li>
 <li>Open the computer Properties and read the Description on the General tab.</li>
 <li>Right-click it and choose Disable Account. Do not delete it.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADComputer OPS-WKS03 -Properties Description,LastLogonDate | Select-Object Name,Description,LastLogonDate,Enabled</code></li>
@@ -467,13 +467,13 @@
 </div>
 <div class="ad-hint__text">
 <p>When the IP address works but the name doesn't, the network itself is fine, which tells you the problem is name resolution.</p>
-<ol>
+<ul>
 <li>On the domain controller run <code>Resolve-DnsName files</code> and note the address it returns.</li>
 <li>Run <code>ipconfig</code> to see the domain controller's own IPv4 address.</li>
 <li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, then go to Forward Lookup Zones → <code>purvexfinancial.local</code>.</li>
 <li>Open the <code>files</code> host record and change its address to the domain controller's address.</li>
 <li>Press F5 in DNS Manager, then run <code>Clear-DnsClientCache</code>. The old address sits in the local cache and makes a correct fix look wrong.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Test-NetConnection files -Port 445</code></li>
@@ -512,12 +512,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Temporary rules usually carry a name or description that mentions the vendor. Once you've found it, check who the rule allows in, as well as which port it opens.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Inbound Rules and sort by Name or Group to find the vendor rule.</li>
 <li>Read its Protocols and Ports and its Scope tabs, then right-click the rule and choose Disable Rule.</li>
 <li>Leave the built-in Remote Desktop rules enabled. Disabling those closes the port you are connected through.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Direction Inbound -Enabled True | Where-Object DisplayName -like "*Vendor*"</code></li>
@@ -557,13 +557,13 @@
 </div>
 <div class="ad-hint__text">
 <p>A GPO only applies where it's linked, and its Scope tab lists every one of those places.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
 <li>Expand Group Policy Objects, select the screen lock GPO and read its Scope tab.</li>
 <li>Right-click the FinanceAccounting OU and choose Link an Existing GPO.</li>
 <li>Under the wrong OU, right-click the GPO's link and choose Delete to remove only the link.</li>
 <li>Delete the link under the OU, never the policy under Group Policy Objects. Deleting the policy removes it everywhere and there is nothing left to link.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-GPInheritance -Target "OU=FinanceAccounting,OU=Departments,DC=purvexfinancial,DC=local"</code></li>
@@ -603,12 +603,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Windows hides known file extensions by default, which lets a program pass for a document. So as well as the name, look at the Type column and the modified time.</p>
-<ol>
+<ul>
 <li>Open File Explorer and go to <code>C:\PurveX\Shares\Finance</code>.</li>
 <li>On the View menu, turn on File name extensions and compare the files.</li>
 <li>Cut the suspicious file and paste it into <code>C:\PurveX\Quarantine</code> without opening it.</li>
 <li>Use Cut rather than Copy. A copy leaves the file on the share and the ticket stays open.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ChildItem C:\PurveX\Shares\Finance | Select-Object Name, Length, LastWriteTime</code></li>
@@ -648,12 +648,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Read the old size before you change it, because once it's raised, the original value is gone.</p>
-<ol>
+<ul>
 <li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>.</li>
 <li>Expand Windows Logs, right-click <strong>Security</strong> and choose Properties.</li>
 <li>Note the current maximum log size, then raise it to 524288 KB or more.</li>
 <li>Leave the policy as overwrite as needed, so the log never stops accepting events.</li>
-</ol>
+</ul>
 <p>In PowerShell, which reports bytes:</p>
 <ul>
 <li><code>Get-WinEvent -ListLog Security | Select-Object MaximumSizeInBytes</code></li>
@@ -693,13 +693,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Only one kind of group can grant permissions, so check the Group type on the General tab.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Finance Reports</code>.</li>
 <li>On the General tab, change Group type from Distribution to Security and click Apply.</li>
 <li>Reopen the group and confirm the General tab now reads Security.</li>
 <li>Count the entries on the Members tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Set-ADGroup "Finance Reports" -GroupCategory Security</code></li>
@@ -738,13 +738,13 @@
 </div>
 <div class="ad-hint__text">
 <p>When a name has two A records, DNS hands them out in turn, which is called round robin. So if one of those addresses belongs to a server that no longer exists, every other lookup fails.</p>
-<ol>
+<ul>
 <li>On the domain controller run <code>Resolve-DnsName payroll</code> and look at how many addresses come back.</li>
 <li>Run <code>ipconfig</code> to find the domain controller's own address, then test the other one with <code>Test-NetConnection</code>.</li>
 <li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, then go to Forward Lookup Zones → <code>purvexfinancial.local</code>.</li>
 <li>Two rows are named payroll. Read the Data column and delete only the one holding the address that no longer answers.</li>
 <li>Clients cache answers, so <code>ipconfig /flushdns</code> clears the old address from a machine that still has it.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-DnsServerResourceRecord -ZoneName purvexfinancial.local -Name payroll -RRType A</code></li>
@@ -783,13 +783,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Account lockout is set in the Default Domain Policy, rather than on individual accounts.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
 <li>Expand the domain, right-click <code>Default Domain Policy</code> and choose Edit.</li>
 <li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Account Policies, Account Lockout Policy.</li>
 <li>Set the threshold to 10 or fewer, and both the duration and the reset counter to 15 minutes or more.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>Get-ADDefaultDomainPasswordPolicy</code>.</li>
-</ol>
+</ul>
 <p>A duration of 0 means an administrator has to unlock the account by hand. That's actually stricter, but this ticket wants a number of minutes, so use 15 or more.</p>
 <p>In PowerShell:</p>
 <ul>
@@ -829,13 +829,13 @@
 </div>
 <div class="ad-hint__text">
 <p>You'll find this under the advanced audit subcategories, rather than among the nine basic categories.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>, then edit <code>Default Domain Controllers Policy</code>.</li>
 <li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Advanced Audit Policy Configuration, Audit Policies, Detailed Tracking.</li>
 <li>Open <strong>Audit Process Creation</strong>, tick Configure, and tick Success.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>auditpol /get /subcategory:"Process Creation"</code>.</li>
 <li>Start any program and look for the new event in the Security log.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="4689">4689 is a process ending. This ticket is about one starting.</div>
@@ -870,13 +870,13 @@
 </div>
 <div class="ad-hint__text">
 <p>The domain password policy applies to everyone, so a second, stricter policy for one group needs a Password Settings Object.</p>
-<ol>
+<ul>
 <li>Open Active Directory Administrative Center with Win+R and <code>dsac.exe</code>.</li>
 <li>Go to System, then Password Settings Container, then New, then Password Settings.</li>
 <li>Give it a name and a precedence, set the minimum length to 16, and set the lockout threshold to 5 or fewer.</li>
 <li>Under Directly Applies To, add the group holding the IT administrators.</li>
 <li>Confirm with <code>Get-ADFineGrainedPasswordPolicy -Filter *</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-ADFineGrainedPasswordPolicy -Name "Admin Password Policy" -Precedence 10 -MinPasswordLength 16 -LockoutThreshold 5 -LockoutDuration 00:30:00 -LockoutObservationWindow 00:30:00</code></li>

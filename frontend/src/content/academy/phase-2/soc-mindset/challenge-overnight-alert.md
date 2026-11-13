@@ -23,11 +23,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The investigation mindset starts with the account itself, before the log and before the clock. One field on this account answers both the time question and the location question, so read all of it.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>morgan.reyes</code>.</li>
 <li>Open the account's Properties and read the General tab's Description field in full.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser morgan.reyes -Properties Description, Title | Select-Object Description, Title</code></li>

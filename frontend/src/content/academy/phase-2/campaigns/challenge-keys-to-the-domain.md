@@ -22,11 +22,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A healthy, modern service ticket uses AES, and this one doesn't.</p>
-<ol>
+<ul>
 <li>Open Event Viewer, Windows Logs → Security, and filter for Event ID 4769.</li>
 <li>Find the request where the Service Name is <code>svc-reports</code>.</li>
 <li>Read Ticket Encryption Type in the General tab. It is written as a hex code.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-WinEvent -LogName Security -FilterHashtable @{Id=4769} -MaxEvents 50 | Format-List TimeCreated, Message</code></li>
@@ -60,10 +60,10 @@
 </div>
 <div class="ad-hint__text">
 <p>An SPN lets any domain user ask for a ticket to that service by name, without ever touching the account's password.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers, find <code>svc-reports</code>, and open its Attribute Editor tab.</li>
 <li>Read the <code>servicePrincipalName</code> attribute.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser svc-reports -Properties ServicePrincipalNames | Select-Object -ExpandProperty ServicePrincipalNames</code></li>
@@ -96,10 +96,10 @@
 </div>
 <div class="ad-hint__text">
 <p>This attribute is a bitmask. A value of 4 means only RC4-HMAC is allowed, while 24 would mean both AES128 and AES256 are.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers, find <code>svc-reports</code>, and open its Attribute Editor tab.</li>
 <li>Read <code>msDS-SupportedEncryptionTypes</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser svc-reports -Properties msDS-SupportedEncryptionTypes | Select-Object msDS-SupportedEncryptionTypes</code></li>
@@ -132,11 +132,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Without an SPN, nobody can ask for a service ticket to this account at all. That closes the Kerberoasting path completely, rather than just making it harder.</p>
-<ol>
+<ul>
 <li>Open PowerShell as administrator.</li>
 <li>Run <code>setspn -D "REPORTS/svc-reports.purvexfinancial.local" svc-reports</code>.</li>
 <li>Confirm with <code>Get-ADUser svc-reports -Properties ServicePrincipalNames</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -165,12 +165,12 @@
 </div>
 <div class="ad-hint__text">
 <p>It's an advanced audit subcategory that's off by default, much like the process-creation auditing you fixed earlier this phase.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>, then edit <code>Default Domain Controllers Policy</code>.</li>
 <li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Advanced Audit Policy Configuration, Audit Policies, DS Access.</li>
 <li>Open <strong>Audit Directory Service Access</strong>, tick Configure, and tick Success.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>auditpol /get /subcategory:"Directory Service Access"</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="4769">That's the Kerberos ticket event from the earlier step. DCSync uses AD replication rather than a service ticket.</div>
@@ -230,10 +230,10 @@
 </div>
 <div class="ad-hint__text">
 <p>By default, this right belongs to the domain controller's own computer account, not to a person's account.</p>
-<ol>
+<ul>
 <li>Every domain controller has a computer account in Active Directory, named after the machine with a trailing <code>$</code>.</li>
 <li>In this lab, that machine is <code>dc01</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="administrator">An administrator's user account doesn't carry replication rights by default. That right belongs to the domain controller's computer account.</div>
@@ -263,11 +263,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Where the plain Security log tells you a process ran, Sysmon also tells you what started it.</p>
-<ol>
+<ul>
 <li>Open Event Viewer and expand Applications and Services Logs → Microsoft → Windows → Sysmon → Operational.</li>
 <li>Filter for Event ID 1 and find the one where Image ends in <code>klist.exe</code>.</li>
 <li>Read ParentImage in the event's details.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -FilterXPath "*[System[(EventID=1)]]" -MaxEvents 50 | Where-Object Message -match "klist.exe"</code></li>

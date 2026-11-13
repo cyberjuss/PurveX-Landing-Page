@@ -22,11 +22,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A rule built for the old perimeter model trusts a connection because of where it comes from, not because of who it is. So read the Remote Address on each inbound rule, not just its name.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Inbound Rules and sort by Group to find the PurveX Lab rules.</li>
 <li>Read each rule's Protocols and Ports and its Scope. The one with Any as its remote address, on a department file-sharing port, is the one still running on the old assumption.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Group "PurveX Lab" -Direction Inbound | Get-NetFirewallPortFilter | Select-Object InstanceID, LocalPort</code></li>
@@ -60,11 +60,11 @@
 </div>
 <div class="ad-hint__text">
 <p>On a hosted lab, the other machine in your pod connects to this share on its own schedule, and that's the traffic this rule lets through.</p>
-<ol>
+<ul>
 <li>Open Event Viewer, Windows Logs → Security, and filter for Event ID 4624.</li>
 <li>Read the Logon Type field in the General tab. Type 3 is Network: a connection from somewhere else, not an interactive sign-in at the keyboard.</li>
 <li>Read the Source Network Address, which should not be the domain controller's own IP.</li>
-</ol>
+</ul>
 <p>On a self-hosted lab with only one machine, nothing will generate this traffic. In that case, read the rule's Scope instead and answer from what Type 3 means by definition.</p>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -95,10 +95,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Disabling the rule is enough. You don't need to delete it or touch any other inbound rule.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Right-click the rule you found and choose Disable Rule.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Group "PurveX Lab" -Direction Inbound | Where-Object DisplayName -like "*Internal*" | Disable-NetFirewallRule</code></li>
@@ -131,11 +131,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A task built to blend in will have a name that sounds like real AD infrastructure work, so read what it runs, not just what it's called.</p>
-<ol>
+<ul>
 <li>Open Task Scheduler with Win+R and <code>taskschd.msc</code>.</li>
 <li>Open Task Scheduler Library and sort by Name.</li>
 <li>Find the task nobody recognizes, then open its Actions tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ScheduledTask | Where-Object TaskPath -eq "\" | Select-Object TaskName, State</code></li>
@@ -169,11 +169,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The task's Actions tab named the address it was reaching, so find the outbound rule that allows traffic to that same address.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Outbound Rules and sort by Group to find the PurveX Lab rules.</li>
 <li>Read each rule's Remote Address against what the task's Actions tab named, then disable the one that matches.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Group "PurveX Lab" -Direction Outbound | Where-Object DisplayName -like "*Replication*" | Disable-NetFirewallRule</code></li>
@@ -206,11 +206,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Every other file on this share belongs to Compliance's own review work, so look for the one that doesn't fit.</p>
-<ol>
+<ul>
 <li>Open <code>C:\PurveX\Shares\Compliance</code> in File Explorer.</li>
 <li>Read every file name. Compliance's own files are about KYC reviews.</li>
 <li>Find the one named like an Operations export, not a compliance review.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ChildItem C:\PurveX\Shares\Compliance | Select-Object Name, LastWriteTime</code></li>
@@ -243,10 +243,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Moving the file keeps it as evidence, whereas deleting it would destroy something the review still needs.</p>
-<ol>
+<ul>
 <li>On the domain controller, open PowerShell and change to <code>C:\PurveX\Shares\Compliance</code>.</li>
 <li>Move the file with <code>Move-Item ops-batch-export.csv C:\PurveX\Quarantine</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">

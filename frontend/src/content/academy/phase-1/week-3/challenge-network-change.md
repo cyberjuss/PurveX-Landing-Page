@@ -23,11 +23,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Before any connection can start, the name has to become an address. If DNS still points at a server that was switched off, every connection goes to a machine that isn't there.</p>
-<ol>
+<ul>
 <li>Resolve <code>portal</code> and note the address it returns.</li>
 <li>Read CHG-3301 in <code>C:\PurveX\Shares\IT\Network_Change_Log_Nov.txt</code> to see where the portal lives now.</li>
 <li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, open Forward Lookup Zones and your domain, and change the <code>portal</code> record to the domain controller's address.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Resolve-DnsName portal</code></li>
@@ -67,11 +67,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A connect scan, <code>-sT</code>, completes the three-way handshake with each port. A SYN-ACK back means open. A reset means closed. Silence means something filtered it. <code>-sV</code> also asks each open port what it is. Only scan systems you're authorized to scan, which on the job means a signed-off scope.</p>
-<ol>
+<ul>
 <li>Find the domain controller's address with <code>ipconfig</code>.</li>
 <li>Run <code>nmap -sT -sV</code> followed by that address.</li>
 <li>Read the PORT, STATE and SERVICE columns. A domain controller normally shows DNS, Kerberos, LDAP, SMB, RPC and Remote Desktop. Look for the one that isn't on that list.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="53|88|135|139|389|445|464|593|636|3268|3269|3389|5985|9389">That's a normal domain controller service. Look down the list for a port and service that came from the contractor.</div>
@@ -106,11 +106,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Closing it properly takes two steps: the firewall rule that lets traffic in, and the program that answers. The change log names the change.</p>
-<ol>
+<ul>
 <li>Open <code>wf.msc</code>, find the vendor rule under Inbound Rules, and disable it.</li>
 <li>Open Task Scheduler with <code>taskschd.msc</code>, then end and disable the NetBridge console task.</li>
 <li>Read <code>C:\PurveX\Shares\IT\Network_Change_Log_Nov.txt</code> for the change that started it.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Disable-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet"</code></li>
@@ -150,10 +150,10 @@
 </div>
 <div class="ad-hint__text">
 <p>This one is an Outbound rule, not an Inbound one. Its port tells you the protocol, because email leaves a server on a well-known port.</p>
-<ol>
+<ul>
 <li>In <code>wf.msc</code>, open Outbound Rules and find the contractor's relay rule.</li>
 <li>Read its remote port, then disable the rule.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -DisplayName "PurveX Relay*" | Get-NetFirewallPortFilter</code></li>
@@ -193,12 +193,12 @@
 </div>
 <div class="ad-hint__text">
 <p>The job and the reporting service both run on the domain controller, so the traffic never leaves the machine. Capture on the loopback adapter. The job uses plain HTTP with Basic authentication, which only Base64-encodes the name and password, and Wireshark decodes it for you.</p>
-<ol>
+<ul>
 <li>Open Wireshark and start a capture on <strong>Adapter for loopback traffic capture</strong>.</li>
 <li>Wait a minute or two for the job to run, then type <code>http</code> in the display filter.</li>
 <li>Open the <strong>POST /reports/upload</strong> request, expand Hypertext Transfer Protocol, then the <strong>Authorization</strong> line, and read the <strong>Credentials</strong> field.</li>
 <li>Disable <code>svc-reportsync</code> in Active Directory Users and Computers, and disable the job in Task Scheduler.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Disable-ADAccount svc-reportsync; Disable-ScheduledTask "PurveX Legacy Report Sync"</code></li>

@@ -22,12 +22,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Each department keeps its own folder, so start there. Open the files and read each header row, because the one you want has a column named after the number.</p>
-<ol>
+<ul>
 <li>On the domain controller, open File Explorer at <code>C:\PurveX\Shares</code>.</li>
 <li>Open each department folder and look at the files inside.</li>
 <li>Open a file in Notepad and read its second line, which names the columns.</li>
 <li>Type the name of the file whose columns include <code>ssn</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ChildItem C:\PurveX\Shares -Recurse -File | Select-String -Pattern "ssn" -List</code></li>
@@ -66,10 +66,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Be careful with the first two lines. The first is a banner and the second names the columns, so neither one is a client.</p>
-<ol>
+<ul>
 <li>Open <code>client-register-SAMPLE.csv</code> in Notepad.</li>
 <li>Count the lines that start with a client ID such as <code>C-1001</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-Content C:\PurveX\Shares\Clients\client-register-SAMPLE.csv | Select-Object -Skip 1 | ConvertFrom-Csv).Count</code></li>
@@ -108,10 +108,10 @@
 </div>
 <div class="ad-hint__text">
 <p>KYC stands for "know your customer", which is the check that a client really is who they say they are. To answer this one, read the status column.</p>
-<ol>
+<ul>
 <li>Open <code>C:\PurveX\Shares\Compliance\kyc-review-log-SAMPLE.csv</code>.</li>
 <li>Count the rows whose status is <code>Awaiting documents</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-Content C:\PurveX\Shares\Compliance\kyc-review-log-SAMPLE.csv | Select-Object -Skip 1 | ConvertFrom-Csv | Group-Object status</code></li>
@@ -150,11 +150,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Read the last column of every row, rather than stopping at the first one.</p>
-<ol>
+<ul>
 <li>Open <code>C:\PurveX\Shares\Finance\vendor-payments-SAMPLE.csv</code>.</li>
 <li>Read the <code>approved_by</code> column on every payment.</li>
 <li>Type the account you find there.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="ledgerline">That is a vendor being paid. Read who approved the payments.</div>
@@ -188,10 +188,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Scan the status column: every batch but one says the same thing.</p>
-<ol>
+<ul>
 <li>Open <code>C:\PurveX\Shares\Operations\settlement-batches-SAMPLE.csv</code>.</li>
 <li>Read the <code>status</code> column and find the row that is not Reconciled.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="2">That is the number of trades that did not match. Type the batch they belong to.</div>
@@ -225,11 +225,11 @@
 </div>
 <div class="ad-hint__text">
 <p>This is the same check you ran on the installer mirrors in Week 2. Be careful not to open and save the file in an editor first, because saving can change its bytes, and with them its hash.</p>
-<ol>
+<ul>
 <li>On the domain controller, open PowerShell.</li>
 <li>Run <code>Get-FileHash C:\PurveX\Shares\Clients\client-register-SAMPLE.csv -Algorithm SHA256</code>.</li>
 <li>Copy the Hash value and paste it here.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="#">A SHA-256 hash is 64 letters and digits. Run Get-FileHash with -Algorithm SHA256 and copy the whole value.</div>
@@ -263,12 +263,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Least privilege means the people who need the data and nobody else. So build that group first, and then look at who the share lets in.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click <code>AccessLevels</code>, choose New, Group, and create <code>Client Data Readers</code> as a Global Security group.</li>
 <li>Add the two advisors and the two Compliance reviewers on its Members tab, and nobody else.</li>
 <li>In PowerShell, run <code>Get-SmbShareAccess -Name Shares</code> and read the AccountName that has Read.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="client-data-readers">That's the group you built. The question asks which group the share lets read it today.</div>

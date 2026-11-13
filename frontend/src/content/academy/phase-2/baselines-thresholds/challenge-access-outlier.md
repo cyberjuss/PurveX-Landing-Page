@@ -22,11 +22,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Don't guess at what the role should have. A baseline is what the peers share, so read it off every one of them.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Find each of the four accounts and open its Member Of tab.</li>
 <li>List what each one has, then compare the four lists side by side.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>"nina.castillo","owen.brandt","lena.farooq","theo.walsh" | ForEach-Object { Get-ADPrincipalGroupMembership $_ | Select-Object @{N="User";E={$_}}, Name }</code></li>
@@ -64,11 +64,11 @@
 </div>
 <div class="ad-hint__text">
 <p>All four accounts share Compliance Users, so look past it for the one group that only the outlier has.</p>
-<ol>
+<ul>
 <li>Open theo.walsh's Member Of tab again.</li>
 <li>Compare it one more time against any of the other three accounts.</li>
 <li>Name the group present on theo.walsh and absent everywhere else.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="compliance users">All four accounts share that group, which makes it part of the baseline rather than the exception.</div>
@@ -102,11 +102,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Be careful to remove the membership, not the account. theo.walsh still needs Compliance Users.</p>
-<ol>
+<ul>
 <li>Open theo.walsh's Properties and go to the Member Of tab.</li>
 <li>Select Server Admins and click Remove.</li>
 <li>Confirm theo.walsh still shows Compliance Users afterward.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Remove-ADGroupMember -Identity "Server Admins" -Members "theo.walsh" -Confirm:$false</code></li>

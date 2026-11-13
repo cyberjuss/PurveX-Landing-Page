@@ -22,12 +22,12 @@
 </div>
 <div class="ad-hint__text">
 <p>A spray and a brute force look alike until you check one thing: is it one account failing many times, or many accounts failing once each?</p>
-<ol>
+<ul>
 <li>Open Event Viewer, Windows Logs → Security.</li>
 <li>Right-click Security and choose Filter Current Log, then filter by Event ID 4625.</li>
 <li>Sort by time and find the burst, every one landing within a few seconds of the last.</li>
 <li>Open a few and read Account For Which Logon Failed on the General tab. Count the distinct names in the burst.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-WinEvent -LogName Security -FilterHashtable @{Id=4625} -MaxEvents 50 | Format-List TimeCreated, Message</code></li>
@@ -61,11 +61,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Every other account in this log either failed outright or failed before it succeeded. Look for the one that did neither.</p>
-<ol>
+<ul>
 <li>Filter the Security log for event 4624 (successful logon).</li>
 <li>For each success, check whether a 4625 for the same account appears right before it.</li>
 <li>One success has no failure anywhere near it. Read its Account Name.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="petra.lindqvist">Any success on that account comes after a string of failures and a lockout. Find the account whose success has nothing in front of it.</div>
@@ -95,11 +95,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Remember that unlocking the account is part of the task, not just something to read about.</p>
-<ol>
+<ul>
 <li>Filter the Security log for event 4740 and read the Account That Was Locked Out.</li>
 <li>Open Active Directory Users and Computers and confirm the account shows as locked on its Account tab.</li>
 <li>Tick "Unlock account" and apply, or run <code>Unlock-ADAccount -Identity &lt;account&gt;</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="svc-night-index">That account signed in cleanly. Read event 4740 to find the one that was actually locked out.</div>
@@ -129,11 +129,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Start with the machine before you read any logs. Its OU is the department folder the computer lives in.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>Departments</code> and open the <code>Workstations</code> folder under each department until you find <code>WM-WKS07</code>.</li>
 <li>The department folder above that Workstations folder is your answer.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADComputer WM-WKS07).DistinguishedName</code></li>
@@ -176,10 +176,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Event 4625 is a failed sign-in and 4624 is a successful one. You'll only find these events in the export on this page, not in your lab's Security log.</p>
-<ol>
+<ul>
 <li>Read the export from top to bottom.</li>
 <li>Count the 4625 rows that appear before the first 4624.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="4625">That's the Event ID itself. Count how many rows carry it before the first success.</div>
@@ -209,11 +209,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A department group such as IT Users only grants standard access, so look for the group on Alex's account that grants more.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>alex.rivera</code>.</li>
 <li>Open the account and find the group on Member Of that goes beyond department access.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADPrincipalGroupMembership alex.rivera | Select-Object Name</code></li>
@@ -310,11 +310,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A task built to blend in will have a name that sounds like routine maintenance, so read what it runs, not just what it's called.</p>
-<ol>
+<ul>
 <li>Open Task Scheduler with Win+R and <code>taskschd.msc</code>.</li>
 <li>Open Task Scheduler Library and sort by Name.</li>
 <li>Find the task nobody on the team recognizes, then open its Actions tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ScheduledTask | Where-Object TaskPath -eq "\" | Select-Object TaskName, State</code></li>
@@ -347,11 +347,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The task's Actions tab named the address it was reaching, so find the outbound rule that allows traffic to that same address.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Outbound Rules and sort by Group to find the PurveX Lab rules.</li>
 <li>Read each rule's Remote Address against what the task's Actions tab named, then disable the one that matches.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Group "PurveX Lab" -Direction Outbound | Where-Object DisplayName -like "*Helper*" | Disable-NetFirewallRule</code></li>
@@ -384,11 +384,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Walk through TRACE: Technique (password spraying touches many accounts from one source), Reference (4625), Aggregate (count distinct accounts per source per window), Condition (threshold) and Escalation. This step is the Aggregate line.</p>
-<ol>
+<ul>
 <li><code>summarize</code> starts the aggregation.</li>
 <li><code>dcount(TargetUserName)</code> counts distinct accounts touched, not total events.</li>
 <li><code>by IpAddress, bin(TimeGenerated, 5m)</code> groups by source and a 5-minute window, so a slow trickle across hours does not falsely match.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="count\(\)">Counting every event misses the point, because a single account failing 20 times shouldn't trigger this. Count distinct accounts, not total failures.</div>

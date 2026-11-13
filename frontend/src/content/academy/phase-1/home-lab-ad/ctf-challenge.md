@@ -22,11 +22,11 @@
 </div>
 <div class="ad-hint__text">
 <p>You're looking for the standard access group for Jordan's department, so you can skip Domain Users and any firm-wide group.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>jordan.ellis</code>.</li>
 <li>Open the account and read the Member Of tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADPrincipalGroupMembership jordan.ellis | Select-Object Name</code></li>
@@ -68,11 +68,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Tickets often describe a job rather than a username, so search by the title instead.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Open Find from the domain's right-click menu and go to the Advanced tab.</li>
 <li>Set Field to User → Job Title and search for <code>Settlements Coordinator</code>. You can also browse Departments → Operations → Users and read each Title.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser -Filter "Title -eq 'Settlements Coordinator'"</code></li>
@@ -112,11 +112,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Count only the first level of folders. Users and Workstations sit inside a department, so they aren't departments themselves.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code>, then <code>Departments</code>.</li>
 <li>Count the folders directly under Departments.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="#">Count only the folders one level under Departments. Users and Workstations sit inside a department, so they do not count.</div>
@@ -157,11 +157,11 @@
 </div>
 <div class="ad-hint__text">
 <p>You find a computer the same way you find a person. One thing to watch: computer names never contain spaces.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> → <code>Departments</code> → <code>IT</code> → <code>Workstations</code>.</li>
 <li>Read the name of the computer object inside.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="wm-wks07|ops-wks03|fin-lt14">That computer belongs to another department. Open Departments → IT → Workstations.</div>
@@ -197,11 +197,11 @@
 </div>
 <div class="ad-hint__text">
 <p>An admin group should have a short member list, short enough to read at a glance.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>IT Admins</code>.</li>
 <li>Open the group and read the Members tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADGroupMember "IT Admins" | Select-Object Name</code></li>
@@ -242,11 +242,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Count the people listed on the group's Members tab.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>IT Admins</code>.</li>
 <li>Open the group and count the entries on the Members tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADGroupMember "IT Admins").Count</code></li>
@@ -284,11 +284,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Remember that an OU is a folder. Since the department folders hold people, the access groups sit in a folder of their own at the same level.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> and look at the folders beside <code>Departments</code>.</li>
 <li>Open each one until you find <code>Server Admins</code> and <code>Helpdesk</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="departments">Departments holds the people. The access groups sit in a separate top-level OU beside it.</div>
@@ -325,11 +325,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A good Description names who belongs in the group, rather than just repeating the group's name.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>IT Admins</code>.</li>
 <li>Open the group and read Description on the General tab.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="it-admins">That repeats the group's name. Read the Description field on the General tab.</div>
@@ -366,11 +366,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Base your answer on the group's member list, not on the word Technician on her account.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>Helpdesk</code>.</li>
 <li>Open the group and read the Members tab.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="yes|y">Priya's title mentions the help desk, but a title grants nothing. Check for her name on the Helpdesk group's Members tab.</div>
@@ -404,11 +404,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Look closely at the icons. A container uses a plain folder icon, while an OU's folder carries a small extra badge.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> and find the built-in folder that holds user accounts.</li>
 <li>Turn on View → Advanced Features. Open the folder's Properties from the tree and read the first part of distinguishedName on the Attribute Editor tab.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="users">That is the display name. The task asks for the name as distinguishedName writes it with its prefix.</div>

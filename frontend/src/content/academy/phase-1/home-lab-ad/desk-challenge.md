@@ -22,11 +22,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Find works from any folder you start in, so there's no need to know which department OU holds the account. The title lives on the Organization tab.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, right-click the domain and choose Find.</li>
 <li>Keep Users, Contacts, and Groups selected, type <code>jordan.ellis</code>, and click Find Now.</li>
 <li>Open the result and read Title on the Organization tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser jordan.ellis -Properties Title | Select-Object Name, Title</code></li>
@@ -64,12 +64,12 @@
 </div>
 <div class="ad-hint__text">
 <p>The deciding question from the Unlock or Reset tab is whether the caller still knows the password. Maya doesn't.</p>
-<ol>
+<ul>
 <li>Use Find to open <code>maya.okafor</code>.</li>
 <li>Right-click the account and choose Reset Password.</li>
 <li>Enter a new temporary password and tick User must change password at next logon.</li>
 <li>Click OK.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Set-ADAccountPassword maya.okafor -Reset -NewPassword (Read-Host -AsSecureString "New temporary password")</code></li>
@@ -138,11 +138,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Read the folders above the account before you move it, because once it's moved, the old location is gone from view.</p>
-<ol>
+<ul>
 <li>Use Find to locate <code>maya.okafor</code> and note the folder shown in the In Folder column.</li>
 <li>Right-click the account, choose Move, and select Departments, WealthManagement, Users.</li>
 <li>Open that folder and confirm Maya is listed there.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser maya.okafor | Select-Object DistinguishedName</code></li>
@@ -181,12 +181,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Moving an account changes where it lives, not what it can reach. Each department has a standard access group, listed on the Groups tab.</p>
-<ol>
+<ul>
 <li>Open maya.okafor's Properties and go to Member Of.</li>
 <li>Click Add and add <code>Wealth Management Users</code>.</li>
 <li>Select <code>Operations Users</code> and click Remove.</li>
 <li>Click OK, then reopen Member Of to confirm both changes stuck.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Add-ADGroupMember -Identity "Wealth Management Users" -Members maya.okafor</code></li>
@@ -226,11 +226,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The Description is on the General tab. Title, Department and Company sit together on a different tab.</p>
-<ol>
+<ul>
 <li>Open maya.okafor's Properties.</li>
 <li>On the General tab, set Description to something like "Client Advisor, Wealth Management. OU and groups corrected under DESK-2001."</li>
 <li>Click through the tabs until you find Title, and note the tab's name.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Set-ADUser maya.okafor -Description "Client Advisor, Wealth Management. OU and groups corrected under DESK-2001."</code></li>
@@ -269,11 +269,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Ticking User must change password at next logon sets <code>pwdLastSet</code> to a special value meaning the password has to be replaced before it can be used. The Attribute Editor shows that value in words.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, open View and turn on Advanced Features.</li>
 <li>Browse to Departments, WealthManagement, Users and open maya.okafor from there, not from Find.</li>
 <li>Open the Attribute Editor tab and find <code>pwdLastSet</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser maya.okafor -Properties pwdLastSet, PasswordExpired | Select-Object pwdLastSet, PasswordExpired</code></li>
@@ -311,11 +311,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The Read the Account tab warned about this quirk. Make sure Advanced Features is still on, then compare the two windows tab by tab.</p>
-<ol>
+<ul>
 <li>Open Find, switch to Computers, find <code>IT-WKS01</code> and open it. Note the tabs.</li>
 <li>Close it, browse to Departments, IT, Workstations, and open IT-WKS01 from there.</li>
 <li>Name the tab that appears only the second time.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="member-of|general|operating-system">That tab appears both ways. Look for the one that shows raw attributes such as lastLogon.</div>

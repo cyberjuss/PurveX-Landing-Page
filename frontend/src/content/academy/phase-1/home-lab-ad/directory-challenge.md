@@ -22,12 +22,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Pre-staging means creating the computer object before the machine joins, so the join finds it waiting in the folder you chose. The Join a Computer tab named the folder Windows uses when nothing was staged.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand Departments, IT, and then Workstations.</li>
 <li>Right-click Workstations, choose New, then Computer, and enter <code>IT-WKS09</code>.</li>
 <li>Look at the folders directly under the domain for the default one a new computer lands in.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-ADComputer -Name "IT-WKS09" -Path "OU=Workstations,OU=IT,OU=Departments,$((Get-ADDomain).DistinguishedName)"</code></li>
@@ -66,11 +66,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A workstation finds <code>purvexfinancial.local</code> by asking DNS, and the only DNS server that knows your domain is the domain controller itself. So the answer is your domain controller's own address, which is different in every lab.</p>
-<ol>
+<ul>
 <li>Sign in to the domain controller.</li>
 <li>Open PowerShell or a command prompt and run <code>ipconfig</code>.</li>
 <li>Read the IPv4 Address of the adapter the lab uses and type it here.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="8.8.8.8|8.8.4.4|1.1.1.1|1.0.0.1|9.9.9.9">That's a public DNS server, and it has never heard of purvexfinancial.local. Use the server that hosts your domain.</div>
@@ -165,13 +165,13 @@
 </div>
 <div class="ad-hint__text">
 <p>The full logon name is the username followed by @ and the domain's name. You'll see it on the account's Account tab as User logon name, with the domain picked from a list beside it.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, expand Departments, IT, and then Users.</li>
 <li>Right-click Users, choose New, then User. Enter Quinn Harper as the name and <code>quinn.harper</code> as the logon name.</li>
 <li>Set a password, finish the wizard, then open the account's Properties.</li>
 <li>On the Organization tab, set Title to <code>Help Desk Technician</code> and click Apply.</li>
 <li>On the Account tab, read the User logon name together with the domain beside it.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>$d = Get-ADDomain</code></li>
@@ -211,12 +211,12 @@
 </div>
 <div class="ad-hint__text">
 <p>A directory path reads from the object outward, the way an address reads from the house to the country. So the new OU comes first and Departments comes last, with <code>OU=</code> in front of each name.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, expand Departments.</li>
 <li>Right-click Compliance, choose New, then Organizational Unit, and name it <code>Workstations</code>.</li>
 <li>Open the new OU's Properties and fill in the Description, for example "Compliance department workstation computer objects."</li>
 <li>Write the path from Workstations up to Departments, separated by commas.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-ADOrganizationalUnit -Name "Workstations" -Path "OU=Compliance,OU=Departments,$((Get-ADDomain).DistinguishedName)" -Description "Compliance department workstation computer objects."</code></li>
@@ -255,11 +255,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Open Priya's and Alex's Member Of tabs side by side, as the Service Accounts tab suggested. The group Alex has and Priya doesn't is your answer.</p>
-<ol>
+<ul>
 <li>Open priya.nair's Properties and read the Member Of tab.</li>
 <li>Open quinn.harper's Member Of tab, click Add, and add the same department group.</li>
 <li>Open alex.rivera's Member Of tab and compare it with Priya's.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Add-ADGroupMember -Identity "IT Users" -Members quinn.harper</code></li>
@@ -299,12 +299,12 @@
 </div>
 <div class="ad-hint__text">
 <p>The Service Accounts tab listed five practices. Four of them are about the name, the folder, the password and the Description. The fifth is about time.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, right-click ServiceAccounts, choose New, then User, and use <code>svc-print-queue</code> as both the name and the logon name.</li>
 <li>Set a long password and tick Password never expires.</li>
 <li>Open the account's Properties and write a Description such as "Runs the nightly print queue cleanup on IT-WKS01, 02:00-02:30."</li>
 <li>On the Account tab, find the button that sets when the account may sign in.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-ADUser -Name "svc-print-queue" -SamAccountName svc-print-queue -Path "OU=ServiceAccounts,$((Get-ADDomain).DistinguishedName)" -Description "Runs the nightly print queue cleanup on IT-WKS01, 02:00-02:30." -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -Enabled $true</code></li>
@@ -403,12 +403,12 @@
 </div>
 <div class="ad-hint__text">
 <p>The Group Policy tab listed the three places a GPO can link to. You've used the OU, and you know the domain is another, so name the one that's left.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
 <li>Expand the domain, Departments, and then Compliance.</li>
 <li>Right-click Workstations and choose Create a GPO in this domain, and Link it here.</li>
 <li>Name it <code>PurveX - Compliance Workstations</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-GPO -Name "PurveX - Compliance Workstations" | New-GPLink -Target "OU=Workstations,OU=Compliance,OU=Departments,$((Get-ADDomain).DistinguishedName)"</code></li>

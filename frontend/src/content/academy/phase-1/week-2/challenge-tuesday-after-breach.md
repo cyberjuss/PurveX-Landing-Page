@@ -52,11 +52,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Analysts decode values like this in CyberChef, the free tool from GCHQ that runs in the browser. A value made only of the digits 0 to 9 and the letters a to f is usually hex. Undo one layer at a time until you can read it.</p>
-<ol>
+<ul>
 <li>On your lab's domain controller, open <code>C:\PurveX\Shares\IT\settlement-upload.ps1</code> and copy the value of <code>$Password</code>.</li>
 <li>Open CyberChef at <code>gchq.github.io/CyberChef</code> and paste the value into Input.</li>
 <li>Drag in From Hex. If the output still isn't readable and ends in <code>=</code>, add From Base64 below it.</li>
-</ol>
+</ul>
 <p>In PowerShell, the same two steps:</p>
 <ul>
 <li><code>$hex = "553256306447786c4c553576647930794d44493249513d3d"; $b64 = -join ($hex -split '(..)' | Where-Object { $_ } | ForEach-Object { [char][Convert]::ToInt32($_, 16) }); [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))</code></li>
@@ -95,11 +95,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A file's SHA-256 changes completely if even one character changes, so the genuine copies all produce exactly the published value, and an altered copy produces something else.</p>
-<ol>
+<ul>
 <li>On your lab's domain controller, read the published value in <code>C:\PurveX\Shares\IT\checksums.txt</code>.</li>
 <li>In PowerShell, run <code>Get-FileHash C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-a.txt</code>, then the same command on mirror-b and mirror-c, and compare each Hash value to the one in checksums.txt.</li>
 <li>Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>. Moving keeps it as evidence.</li>
-</ol>
+</ul>
 <p>In PowerShell, checking all three mirrors in one command:</p>
 <ul>
 <li><code>Get-FileHash C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-*.txt | Select-Object Path, Hash</code></li>

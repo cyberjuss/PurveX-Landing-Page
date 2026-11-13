@@ -22,11 +22,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The lab's department shares live under <code>C:\PurveX\Shares</code>. Look in Operations for a file that plainly belongs to another department, and count the client rows, not the header.</p>
-<ol>
+<ul>
 <li>Open File Explorer and go to <code>C:\PurveX\Shares\Operations</code>.</li>
 <li>Open the client export and count the rows that hold a client.</li>
 <li>Move the file, don't copy it, into <code>C:\PurveX\Shares\WealthManagement</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Import-Csv C:\PurveX\Shares\Operations\WM_Client_Export.csv).Count</code></li>
@@ -96,11 +96,11 @@
 </div>
 <div class="ad-hint__text">
 <p>File shares on Windows use SMB. Look for an inbound rule that blocks rather than allows, with a name that sounds like maintenance. Its Scope tab shows which network it blocks.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Open Inbound Rules, sort by Action, and look at the rules that Block.</li>
 <li>Open the maintenance rule, read its port on the Protocols and Ports tab, then right-click it and choose Disable Rule.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Direction Inbound -Action Block | Select-Object DisplayName, Enabled</code></li>
@@ -142,11 +142,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A hash changes completely if even one character in the file changes, so a mismatch proves the file was altered. Comparing it line by line with the approved copy shows you where.</p>
-<ol>
+<ul>
 <li>In PowerShell, run <code>Get-FileHash C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv</code> and compare the Hash value it prints with the one saved in <code>Wire_Approvals_Nov.sha256</code> (open that file in Notepad to read it). A mismatch proves the file changed.</li>
 <li>Run <code>Compare-Object (Get-Content C:\PurveX\Archive\Wire_Approvals_Nov.csv) (Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv)</code>. It prints the one line that differs between the two files. The Wire ID is the first value on that line.</li>
 <li>Run <code>Copy-Item C:\PurveX\Archive\Wire_Approvals_Nov.csv C:\PurveX\Shares\Finance\ -Force</code> to restore the approved version, then hash the Finance file again to confirm it now matches.</li>
-</ol>
+</ul>
 <p>In PowerShell, the same three steps in a row:</p>
 <ul>
 <li><code>(Get-FileHash C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv).Hash; Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.sha256</code></li>

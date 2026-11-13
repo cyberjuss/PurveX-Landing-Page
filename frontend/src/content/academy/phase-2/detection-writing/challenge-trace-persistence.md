@@ -157,11 +157,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The task object itself still exists, because disabling it in Week 1 removed only its ability to fire, not its definition. Read <code>PT15M</code> as a Period of Time of 15 Minutes.</p>
-<ol>
+<ul>
 <li>Open PowerShell on the domain controller.</li>
 <li><code>Get-ScheduledTask -TaskName "WindowsDiagnosticsSync"</code> confirms it is still there and now Disabled.</li>
 <li><code>.Triggers.Repetition.Interval</code> reads the schedule straight off that trigger.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="pt15m">That's the raw ISO 8601 value. Strip the wrapper and report just the number of minutes it names.</div>
@@ -220,10 +220,10 @@
 </div>
 <div class="ad-hint__text">
 <p>A detection tells you something is happening, but it doesn't stop it. Those are two different jobs, and this ticket stays open until you do the second one yourself.</p>
-<ol>
+<ul>
 <li><code>Get-NetFirewallRule -DisplayName "Windows Update Assistant Network" | Disable-NetFirewallRule</code></li>
 <li>Confirm it with <code>Get-NetFirewallRule -DisplayName "Windows Update Assistant Network" | Select-Object DisplayName, Enabled</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="true|enabled">That's the state from before you disabled it. Run <code>Disable-NetFirewallRule</code> against the rule first, then check Enabled again.</div>

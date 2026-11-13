@@ -52,10 +52,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Domain Admins should hold only the built-in Administrator and the few accounts whose job is running the domain. A help desk technician isn't one of them.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, open the Users container and then Domain Admins.</li>
 <li>On the Members tab, find the staff account and click Remove.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADGroupMember "Domain Admins" | Select-Object SamAccountName</code></li>
@@ -95,10 +95,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Authorization comes from groups. Read Noor's Member Of tab and the account's Description, which says how the access started.</p>
-<ol>
+<ul>
 <li>Use Find to open <code>noor.ahmadi</code> and read the Description.</li>
 <li>On the Member Of tab, select the Compliance group and click Remove.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADPrincipalGroupMembership noor.ahmadi | Select-Object Name</code></li>
@@ -137,11 +137,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Windows records a failed sign-in as Event ID 4625 and a successful one as 4624. Filter the log down to failures, then find the ones for this account.</p>
-<ol>
+<ul>
 <li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>, then Windows Logs, Security.</li>
 <li>Choose Filter Current Log, type <code>4625</code> in the event IDs box, and click OK.</li>
 <li>Use Find to look for <code>frontdesk.shared</code>, or open each event and read Account Name under "Account For Which Logon Failed".</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625 } | Where-Object { $_.Properties[5].Value -like "frontdesk.shared*" }).Count</code></li>
@@ -180,11 +180,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A shared account usually gives itself away in its name or its Description. Check the accounts in Departments → Operations → Users.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, open Departments → Operations → Users.</li>
 <li>Read the Description of each account until you find the shared one.</li>
 <li>Right-click it and choose Disable Account.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser -SearchBase "OU=Users,OU=Operations,OU=Departments,$((Get-ADDomain).DistinguishedName)" -Filter * -Properties Description | Select-Object SamAccountName, Description</code></li>
