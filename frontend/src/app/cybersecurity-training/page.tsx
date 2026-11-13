@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import TrainingPage, { type CourseOutline } from "@/components/purvex-landing-page/training-page";
 import { phases } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
+import { isPhaseLocked } from "@/lib/academy-locks";
 
 const title = "Cybersecurity Training";
 const description =
@@ -26,7 +27,8 @@ function outline(): CourseOutline {
     entries: entriesOf(p).map((w) => ({
       title: w.title.replace(" — ", ": "),
       summary: w.summary,
-      live: w.sections.length > 0,
+      // A locked phase reads as coming soon here too, even with its lessons written.
+      live: w.sections.length > 0 && !isPhaseLocked(p.slug),
       lessons: w.sections.map((s) => s.label.replace(/ — .*$/, "")).filter((l) => !SKIP.has(l)),
     })),
   }));
