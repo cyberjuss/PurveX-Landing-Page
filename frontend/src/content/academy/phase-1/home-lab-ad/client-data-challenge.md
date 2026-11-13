@@ -241,7 +241,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A hash is a fingerprint of the file's exact bytes. Change one digit in one client's row and the hash changes completely. A recorded hash lets anyone prove later whether the file is still the one the firm signed off. If your hash ever differs from this one, check first whether you ran the command the same way. Once that's ruled out, treat the mismatch as a real change to the file.</p>
+<p>A hash is a fingerprint of the file's exact bytes, so changing even one digit in one client's row changes it completely. A recorded hash lets anyone prove later whether the file is still the one the firm signed off. If your hash ever differs from this one, check first whether you ran the command the same way. Once that's ruled out, treat the mismatch as a real change to the file.</p>
 </div>
 <div>
 <span>What to do</span>

@@ -114,7 +114,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>This exact hash is real and already in VirusTotal's database. The file contains the EICAR standard antivirus test string, a 68-byte file that every major engine flags on sight, so the lookup shows real detections rather than "no results." A lookup for a freshly built payload, by contrast, often comes back empty, because a brand-new file has no reputation yet. Either answer, flagged or unknown, tells you something real. The disguised extension (T1036.007, Double File Extension) is only the first clue. The hash is what proves what the file really is underneath its name.</p>
+<p>This exact hash is real and already in VirusTotal's database. The file contains the EICAR standard antivirus test string, a 68-byte file that every major engine flags on sight, so the lookup shows real detections rather than "no results." A lookup for a freshly built payload, by contrast, often comes back empty, because a brand-new file has no reputation yet. Either answer, flagged or unknown, tells you something real, which is why the disguised extension (T1036.007, Double File Extension) only counts as the first clue. The hash is what proves what the file really is underneath its name.</p>
 </div>
 </div>
 </div>

@@ -117,4 +117,4 @@ A real domain controller listens on more than five ports, though. Scroll through
 
 ### Why It Matters
 
-Five ports explain what a domain controller is for, but the real list explains what yours is doing. The habit to keep from this lab matters more than any single port. Whenever you can, open the machine and ask it, rather than working from what you remember.
+Five ports explain what a domain controller is for, but the real list explains what yours is doing. That is the habit worth keeping from this lab: whenever you can, open the machine and ask it, rather than working from what you remember.

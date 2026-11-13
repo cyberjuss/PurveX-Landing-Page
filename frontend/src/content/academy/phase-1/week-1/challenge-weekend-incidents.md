@@ -87,7 +87,7 @@
 <div class="ad-mission" data-id="w1-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Availability · High · INC-1090</span>
 <h4>Bring the File Shares Back</h4>
-<p><strong>Priya Nair · IT · 8:31 AM</strong><br>The phones haven't stopped. Nobody on the fourth floor, the office network at 10.250.40.0/24, can open a file share this morning, whatever department they're in. The files are all still there on the server. The only thing that happened this weekend was a maintenance window.</p>
+<p><strong>Priya Nair · IT · 8:31 AM</strong><br>The phones haven't stopped. Nobody on the fourth floor, the office network at 10.250.40.0/24, can open a file share this morning, whatever department they're in. The files are all still there on the server, and the only thing that happened this weekend was a maintenance window.</p>
 <p><strong>Task:</strong> Find the firewall rule the weekend's maintenance left behind on the domain controller and switch it off. Then report the port it was blocking.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Bring the File Shares Back" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">

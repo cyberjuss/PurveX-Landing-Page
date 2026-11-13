@@ -43,7 +43,7 @@
 <div class="ad-mission" data-id="w2-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · Apply it · Encoding · High · INC-1091</span>
 <h4>Decode the Settlement Script</h4>
-<p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>"The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I assume it is fine to send. It is in the IT share."</p>
+<p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>"The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I assume it is fine to send it straight from the IT share."</p>
 <p><strong>Task:</strong> Answer Taylor. Confirm whether the password is genuinely encrypted, and report what it is.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Decode the Settlement Script" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -138,7 +138,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>With no salt, the same password always produces the same hash. So you can hash every word in the list and look for a match, which is what an attacker holding this table would do.</p>
+<p>With no salt, the same password always produces the same hash, so you can hash every word in the list and look for a match, which is what an attacker holding this table would do.</p>
 <ul>
 <li>On your lab's domain controller, open <code>C:\PurveX\Shares\IT\exported-hashes.txt</code> and find the two accounts with the same hash.</li>
 <li>Open CyberChef, and paste the whole contents of <code>common-passwords.txt</code> into Input, one word per line.</li>

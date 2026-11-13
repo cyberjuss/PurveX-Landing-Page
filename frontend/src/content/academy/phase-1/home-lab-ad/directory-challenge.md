@@ -246,7 +246,7 @@
 <div class="ad-mission" data-id="dr-07" data-attempts="0">
 <span class="ad-mission__num">Task 07 · Apply it · Groups</span>
 <h4>Mirror the Right Peer</h4>
-<p><strong>Alex Rivera · IT · 1:55 PM</strong><br>Quinn does the same job as Priya, so give Quinn the same access Priya has. Please don't copy mine. I hold more than a help desk role needs.</p>
+<p><strong>Alex Rivera · IT · 1:55 PM</strong><br>Quinn does the same job as Priya, so give Quinn the same access Priya has. Please don't copy mine, since I hold more than a help desk role needs.</p>
 <p><strong>Task:</strong> Add quinn.harper to the same department group as priya.nair. Then report the group alex.rivera has that Quinn must not get.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Mirror the Right Peer" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -298,7 +298,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The Service Accounts tab listed five practices. Four of them are about the name, the folder, the password and the Description. The fifth is about time.</p>
+<p>The Service Accounts tab listed five practices, and four of them cover the name, the folder, the password and the Description. The fifth is about time.</p>
 <ul>
 <li>In Active Directory Users and Computers, right-click ServiceAccounts, choose New, then User, and use <code>svc-print-queue</code> as both the name and the logon name.</li>
 <li>Set a long password and tick Password never expires.</li>
@@ -375,7 +375,7 @@
 <p>The Organizational Units tab explained that you can delegate control over a single OU. Ask yourself which option covers Compliance's staff accounts and nothing more.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">A group decides what its members can reach. It isn't where you grant someone control over other accounts. Delegation attaches to the folder those accounts live in.</div>
+<div class="ad-miss" data-guess="a">A group decides what its members can reach. It isn't where you grant someone control over other accounts, since delegation attaches to the folder those accounts live in.</div>
 <div class="ad-miss" data-guess="c">That would let Helpdesk reset every password in the firm, administrators included. Delegate at the smallest folder that covers the job.</div>
 <div class="ad-flag">
 <div class="ad-break">

@@ -141,7 +141,7 @@
 <div class="ad-mission" data-id="w3-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Apply it · Protocols · High · CHG-3303 · INC-1092</span>
 <h4>Why Is the DC Sending Mail?</h4>
-<p><strong>Alex Rivera · IT · 10:10 AM</strong><br>A domain controller has no legitimate reason to send email. The last line of the change log says they opened something outbound for a test. Find it and shut it.</p>
+<p><strong>Alex Rivera · IT · 10:10 AM</strong><br>A domain controller has no legitimate reason to send email, yet the last line of the change log says they opened something outbound for a test. Find it and shut it.</p>
 <p><strong>Task:</strong> Find the outbound rule from CHG-3303, switch it off, and name the protocol it let out.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Why Is the DC Sending Mail?" placeholder="a protocol" autocomplete="off" autocapitalize="off" spellcheck="false">

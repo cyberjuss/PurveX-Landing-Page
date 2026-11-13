@@ -199,7 +199,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Moving the account brings the right Group Policy with it, because policy follows the folder. Groups don't move with the account, though, so you have to change those yourself. And the title is a separate field again, on the General tab.</p>
+<p>Moving the account brings the right Group Policy with it, because policy follows the folder, but you have to change the groups yourself since they do not move with the account. The title is a separate field again, so update that too on the General tab.</p>
 <ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click <code>taylor.osei</code> and choose Move, then select Departments → Compliance → Users.</li>
@@ -322,7 +322,7 @@
 <div class="ad-mission" data-id="tq-13" data-attempts="0">
 <span class="ad-mission__num">Ticket 08 · Apply it · INC-1049 · Medium</span>
 <h4>Audit Finding</h4>
-<p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our quarterly review found a staff account whose password never expires. Policy allows that setting only on service accounts.</p>
+<p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our quarterly review found a staff account whose password never expires, even though policy allows that setting only on service accounts.</p>
 <p><strong>Task:</strong> Find the staff account with Password never expires set and clear the setting without disabling the account. Then report its username.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Audit Finding" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -490,7 +490,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every device that asked for <code>files</code> was sent to an address where no server exists. So one wrong record took the shared drive away from the whole firm, even though the server itself never went down.</p>
+<p>Every device that asked for <code>files</code> was sent to an address where no server exists, so one wrong record took the shared drive away from the whole firm, even though the server itself never went down.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -602,7 +602,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Windows hides known file extensions by default, which lets a program pass for a document. So as well as the name, look at the Type column and the modified time.</p>
+<p>Windows hides known file extensions by default, which lets a program pass for a document, so check the Type column and the modified time along with the name.</p>
 <ul>
 <li>Open File Explorer and go to <code>C:\PurveX\Shares\Finance</code>.</li>
 <li>On the View menu, turn on File name extensions and compare the files.</li>
@@ -729,7 +729,7 @@
 <div class="ad-mission" data-id="tq-20" data-attempts="0">
 <span class="ad-mission__num">Ticket 17 · Stretch · INC-1056 · High</span>
 <h4>Payroll Works for Some People</h4>
-<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>The payroll portal at payroll.purvexfinancial.local opens fine for me, but Morgan sitting next to me gets a timeout. When Morgan refreshes a few times it sometimes loads. IT moved payroll to a new server last month.</p>
+<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>The payroll portal at payroll.purvexfinancial.local opens fine for me, but Morgan sitting next to me gets a timeout, though it sometimes loads after a few refreshes. This started after IT moved payroll to a new server last month.</p>
 <p><strong>Task:</strong> Find why the name <code>payroll</code> resolves differently between attempts and remove the stale record, so the name points only at the domain controller. In this lab the domain controller stands in for the new payroll server. Report the stale record's address.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Payroll Works for Some People" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -737,7 +737,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>When a name has two A records, DNS hands them out in turn, which is called round robin. So if one of those addresses belongs to a server that no longer exists, every other lookup fails.</p>
+<p>When a name has two A records, DNS hands them out in turn, which is called round robin. If one of those addresses belongs to a server that no longer exists, every other lookup then fails.</p>
 <ul>
 <li>On the domain controller run <code>Resolve-DnsName payroll</code> and look at how many addresses come back.</li>
 <li>Run <code>ipconfig</code> to find the domain controller's own address, then test the other one with <code>Test-NetConnection</code>.</li>
@@ -811,7 +811,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Set a threshold that stops guessing without locking out real people on a bad morning. Ten tries with a fifteen-minute lock is the usual balance. Then watch for event 4740, so a wave of lockouts is visible as soon as it starts.</p>
+<p>Set a threshold that stops guessing without locking out real people on a bad morning, with ten tries and a fifteen-minute lock as the usual balance. Then watch for event 4740, so a wave of lockouts is visible as soon as it starts.</p>
 </div>
 </div>
 </div>

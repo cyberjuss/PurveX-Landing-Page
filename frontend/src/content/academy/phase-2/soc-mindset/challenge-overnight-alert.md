@@ -82,7 +82,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An approved overnight window authorizes work from one named workstation, not a sign-in from anywhere at that hour. Attackers use stolen credentials at convenient times on purpose, often inside a window when staff already expect activity. Had you checked only the time and stopped there, you would have closed this as clean.</p>
+<p>An approved overnight window authorizes work from one named workstation, not a sign-in from anywhere at that hour. That gap matters because attackers use stolen credentials at convenient times on purpose, often inside a window when staff already expect activity. Had you checked only the time and stopped there, you would have closed this as clean.</p>
 </div>
 <div>
 <span>What to do</span>

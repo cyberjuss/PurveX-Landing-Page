@@ -43,7 +43,7 @@
 <div class="ad-mission" data-id="w4-04" data-attempts="0">
 <span class="ad-mission__num">Finding 02 · Warm-up · Authorization · Critical · INC-1093</span>
 <h4>The Temporary Domain Admin</h4>
-<p><strong>Alex Rivera · IT · 9:00 AM</strong><br>During the server migration, someone added a member of staff to Domain Admins "just for the weekend". The migration finished weeks ago. The auditors want to know who it is, and that it's been fixed.</p>
+<p><strong>Alex Rivera · IT · 9:00 AM</strong><br>During the server migration, someone added a member of staff to Domain Admins "just for the weekend," but the migration finished weeks ago and nobody has removed the access since. The auditors want to know who it is, and that it's been fixed.</p>
 <p><strong>Task:</strong> Find the staff account in Domain Admins that shouldn't be there, remove it, and report its username.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Temporary Domain Admin" placeholder="a username" autocomplete="off" autocapitalize="off" spellcheck="false">
