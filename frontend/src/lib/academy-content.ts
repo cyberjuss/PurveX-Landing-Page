@@ -96,7 +96,7 @@ const phase1Weeks: WeekDef[] = [
   },
   {
     slug: "week-4",
-    title: "Week 4 — Authentication & Authorization & Access Control",
+    title: "Week 4 — Authentication, Authorization & Access Control",
     summary: "Prove who someone is, give them only what their job needs, and check it on every request. Then break an app that forgot to.",
     sections: [
       { label: "Overview", file: "phase-1/week-4/lesson-overview.md" },
@@ -223,7 +223,7 @@ const phase2Weeks: WeekDef[] = [
   // student progress to preserve -- safe to retire rather than renumber.
   {
     slug: "baselines-thresholds",
-    title: "Week 4 — Baselines & Thresholds & Zero Trust",
+    title: "Week 4 — Baselines, Thresholds & Zero Trust",
     summary: "Map your own lab's network, tell an outlier from a baseline, place MITRE ATT&CK on attacker behavior you've already seen, and learn what a detection threshold actually costs in either direction.",
     sections: [
       { label: "Overview", file: "phase-2/baselines-thresholds/overview.md" },

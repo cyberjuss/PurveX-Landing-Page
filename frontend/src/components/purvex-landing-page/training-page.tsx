@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowRight, BookOpen, Bug, Check, FileSearch, Fingerprint, KeyRound, MonitorDot, Network, Radar, ScanSearch,
-  Server, ShieldCheck, ShieldHalf, Siren, type LucideIcon,
+  ArrowRight, BookOpen, Bug, Check, Eye, FileSearch, Fingerprint, Flag, Gauge, KeyRound, Link2, MonitorDot, Network, Radar,
+  ScanSearch, Server, ShieldCheck, ShieldHalf, Siren, type LucideIcon,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
 import { DiscordLogo } from "./discord-logo";
@@ -26,7 +26,14 @@ import {
 export type CourseOutline = {
   label: string;
   title: string;
-  entries: { title: string; summary: string; live: boolean; lessons: string[] }[];
+  /** open: students can take it now. soon: written, not open yet. planned: not written yet. */
+  status: "open" | "soon" | "planned";
+  summary: string;
+  /** What a phase with nothing written yet will cover. */
+  points: string[];
+  weeks: { no: number; title: string; summary: string }[];
+  homeLab: { parts: string[]; summary: string } | null;
+  capstones: { title: string; summary: string }[];
 }[];
 
 type Item = { title: string; body: string; Icon: BrandIcon };
@@ -60,11 +67,13 @@ const FEATURES: Item[] = [
 
 
 
-function plainWeek(title: string) {
-  return title.replace(/^Week \d+:\s*/, "");
-}
-
 const PHASE_ICONS: LucideIcon[] = [ShieldCheck, Radar, Siren];
+
+const STATUS_LABEL: Record<CourseOutline[number]["status"], string> = {
+  open: "Open now",
+  soon: "Coming soon",
+  planned: "In development",
+};
 
 // Week icons are matched on the topic name, so new weeks in the portal
 // pick up a fitting icon without touching this page.
@@ -72,11 +81,13 @@ const WEEK_ICONS: [RegExp, LucideIcon][] = [
   [/cia|triad/i, ShieldHalf],
   [/encrypt|hash/i, KeyRound],
   [/network/i, Network],
-  [/active directory|home lab/i, Server],
   [/auth|access/i, Fingerprint],
+  [/soc|analyst/i, Eye],
   [/malware/i, Bug],
+  [/baseline|threshold|zero trust/i, Gauge],
+  [/kill chain/i, Link2],
   [/siem/i, MonitorDot],
-  [/detection/i, ScanSearch],
+  [/detection|kql/i, ScanSearch],
   [/log/i, FileSearch],
 ];
 
@@ -84,33 +95,83 @@ function weekIcon(title: string): LucideIcon {
   return WEEK_ICONS.find(([re]) => re.test(title))?.[1] ?? BookOpen;
 }
 
+// One block per phase: what it covers, its weeks as cards with the portal's
+// own one-line summary, the Home Lab as a single item with its parts, and
+// the capstone. A phase with nothing written yet lists what it will cover.
 function Course({ outline }: { outline: CourseOutline }) {
   return (
-    <ol className="tp-course" data-r>
+    <ol className="tp-syl" data-r>
       {outline.map((phase, n) => {
-        const live = phase.entries.some((e) => e.live);
+        const PhaseIcon = PHASE_ICONS[n] ?? BookOpen;
         return (
-          <li key={phase.label} data-live={live ? "1" : "0"}>
-            <i>
-              {(() => {
-                const Icon = PHASE_ICONS[n] ?? BookOpen;
-                return <Icon size={24} strokeWidth={1.75} />;
-              })()}
-              <b>{n + 1}</b>
-            </i>
-            <span>{live ? phase.label : `${phase.label}, coming soon`}</span>
-            <strong>{phase.title}</strong>
-            {phase.entries.length > 0 && (
-              <ul>
-                {phase.entries.map((e) => {
-                  const Icon = weekIcon(e.title);
+          <li key={phase.label} className="tp-syl__phase" data-status={phase.status}>
+            <header className="tp-syl__head">
+              <i className="tp-syl__badge">
+                <PhaseIcon size={22} strokeWidth={1.75} />
+              </i>
+              <div>
+                <p className="tp-syl__meta">
+                  <span>{phase.label}</span>
+                  <em>{STATUS_LABEL[phase.status]}</em>
+                </p>
+                <h3>{phase.title}</h3>
+                {phase.summary && <p className="tp-syl__sum">{phase.summary}</p>}
+              </div>
+            </header>
+
+            {phase.weeks.length > 0 && (
+              <ul className="tp-syl__weeks">
+                {phase.weeks.map((w) => {
+                  const Icon = weekIcon(w.title);
                   return (
-                    <li key={e.title}>
+                    <li key={w.title} className="tp-syl__item">
                       <em><Icon size={15} strokeWidth={1.9} /></em>
-                      {plainWeek(e.title)}
+                      <div>
+                        <span>Week {w.no}</span>
+                        <strong>{w.title}</strong>
+                        <p>{w.summary}</p>
+                      </div>
                     </li>
                   );
                 })}
+              </ul>
+            )}
+
+            {phase.homeLab && (
+              <div className="tp-syl__item tp-syl__wide">
+                <em><Server size={15} strokeWidth={1.9} /></em>
+                <div>
+                  <span>Home Lab · {phase.homeLab.parts.length} parts</span>
+                  <strong>Build and run PurveX Financial</strong>
+                  <p>{phase.homeLab.summary}</p>
+                  <ul className="tp-syl__parts">
+                    {phase.homeLab.parts.map((part) => (
+                      <li key={part}>{part}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {phase.capstones.map((c) => (
+              <div key={c.title} className="tp-syl__item tp-syl__wide">
+                <em><Flag size={15} strokeWidth={1.9} /></em>
+                <div>
+                  <span>Capstone</span>
+                  <strong>{c.title}</strong>
+                  <p>{c.summary}</p>
+                </div>
+              </div>
+            ))}
+
+            {phase.points.length > 0 && (
+              <ul className="tp-syl__plan">
+                {phase.points.map((pt) => (
+                  <li key={pt}>
+                    <Check size={15} aria-hidden="true" />
+                    {pt}
+                  </li>
+                ))}
               </ul>
             )}
           </li>
@@ -278,7 +339,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section" id="course">
         <div className="pg-head">
           <h2>The course, starting with the fundamentals</h2>
-          <p>Phase 1 is open now, and the security phases follow. Each one pairs short lessons with hands-on work in the lab.</p>
+          <p>Three phases, from the fundamentals to incident response. Phase 1 is open now, and every week pairs short lessons with hands-on work in your own lab.</p>
         </div>
         <Course outline={outline} />
       </section>
@@ -427,31 +488,34 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         .tp-pricing__note { margin: 22px 0 0; text-align: center; font-size: .88rem; color: var(--muted) }
         @media (max-width: 900px) { .tp-tiers { grid-template-columns: 1fr; gap: 16px } }
 
-        .tp-course { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); position: relative }
-        .tp-course::before { content: ""; position: absolute; left: 28px; right: 28px; top: 28px; height: 2px; background: linear-gradient(90deg, rgba(106,92,255,.45), rgba(106,92,255,.12)) }
-        .tp-course > li { position: relative; padding: 0 28px 8px 0 }
-        .tp-course > li + li { padding-left: 28px }
-        .tp-course > li > i {
-          position: relative; z-index: 1; display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 20px;
-          background: var(--accent); color: #fff; box-shadow: 0 0 0 6px #fbfcfe, 0 16px 30px -16px rgba(85,70,224,.7);
-        }
-        .tp-course > li > i svg { position: static }
-        .tp-course > li > i b {
-          position: absolute; top: -8px; right: -8px; display: grid; place-items: center; width: 22px; height: 22px;
-          font-style: normal; font-size: .72rem; font-weight: 700; background: #fff; color: var(--accent-deep); border: 1px solid rgba(106,92,255,.35);
-        }
-        .tp-course > li[data-live="0"] > i { background: #fff; color: var(--muted); border: 1.5px dashed rgba(106,92,255,.45); box-shadow: 0 0 0 6px #fbfcfe }
-        .tp-course > li > span { display: block; font-size: .85rem; font-weight: 600; color: var(--accent-deep) }
-        .tp-course > li > strong { display: block; margin-top: 6px; font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; color: var(--ink) }
-        .tp-course ul { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px }
-        .tp-course ul li { display: flex; align-items: center; gap: 12px; color: var(--ink-soft); font-size: .93rem; line-height: 1.35 }
-        .tp-course ul li em {
-          display: grid; place-items: center; width: 30px; height: 30px; flex: none;
-          background: var(--accent-soft); color: var(--accent-deep); transition: background .25s var(--ease), color .25s var(--ease);
-        }
-        .tp-course ul li em svg { position: static }
-        .tp-course ul li:hover em { background: var(--accent); color: #fff }
-        .tp-course > li[data-live="0"] > strong, .tp-course > li[data-live="0"] > span { color: var(--muted) }
+        .tp-syl { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px }
+        .tp-syl__phase { padding: 28px; border: 1px solid var(--border); background: #fff }
+        .tp-syl__phase[data-status="open"] { border-color: rgba(106,92,255,.32); box-shadow: 0 28px 56px -42px rgba(85,70,224,.55) }
+        .tp-syl__head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: start }
+        .tp-syl__badge { display: grid; place-items: center; width: 48px; height: 48px; background: var(--accent); color: #fff; box-shadow: 0 14px 26px -16px rgba(85,70,224,.8) }
+        .tp-syl__badge svg { position: static }
+        .tp-syl__phase:not([data-status="open"]) .tp-syl__badge { background: var(--accent-soft); color: var(--accent-deep); box-shadow: none }
+        .tp-syl__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; font-size: .82rem; font-weight: 600; color: var(--accent-deep) }
+        .tp-syl__meta em { font-style: normal; padding: 2px 8px; font-size: .72rem; font-weight: 650; background: var(--accent-soft); color: var(--accent-deep) }
+        .tp-syl__phase[data-status="open"] .tp-syl__meta em { background: #e6f6ee; color: #0a7d55 }
+        .tp-syl__head h3 { margin: 4px 0 0; font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; color: var(--ink) }
+        .tp-syl__sum { margin: 6px 0 0; max-width: 62ch; color: var(--ink-soft); font-size: .95rem; line-height: 1.55 }
+        .tp-syl__weeks { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+        .tp-syl__item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 14px 16px; border: 1px solid var(--border); background: #fbfcfe; transition: border-color .25s var(--ease) }
+        .tp-syl__item:hover { border-color: rgba(106,92,255,.35) }
+        .tp-syl__item > em { display: grid; place-items: center; width: 30px; height: 30px; background: var(--accent-soft); color: var(--accent-deep); transition: background .25s var(--ease), color .25s var(--ease) }
+        .tp-syl__item > em svg { position: static }
+        .tp-syl__item:hover > em { background: var(--accent); color: #fff }
+        .tp-syl__item span { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted) }
+        .tp-syl__item strong { display: block; margin-top: 2px; font-size: .98rem; font-weight: 650; line-height: 1.3; color: var(--ink) }
+        .tp-syl__item p { margin: 3px 0 0; font-size: .86rem; line-height: 1.45; color: var(--ink-soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
+        .tp-syl__wide { margin-top: 10px }
+        .tp-syl__wide p { -webkit-line-clamp: 3 }
+        .tp-syl__parts { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px }
+        .tp-syl__parts li { padding: 3px 9px; font-size: .78rem; font-weight: 600; border: 1px solid rgba(106,92,255,.25); background: #fff; color: var(--accent-deep) }
+        .tp-syl__plan { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 8px }
+        .tp-syl__plan li { display: flex; align-items: center; gap: 10px; color: var(--ink-soft); font-size: .93rem }
+        .tp-syl__plan svg { flex: none; color: var(--accent) }
 
           display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 32px 64px; align-items: center;
           padding: clamp(32px, 5vw, 64px); background: var(--accent-soft); border: 1px solid rgba(106,92,255,.16);
@@ -483,13 +547,12 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         @media (max-width: 860px) {
           .tp-features { grid-template-columns: minmax(0, 1fr) }
           .tp-features__head { position: static }
-          .tp-course { grid-template-columns: 1fr; gap: 32px }
-          .tp-course::before { left: 27px; right: auto; top: 28px; bottom: 28px; width: 2px; height: auto; background: rgba(106,92,255,.25) }
-          .tp-course > li, .tp-course > li + li { padding: 0 0 0 80px }
-          .tp-course > li > i { position: absolute; left: 0; top: 0; margin: 0 }
+          .tp-syl__weeks { grid-template-columns: 1fr }
         }
         @media (max-width: 640px) {
           .tp-feature-list { grid-template-columns: 1fr }
+          .tp-syl__phase { padding: 20px }
+          .tp-syl__head { grid-template-columns: minmax(0, 1fr) }
         }
       `}</style>
     </SiteChrome>
