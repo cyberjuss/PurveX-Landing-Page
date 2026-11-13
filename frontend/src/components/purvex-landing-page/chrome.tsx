@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Linkedin, Menu, X } from "lucide-react";
+import { DiscordLogo } from "./discord-logo";
 
 /* ─────────────────────────────────────────────────────────
    PurveX — shared site chrome
@@ -264,13 +265,21 @@ export function SiteChrome({
         </div>
         <div className="sp-footer__bottom">
           <span>&copy; 2026 PurveX. All rights reserved.</span>
-          <a
-            href="https://www.linkedin.com/company/purvex/?viewAsMember=true"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Linkedin size={14} /> LinkedIn
-          </a>
+          <span className="sp-footer__social">
+            {/* The Range Discord invite, inlined at build time. Hidden if unset. */}
+            {process.env.NEXT_PUBLIC_DISCORD_INVITE_URL && (
+              <a href={process.env.NEXT_PUBLIC_DISCORD_INVITE_URL} target="_blank" rel="noreferrer" className="sp-footer__discord">
+                <DiscordLogo size={15} /> Discord
+              </a>
+            )}
+            <a
+              href="https://www.linkedin.com/company/purvex/?viewAsMember=true"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Linkedin size={14} /> LinkedIn
+            </a>
+          </span>
         </div>
       </footer>
 
@@ -580,6 +589,8 @@ export const CHROME_CSS = `
 .sp-footer__bottom { border-top: 1px solid var(--border); margin-top: 32px; padding-top: 20px; display: flex; align-items: center; justify-content: space-between; color: var(--muted-dim); font-size: .8rem }
 .sp-footer__bottom a { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-weight: 600; transition: color .2s }
 .sp-footer__bottom a:hover { color: var(--accent-deep) }
+.sp-footer__social { display: inline-flex; align-items: center; gap: 20px }
+.sp-footer__bottom a.sp-footer__discord:hover { color: #5865F2 }
 
 /* ── Responsive ── */
 @media (max-width: 940px) {
