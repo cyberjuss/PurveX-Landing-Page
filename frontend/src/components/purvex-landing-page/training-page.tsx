@@ -41,7 +41,7 @@ const COMMUNITY_POINTS = [
   "Hints when you're stuck, never answers",
   "Help getting your lab built and connected",
   "A new ticket every Friday to work together",
-  "Resume, interview and Security+ study help",
+  "Resume, interview and cert study help",
 ];
 
 // A small picture of the server, using the channels scripts/discord/setup.ts
