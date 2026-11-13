@@ -276,7 +276,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
               <DiscordLogo size={20} /> Start free to join
             </Link>
           )}
-          <p className="tp-dc__note">Free for every student. Range Pro adds private channels, cloud lab help and portfolio reviews.</p>
         </div>
 
         {/* A picture of the server, not a live embed: no third-party script,
@@ -442,7 +441,6 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           box-shadow: 0 14px 28px -16px rgba(88, 101, 242, .9); transition: background .2s var(--ease), transform .2s var(--ease);
         }
         .tp-dc__cta:hover { background: #4752c4; transform: translateY(-1px) }
-        .tp-dc__copy > .tp-dc__note { margin-top: 12px; font-size: .84rem; color: var(--muted) }
 
         .tp-dc__window {
           display: grid; grid-template-columns: 56px 190px minmax(0, 1fr); min-height: 340px; overflow: hidden; border-radius: 14px;
