@@ -147,7 +147,7 @@ const TIERS: {
   {
     name: "Explore",
     price: "Free",
-    forWho: "The whole curriculum, free for as long as you want it",
+    forWho: "The whole curriculum free for as long as you want it",
     perks: [
       "Every lesson, including each new phase",
       "The whole Ticket Queue and every challenge",
@@ -186,7 +186,7 @@ const TIERS: {
   {
     name: "Custom",
     price: "Talk to us",
-    forWho: "Schools, agencies, and workforce programs running a cohort",
+    forWho: "Schools and workforce programs running a cohort",
     perks: [
       "Everything in Pro on every seat",
       "Watch every student work in real time",
@@ -208,7 +208,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section" id="benefits">
         <div className="pg-head">
           <h2>What students walk away with</h2>
-          <p>Real practice, help when they need it, and proof they can show an employer.</p>
+          <p>Real practice. Help when they need it. Proof they can show an employer.</p>
         </div>
         <TrainingBenefits />
       </section>
@@ -216,7 +216,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section tp-proof" id="proof">
         <div className="pg-head">
           <h2>Proof employers can check</h2>
-          <p>Every student gets a shareable portfolio of work confirmed in their own lab, and a credential ID any employer can verify.</p>
+          <p>Pro and class students get a shareable portfolio of work confirmed in their own lab. It carries a credential ID any employer can verify.</p>
         </div>
         <div className="tp-proof__grid" data-r>
           <figure className="tp-proof__shot">
@@ -234,7 +234,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section tp-features" id="features">
         <div className="tp-features__head">
           <h2>Everything in Range</h2>
-          <p>One portal for learning, practice, and proof. Students sign in and everything is there.</p>
+          <p>One portal for the whole course. Students sign in and everything is there.</p>
           <Link href="/range" className="tp-link">
             Open the portal <ArrowRight size={14} />
           </Link>
@@ -258,7 +258,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
             <DiscordLogo size={26} />
           </span>
           <h2>Learn alongside the Range</h2>
-          <p>The Range has its own Discord, full of people working the same tickets you are. Ask for a hint, get your lab running, and share the wins.</p>
+          <p>The Range has its own Discord full of people working the same tickets as you. Ask for a hint and get your lab running. Then share the wins.</p>
           <ul className="tp-dc__points">
             {COMMUNITY_POINTS.map((point) => (
               <li key={point}>
@@ -325,8 +325,8 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 
       <section className="pg-section" id="course">
         <div className="pg-head">
-          <h2>The course, starting with the fundamentals</h2>
-          <p>Phase 1 is open now, and the security phases follow. Each one pairs short lessons with hands-on work in the lab.</p>
+          <h2>The course starts with the fundamentals</h2>
+          <p>Phase 1 is open now and the security phases follow. Each one pairs short lessons with hands-on work in the lab.</p>
         </div>
         <Course outline={outline} />
       </section>
@@ -338,7 +338,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section tp-pricing" id="pricing">
         <div className="pg-head">
           <h2>Start free. Go Pro when you want the job.</h2>
-          <p>Every lesson is free, forever. Pro adds the cloud lab, the coach, and the proof an employer can check.</p>
+          <p>Every lesson is free forever. Pro adds the cloud lab and the AI coach. It also adds proof an employer can check.</p>
         </div>
         <ul className="tp-tiers" data-r>
           {TIERS.map((t) => (

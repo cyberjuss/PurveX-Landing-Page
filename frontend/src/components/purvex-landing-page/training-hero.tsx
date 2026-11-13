@@ -234,8 +234,8 @@ export function TrainingHero() {
           <span>Job-ready</span> cybersecurity training
         </h1>
         <p className="th-sub">
-          Students practice on their own company network, get help from an AI coach, and finish with proof employers
-          trust.
+          Students practice on their own company network and get help from an AI coach. They finish with proof
+          employers trust.
         </p>
         <div className="th-actions">
           <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="sp-btn sp-btn--prim sp-btn--lg">
