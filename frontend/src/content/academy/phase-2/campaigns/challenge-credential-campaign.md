@@ -229,7 +229,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>So the session that followed the guessing ran with admin-level rights. With a stolen admin login, an attacker can reset passwords and change group memberships, and then cover their tracks.</p>
+<p>As a result, the session that followed the guessing ran with admin-level rights. With a stolen admin login, an attacker can reset passwords and change group memberships, and then cover their tracks.</p>
 </div>
 </div>
 </div>
@@ -238,8 +238,8 @@
 <div class="ad-mission" data-id="tq-09" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 2 · Exploitation · T1110.001 Password Guessing · INC-1046 · Critical</span>
 <h4>Mistake or Attack?</h4>
-<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Here's what you have so far: four failed logons two seconds apart, then a success, at 2 AM, with an admin account, on a workstation outside IT. Which explanation fits?<br><strong>A</strong> Alex mistyped the password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
-<p><strong>Task:</strong> Choose the explanation that fits all of the evidence and type its letter.</p>
+<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Here is what you have so far: four failed logons two seconds apart, then a success, at 2 AM, with an admin account, on a workstation outside IT. Which explanation fits?<br><strong>A</strong> Alex mistyped the password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
+<p><strong>Task:</strong> Select the explanation that fits all of the evidence and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Mistake or Attack?" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -270,8 +270,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="tq-10" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 2 · Exploitation · T1110.001 Password Guessing · INC-1046 · Critical</span>
 <h4>The First Move</h4>
-<p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>It's 2:12 AM, and you believe an admin account has been compromised and is in use on a Wealth Management machine. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera and isolate WM-WKS07 from the network while keeping the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
-<p><strong>Task:</strong> Choose the best first move and type its letter.</p>
+<p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>It is 2:12 AM, and you believe an admin account has been compromised and is in use on a Wealth Management machine. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera and isolate WM-WKS07 from the network while keeping the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
+<p><strong>Task:</strong> Select the best first move and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Your First Move" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

@@ -45,7 +45,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>The fix is to add her to <code>All Employees</code> and confirm she appears on its member list. Once she's there, the next company-wide email will reach her.</p>
+<p>The fix is to add her to <code>All Employees</code> and confirm she appears on its member list. Once she is there, the next company-wide email will reach her.</p>
 </div>
 </div>
 </div>
@@ -86,11 +86,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Riley believed she was locked out, but the account was actually disabled. An unlock wouldn't have restored her sign-in, so she'd have stayed blocked while the ticket showed as closed.</p>
+<p>Riley believed she was locked out, but the account was actually disabled. An unlock would not have restored her sign-in, so she would have stayed blocked while the ticket showed as closed.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>That's why you read the Account tab first and then enable the account. Close the ticket on what you verified, rather than on the word the caller happened to use.</p>
+<p>That is why you read the Account tab first and then enable the account. Close the ticket on what you verified, rather than on the word the caller happened to use.</p>
 </div>
 </div>
 </div>
@@ -131,7 +131,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>IT Users was holding a leftover intern account and a backup service account. If you'd added Casey without cleaning that up, the unused access would have stayed in place, and unused access is what attackers look for.</p>
+<p>IT Users was holding a leftover intern account and a backup service account. If you had added Casey without cleaning that up, the unused access would have stayed in place, and unused access is what attackers look for.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -178,7 +178,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Auditors can't rely on hours that only live on a folder. Once the window is on the account itself, a sign-in at noon stands out as a problem instead of passing unnoticed.</p>
+<p>Auditors cannot rely on hours that only live on a folder. Once the window is on the account itself, a sign-in at noon stands out as a problem instead of passing unnoticed.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -220,7 +220,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Taylor was still sitting in Operations with Operations access, so Compliance policies didn't apply and the old access stayed open. That's the key lesson here: an HR notice changes nothing in the directory until someone acts on it.</p>
+<p>Taylor was still sitting in Operations with Operations access, so Compliance policies did not apply and the old access stayed open. That is the key lesson here: an HR notice changes nothing in the directory until someone acts on it.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -309,7 +309,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Server Admins controls the firm's servers. An advisor with that access could be tricked into running malware with server rights, and installing one app doesn't need that much power.</p>
+<p>Server Admins controls the firm's servers. An advisor with that access could be tricked into running malware with server rights, and installing one app does not need that much power.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -358,7 +358,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>That's why you clear the setting on staff accounts and leave it only on documented service accounts. It's also worth rechecking that list during each access review.</p>
+<p>That is why you clear the setting on staff accounts and leave it only on documented service accounts. It is also worth rechecking that list during each access review.</p>
 </div>
 </div>
 </div>
@@ -445,11 +445,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A computer object that nobody uses keeps its place in the domain, so a machine that left the building still has an account that can authenticate. Old objects are also a good place for an attacker to hide: a name on the list that nobody questions, because it's always been there.</p>
+<p>A computer object that nobody uses keeps its place in the domain, so a machine that left the building still has an account that can authenticate. Old objects are also a good place for an attacker to hide: a name on the list that nobody questions, because it has always been there.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Disable it rather than deleting it, which keeps the record in case someone later asks what happened to the asset. Only delete it after a waiting period, once you're sure nothing depended on it.</p>
+<p>Disable it rather than deleting it, which keeps the record in case someone later asks what happened to the asset. Only delete it after a waiting period, once you are sure nothing depended on it.</p>
 </div>
 </div>
 </div>
@@ -585,7 +585,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>To fix it, link the GPO where the Finance accounts live and remove the stray link. Then test one Finance workstation yourself before you tell Audit it's fixed.</p>
+<p>To fix it, link the GPO where the Finance accounts live and remove the stray link. Then test one Finance workstation yourself before you tell Audit it is fixed.</p>
 </div>
 </div>
 </div>
@@ -671,7 +671,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A busy domain controller fills 128 MB in a day or two, so the log quietly destroys its own oldest evidence. That's a real problem, because most intrusions are found weeks after they start, by which point the record of the first day has already been overwritten.</p>
+<p>A busy domain controller fills 128 MB in a day or two, so the log quietly destroys its own oldest evidence. That is a real problem, because most intrusions are found weeks after they start, by which point the record of the first day has already been overwritten.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -716,7 +716,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A distribution group is for email and can't grant access, so every permission set on it did nothing. That matters beyond the inconvenience, because people blocked from files they need start looking for workarounds that skip security.</p>
+<p>A distribution group is for email and cannot grant access, so every permission set on it did nothing. That matters beyond the inconvenience, because people blocked from files they need start looking for workarounds that skip security.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -761,7 +761,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The old server's record survived the migration, so roughly every other lookup sent people to a machine that no longer exists. Intermittent failures like this burn hours, because the fault doesn't show up when someone tests it just once.</p>
+<p>The old server's record survived the migration, so roughly every other lookup sent people to a machine that no longer exists. Intermittent failures like this burn hours, because the fault does not show up when someone tests it just once.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -848,11 +848,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Without process auditing, an investigation can see that someone signed in but not what they ran afterwards, and that second half is what tells you whether anything bad happened. Turning it on after an incident won't recover the week you needed.</p>
+<p>Without process auditing, an investigation can see that someone signed in but not what they ran afterwards, and that second half is what tells you whether anything bad happened. Turning it on after an incident will not recover the week you needed.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Turn on Process Creation for success, and keep it on. It's also worth asking about a second setting that adds the command line to the event, because a process name without its arguments often hides what ran.</p>
+<p>Turn on Process Creation for success, and keep it on. It is also worth asking about a second setting that adds the command line to the event, because a process name without its arguments often hides what ran.</p>
 </div>
 </div>
 </div>

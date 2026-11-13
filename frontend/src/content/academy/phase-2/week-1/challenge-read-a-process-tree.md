@@ -57,7 +57,7 @@ Now look at the ParentImage field your query returned. It points to the system s
 <div class="ad-mission" data-id="mw2-06" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1138 · Medium</span>
 <p><strong>SOC Analyst · Alert Triage · 10:20 AM</strong><br>A second alert comes in with the exact same PowerShell command line as before, but a different ParentImage: <code>winword.exe</code>.</p>
-<p><strong>Task:</strong> What would that change about how you read this event? Type its letter.<br><strong>A</strong> Nothing. The command line is identical either way, so the story is the same.<br><strong>B</strong> It would suggest the process was spawned by a document someone opened, a very different initial-access story than a pre-existing scheduled task quietly persisting.<br><strong>C</strong> Word cannot launch PowerShell under any circumstance, so this would be impossible.</p>
+<p><strong>Task:</strong> What would that change about how you read this event? Enter its letter.<br><strong>A</strong> Nothing. The command line is identical either way, so the story is the same.<br><strong>B</strong> It would suggest the process was spawned by a document someone opened, a very different initial-access story than a pre-existing scheduled task quietly persisting.<br><strong>C</strong> Word cannot launch PowerShell under any circumstance, so this would be impossible.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what a different parent process would change" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

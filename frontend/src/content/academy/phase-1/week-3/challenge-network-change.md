@@ -14,7 +14,7 @@
 <div class="ad-mission" data-id="w3-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · Warm-up · TCP/IP · High · CHG-3301 · INC-1092</span>
 <h4>Fix the Portal's Address</h4>
-<p><strong>Jordan Ellis · Finance · 8:20 AM</strong><br>The intranet portal won't load for anyone in Finance this morning. It worked on Friday. The browser just spins and gives up.</p>
+<p><strong>Jordan Ellis · Finance · 8:20 AM</strong><br>The intranet portal will not load for anyone in Finance this morning. It worked on Friday. The browser simply spins and gives up.</p>
 <p><strong>Task:</strong> Find out what address <code>portal</code> resolves to, compare it with the change log, and point the record at the portal's new home. Then report the address it was stuck on.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Fix the Portal's Address" placeholder="an IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -49,7 +49,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Update the record, confirm <code>portal</code> now resolves to the domain controller, and ask Jordan to try again. Then add "update DNS" to the migration checklist, so the next move doesn't repeat this.</p>
+<p>Update the record, confirm <code>portal</code> now resolves to the domain controller, and ask Jordan to try again. Then add "update DNS" to the migration checklist, so the next move does not repeat this.</p>
 </div>
 </div>
 </div>
@@ -58,7 +58,7 @@
 <div class="ad-mission" data-id="w3-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · Apply it · Three-Way Handshake · High · Nmap · INC-1092</span>
 <h4>Scan What the Change Left Open</h4>
-<p><strong>Alex Rivera · IT · 9:05 AM</strong><br>Before we trust anything in that change log, I want to see DC01 the way an attacker on our network would. Scan it and tell me what's listening that shouldn't be.</p>
+<p><strong>Alex Rivera · IT · 9:05 AM</strong><br>Before we trust anything in that change log, I want to see DC01 the way an attacker on our network would. Scan it and tell me what is listening that should not be.</p>
 <p><strong>Task:</strong> Scan the domain controller's own address with Nmap. Compare the open ports with what a domain controller normally runs, and report the port that doesn't belong.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Scan What the Change Left Open" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -84,7 +84,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Nmap showed port 23 open, with the vendor's console answering as Telnet. The change log told you to expect it, but the scan is what proves it's still there. Checking a server with a scan after every change is how network and security teams catch what a change log forgets to mention.</p>
+<p>Nmap showed port 23 open, with the vendor's console answering as Telnet. The change log told you to expect it, but the scan is what proves it is still there. Checking a server with a scan after every change is how network and security teams catch what a change log forgets to mention.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -97,7 +97,7 @@
 <div class="ad-mission" data-id="w3-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Common Ports · High · Change Control · INC-1092</span>
 <h4>Close the Vendor's Door</h4>
-<p><strong>Alex Rivera · IT · 9:40 AM</strong><br>Telnet on our domain controller, open to the whole network. Shut it down: the rule and the console behind it. And tell me which change in the log opened it, so I can raise it with the contractor.</p>
+<p><strong>Alex Rivera · IT · 9:40 AM</strong><br>Telnet on our domain controller, open to the whole network. Shut it down, the rule and the console behind it, and tell me which change in the log opened it so I can raise it with the contractor.</p>
 <p><strong>Task:</strong> Disable the inbound rule that lets port 23 in, stop and disable the vendor's console task, and report the change number that opened it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Close the Vendor's Door" placeholder="a change number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -141,7 +141,7 @@
 <div class="ad-mission" data-id="w3-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Apply it · Protocols · High · CHG-3303 · INC-1092</span>
 <h4>Why Is the DC Sending Mail?</h4>
-<p><strong>Alex Rivera · IT · 10:10 AM</strong><br>A domain controller has no business sending email. The last line of the change log says they opened something outbound for a test. Find it and shut it.</p>
+<p><strong>Alex Rivera · IT · 10:10 AM</strong><br>A domain controller has no legitimate reason to send email. The last line of the change log says they opened something outbound for a test. Find it and shut it.</p>
 <p><strong>Task:</strong> Find the outbound rule from CHG-3303, switch it off, and name the protocol it let out.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Why Is the DC Sending Mail?" placeholder="a protocol" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -171,7 +171,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>SMTP carries mail outward, and a domain controller has no reason to send any. An open path like this is what an attacker on a compromised server uses to send phishing or email data out. It looks like ordinary mail traffic unless you know the host shouldn't be sending it.</p>
+<p>SMTP carries mail outward, and a domain controller has no reason to send any. An open path like this is what an attacker on a compromised server uses to send phishing or email data out. It looks like ordinary mail traffic unless you know the host should not be sending it.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -184,7 +184,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="w3-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · Stretch · Protocols and TLS · Critical · Wireshark · INC-1092</span>
 <h4>Read the Password Off the Wire</h4>
-<p><strong>Jordan Ellis · Finance · 11:30 AM</strong><br>Our old report sync sends the daily ledger report to the reporting service every minute, signing in with its service account. The vendor promised the password is "stored encrypted", so we've never worried about it. Is that the whole story?</p>
+<p><strong>Jordan Ellis · Finance · 11:30 AM</strong><br>Our old report sync sends the daily ledger report to the reporting service every minute, signing in with its service account. The vendor promised the password is "stored encrypted", so we have never worried about it. Is that the whole story?</p>
 <p><strong>Task:</strong> Capture the domain controller's own traffic with Wireshark for a couple of minutes, find the report sync's upload, and read the password it signs in with. Then disable <code>svc-reportsync</code> and report the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Read the Password Off the Wire" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -215,7 +215,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The vendor was telling the truth: on disk, the password is encrypted. But every minute the job sends it over plain HTTP, where Basic authentication is only Base64, so anyone who can capture traffic reads it in seconds. Protecting data at rest says nothing about data in transit, and that's the gap TLS exists to close.</p>
+<p>The vendor was telling the truth: on disk, the password is encrypted. But every minute the job sends it over plain HTTP, where Basic authentication is only Base64, so anyone who can capture traffic reads it in seconds. Protecting data at rest says nothing about data in transit, and that is the gap TLS exists to close.</p>
 </div>
 <div>
 <span>What to do</span>

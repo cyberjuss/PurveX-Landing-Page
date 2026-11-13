@@ -98,7 +98,7 @@
 <span class="ad-mission__num">Task 03 · Warm-up · Accounts</span>
 <h4>Person, Machine or Job?</h4>
 <p><strong>Alex Rivera · IT · 1:48 PM</strong><br>Before Quinn starts, I'd like to be sure Quinn can tell the three kinds of account apart. Which of these is a user object that doesn't represent a person?<br><strong>A</strong> IT-WKS01<br><strong>B</strong> svc-backup-job<br><strong>C</strong> jordan.ellis</p>
-<p><strong>Task:</strong> Choose the user object that stands for a job rather than a person and type its letter.</p>
+<p><strong>Task:</strong> Select the user object that stands for a job rather than a person and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Person, Machine or Job?" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}" data-accept="svc-backup-job">Submit</button>
@@ -334,8 +334,8 @@
 <div class="ad-mission" data-id="dr-10" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 09 · Stretch · Service Accounts</span>
 <h4>A Job Running Outside Its Window</h4>
-<p><strong>SOC Queue · Alert Review · 2:22 PM</strong><br>The Security log shows an interactive sign-in by <code>svc-print-queue</code> at 2:15 PM. Its Description says it runs from 02:00 to 02:30. What should you make of that?<br><strong>A</strong> It's normal, because service accounts sign in whenever they need to.<br><strong>B</strong> It's a red flag. Find out who or what signed in, and from where, before anything else.<br><strong>C</strong> Widen the account's Logon Hours so the alert stops.</p>
-<p><strong>Task:</strong> Choose the right reading and type its letter.</p>
+<p><strong>SOC Queue · Alert Review · 2:22 PM</strong><br>The Security log shows an interactive sign-in by <code>svc-print-queue</code> at 2:15 PM. Its Description says it runs from 02:00 to 02:30. How should you interpret that?<br><strong>A</strong> This is normal. Service accounts sign in whenever their job requires it.<br><strong>B</strong> This is a red flag. Determine who or what signed in, and from where, before taking any other action.<br><strong>C</strong> Widen the account's Logon Hours so the alert stops.</p>
+<p><strong>Task:</strong> Select the correct reading and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for A Job Running Outside Its Window" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -355,7 +355,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An interactive sign-in hours away from the job's window often means someone found the password, so find out who signed in and why, and reset the password if nobody can explain it.</p>
+<p>An interactive sign-in hours away from the job's window often means the password has been compromised, so determine who signed in and why, and reset the password if no one can account for it.</p>
 </div>
 </div>
 </div>
@@ -365,7 +365,7 @@
 <span class="ad-mission__num">Task 10 · Stretch · Organizational Units</span>
 <h4>Delegate Only What Helpdesk Needs</h4>
 <p><strong>Devon Brooks · Compliance · 1:28 PM</strong><br>We'd like the Helpdesk group to be able to reset passwords for Compliance staff, and for nobody else's accounts. Where should that permission be granted?<br><strong>A</strong> On the Compliance Users group.<br><strong>B</strong> On the OU <code>OU=Users,OU=Compliance,OU=Departments</code>.<br><strong>C</strong> On the domain itself, so it covers every account.</p>
-<p><strong>Task:</strong> Choose where to delegate the permission and type its letter.</p>
+<p><strong>Task:</strong> Select where to delegate the permission and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Delegate Only What Helpdesk Needs" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -439,7 +439,7 @@
 <span class="ad-mission__num">Task 12 · Stretch · Group Policy</span>
 <h4>The Password Rule That Will Not Apply</h4>
 <p><strong>Devon Brooks · Compliance · 2:50 PM</strong><br>The auditors want Compliance staff on 16-character passwords, while everyone else stays on the firm's standard. Someone suggested putting a password setting in a GPO linked to <code>OU=Compliance</code>. Will that work?<br><strong>A</strong> Yes. A GPO linked to the OU applies to every account in it.<br><strong>B</strong> No. Domain password policy only applies from the domain level, so use a fine-grained password policy that targets Compliance instead.<br><strong>C</strong> Only if security filtering limits the GPO to Compliance Users.</p>
-<p><strong>Task:</strong> Choose the approach that will work and type its letter.</p>
+<p><strong>Task:</strong> Select the approach that will work and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Password Rule That Will Not Apply" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

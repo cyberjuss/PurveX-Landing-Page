@@ -114,7 +114,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Without AES enabled here, every ticket for this account has to come back as RC4, no matter who asks or what tool they use. So the weak encryption wasn't the attacker's choice. It was the account's own configuration, left over from before the domain required AES.</p>
+<p>Without AES enabled here, every ticket for this account has to come back as RC4, no matter who asks or what tool they use. As a result, the weak encryption wasn't the attacker's choice. It was the account's own configuration, left over from before the domain required AES.</p>
 </div>
 </div>
 </div>
@@ -192,7 +192,7 @@
 <span class="ad-mission__num">Stage 2 · Actions on Objectives · T1003.006 DCSync · INC-1080 · High</span>
 <h4>Know What You Are Looking For</h4>
 <p><strong>IT Lead · Hardening review · 2:05 PM</strong><br>Auditing is on, so now you need the one detail that separates a real DCSync request from a domain controller's own replication traffic.<br><strong>A</strong> The account name, since only administrators ever appear in event 4662.<br><strong>B</strong> The access mask: Control Access (0x100), naming the replication-change rights in Properties, requested by an account that isn't a known domain controller.<br><strong>C</strong> The time of day, since replication only happens overnight.</p>
-<p><strong>Task:</strong> Choose the detail that distinguishes the two, and type its letter.</p>
+<p><strong>Task:</strong> Select the detail that distinguishes the two, and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Know What You Are Looking For" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

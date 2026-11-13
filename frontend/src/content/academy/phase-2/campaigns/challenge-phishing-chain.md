@@ -195,7 +195,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="pi-02" data-attempts="0">
 <span class="ad-mission__num">Stage 4 · Command and Control · T1071 Application Layer Protocol · INC-1075 · High</span>
 <h4>Close Its Channel</h4>
-<p><strong>IT Lead · Follow-up · 9:40 AM</strong><br>You've seen it happen, so now stop it from happening again.</p>
+<p><strong>IT Lead · Follow-up · 9:40 AM</strong><br>Now that you've seen it happen, stop it from happening again.</p>
 <p><strong>Task:</strong> Find the outbound firewall rule that lets this traffic leave the domain controller and disable it. Leave every other rule alone, then report the port it allowed.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Close Its Channel" placeholder="port number" autocomplete="off" autocapitalize="off" spellcheck="false">

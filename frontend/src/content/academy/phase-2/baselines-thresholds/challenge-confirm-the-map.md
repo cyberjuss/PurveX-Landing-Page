@@ -57,8 +57,8 @@ A real domain controller listens on more than five ports, though. Scroll through
 
 <div class="ad-mission" data-id="nm-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1148 · Low</span>
-<p><strong>Self-Check · Baseline Review · 11:00 AM</strong><br>One extra port you probably saw in your output is 9389. Think about every <code>Get-ADUser</code>, <code>Get-ADGroupMember</code> and other AD PowerShell command you've run in this course. Each of them had to reach the directory somehow.</p>
-<p><strong>Task:</strong> What service listens on 9389, and why does it matter to you specifically? Type its letter.<br><strong>A</strong> Active Directory Web Services, which is what the PowerShell AD module talks to behind every one of those commands.<br><strong>B</strong> A second, backup DNS resolver.<br><strong>C</strong> A game server bundled with Windows Server by default.</p>
+<p><strong>Self-Check · Baseline Review · 11:00 AM</strong><br>One extra port you probably saw in your output is 9389. Think about every <code>Get-ADUser</code>, <code>Get-ADGroupMember</code> and other AD PowerShell command you have run in this course. Each of them had to reach the directory somehow.</p>
+<p><strong>Task:</strong> What service listens on 9389, and why does it matter to you specifically? Enter its letter.<br><strong>A</strong> Active Directory Web Services, which the PowerShell AD module communicates with behind every one of those commands.<br><strong>B</strong> A second, backup DNS resolver.<br><strong>C</strong> A game server bundled with Windows Server by default.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what service listens on 9389" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
@@ -78,7 +78,7 @@ A real domain controller listens on more than five ports, though. Scroll through
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every AD cmdlet you've run since Week 1 depended on this port being open, whether or not you noticed. A lesson only has room for the ports that explain the big picture, while the real list shows you the ones you've been relying on all along.</p>
+<p>Every AD cmdlet you have run since Week 1 depended on this port being open, whether or not you noticed. A lesson only has room for the ports that explain the big picture, while the real list shows you the ones you have been relying on all along.</p>
 </div>
 </div>
 </div>
@@ -89,7 +89,7 @@ A real domain controller listens on more than five ports, though. Scroll through
 <div class="ad-mission ad-mission--capstone" data-id="nm-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1149 · Low</span>
 <p><strong>Self-Check · Baseline Review · 11:15 AM</strong><br>Your port list came back with entries the lesson never named.</p>
-<p><strong>Task:</strong> What does that tell you about working from memory alone? Type its letter.<br><strong>A</strong> A lesson only has room to teach what matters most, not everything a machine runs.<br><strong>B</strong> Nothing. A lesson and the machine always match exactly.<br><strong>C</strong> Any port a lesson leaves out is a sign of compromise.</p>
+<p><strong>Task:</strong> What does that tell you about working from memory alone? Enter its letter.<br><strong>A</strong> A lesson only has room to teach what matters most, not everything a machine runs.<br><strong>B</strong> Nothing. A lesson and the machine always match exactly.<br><strong>C</strong> Any port a lesson leaves out is a sign of compromise.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what the extra ports tell you" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>

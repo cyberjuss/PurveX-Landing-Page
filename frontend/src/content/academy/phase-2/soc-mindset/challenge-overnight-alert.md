@@ -50,7 +50,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So carry both facts into the next step: the time that matched, and the workstation that didn't.</p>
+<p>Carry both facts into the next step: the time that matched, and the workstation that didn't.</p>
 </div>
 </div>
 </div>
@@ -60,7 +60,7 @@
 <span class="ad-mission__num">Ticket 02 · INC-1065 · High</span>
 <h4>Classify What You Actually Found</h4>
 <p><strong>SOC Queue · Follow-up · 3:45 AM</strong><br>You now know morgan.reyes's 3:40 AM sign-in falls inside the account's approved overnight window, but it came from REMOTE-SUPPORT4, not IT-WKS01, the one workstation that record authorizes.<br><strong>A</strong> P1, Critical: an off-hours sign-in is always worked first.<br><strong>B</strong> P2, High: the time checks out, but the workstation does not, and that gap needs a fast look before the ticket closes.<br><strong>C</strong> P3, Routine: the sign-in matches the account's own approved window, so it is worked when the queue allows.<br><strong>D</strong> Not an incident at all, and the alert should be deleted.</p>
-<p><strong>Task:</strong> Choose the classification that fits what the record showed, and type its letter.</p>
+<p><strong>Task:</strong> Select the classification that fits what the record showed, and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Classify What You Actually Found" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -82,7 +82,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An approved overnight window authorizes work from one named workstation, not a sign-in from anywhere at that hour. Attackers use stolen credentials at convenient times on purpose, often inside a window when staff already expect activity. So if you'd checked the time and stopped there, you'd have closed this as clean.</p>
+<p>An approved overnight window authorizes work from one named workstation, not a sign-in from anywhere at that hour. Attackers use stolen credentials at convenient times on purpose, often inside a window when staff already expect activity. Had you checked only the time and stopped there, you would have closed this as clean.</p>
 </div>
 <div>
 <span>What to do</span>

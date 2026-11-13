@@ -46,11 +46,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A ticket names a person, not a group, so it's tempting to guess the group from a title or a department name instead of reading it off the account. A guess can be wrong, and fixing a folder-access ticket on a wrong guess means touching access that was never the problem.</p>
+<p>A ticket names a person, not a group, so it is tempting to guess the group from a title or department name rather than reading it from the account. A guess can be wrong, and fixing a folder-access ticket on a wrong guess means touching access that was never the problem.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>That's why you find the account and read Member Of before you change anything. That list shows you the access Jordan already has.</p>
+<p>This is why you find the account and read Member Of before changing anything. That list shows the access Jordan already has.</p>
 </div>
 </div>
 </div>
@@ -59,7 +59,7 @@
 <div class="ad-mission" data-id="d1-07" data-attempts="0">
 <span class="ad-mission__num">Task 02 · Warm-up · Find by Title</span>
 <h4>Who Is the Settlements Coordinator?</h4>
-<p><strong>Situation:</strong> A manager calls about "the settlements coordinator" but doesn't know the person's username, so the request only names the job title.</p>
+<p><strong>Situation:</strong> A manager calls about "the settlements coordinator" but does not know the person's username, so the request only names the job title.</p>
 <p><strong>Task:</strong> Find the person whose title is <strong>Settlements Coordinator</strong>, and answer with their first and last name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Who Is the Settlements Coordinator?" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -94,7 +94,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So search by the title, and then confirm the name with the caller before you make any change.</p>
+<p>Search by the title, then confirm the name with the caller before making any change.</p>
 </div>
 </div>
 </div>
@@ -175,11 +175,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>If you can't find the computer an alert names, you can't tell who it belongs to, and the investigation stalls.</p>
+<p>If you cannot find the computer an alert names, you cannot tell who it belongs to, and the investigation stalls.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>That's why it helps to know where computers live. Look under Departments → IT → Workstations and read the object's name, just as you would look up a person.</p>
+<p>This is why it helps to know where computers live. Look under Departments → IT → Workstations and read the object's name, the same way you would look up a person.</p>
 </div>
 </div>
 </div>
@@ -220,11 +220,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>If you don't know who holds elevated access, you can't spot an account that shouldn't be there. That matters, because a stolen admin login does far more damage than a standard one.</p>
+<p>If you do not know who holds elevated access, you cannot spot an account that should not be there. That matters, because a compromised admin login does far more damage than a standard one.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So read the group's Members tab, and help keep that list short and reviewed. Anyone on it you can't explain is worth a question to your lead.</p>
+<p>Read the group's Members tab, and help keep that list short and reviewed. Anyone on it you cannot explain is worth a question to your lead.</p>
 </div>
 </div>
 </div>
@@ -266,7 +266,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So record the count now. If it ever grows, find the ticket that explains the new member.</p>
+<p>Record the count now. If it ever grows, find the ticket that explains the new member.</p>
 </div>
 </div>
 </div>
@@ -307,7 +307,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>That's why people stay in Departments, while domain-wide access groups such as Server Admins and Helpdesk live separately in AccessLevels.</p>
+<p>This is why people stay in Departments, while domain-wide access groups such as Server Admins and Helpdesk live separately in AccessLevels.</p>
 </div>
 </div>
 </div>
@@ -344,11 +344,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A group without a clear purpose tends to collect members over time, and each extra member is one more account that could be misused if its password were stolen.</p>
+<p>A group without a clear purpose tends to collect members over time, and each extra member is one more account that could be misused if its password were compromised.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So read the Description before you add anyone. If the request doesn't match it, check with your lead before you act.</p>
+<p>Read the Description before adding anyone. If the request does not match it, check with your lead before acting.</p>
 </div>
 </div>
 </div>
@@ -357,7 +357,7 @@
 <div class="ad-mission" data-id="d1-06" data-attempts="0">
 <span class="ad-mission__num">Task 09 · Apply it · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
-<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges she shouldn't have. Her title is Help Desk Technician, but a title is only a label on the account, because privileges come from groups.</p>
+<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges she should not have. Her title is Help Desk Technician, but a title is only a label on the account, because privileges come from groups.</p>
 <p><strong>Task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Is Priya on the Help Desk Group?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -386,7 +386,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Instead, read the group's Members tab or the person's Member Of tab. Here, Priya has IT Users but not Helpdesk, so there's actually nothing to remove.</p>
+<p>Instead, read the group's Members tab or the person's Member Of tab. Here, Priya has IT Users but not Helpdesk, so there is nothing to remove.</p>
 </div>
 </div>
 </div>
@@ -395,7 +395,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="d1-04" data-attempts="0">
 <span class="ad-mission__num">Task 10 · Stretch · Spot the Default Folder</span>
 <h4>The Folder That Is Not an OU</h4>
-<p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container rather than an OU, and as you'll see, the difference matters for Group Policy.</p>
+<p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container rather than an OU, and as you will see, the difference matters for Group Policy.</p>
 <p><strong>Task:</strong> Give the name of that default folder exactly as Active Directory writes it in the object's distinguished name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Folder That Is Not an OU" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -426,7 +426,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So create each account in its department's Users OU, or move it there on the same day it's created. That's the end of day one, and you now know your way around the directory.</p>
+<p>Create each account in its department's Users OU, or move it there on the same day it is created. That marks the end of day one, and you now know your way around the directory.</p>
 </div>
 </div>
 </div>

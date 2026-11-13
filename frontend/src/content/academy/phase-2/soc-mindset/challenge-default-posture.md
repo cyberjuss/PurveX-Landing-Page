@@ -52,7 +52,7 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 <div class="ad-mission" data-id="sm2-06" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1132 · Medium</span>
 <p><strong>Detection Engineering · Design Question · 3:00 PM</strong><br>Later this phase you will find a scheduled task quietly reaching out to an address nobody approved, and nothing stops it.</p>
-<p><strong>Task:</strong> If this machine's outbound default were Block instead of Allow, would that traffic have left the machine at all, without someone first writing an explicit rule to permit it? Type its letter.<br><strong>A</strong> No, it would be blocked by default, the same way unsolicited inbound traffic already is.<br><strong>B</strong> Yes, outbound traffic always reaches its destination no matter what the default says.<br><strong>C</strong> It depends only on the task's own permissions, not the firewall at all.</p>
+<p><strong>Task:</strong> If this machine's outbound default were Block instead of Allow, would that traffic have left the machine at all, without someone first writing an explicit rule to permit it? Enter its letter.<br><strong>A</strong> No, it would be blocked by default, the same way unsolicited inbound traffic already is.<br><strong>B</strong> Yes, outbound traffic always reaches its destination no matter what the default says.<br><strong>C</strong> It depends only on the task's own permissions, not the firewall at all.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for whether a Block-by-default outbound posture would have stopped the beacon" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{a}">Submit</button>
@@ -72,7 +72,7 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 </div>
 <div>
 <span>Why it matters</span>
-<p>Nothing about the task's own permissions decides whether its traffic leaves the machine. The firewall's default does. So an outbound allowlist would have stopped it cold, without anyone writing a rule specifically against it, by trusting nothing it hadn't already approved.</p>
+<p>Nothing about the task's own permissions decides whether its traffic leaves the machine. The firewall's default does. An outbound allowlist would therefore have stopped it cold, without anyone writing a rule specifically against it, by trusting nothing it hadn't already approved.</p>
 </div>
 </div>
 </div>
@@ -83,7 +83,7 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 <div class="ad-mission ad-mission--capstone" data-id="sm2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1133 · Medium</span>
 <p><strong>Security Architecture Review · Policy Question · 3:30 PM</strong><br>Alex Rivera is presenting your audit finding to the architecture review board. Explain to Alex, in plain terms, why the domain controller allows outbound traffic by default but refuses inbound traffic by default.</p>
-<p><strong>Task:</strong> What does that difference trade off? Type its letter.<br><strong>A</strong> Nothing, the two defaults are functionally identical.<br><strong>B</strong> Blocking inbound by default stops strangers from reaching in, while allowing outbound by default trusts the machine's own software not to call out to somewhere it should not.<br><strong>C</strong> Outbound is allowed by default because outbound traffic can never carry anything malicious.</p>
+<p><strong>Task:</strong> What does that difference trade off? Enter its letter.<br><strong>A</strong> Nothing, the two defaults are functionally identical.<br><strong>B</strong> Blocking inbound by default stops strangers from reaching in, while allowing outbound by default trusts the machine's own software not to call out to somewhere it should not.<br><strong>C</strong> Outbound is allowed by default because outbound traffic can never carry anything malicious.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what the two defaults trade off" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

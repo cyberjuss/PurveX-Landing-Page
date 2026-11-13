@@ -86,7 +86,7 @@ Get-MpThreatCatalog -ThreatID (Get-MpThreatDetection | Select-Object -First 1 -E
 </div>
 <div>
 <span>Why it matters</span>
-<p>One engine missing a file is normal, because every signature library has gaps. When sixty-eight independent engines flag the same file, though, the lone clean verdict is the one to doubt. That's why a hash and reputation lookup is worth running even after your own antivirus has come back clean.</p>
+<p>One engine missing a file is normal, because every signature library has gaps. When sixty-eight independent engines flag the same file, though, the lone clean verdict is the one to doubt. This is why a hash and reputation lookup is worth running even after your own antivirus has come back clean.</p>
 </div>
 </div>
 </div>
@@ -125,4 +125,4 @@ Get-MpThreatCatalog -ThreatID (Get-MpThreatDetection | Select-Object -First 1 -E
 
 ### Why It Matters
 
-You've just watched signature-based detection do exactly what it was built to do, which is catch something it already knows. In the next lab, you'll come at it from the other side and watch a process behave suspiciously, because behavior is what catches the file nobody has seen before.
+You have just watched signature-based detection do exactly what it was built to do, which is catch something it already knows. In the next lab, you will come at it from the other side and watch a process behave suspiciously, because behavior is what catches the file nobody has seen before.
