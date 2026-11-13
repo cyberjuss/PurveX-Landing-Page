@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { CLIP_MAX_BYTES, CLIP_MAX_SECONDS } from "@/lib/academy-clip-limits";
 import {
+  challengeRemaining,
   challengeSolvedAt,
   clipPlayUrl,
   clipsAvailable,
@@ -75,9 +76,13 @@ export async function POST(request: Request) {
   if (size > CLIP_MAX_BYTES || seconds > CLIP_MAX_SECONDS) {
     return NextResponse.json({ error: "Clips can be up to 15 minutes. Record a shorter one to add it to your profile." }, { status: 413 });
   }
-  const solvedAt = challengeSolvedAt(await loadProgress(a.student.id), body.challenge);
+  const progress = await loadProgress(a.student.id);
+  const solvedAt = challengeSolvedAt(progress, body.challenge);
   if (!solvedAt) {
-    return NextResponse.json({ error: "Solve every question in this challenge first. Only finished challenges go on your profile." }, { status: 409 });
+    const { left, total } = challengeRemaining(progress, body.challenge);
+    const title = CHALLENGE_LABELS[body.challenge];
+    const what = left >= total ? `all ${total} questions` : left === 1 ? "the last question" : `the other ${left} questions`;
+    return NextResponse.json({ error: `Solve ${what} in ${title} first. Only finished challenges go on your profile.` }, { status: 409 });
   }
   const recordedAt = typeof body.recordedAt === "string" && !Number.isNaN(Date.parse(body.recordedAt)) ? new Date(body.recordedAt).toISOString() : null;
   const started = await startClip(a.student.id, body.challenge, size, Number.isFinite(seconds) ? seconds : 0, recordedAt, solvedAt);

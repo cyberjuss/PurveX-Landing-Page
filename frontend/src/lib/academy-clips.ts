@@ -42,6 +42,12 @@ export function challengeSolvedAt(results: Results, challenge: ChallengeKey): st
   return times[times.length - 1] ?? new Date().toISOString();
 }
 
+/** How many of the challenge's questions are still open, and how many it has in all. */
+export function challengeRemaining(results: Results, challenge: ChallengeKey): { left: number; total: number } {
+  const ids = Object.values(MISSION_CATALOG).filter((m) => m.challenge === challenge).map((m) => m.id);
+  return { left: ids.filter((id) => !results[id]?.solved).length, total: ids.length };
+}
+
 function fromRow(r: Record<string, unknown>): ChallengeClip {
   return {
     id: String(r.id),
