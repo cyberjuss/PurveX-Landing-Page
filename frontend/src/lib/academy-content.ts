@@ -84,6 +84,7 @@ const phase1Weeks: WeekDef[] = [
     sections: [
       { label: "Overview", file: "phase-1/week-3/lesson-overview.md" },
       { label: "TCP/IP", file: "phase-1/week-3/lesson-tcpip.md" },
+      { label: "IP Addresses and Subnets", file: "phase-1/week-3/lesson-addressing.md" },
       { label: "Three-Way Handshake", file: "phase-1/week-3/lesson-handshake.md" },
       { label: "Common Ports", file: "phase-1/week-3/lesson-ports.md" },
       { label: "Protocols", file: "phase-1/week-3/lesson-protocols.md" },

@@ -253,6 +253,23 @@ export const quizzes: Quiz[] = [
     weekSlug: "week-3",
     questions: [
       {
+        question: "A workstation is at 192.168.1.25/24. Which address can it reach directly, without going through its default gateway?",
+        options: ["192.168.2.25", "192.168.1.200", "10.0.0.25", "192.169.1.25"],
+        correctIndex: 1,
+        explanation: "A /24 makes the first three octets the network. 192.168.1.200 shares 192.168.1, so it's on the same subnet. Every other option has a different network part, so that traffic goes through the default gateway.",
+      },
+      {
+        question: "A user can print to the printer down the hall but can't reach any server in another building. ipconfig shows a normal address and the right subnet mask. What do you check next?",
+        options: [
+          "The default gateway, because a wrong one strands the machine on its own subnet",
+          "The printer driver",
+          "Whether the address starts with 169.254",
+          "The user's password",
+        ],
+        correctIndex: 0,
+        explanation: "Reaching devices on its own subnet but nothing beyond it is the classic sign of a missing or wrong default gateway. A 169.254 address would have stopped the printer working too.",
+      },
+      {
         question: "Put the TCP three-way handshake in the correct order.",
         options: ["ACK → SYN → SYN-ACK", "SYN → SYN-ACK → ACK", "SYN-ACK → SYN → ACK", "SYN → ACK → SYN-ACK"],
         correctIndex: 1,
