@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Loader2, X } from "lucide-react";
+import { BadgeCheck, Loader2, Lock, X } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { AVAILABILITY, CERT_STATUS_LABEL, CLEARANCE, WORK_AUTH, CERT_SUGGESTIONS, certStatusText, openTasks, SHOTS_PER_ITEM, TRACK_LABEL, type ExtraCert, type StarPart, type Track, type WorkItem } from "@/lib/academy-proof";
 import { useAcademyGoals } from "@/components/academy/academy-account";
@@ -46,7 +46,7 @@ type Data = {
   /** Verified challenge clips already on the profile. */
   clips?: { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null; hasPoster: boolean }[];
   blockers: string[];
-  /** On Explore: the draft is readable, but publishing it is what Pro buys. */
+  /** On Explore: the portfolio is part of Range Pro, so the editor is not shown. */
   locked?: boolean;
 };
 
@@ -311,6 +311,11 @@ export function ProofEditor() {
       </div>
     );
   }
+
+  // The portfolio is part of Range Pro. A free student sees what it is and how
+  // much verified work is already waiting for it, since everything the lab
+  // confirms is kept either way, but not the editor itself.
+  if (data.locked) return <PortfolioLocked items={data.items} />;
 
   const { settings, items } = data;
   const link = `purvex.io/p/${settings.slug}`;
@@ -823,6 +828,55 @@ export function ProofEditor() {
           {note.text}
         </p>
       )}
+    </div>
+  );
+}
+
+/** What a free student sees on Portfolio: the offer, with their own work as the reason. */
+function PortfolioLocked({ items }: { items: WorkItem[] }) {
+  const n = items.length;
+  return (
+    <div className="pf rd">
+      <header className="pf-head">
+        <p className="rd-kicker">Portfolio</p>
+        <h1>Your portfolio is part of Range Pro</h1>
+        <p className="pf-lede">
+          Pro turns the work your lab confirms into one page employers can check: your verified fixes, screenshots and recorded solves, with a
+          credential ID a hiring manager can look up.
+        </p>
+      </header>
+      <section className="pf-sec pf-locked">
+        {n > 0 ? (
+          <>
+            <p className="pf-locked__count">
+              <BadgeCheck className="h-5 w-5" aria-hidden />
+              <span>
+                <b>{n}</b> verified {n === 1 ? "fix is" : "fixes are"} already waiting for your portfolio.
+              </span>
+            </p>
+            <ul className="pf-locked__list">
+              {items.slice(0, 3).map((i) => (
+                <li key={i.job}>
+                  <Lock className="h-3.5 w-3.5" aria-hidden />
+                  {i.title}
+                </li>
+              ))}
+              {n > 3 && <li className="pf-locked__more">and {n - 3} more</li>}
+            </ul>
+          </>
+        ) : (
+          <p className="pf-locked__count">
+            <BadgeCheck className="h-5 w-5" aria-hidden />
+            <span>Every fix your lab confirms is kept, so all of it is on your portfolio the day you go Pro.</span>
+          </p>
+        )}
+        <div className="pf-locked__cta">
+          <a className="pf-btn pf-btn--primary" href="/range/upgrade">
+            Get Pro, free for 3 days
+          </a>
+          <span>$49 a month after the trial. Cancel in one click.</span>
+        </div>
+      </section>
     </div>
   );
 }

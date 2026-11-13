@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Check, Loader2 } from "lucide-react";
+import { BadgeCheck, Bot, CalendarClock, Cloud, Loader2, MessagesSquare, RotateCcw, ShieldCheck, type LucideIcon } from "lucide-react";
 import { AuthHeading, AuthMinimal } from "@/components/auth/auth-minimal";
 import { academyFetch } from "@/lib/academy-client";
 import { getCurrentUser } from "@/lib/portal-auth";
@@ -24,12 +24,19 @@ import type { User } from "@supabase/supabase-js";
 const BUILT_IN_LINK_URL = process.env.NEXT_PUBLIC_STRIPE_RANGE_PRO_LINK_URL || "";
 const BUILT_IN_DIRECT_LINK_URL = process.env.NEXT_PUBLIC_STRIPE_RANGE_PRO_LINK_URL_DIRECT || "";
 
-const PERKS = [
-  "A cloud lab of your own in a browser tab",
-  "A real Windows domain built for one person",
-  "An AI coach that reads the lab and never hands over the answer",
-  "A Proof Profile any employer can verify",
-  "Cancel in one click",
+// What Pro adds over the free plan, each with one line of what it means.
+// Keep in step with the training page's pricing card and the #go-pro post.
+const PERKS: { Icon: LucideIcon; title: string; body: string }[] = [
+  { Icon: Cloud, title: "Your own cloud lab", body: "A real Windows domain built just for you, open in a browser tab. Nothing to install." },
+  { Icon: Bot, title: "An AI coach that reads your lab", body: "Stuck on a ticket? It looks at your directory and gives you the next step, never the answer." },
+  { Icon: BadgeCheck, title: "Your portfolio", body: "Your verified work, screenshots and recorded solves on one page, with a credential ID employers can check." },
+  { Icon: MessagesSquare, title: "Private Pro channels", body: "A Pro lounge, cloud lab help and portfolio reviews in the Range Discord." },
+];
+
+const ASSURANCES: { Icon: LucideIcon; text: string }[] = [
+  { Icon: CalendarClock, text: "No charge for 3 days" },
+  { Icon: RotateCcw, text: "Cancel in one click" },
+  { Icon: ShieldCheck, text: "Secure checkout by Stripe" },
 ];
 
 type Plan = {
@@ -205,44 +212,42 @@ function UpgradeContent() {
 
   return (
     <AuthMinimal product="Range">
-      <AuthHeading sub="A cloud lab of your own on a real Windows domain. An AI coach that reads it. A Proof Profile any employer can verify.">
-        Get Range Pro
-      </AuthHeading>
+      <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#5546e0]">Range Pro</p>
+      <AuthHeading sub="Every lesson in the Range stays free. Pro is for when you want the job.">Get Range Pro</AuthHeading>
 
-      {/* Price and what it buys read as one block. Loose on the page they were
-          two unrelated lists with nothing holding them together. */}
-      <div className="mt-7 rounded-xl border border-[#e6e7ee] bg-[#fbfbfd]">
-        <div className="flex items-baseline gap-2 border-b border-[#eceef4] px-5 py-4">
-          <span className="text-[2rem] font-bold leading-none tracking-tight text-[#10192e]">$49</span>
-          <span className="text-sm font-medium text-slate-500">per month</span>
-          <span className="ml-auto text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Range Pro</span>
+      {/* Price, trial and what it buys, as one card. Each perk gets a title
+          and one line of what it means, rather than a list of fragments. */}
+      <div className="mt-7 overflow-hidden rounded-2xl border border-[#e6e7ee] bg-white shadow-[0_1px_2px_rgba(16,25,46,0.04),0_18px_40px_-30px_rgba(16,25,46,0.25)]">
+        <div className="px-6 pb-5 pt-6">
+          <div className="flex items-end gap-2">
+            <span className="text-[2.6rem] font-bold leading-none tracking-tight text-[#10192e]">$49</span>
+            <span className="pb-1 text-sm font-medium text-slate-500">per month</span>
+            <span className="mb-1 ml-auto rounded-full bg-[#efecff] px-2.5 py-1 text-xs font-semibold text-[#5546e0]">3 days free</span>
+          </div>
+          <p className="mt-2 text-[0.85rem] leading-snug text-slate-500">Billed monthly after your trial. Cancel in one click.</p>
         </div>
-        <p className="border-b border-[#eceef4] px-5 py-2 text-[0.8rem] font-semibold text-[#6a5cff]">
-          Free for your first 3 days
-        </p>
-        <ul className="flex flex-col gap-2.5 px-5 py-4">
-          {PERKS.map((perk) => (
-            <li key={perk} className="flex items-start gap-2.5 text-[0.93rem] leading-snug text-[#39415a]">
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#6a5cff]" strokeWidth={3} aria-hidden="true" />
-              <span>{perk}</span>
+        <ul className="divide-y divide-[#eef0f5] border-t border-[#eef0f5]">
+          {PERKS.map(({ Icon, title, body }) => (
+            <li key={title} className="flex items-start gap-3.5 px-6 py-4">
+              <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f2f0ff] text-[#5546e0]">
+                <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <strong className="block text-[0.95rem] font-semibold text-[#10192e]">{title}</strong>
+                <span className="mt-0.5 block text-[0.84rem] leading-snug text-slate-500">{body}</span>
+              </span>
             </li>
           ))}
         </ul>
       </div>
 
-      {/* Which account is about to be charged belongs with the decision, not
-          buried in the billing line underneath it. */}
-      <p className="mt-6 text-[0.8rem] text-slate-500">
-        Signed in as <span className="font-medium text-[#39415a]">{user?.email}</span>
-      </p>
-
-      <button type="button" onClick={() => checkout("trial")} disabled={pending !== null} className="am-primary mt-2">
+      <button type="button" onClick={() => checkout("trial")} disabled={pending !== null} className="am-primary mt-6">
         {pending === "trial" ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" /> Opening checkout...
           </>
         ) : (
-          "Start your free trial"
+          "Start your 3-day free trial"
         )}
       </button>
 
@@ -251,33 +256,44 @@ function UpgradeContent() {
           second link actually exists, so a misconfigured env never offers a
           button that 503s. */}
       {directLinkUrl && (
-        <button
-          type="button"
-          onClick={() => checkout("direct")}
-          disabled={pending !== null}
-          className="am-legal mt-3 underline underline-offset-4"
-        >
-          {pending === "direct" ? "Opening checkout…" : "Skip the trial, pay $49 now"}
-        </button>
+        <p className="mt-3 text-center text-sm text-slate-500">
+          Already sure?{" "}
+          <button
+            type="button"
+            onClick={() => checkout("direct")}
+            disabled={pending !== null}
+            className="font-medium text-[#39415a] underline underline-offset-4 hover:text-[#10192e]"
+          >
+            {pending === "direct" ? "Opening checkout…" : "Skip the trial and pay $49 now"}
+          </button>
+        </p>
       )}
 
       {error ? (
-        <p className="mt-2 text-sm font-medium text-[#d92d20]" role="alert">
+        <p className="mt-3 text-sm font-medium text-[#d92d20]" role="alert">
           {error}
         </p>
       ) : null}
 
-      {/* Left aligned like everything above it. .am-legal centres itself, which
-          suits the sign-in screens and left this page looking half-justified. */}
-      <p className="am-legal !text-left">
-        Free for 3 days, then $49 billed monthly through Stripe. Cancel any time, including before the trial ends.
-      </p>
-      <p className="mt-5 border-t border-[#eceef4] pt-4 text-sm text-slate-500">
-        Not now?{" "}
+      <ul className="mt-6 grid grid-cols-1 gap-2.5 text-[0.8rem] text-slate-500 sm:grid-cols-3 sm:gap-3">
+        {ASSURANCES.map(({ Icon, text }) => (
+          <li key={text} className="flex items-center gap-2 sm:flex-col sm:gap-1.5 sm:text-center">
+            <Icon className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
+            <span>{text}</span>
+          </li>
+        ))}
+      </ul>
+
+      {/* Which account is about to be charged belongs with the decision, and
+          the way out sits beside it. */}
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-[#eceef4] pt-4 text-[0.82rem] text-slate-500">
+        <span>
+          Signed in as <span className="font-medium text-[#39415a]">{user?.email}</span>
+        </span>
         <Link href="/range" className="am-link">
-          Keep using Explore for free
+          Keep using the Range free
         </Link>
-      </p>
+      </div>
     </AuthMinimal>
   );
 }

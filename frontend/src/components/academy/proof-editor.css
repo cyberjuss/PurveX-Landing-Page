@@ -154,3 +154,15 @@
 .pf-certs__add input[list] { flex: 1 1 220px; min-width: 0; }
 .pf-certs__add select option { color: #0f172a; }
 @media (max-width: 560px) { .pf-certs li { grid-template-columns: 1fr auto; } .pf-certs li em { grid-column: 1; } }
+
+/* Portfolio on the free plan: the offer, with the student's own work as the reason. */
+.pf-locked { gap: 18px; }
+.pf-locked__count { display: flex; align-items: center; gap: 10px; margin: 0; font-size: var(--ty-body); color: var(--rd-ink); }
+.pf-locked__count svg { flex: none; color: var(--rd-accent); }
+.pf-locked__count b { font-weight: 700; }
+.pf-locked__list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.pf-locked__list li { display: flex; align-items: center; gap: 9px; padding: 10px 14px; border: 1px solid var(--rd-line); font-size: var(--ty-note); color: var(--rd-ink-2); }
+.pf-locked__list li svg { flex: none; color: var(--rd-ink-3); }
+.pf-locked__list .pf-locked__more { border-style: dashed; color: var(--rd-ink-3); }
+.pf-locked__cta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 4px; }
+.pf-locked__cta span { font-size: var(--ty-note); color: var(--rd-ink-3); }

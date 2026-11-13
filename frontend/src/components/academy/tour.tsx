@@ -268,8 +268,8 @@ const PORTFOLIO: Tour = {
     },
     {
       icon: BadgeCheck,
-      title: "Publishing is Pro",
-      body: "Building it here is free. Pro adds the public link, the QR code and a credential ID employers can check.",
+      title: "Part of Range Pro",
+      body: "Pro turns your verified work into a page with a public link, a QR code and a credential ID employers can check.",
     },
   ],
 };
