@@ -408,6 +408,8 @@ export type ProfileExtras = {
   machine?: Machine;
   help?: HelpStyle;
   notes?: string;
+  /** Opted in to a post in the PurveX Discord's #wins when they finish a challenge. Off unless they say so. */
+  shareWins?: boolean;
 };
 
 /** An empty list is a real answer ("none of these yet"). A list of nothing
@@ -444,6 +446,7 @@ export function sanitizeExtras(raw: unknown): ProfileExtras {
     machine: pick(r.machine, MACHINES),
     help: pick(r.help, HELP_STYLES),
     notes: typeof r.notes === "string" && r.notes.trim() ? r.notes.replace(/\s+/g, " ").trim().slice(0, 200) : undefined,
+    shareWins: r.shareWins === true ? true : undefined,
   };
   return Object.fromEntries(Object.entries(out).filter(([, v]) => v !== undefined)) as ProfileExtras;
 }

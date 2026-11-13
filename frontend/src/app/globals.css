@@ -6340,3 +6340,7 @@ a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transpare
   z-index: 0;
 }
 .sf-wash > * { position: relative; z-index: 1; }
+
+/* The community link under Ask Coach in a hint, when a Discord is set. */
+.ad-hint-card__foot:has(.ad-hint-card__discord) { flex-wrap: wrap; }
+.ad-hint-card__discord { display: block; width: 100%; margin-top: 10px; font-size: 0.85rem; font-weight: 600; color: var(--rd-accent, #5546e0); text-align: center; text-decoration: underline; text-underline-offset: 3px; }

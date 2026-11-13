@@ -42,6 +42,8 @@ import { confettiFrom } from "@/lib/confetti";
 import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
 
+const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
+
 type Student = AcademyStudent;
 
 const PREVIEW_STUDENT: Student = { id: "dev-preview", email: "preview@localhost", name: "Preview" };
@@ -807,6 +809,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         // close this, find the coach and describe where they were from memory.
         '<div class="ad-hint-card__foot">' +
         '<button type="button" class="ad-hint-card__coach">Still stuck? Ask Coach</button>' +
+        // The community, when there is one: other students in #ticket-help.
+        (DISCORD_URL ? `<a class="ad-hint-card__discord" href="${DISCORD_URL.replace(/"/g, "&quot;")}" target="_blank" rel="noreferrer">Or ask in the Discord's #ticket-help</a>` : "") +
         "</div>" +
         "</aside>";
       document.body.appendChild(root);

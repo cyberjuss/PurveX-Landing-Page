@@ -3,11 +3,13 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, Hammer } from "lucide-react";
+import { ArrowUpRight, BookMarked, Check, ChevronDown, Flag, Hammer, MessagesSquare } from "lucide-react";
 import { type PhaseDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
+
+const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
 
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -360,6 +362,20 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         <BookMarked className="h-3 w-3 shrink-0" />
         <span className="truncate">Reference — Cheat Sheet</span>
       </Link>
+
+      {DISCORD_URL && (
+        <a
+          href={DISCORD_URL}
+          target="_blank"
+          rel="noreferrer"
+          onClick={onNavigate}
+          className="flex items-center gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] transition hover:text-[var(--rd-accent)]"
+        >
+          <MessagesSquare className="h-3 w-3 shrink-0" />
+          <span className="truncate">Community — Discord</span>
+          <ArrowUpRight className="h-3 w-3 shrink-0" />
+        </a>
+      )}
     </nav>
   );
 }

@@ -26,6 +26,8 @@ import {
 import { academyFetch } from "@/lib/academy-client";
 import { daysUntil, passedExamDates, todayLocal } from "@/lib/academy-goals";
 
+const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
+
 
 // Every intake answer on one screen, so changing an exam date is one edit,
 // not a walk through all four intake questions. The first-time intake stays
@@ -64,6 +66,7 @@ export function GoalsPanel({
   const [done, setDone] = useState<string[]>(ex.done ?? []);
   const [help, setHelp] = useState<HelpStyle | undefined>(ex.help);
   const [notes, setNotes] = useState(ex.notes ?? "");
+  const [shareWins, setShareWins] = useState(ex.shareWins === true);
   const today = todayLocal();
   const overdue = passedExamDates({ ...profile, certs }, today);
 
@@ -90,7 +93,8 @@ export function GoalsPanel({
     hours !== ex.hours ||
     [...done].sort().join() !== [...(ex.done ?? [])].sort().join() ||
     help !== ex.help ||
-    notes.trim() !== (ex.notes ?? "");
+    notes.trim() !== (ex.notes ?? "") ||
+    shareWins !== (ex.shareWins === true);
 
   function toggleRole(id: RoleId) {
     setRoles((prev) => (prev.includes(id) ? prev.filter((r) => r !== id) : prev.length >= MAX_ROLES ? [prev[1], id] : [...prev, id]));
@@ -122,7 +126,7 @@ export function GoalsPanel({
             start,
             background,
             callMe,
-            extras: { ...ex, timeline, hours, done: ex.done || done.length ? done : undefined, help, notes: notes.trim() || undefined },
+            extras: { ...ex, timeline, hours, done: ex.done || done.length ? done : undefined, help, notes: notes.trim() || undefined, shareWins: shareWins || undefined },
           },
         }),
       });
@@ -313,6 +317,18 @@ export function GoalsPanel({
               <input type="text" maxLength={200} placeholder="e.g. English is my second language, keep answers short" value={notes} onChange={(e) => setNotes(e.target.value)} />
             </label>
           </section>
+          {DISCORD_URL && (
+            <section className="gp-sec">
+              <h3>Community</h3>
+              <label className="gp-check">
+                <input type="checkbox" checked={shareWins} onChange={(e) => setShareWins(e.target.checked)} />
+                <span>Share my finished challenges in the PurveX Discord. Only your first name and the challenge name are posted.</span>
+              </label>
+              <a className="gp-link" href={DISCORD_URL} target="_blank" rel="noreferrer">
+                Join the Discord
+              </a>
+            </section>
+          )}
         </div>
 
         <div className="gp-foot">
