@@ -13,7 +13,7 @@ import { TrainingHero } from "./training-hero";
 import { TrainingAudiences } from "./training-audiences";
 import { TrainingBenefits } from "./training-benefits";
 import {
-  IconAlert, IconBook, IconChecks, IconEvidence, IconMic, IconSchedule, IconShield, IconTicket,
+  IconAlert, IconBook, IconChecks, IconEvidence, IconGraduate, IconKey, IconLifebuoy, IconMic, IconSchedule, IconShield, IconTicket,
   type BrandIcon,
 } from "./brand-icons";
 
@@ -29,6 +29,21 @@ export type CourseOutline = {
 }[];
 
 type Item = { title: string; body: string; Icon: BrandIcon };
+
+// The Range's Discord. The invite is inlined at build time; until it is set,
+// the button sends people to sign up instead, which is where the portal's own
+// Discord link lives.
+const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
+
+// What the Discord is for, matching the channels scripts/discord/setup.ts builds.
+const COMMUNITY: Item[] = [
+  { Icon: IconLifebuoy, title: "Hints, never answers", body: "Stuck on a ticket? Ask in #ticket-help and get pointed the right way." },
+  { Icon: IconShield, title: "Lab setup help", body: "Get the home lab built or the cloud lab connected, with people who have done it." },
+  { Icon: IconSchedule, title: "Ticket of the week", body: "A new ticket every Friday. Work it, then compare how you got there." },
+  { Icon: IconChecks, title: "Wins", body: "Finished challenges, passed certs and job offers, shared with people who know what it took." },
+  { Icon: IconGraduate, title: "Career and cert study", body: "Resumes, interview questions and Security+ study partners." },
+  { Icon: IconKey, title: "Private Pro channels", body: "Pro members get a private lounge, cloud lab help and Proof Profile reviews with mentors." },
+];
 
 
 const FEATURES: Item[] = [
@@ -130,6 +145,7 @@ const TIERS: {
       "The whole Ticket Queue and every challenge",
       "Every lab, on your own Windows PC",
       "Your readiness score from day one",
+      "The Range Discord community",
       "No card. No trial clock.",
     ],
     cta: "Start free",
@@ -147,6 +163,7 @@ const TIERS: {
       "A real Windows domain built just for you",
       "An AI coach that reads your lab and never hands you the answer",
       "A Proof Profile any employer can verify",
+      "Private Pro channels in the Range Discord",
       "Cancel in one click",
     ],
     cta: "Get Pro",
@@ -216,6 +233,33 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         </div>
         <ul className="tp-feature-list" data-r>
           {FEATURES.map(({ Icon, title, body }) => (
+            <li key={title}>
+              <i><Icon size={20} /></i>
+              <div>
+                <strong>{title}</strong>
+                <p>{body}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="pg-section tp-features" id="community">
+        <div className="tp-features__head">
+          <h2>Learn alongside the Range</h2>
+          <p>The Range has its own Discord. Ask for a hint, get your lab running, and share the wins with people working the same tickets.</p>
+          {DISCORD_URL ? (
+            <a href={DISCORD_URL} target="_blank" rel="noreferrer" className="tp-link">
+              Join the Range Discord <ArrowRight size={14} />
+            </a>
+          ) : (
+            <Link href="/range" className="tp-link">
+              Start free to join <ArrowRight size={14} />
+            </Link>
+          )}
+        </div>
+        <ul className="tp-feature-list" data-r>
+          {COMMUNITY.map(({ Icon, title, body }) => (
             <li key={title}>
               <i><Icon size={20} /></i>
               <div>
