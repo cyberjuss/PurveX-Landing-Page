@@ -173,10 +173,11 @@ export function AcademyIntake({
     });
   }
 
-  // The quick check keeps the first answer: it is a read on what they know
-  // walking in, not a test to retry until it comes out right.
+  // The quick check is a read on what they know walking in, for Coach, not a
+  // test: nothing on screen says right or wrong, so a student can change an
+  // answer until they move on, the same as any other question here.
   function answerQuick(id: string, n: number) {
-    setQuick((prev) => (id in prev ? prev : { ...prev, [id]: n }));
+    setQuick((prev) => ({ ...prev, [id]: n }));
   }
 
   function extrasNow() {
@@ -250,7 +251,7 @@ export function AcademyIntake({
   // Each screen is a section of the form, a question, and its choices. The
   // choices are one list for every kind of step, so they look the same and
   // the keyboard (A, B, C… and Enter) works on all of them.
-  type Choice = { label: string; on: boolean; pick: () => void; tone?: "right" | "wrong" | "answer"; icon?: LucideIcon; desc?: string };
+  type Choice = { label: string; on: boolean; pick: () => void; icon?: LucideIcon; desc?: string };
   let section = "";
   let title = "";
   let hint: string | null = null;
@@ -284,23 +285,14 @@ export function AcademyIntake({
   } else if (quickQ) {
     const n = QUICK_CHECK.indexOf(quickQ) + 1;
     const picked = quick[quickQ.id];
-    const answered = picked !== undefined;
     section = `Quick check · ${n} of ${QUICK_CHECK.length}`;
     title = quickQ.prompt;
-    hint = "This is not graded.";
+    hint = "There's no right or wrong here. Your answer shows where you're already strong and where to start, so go with your first instinct.";
     choices = quickQ.options.map((o, k) => ({
       label: o,
       on: picked === k,
       pick: () => answerQuick(quickQ.id, k),
-      tone: !answered ? undefined : k === quickQ.answer ? (picked === k ? "right" : "answer") : picked === k ? "wrong" : undefined,
     }));
-    if (answered)
-      extra = (
-        <div className={`axq-note ${picked === quickQ.answer ? "is-right" : "is-wrong"}`} role="status">
-          <span className="axq-note__tag">{picked === quickQ.answer ? "Correct" : "Not quite"}</span>
-          <p>{quickQ.why}</p>
-        </div>
-      );
   } else if (step === "machine") {
     section = "Setup";
     title = "What computer will you use?";
@@ -449,14 +441,14 @@ export function AcademyIntake({
           <div className="axq-list" role={multi ? "group" : "radiogroup"} aria-label={title}>
             {choices.map((c, n) => {
               const Icon = c.icon;
-              const checked = c.on || c.tone === "answer";
+              const checked = c.on;
               return (
                 <button
                   key={c.label}
                   type="button"
                   role={multi ? "checkbox" : "radio"}
                   aria-checked={c.on}
-                  className={`axq-opt${c.on ? " is-on" : ""}${c.tone ? ` is-${c.tone}` : ""}`}
+                  className={`axq-opt${c.on ? " is-on" : ""}`}
                   onClick={c.pick}
                 >
                   <kbd className="axq-key">{String.fromCharCode(65 + n)}</kbd>
@@ -468,7 +460,6 @@ export function AcademyIntake({
                   <span className="axq-opt__body">
                     <span className="axq-opt__title">
                       {c.label}
-                      {c.tone === "answer" && <span className="axq-opt__tag">Correct answer</span>}
                     </span>
                     {c.desc && <span className="axq-opt__desc">{c.desc}</span>}
                   </span>

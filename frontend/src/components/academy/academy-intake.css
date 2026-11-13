@@ -11,9 +11,7 @@
 .axq-count,
 .axq-label,
 .axq-enter,
-.axq-field > span,
-.axq-note__tag,
-.axq-opt__tag { font-family: var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; text-transform: uppercase; }
+.axq-field > span { font-family: var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; text-transform: uppercase; }
 .axq-org { font-size: 11px; font-weight: 600; color: var(--rd-ink-3); }
 .axq-count { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; color: var(--rd-ink-3); font-variant-numeric: tabular-nums; }
 .axq-hi { font-family: var(--font-sans, inherit); letter-spacing: normal; text-transform: none; font-size: 13px; font-weight: 600; color: var(--rd-ink); }
@@ -60,6 +58,11 @@
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
   -webkit-tap-highlight-color: transparent;
 }
+/* Dark theme: black like the page, drawn by its outline, the way every other
+   panel in this theme is. The white fallback above put the near-white dark
+   theme title on a white card, where it could not be read. */
+.academy-bg[data-academy-theme="dark"] .axq-opt { background: var(--rd-surface, #000); box-shadow: none; }
+.academy-bg[data-academy-theme="dark"] .axq-opt.is-on { background: color-mix(in srgb, var(--rd-accent) 12%, #000); }
 .axq-opt:hover { border-color: color-mix(in srgb, var(--rd-accent) 45%, var(--rd-line)); transform: translateY(-1px); }
 .axq-opt:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
 .axq-opt.is-on { border-color: var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 6%, transparent); }
@@ -78,22 +81,6 @@
 /* The keyboard shortcut still works (A, B, C…); the badge just steps back
    into the corner so the icon can carry the card instead. */
 .axq-key { position: absolute; top: 6px; left: 8px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 9px; font-weight: 700; color: var(--rd-ink-3); opacity: 0.4; }
-
-/* Quick check: the right and wrong choices, and a resolution note. */
-.axq-opt.is-right { border-color: #0f9f6e; }
-.axq-opt.is-right .axq-opt__check { border-color: #0f9f6e; background: #0f9f6e; }
-.axq-opt.is-wrong { border-color: var(--rd-bad, #d93a3f); }
-.axq-opt.is-wrong .axq-opt__check { border-color: var(--rd-bad, #d93a3f); background: var(--rd-bad, #d93a3f); }
-.axq-opt.is-answer { border-color: #0f9f6e; }
-.axq-opt.is-answer .axq-opt__check { border-color: #0f9f6e; background: transparent; color: #0f9f6e; }
-.axq-opt__tag { flex: none; font-size: 10px; font-weight: 700; color: #0f9f6e; }
-.axq-note { display: grid; gap: 6px; margin-top: 16px; padding: 12px 16px; border-left: 3px solid; background: color-mix(in srgb, var(--rd-ink) 3%, transparent); }
-.axq-note.is-right { border-color: #0f9f6e; }
-.axq-note.is-wrong { border-color: var(--rd-bad, #d93a3f); }
-.axq-note__tag { font-size: 10.5px; font-weight: 700; }
-.axq-note.is-right .axq-note__tag { color: #0f9f6e; }
-.axq-note.is-wrong .axq-note__tag { color: var(--rd-bad, #d93a3f); }
-.axq-note p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--rd-ink-2); }
 
 /* Fields. */
 .axq-fields { display: grid; gap: 18px; margin-top: 28px; }
