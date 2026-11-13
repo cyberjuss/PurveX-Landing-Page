@@ -2,14 +2,13 @@ import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { CLIP_MAX_BYTES, CLIP_MAX_SECONDS } from "@/lib/academy-clip-limits";
 import {
-  challengeRemaining,
-  challengeSolvedAt,
   clipPlayUrl,
   clipsAvailable,
   confirmClip,
   deleteClip,
   isChallengeKey,
   listClips,
+  recordingSolvedAt,
   startClip,
 } from "@/lib/academy-clips";
 import { CHALLENGE_LABELS } from "@/lib/academy-missions";
@@ -71,21 +70,23 @@ export async function POST(request: Request) {
   }
   if (!isChallengeKey(body.challenge)) return NextResponse.json({ error: "That isn't a challenge." }, { status: 400 });
   const size = Number(body.sizeBytes);
-  const seconds = Number(body.durationSec);
+  const seconds = Number.isFinite(Number(body.durationSec)) ? Number(body.durationSec) : 0;
   if (!Number.isFinite(size) || size <= 0) return NextResponse.json({ error: "The recording is empty." }, { status: 400 });
   if (size > CLIP_MAX_BYTES || seconds > CLIP_MAX_SECONDS) {
     return NextResponse.json({ error: "Clips can be up to 15 minutes. Record a shorter one to add it to your profile." }, { status: 413 });
   }
-  const progress = await loadProgress(a.student.id);
-  const solvedAt = challengeSolvedAt(progress, body.challenge);
-  if (!solvedAt) {
-    const { left, total } = challengeRemaining(progress, body.challenge);
-    const title = CHALLENGE_LABELS[body.challenge];
-    const what = left >= total ? `all ${total} questions` : left === 1 ? "the last question" : `the other ${left} questions`;
-    return NextResponse.json({ error: `Solve ${what} in ${title} first. Only finished challenges go on your profile.` }, { status: 409 });
-  }
   const recordedAt = typeof body.recordedAt === "string" && !Number.isNaN(Date.parse(body.recordedAt)) ? new Date(body.recordedAt).toISOString() : null;
-  const started = await startClip(a.student.id, body.challenge, size, Number.isFinite(seconds) ? seconds : 0, recordedAt, solvedAt);
+  if (!recordedAt) return NextResponse.json({ error: "Couldn't tell when that was recorded. Try again." }, { status: 400 });
+  const progress = await loadProgress(a.student.id);
+  const solvedAt = recordingSolvedAt(progress, body.challenge, recordedAt, seconds);
+  if (!solvedAt) {
+    const title = CHALLENGE_LABELS[body.challenge];
+    return NextResponse.json(
+      { error: `No correct answer in ${title} landed while that recording was running. Answer one while recording, then add it.` },
+      { status: 409 }
+    );
+  }
+  const started = await startClip(a.student.id, body.challenge, size, seconds, recordedAt, solvedAt);
   if (!started) return NextResponse.json({ error: "Couldn't start the upload. Try again in a minute." }, { status: 500 });
   return NextResponse.json(started);
 }

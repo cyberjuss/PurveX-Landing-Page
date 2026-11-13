@@ -21,9 +21,9 @@ function pickMimeType() {
 // getDisplayMedia asks the student to share a tab, window or screen,
 // MediaRecorder captures it, and on stop the file downloads straight to
 // disk. Nothing leaves the browser unless the student then chooses "Add to
-// my profile": the server checks the challenge is fully solved, hands back a
-// signed upload link, and the clip goes on their Proof Profile with a
-// Verified solve stamp.
+// my profile": the server checks a question in the challenge was actually
+// solved while the recording was running, hands back a signed upload link,
+// and the clip goes on their Proof Profile with a Verified solve stamp.
 type Take = { blob: Blob; seconds: number; recordedAt: string };
 type ClipState = { kind: "idle" } | { kind: "busy" } | { kind: "done" } | { kind: "error"; text: string; upgrade?: boolean };
 
@@ -256,7 +256,7 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
               Click <strong>Stop recording</strong>. The video saves to your Downloads folder.
             </li>
             <li>
-              Once the challenge is solved, click <strong>Add to my profile</strong> to show it on your portfolio as a verified solve.
+              Once a question in it lands correct, click <strong>Add to my profile</strong> to show it on your portfolio as a verified solve.
             </li>
           </ol>
           <p className="ad-record__guide-note">Nothing is uploaded unless you add it to your profile.</p>

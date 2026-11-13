@@ -795,7 +795,7 @@ export function ProofEditor() {
           <section className="pf-sec">
             <h2>Challenge clips</h2>
             <p>
-              Record a challenge, and once every question in it is solved, choose <strong>Add to my profile</strong> when you stop recording. The clip shows here with a Verified solve stamp.
+              Record a challenge, and once a question in it lands correct while you&apos;re recording, choose <strong>Add to my profile</strong> when you stop. The clip shows here with a Verified solve stamp.
             </p>
             {(data.clips ?? []).length > 0 && (
               <ul className="pf-shots">

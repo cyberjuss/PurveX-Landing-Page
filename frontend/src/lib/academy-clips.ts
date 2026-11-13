@@ -6,11 +6,12 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { CLIP_MAX_BYTES, CLIP_MAX_SECONDS } from "@/lib/academy-clip-limits";
 
 // Verified challenge clips. A student records a challenge in the browser and,
-// once every question in it is solved, may add the recording to their Proof
-// Profile. Solves are written by the server alone (mission-answer), so the
-// verification here cannot be faked from the page. The video goes straight
-// from the browser to the private proof-clips bucket through a signed upload
-// URL: it is far larger than the 4.5 MB a Vercel request can carry.
+// once a question in it is answered correctly while the recording is running,
+// may add the recording to their Proof Profile. Solves are written by the
+// server alone (mission-answer), so the verification here cannot be faked
+// from the page. The video goes straight from the browser to the private
+// proof-clips bucket through a signed upload URL: it is far larger than the
+// 4.5 MB a Vercel request can carry.
 
 export type ChallengeKey = MissionCatalogEntry["challenge"];
 export type ChallengeClip = {
@@ -34,18 +35,37 @@ const PLAY_SECONDS = 4 * 60 * 60;
 
 export const isChallengeKey = (v: unknown): v is ChallengeKey => typeof v === "string" && Object.hasOwn(CHALLENGE_PATHS, v);
 
-/** When the student finished the challenge: the latest solve among its questions. Null while any is open. */
-export function challengeSolvedAt(results: Results, challenge: ChallengeKey): string | null {
-  const ids = Object.values(MISSION_CATALOG).filter((m) => m.challenge === challenge).map((m) => m.id);
-  if (!ids.length || !ids.every((id) => results[id]?.solved)) return null;
-  const times = ids.map((id) => results[id]?.at ?? "").filter(Boolean).sort();
-  return times[times.length - 1] ?? new Date().toISOString();
-}
+// A little slack on each side of the recording window, since recordedAt comes
+// from the browser's clock and a solve's timestamp from the server's.
+const RECORDING_SLACK_MS = 30_000;
 
-/** How many of the challenge's questions are still open, and how many it has in all. */
-export function challengeRemaining(results: Results, challenge: ChallengeKey): { left: number; total: number } {
+/**
+ * The latest correct answer, among the challenge's questions, that the student
+ * reached while this recording was running. Null if none of them were solved
+ * inside that window -- a challenge like Ticket Queue holds twenty-odd
+ * questions, and a clip only has to prove the one it actually shows.
+ */
+export function recordingSolvedAt(
+  results: Results,
+  challenge: ChallengeKey,
+  recordedAt: string,
+  durationSec: number
+): string | null {
+  const startedMs = Date.parse(recordedAt);
+  if (Number.isNaN(startedMs)) return null;
+  const from = startedMs - RECORDING_SLACK_MS;
+  const to = startedMs + durationSec * 1000 + RECORDING_SLACK_MS;
   const ids = Object.values(MISSION_CATALOG).filter((m) => m.challenge === challenge).map((m) => m.id);
-  return { left: ids.filter((id) => !results[id]?.solved).length, total: ids.length };
+  const times = ids
+    .map((id) => results[id])
+    .filter((r): r is Results[string] & { at: string } => Boolean(r?.solved && r.at))
+    .map((r) => r.at)
+    .filter((at) => {
+      const t = Date.parse(at);
+      return !Number.isNaN(t) && t >= from && t <= to;
+    })
+    .sort();
+  return times[times.length - 1] ?? null;
 }
 
 function fromRow(r: Record<string, unknown>): ChallengeClip {
