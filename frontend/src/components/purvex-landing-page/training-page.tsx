@@ -14,7 +14,7 @@ import { TrainingHero } from "./training-hero";
 import { TrainingAudiences } from "./training-audiences";
 import { TrainingBenefits } from "./training-benefits";
 import {
-  IconAlert, IconBook, IconChecks, IconEvidence, IconGraduate, IconKey, IconLifebuoy, IconMic, IconSchedule, IconShield, IconTicket,
+  IconAlert, IconBook, IconChecks, IconEvidence, IconMic, IconSchedule, IconShield, IconTicket,
   type BrandIcon,
 } from "./brand-icons";
 
@@ -38,19 +38,26 @@ export type CourseOutline = {
 
 type Item = { title: string; body: string; Icon: BrandIcon };
 
-// The Range's Discord. The invite is inlined at build time; until it is set,
+// The Range's Discord. The invite is inlined at build time. Until it is set,
 // the button sends people to sign up instead, which is where the portal's own
 // Discord link lives.
 const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
 
-// What the Discord is for, matching the channels scripts/discord/setup.ts builds.
-const COMMUNITY: Item[] = [
-  { Icon: IconLifebuoy, title: "Hints, never answers", body: "Stuck on a ticket? Ask in #ticket-help and get pointed the right way." },
-  { Icon: IconShield, title: "Lab setup help", body: "Get the home lab built or the cloud lab connected, with people who have done it." },
-  { Icon: IconSchedule, title: "Ticket of the week", body: "A new ticket every Friday. Work it, then compare how you got there." },
-  { Icon: IconChecks, title: "Wins", body: "Finished challenges, passed certs and job offers, shared with people who know what it took." },
-  { Icon: IconGraduate, title: "Career and cert study", body: "Resumes, interview questions and Security+ study partners." },
-  { Icon: IconKey, title: "Private Pro channels", body: "Pro members get a private lounge, cloud lab help and Proof Profile reviews with mentors." },
+// What the Discord is for, in four lines.
+const COMMUNITY_POINTS = [
+  "Hints when you're stuck, never answers",
+  "Help getting your lab built and connected",
+  "A new ticket every Friday to work together",
+  "Resume, interview and Security+ study help",
+];
+
+// A small picture of the server, using the channels scripts/discord/setup.ts
+// really builds, so what people see here is what they find when they join.
+const DISCORD_PREVIEW: { category: string; locked?: boolean; channels: { name: string; active?: boolean }[] }[] = [
+  { category: "📌 Start Here", channels: [{ name: "👋・welcome" }, { name: "📜・rules" }] },
+  { category: "🎫 The Desk", channels: [{ name: "🎫・ticket-help" }, { name: "🧪・lab-setup" }, { name: "📅・ticket-of-the-week" }] },
+  { category: "🏆 Progress", channels: [{ name: "🏆・wins", active: true }, { name: "🙋・introductions" }] },
+  { category: "💎 Range Pro", locked: true, channels: [{ name: "💎・pro-lounge" }, { name: "☁️・cloud-lab-help" }] },
 ];
 
 
@@ -306,34 +313,76 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         </ul>
       </section>
 
-      <section className="pg-section tp-features" id="community">
-        <div className="tp-features__head">
+      <section className="pg-section tp-dc" id="community">
+        <div className="tp-dc__copy">
           <span className="tp-discord-badge" aria-hidden="true">
             <DiscordLogo size={26} />
           </span>
           <h2>Learn alongside the Range</h2>
-          <p>The Range has its own Discord. Ask for a hint, get your lab running, and share the wins with people working the same tickets.</p>
+          <p>The Range has its own Discord, full of people working the same tickets you are. Ask for a hint, get your lab running, and share the wins.</p>
+          <ul className="tp-dc__points">
+            {COMMUNITY_POINTS.map((point) => (
+              <li key={point}>
+                <Check size={16} aria-hidden="true" />
+                {point}
+              </li>
+            ))}
+          </ul>
           {DISCORD_URL ? (
-            <a href={DISCORD_URL} target="_blank" rel="noreferrer" className="tp-link">
-              <DiscordLogo size={16} /> Join the Range Discord <ArrowRight size={14} />
+            <a href={DISCORD_URL} target="_blank" rel="noreferrer" className="tp-dc__cta">
+              <DiscordLogo size={20} /> Join the Range Discord
             </a>
           ) : (
-            <Link href="/range" className="tp-link">
-              <DiscordLogo size={16} /> Start free to join <ArrowRight size={14} />
+            <Link href="/range" className="tp-dc__cta">
+              <DiscordLogo size={20} /> Start free to join
             </Link>
           )}
+          <p className="tp-dc__note">Free for every student. Range Pro adds private channels, cloud lab help and portfolio reviews.</p>
         </div>
-        <ul className="tp-feature-list" data-r>
-          {COMMUNITY.map(({ Icon, title, body }) => (
-            <li key={title}>
-              <i><Icon size={20} /></i>
-              <div>
-                <strong>{title}</strong>
-                <p>{body}</p>
+
+        {/* A picture of the server, not a live embed: no third-party script,
+            and it shows the layout people will find when they join. */}
+        <div className="tp-dc__window" aria-hidden="true">
+          <div className="tp-dc__rail">
+            <span className="tp-dc__server">
+              <DiscordLogo size={22} />
+            </span>
+          </div>
+          <div className="tp-dc__channels">
+            <p className="tp-dc__name">PurveX Range</p>
+            {DISCORD_PREVIEW.map((group) => (
+              <div key={group.category} className="tp-dc__group">
+                <p className="tp-dc__cat">
+                  {group.category}
+                  {group.locked && <span className="tp-dc__lock">Pro</span>}
+                </p>
+                {group.channels.map((c) => (
+                  <p key={c.name} className={`tp-dc__chan${c.active ? " is-active" : ""}${group.locked ? " is-locked" : ""}`}>
+                    <b>#</b>
+                    {c.name}
+                  </p>
+                ))}
               </div>
-            </li>
-          ))}
-        </ul>
+            ))}
+          </div>
+          <div className="tp-dc__chat">
+            <p className="tp-dc__topic">
+              <b>#</b> 🏆・wins
+            </p>
+            <div className="tp-dc__msg">
+              <span className="tp-dc__avatar">
+                <DiscordLogo size={16} />
+              </span>
+              <div>
+                <p className="tp-dc__who">
+                  PurveX Range <em>APP</em> <time>Today at 4:12 PM</time>
+                </p>
+                <p>🎉 <strong>Jordan</strong> just finished <strong>Operation Day One</strong> in Range.</p>
+              </div>
+            </div>
+            <div className="tp-dc__box">Message #🏆・wins</div>
+          </div>
+        </div>
       </section>
 
       <section className="pg-section" id="course">
@@ -440,6 +489,49 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           border-radius: 12px; background: #5865F2; color: #fff;
           box-shadow: 0 6px 18px -8px rgba(88, 101, 242, .7);
         }
+        /* The Range Discord: the pitch beside a picture of the server, in
+           Discord's own dark colours so it reads as the real thing. */
+        .tp-dc { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 40px 64px; align-items: center }
+        .tp-dc__copy h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.9rem, 3.4vw, 2.5rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; color: var(--ink) }
+        .tp-dc__copy > p { margin: 14px 0 0; max-width: 46ch; color: var(--muted); font-size: 1rem; line-height: 1.6 }
+        .tp-dc__points { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 10px }
+        .tp-dc__points li { display: flex; align-items: center; gap: 10px; color: var(--ink-soft); font-size: .95rem }
+        .tp-dc__points svg { flex: none; color: #5865F2 }
+        .tp-dc__cta {
+          display: inline-flex; align-items: center; gap: 10px; margin-top: 26px; padding: 13px 22px; border-radius: 10px;
+          background: #5865F2; color: #fff; font-size: .98rem; font-weight: 650; text-decoration: none;
+          box-shadow: 0 14px 28px -16px rgba(88, 101, 242, .9); transition: background .2s var(--ease), transform .2s var(--ease);
+        }
+        .tp-dc__cta:hover { background: #4752c4; transform: translateY(-1px) }
+        .tp-dc__copy > .tp-dc__note { margin-top: 12px; font-size: .84rem; color: var(--muted) }
+
+        .tp-dc__window {
+          display: grid; grid-template-columns: 56px 190px minmax(0, 1fr); min-height: 340px; overflow: hidden; border-radius: 14px;
+          background: #313338; color: #dbdee1; font-size: 13.5px; box-shadow: 0 40px 80px -40px rgba(16, 25, 46, .55), 0 0 0 1px rgba(16, 25, 46, .08);
+        }
+        .tp-dc__window p { margin: 0 }
+        .tp-dc__rail { background: #1e1f22; padding: 12px 0; display: flex; justify-content: center }
+        .tp-dc__server { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 14px; background: #5865F2; color: #fff }
+        .tp-dc__channels { background: #2b2d31; padding: 0 8px 12px; overflow: hidden }
+        .tp-dc__name { padding: 13px 8px 12px; margin: 0 -8px 8px !important; border-bottom: 1px solid #1e1f22; font-weight: 700; color: #f2f3f5; font-size: 14px }
+        .tp-dc__group { margin-top: 10px }
+        .tp-dc__cat { display: flex; align-items: center; gap: 6px; padding: 0 6px 4px; font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: #949ba4 }
+        .tp-dc__lock { padding: 0 5px; border-radius: 4px; background: #f0b232; color: #1e1f22; font-size: 9.5px; letter-spacing: .04em }
+        .tp-dc__chan { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 4px; color: #949ba4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+        .tp-dc__chan b { color: #80848e; font-weight: 500; font-size: 16px; line-height: 1 }
+        .tp-dc__chan.is-active { background: #404249; color: #f2f3f5 }
+        .tp-dc__chan.is-locked { opacity: .55 }
+        .tp-dc__chat { display: flex; flex-direction: column; min-width: 0 }
+        .tp-dc__topic { display: flex; align-items: center; gap: 6px; padding: 12px 16px; border-bottom: 1px solid #26272b; font-weight: 600; color: #f2f3f5 }
+        .tp-dc__topic b { color: #80848e; font-weight: 500; font-size: 18px; line-height: 1 }
+        .tp-dc__msg { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; padding: 14px 16px 2px }
+        .tp-dc__avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #5865F2; color: #fff }
+        .tp-dc__who { display: flex; align-items: center; gap: 6px; font-weight: 600; color: #f2f3f5; font-size: 14px }
+        .tp-dc__who em { padding: 0 4px; border-radius: 3px; background: #5865F2; color: #fff; font-style: normal; font-size: 9.5px; font-weight: 700 }
+        .tp-dc__who time { font-weight: 400; font-size: 11.5px; color: #949ba4 }
+        .tp-dc__msg div > p:last-child { margin-top: 2px; line-height: 1.45 }
+        .tp-dc__msg strong { color: #f2f3f5 }
+        .tp-dc__box { margin: auto 16px 16px; padding: 11px 14px; border-radius: 8px; background: #383a40; color: #6d6f78 }
         .tp-feature-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px }
         .tp-feature-list li { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; padding: 22px 0; border-top: 1px solid var(--border) }
         .tp-feature-list i {
@@ -548,11 +640,14 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           .tp-features { grid-template-columns: minmax(0, 1fr) }
           .tp-features__head { position: static }
           .tp-syl__weeks { grid-template-columns: 1fr }
+          .tp-dc { grid-template-columns: minmax(0, 1fr) }
         }
         @media (max-width: 640px) {
           .tp-feature-list { grid-template-columns: 1fr }
           .tp-syl__phase { padding: 20px }
           .tp-syl__head { grid-template-columns: minmax(0, 1fr) }
+          .tp-dc__window { grid-template-columns: 48px minmax(0, 1fr) }
+          .tp-dc__channels { display: none }
         }
       `}</style>
     </SiteChrome>
