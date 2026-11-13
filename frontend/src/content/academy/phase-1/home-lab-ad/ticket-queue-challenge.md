@@ -14,7 +14,7 @@
 <span class="ad-mission__num">Ticket 01 · Warm-up · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
 <p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email. Everyone else on my team has. Can you check my access?</p>
-<p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if she is missing. Then report how many members the group has.</p>
+<p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if they are missing. Then report how many members the group has.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Missing Announcements" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{9}" data-lab-answer="members:All Employees">Submit</button>
@@ -25,7 +25,7 @@
 <ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open the group whose Description mentions company-wide announcements.</li>
-<li>On the Members tab, add <code>jamie.torres</code> if she is missing and click Apply.</li>
+<li>On the Members tab, add <code>jamie.torres</code> if they are missing and click Apply.</li>
 <li>Reopen the group after Apply and count the Members tab, including Jamie.</li>
 <li>Type that number here.</li>
 </ul>
@@ -41,11 +41,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Jamie was missing from <code>All Employees</code>, so every company-wide notice skipped her, including the policy and security updates staff are expected to follow.</p>
+<p>Jamie was missing from <code>All Employees</code>, so every company-wide notice skipped them, including the policy and security updates staff are expected to follow.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>The fix is to add her to <code>All Employees</code> and confirm she appears on its member list. Once she is there, the next company-wide email will reach her.</p>
+<p>The fix is to add them to <code>All Employees</code> and confirm they appear on its member list. Once they are there, the next company-wide email will reach them.</p>
 </div>
 </div>
 </div>
@@ -55,7 +55,7 @@
 <span class="ad-mission__num">Ticket 02 · Warm-up · INC-1042 · Low</span>
 <h4>Locked Out</h4>
 <p><strong>Riley Kwan · Operations · 8:47 AM</strong><br>It will not let me sign in. I have typed my password wrong a few times, so I think I locked myself out. Can you unlock me?</p>
-<p><strong>Task:</strong> Open Riley's account before you take the action she asked for. Restore sign-in if something is blocking her, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
+<p><strong>Task:</strong> Open Riley's account before you take the action they asked for. Restore sign-in if something is blocking them, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Locked Out" placeholder="locked or disabled" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}" data-accept="account-is-disabled|account-disabled">Submit</button>
@@ -68,7 +68,7 @@
 <li>Right-click the domain and use Find to search for <code>riley.kwan</code>.</li>
 <li>Open the account and go to the Account tab. Check both Unlock account and Account is disabled.</li>
 <li>The Unlock account box is grayed out when nothing is locked. Read that as a finding and keep going.</li>
-<li>Fix the setting that is blocking her, then submit the cause rather than the word she used.</li>
+<li>Fix the setting that is blocking them, then submit the cause rather than the word they used.</li>
 </ul>
 <p>In PowerShell:</p>
 <ul>
@@ -86,7 +86,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Riley believed she was locked out, but the account was actually disabled. An unlock would not have restored her sign-in, so she would have stayed blocked while the ticket showed as closed.</p>
+<p>Riley believed they were locked out, but the account was actually disabled. An unlock would not have restored their sign-in, so they would have stayed blocked while the ticket showed as closed.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -293,7 +293,7 @@
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Server Admins</code>.</li>
 <li>Read Description on the General tab and compare it with what Sam needs.</li>
-<li>Do not add Sam. If you added him while reading the group, remove him again before you submit.</li>
+<li>Do not add Sam. If you added them while reading the group, remove them again before you submit.</li>
 <li>Type the access level from the Description here.</li>
 </ul>
 </div>

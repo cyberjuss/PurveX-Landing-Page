@@ -10,6 +10,26 @@ import { TrailDock, type TrailLink } from "./trail-dock";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
+/**
+ * The order a question's options are shown in. The source lists the right
+ * answer second more often than not, so showing it as written let a student
+ * pass by always picking B. Seeded by the question text, so the order is the
+ * same on every visit and device, and the saved pick (an index into the
+ * source list) still points at the option the student chose.
+ */
+function shownOrder(question: string, count: number): number[] {
+  let seed = 2166136261;
+  for (let i = 0; i < question.length; i++) seed = Math.imul(seed ^ question.charCodeAt(i), 16777619) >>> 0;
+  const order = Array.from({ length: count }, (_, i) => i);
+  for (let i = count - 1; i > 0; i--) {
+    seed = Math.imul(seed ^ (seed >>> 15), 2246822507) >>> 0;
+    seed = Math.imul(seed ^ (seed >>> 13), 3266489909) >>> 0;
+    const j = (seed ^ (seed >>> 16)) % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
 export function QuizBlock({
   quiz,
   actionHost,
@@ -149,7 +169,8 @@ export function QuizBlock({
           <p>{q.question}</p>
         </div>
         <div className="ax-quiz__opts">
-          {q.options.map((option, oi) => {
+          {shownOrder(q.question, q.options.length).map((oi, shown) => {
+            const option = q.options[oi];
             const isSelected = selected === oi;
             const showCorrect = answered && oi === q.correctIndex;
             const showWrong = answered && isSelected && oi !== q.correctIndex;
@@ -163,7 +184,7 @@ export function QuizBlock({
                   showCorrect ? "ax-quiz__opt--ok" : showWrong ? "ax-quiz__opt--bad" : isSelected ? "ax-quiz__opt--on" : ""
                 }`}
               >
-                <span className="ax-quiz__letter">{LETTERS[oi]}</span>
+                <span className="ax-quiz__letter">{LETTERS[shown]}</span>
                 <span>{option}</span>
               </button>
             );

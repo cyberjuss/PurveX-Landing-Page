@@ -357,7 +357,7 @@
 <div class="ad-mission" data-id="d1-06" data-attempts="0">
 <span class="ad-mission__num">Task 09 · Apply it · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
-<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges she should not have. Her title is Help Desk Technician, but a title is only a label on the account, because privileges come from groups.</p>
+<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges they should not have. Their title is Help Desk Technician, but a title is only a label on the account, because privileges come from groups.</p>
 <p><strong>Task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Is Priya on the Help Desk Group?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -365,7 +365,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Base your answer on the group's member list, not on the word Technician on her account.</p>
+<p>Base your answer on the group's member list, not on the word Technician on their account.</p>
 <ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>Helpdesk</code>.</li>
@@ -373,7 +373,7 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="yes|y">Priya's title mentions the help desk, but a title grants nothing. Check for her name on the Helpdesk group's Members tab.</div>
+<div class="ad-miss" data-guess="yes|y">Priya's title mentions the help desk, but a title grants nothing. Check for their name on the Helpdesk group's Members tab.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
