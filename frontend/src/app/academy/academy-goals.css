@@ -338,3 +338,9 @@
 .ad-drawer .gp-check input { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--dr-accent); }
 .ad-drawer .gp-link { display: inline-block; margin-top: 12px; font-size: var(--ty-small); font-weight: 600; color: var(--dr-accent); text-decoration: underline; text-underline-offset: 3px; }
 .ad-drawer .gp-link:focus-visible { outline: 2px solid var(--dr-accent); outline-offset: 2px; }
+/* Connect Discord: the Pro role follows Range Pro once linked. */
+.ad-drawer .gp-discord { margin-top: 14px; font-size: var(--ty-note); line-height: 1.45; color: var(--dr-ink); }
+.ad-drawer .gp-discord p { margin: 0; }
+.ad-drawer .gp-discord__connect { margin-top: 10px; }
+.ad-drawer .gp-link--btn { background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: var(--ty-small); font-weight: 600; }
+.ad-drawer .gp-link--btn:disabled { opacity: 0.6; cursor: default; }

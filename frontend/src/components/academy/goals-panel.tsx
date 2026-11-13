@@ -24,6 +24,7 @@ import {
   type StudentProfile,
 } from "@/lib/academy-certs";
 import { academyFetch } from "@/lib/academy-client";
+import { DiscordConnect } from "@/components/academy/discord-connect";
 import { daysUntil, passedExamDates, todayLocal } from "@/lib/academy-goals";
 
 const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
@@ -324,6 +325,7 @@ export function GoalsPanel({
                 <input type="checkbox" checked={shareWins} onChange={(e) => setShareWins(e.target.checked)} />
                 <span>Share my finished challenges in the PurveX Discord. Only your first name and the challenge name are posted.</span>
               </label>
+              <DiscordConnect />
               <a className="gp-link" href={DISCORD_URL} target="_blank" rel="noreferrer">
                 Join the Discord
               </a>
