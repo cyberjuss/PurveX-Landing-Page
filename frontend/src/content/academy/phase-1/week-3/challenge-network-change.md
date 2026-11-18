@@ -3,9 +3,10 @@
 <h3>The Network Change That Went Wrong</h3>
 <p class="ad-brief__ask">A contractor ran a network change at PurveX Financial over the weekend. It is Monday, and the cleanup they promised never happened. Can you read their change log, find what they left behind, and put it right?</p>
 <ul>
-<li>The contractor's changes are already in your lab, and their change log is in the IT share.</li>
+<li>The contractor's changes are already in your lab. Their change log is in the IT share.</li>
 <li>Read it the way you would on the job: treat every line as a change someone now has to check.</li>
-<li>If you have not yet, install <strong>Nmap</strong> and <strong>Wireshark</strong> from <code>nmap.org/download</code> and <code>wireshark.org/download</code>, and keep the Npcap option ticked for loopback support.</li>
+<li>If you have not yet, install <strong>Nmap</strong> and <strong>Wireshark</strong> from <code>nmap.org/download</code> and <code>wireshark.org/download</code>.</li>
+<li>When the installer offers the Npcap option, keep it ticked for loopback support.</li>
 </ul>
 </div>
 
