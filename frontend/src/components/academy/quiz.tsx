@@ -2,33 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { QUIZ_PASS_PERCENT, quizPassed, type Quiz } from "@/content/academy/quizzes";
+import { QUIZ_PASS_PERCENT, quizPassed, shownOrder, type Quiz } from "@/content/academy/quizzes";
 import { confetti } from "@/lib/confetti";
 import { getSaved, subscribeSaved, updateSaved } from "@/lib/academy-saved-client";
 import { useAcademyProgress } from "./academy-progress";
 import { TrailDock, type TrailLink } from "./trail-dock";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
-
-/**
- * The order a question's options are shown in. The source lists the right
- * answer second more often than not, so showing it as written let a student
- * pass by always picking B. Seeded by the question text, so the order is the
- * same on every visit and device, and the saved pick (an index into the
- * source list) still points at the option the student chose.
- */
-function shownOrder(question: string, count: number): number[] {
-  let seed = 2166136261;
-  for (let i = 0; i < question.length; i++) seed = Math.imul(seed ^ question.charCodeAt(i), 16777619) >>> 0;
-  const order = Array.from({ length: count }, (_, i) => i);
-  for (let i = count - 1; i > 0; i--) {
-    seed = Math.imul(seed ^ (seed >>> 15), 2246822507) >>> 0;
-    seed = Math.imul(seed ^ (seed >>> 13), 3266489909) >>> 0;
-    const j = (seed ^ (seed >>> 16)) % (i + 1);
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  return order;
-}
 
 export function QuizBlock({
   quiz,

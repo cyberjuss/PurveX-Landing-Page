@@ -10,12 +10,13 @@
  * content instead, and home-lab-desk itself had no quiz at all.
  *
  * Pure structure, no database and no content judgment: option counts,
- * correctIndex in range, no duplicate options, and every key naming an
+ * correctIndex in range, no duplicate options, a shown order that lists
+ * every option once (a negative shuffle index once blanked options B-D), and every key naming an
  * entry that exists.
  */
 import { phases } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
-import { quizzes } from "@/content/academy/quizzes";
+import { quizzes, shownOrder } from "@/content/academy/quizzes";
 
 let failures = 0;
 function t(name: string, ok: boolean, detail = "") {
@@ -38,6 +39,13 @@ for (const quiz of quizzes) {
     t(`${label} has at least two options`, q.options.length >= 2);
     t(`${label}'s correctIndex is in range`, q.correctIndex >= 0 && q.correctIndex < q.options.length, `${q.correctIndex} of ${q.options.length}`);
     t(`${label} has no duplicate options`, new Set(q.options).size === q.options.length);
+    const order = shownOrder(q.question, q.options.length);
+    t(
+      `${label} shows every option exactly once`,
+      order.length === q.options.length && order.every((o) => Number.isInteger(o) && o >= 0 && o < q.options.length) && new Set(order).size === order.length,
+      order.join(",")
+    );
+    t(`${label} has no commas in its options`, q.options.every((o) => !o.includes(",")));
     t(`${label} has question and explanation text`, Boolean(q.question?.trim()) && Boolean(q.explanation?.trim()));
   });
 }

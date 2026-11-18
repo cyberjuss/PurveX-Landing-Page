@@ -18,6 +18,28 @@ export function quizPassed(score: number, total: number) {
   return Math.round((score / total) * 100) >= QUIZ_PASS_PERCENT;
 }
 
+/**
+ * The order a question's options are shown in. The source lists the right
+ * answer second more often than not, so showing it as written let a student
+ * pass by always picking B. Seeded by the question text, so the order is the
+ * same on every visit and device, and the saved pick (an index into the
+ * source list) still points at the option the student chose.
+ */
+export function shownOrder(question: string, count: number): number[] {
+  let seed = 2166136261;
+  for (let i = 0; i < question.length; i++) seed = Math.imul(seed ^ question.charCodeAt(i), 16777619) >>> 0;
+  const order = Array.from({ length: count }, (_, i) => i);
+  for (let i = count - 1; i > 0; i--) {
+    seed = Math.imul(seed ^ (seed >>> 15), 2246822507) >>> 0;
+    seed = Math.imul(seed ^ (seed >>> 13), 3266489909) >>> 0;
+    // ^ yields a signed 32-bit int, so without >>> 0 j could be negative and
+    // the swap pulled `undefined` into the order: those options rendered blank.
+    const j = ((seed ^ (seed >>> 16)) >>> 0) % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
 export const quizzes: Quiz[] = [
   {
     phaseSlug: "phase-1",
