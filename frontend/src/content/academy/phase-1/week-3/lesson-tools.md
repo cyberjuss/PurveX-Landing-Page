@@ -1,4 +1,4 @@
-### Tools You'll Use
+### Tools You Will Use
 
 This week's challenge uses the two tools network and security teams reach for most often, so install both on your domain controller from their official sites, nmap.org and wireshark.org. One rule comes first, though: only scan machines you own or have written permission to test.
 
