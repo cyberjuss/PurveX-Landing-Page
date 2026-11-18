@@ -31,7 +31,22 @@ The address on its own does not say where one part ends and the other begins. Th
 
 ### The subnet mask and CIDR
 
-The most common subnet mask is `255.255.255.0`. Read it octet by octet, where 255 means "this octet belongs to the network" and 0 means "this octet belongs to the host". So for `192.168.1.25` with that mask, the network is `192.168.1` and the device is host 25 on it.
+The most common subnet mask is `255.255.255.0`. Read it octet by octet: 255 means "this octet belongs to the network," and 0 means "this octet belongs to the host."
+
+<div style="display:grid;grid-template-columns:repeat(4, auto);gap:2px 0.5rem;align-items:end;font-family:var(--font-mono, ui-monospace, monospace);margin:1rem 0 0.3rem;">
+<span style="font-size:1.3em;font-weight:700;color:var(--rd-accent);">192.</span>
+<span style="font-size:1.3em;font-weight:700;color:var(--rd-accent);">168.</span>
+<span style="font-size:1.3em;font-weight:700;color:var(--rd-accent);">1.</span>
+<span style="font-size:1.3em;font-weight:700;color:var(--rd-ink-3, #94a3b8);">25</span>
+<span style="font-size:0.85em;color:var(--rd-accent);">255.</span>
+<span style="font-size:0.85em;color:var(--rd-accent);">255.</span>
+<span style="font-size:0.85em;color:var(--rd-accent);">255.</span>
+<span style="font-size:0.85em;color:var(--rd-ink-3, #94a3b8);">0</span>
+<span style="grid-column:1 / span 3;font-size:0.72em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-accent);">network</span>
+<span style="font-size:0.72em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-ink-3, #94a3b8);">host</span>
+</div>
+
+For `192.168.1.25` with that mask, the network is `192.168.1` and the device is host 25 on it.
 
 Writing out the mask every time gets tedious, so engineers use a shorter form called **CIDR notation**. It simply counts how many bits belong to the network. The mask `255.255.255.0` gives the first 24 bits to the network, so the same address is written `192.168.1.25/24`. The number after the slash is called the **prefix**.
 
