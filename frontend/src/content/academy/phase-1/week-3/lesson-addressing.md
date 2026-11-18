@@ -48,13 +48,6 @@ The most common subnet mask is `255.255.255.0`. Read it octet by octet: 255 mean
 
 Writing out the mask every time gets tedious, so engineers use a shorter form called **CIDR notation**. The mask `255.255.255.0` gives the first 24 bits to the network, so the same address is written `192.168.1.25/24`. The number after the slash is called the **prefix**.
 
-<div style="display:flex;align-items:baseline;gap:2px;font-family:var(--font-mono, ui-monospace, monospace);font-size:1.4em;margin:1.25rem 0 0.3rem;">
-<span style="color:var(--rd-accent);font-weight:700;">192.168.1</span><span style="color:var(--rd-ink-3, #94a3b8);">.25</span>
-</div>
-<div style="display:flex;gap:4px;align-items:center;font-family:var(--font-mono, ui-monospace, monospace);font-size:0.8em;color:var(--rd-ink-3, #94a3b8);margin:0 0 1.25rem;">
-<span style="color:var(--rd-accent);font-weight:700;">⟵ network · /24 ⟶</span><span>host</span>
-</div>
-
 | Prefix | Subnet mask | Addresses | Usable hosts |
 | :---- | :---- | :---- | :---- |
 | /8 | 255.0.0.0 | 16,777,216 | 16,777,214 |
@@ -82,16 +75,10 @@ This is where addressing starts to matter on the job. Two devices on the same su
 
 To decide which case applies, compare the network parts. Take a workstation at `192.168.1.25/24`, where the first three octets are the network:
 
-<div style="display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;">
-<div style="flex:1 1 220px;padding:0.9rem 1rem;border-radius:12px;background:color-mix(in srgb, var(--rd-good, #16a34a) 6%, var(--rd-surface));box-shadow:0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);">
-<strong style="display:block;font-size:0.72em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-good, #16a34a);margin-bottom:4px;">Same subnet</strong>
-<code>192.168.1.200</code> shares <code>192.168.1</code> with the workstation, so it reaches it directly.
-</div>
-<div style="flex:1 1 220px;padding:0.9rem 1rem;border-radius:12px;background:color-mix(in srgb, var(--rd-warn, #d97706) 6%, var(--rd-surface));box-shadow:0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);">
-<strong style="display:block;font-size:0.72em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-warn, #d97706);margin-bottom:4px;">Through the gateway</strong>
-<code>192.168.2.25</code> has a different third octet, so that traffic goes through the gateway.
-</div>
-</div>
+<ul>
+<li><strong>Same subnet:</strong> <code>192.168.1.200</code> shares <code>192.168.1</code> with the workstation, so it reaches it directly.</li>
+<li><strong>Through the gateway:</strong> <code>192.168.2.25</code> has a different third octet, so that traffic goes through the gateway.</li>
+</ul>
 
 With a `/16`, you would compare only the first two octets. Prefixes larger than `/24` split the last octet itself, which catches people out. A `/26` divides it into four blocks of 64:
 
