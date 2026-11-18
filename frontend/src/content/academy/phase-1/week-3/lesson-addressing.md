@@ -66,12 +66,21 @@ Writing out the mask every time gets tedious, so engineers use a shorter form ca
 | /26 | 255.255.255.192 | 64 | 62 |
 | /30 | 255.255.255.252 | 4 | 2 |
 
-Two patterns in that table are worth committing to memory:
+Two patterns in that table are worth committing to memory. First:
 
 <ul>
 <li>A subnet with prefix <code>/n</code> holds 2 to the power of (32 minus n) addresses, so every bit you add to the prefix cuts the subnet in half.</li>
-<li>The usable count is always two short, because two addresses in every subnet are reserved. The <strong>network address</strong> names the subnet itself (<code>192.168.1.0</code>), and the <strong>broadcast address</strong> reaches every device on the subnet at once (<code>192.168.1.255</code>). Neither can be given to a computer.</li>
 </ul>
+
+Second, the usable count is always two short, because two addresses in every subnet are reserved:
+
+<div style="display:flex;gap:2px;margin:1rem 0;font-family:var(--font-mono, ui-monospace, monospace);font-size:0.8em;text-align:center;">
+<span style="flex:0 0 72px;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-bad, #dc2626) 14%, transparent);border-bottom:3px solid var(--rd-bad, #dc2626);">.0<br><span style="font-size:0.82em;text-transform:uppercase;letter-spacing:0.04em;">network</span></span>
+<span style="flex:1;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-good, #16a34a) 10%, transparent);border-bottom:3px solid var(--rd-good, #16a34a);">.1 – .254<br><span style="font-size:0.82em;text-transform:uppercase;letter-spacing:0.04em;">usable hosts</span></span>
+<span style="flex:0 0 72px;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-bad, #dc2626) 14%, transparent);border-bottom:3px solid var(--rd-bad, #dc2626);">.255<br><span style="font-size:0.82em;text-transform:uppercase;letter-spacing:0.04em;">broadcast</span></span>
+</div>
+
+The <strong>network address</strong> names the subnet itself (<code>192.168.1.0</code>), and the <strong>broadcast address</strong> reaches every device on the subnet at once (<code>192.168.1.255</code>). Neither can be given to a computer.
 
 ### Same subnet or not
 
@@ -92,12 +101,12 @@ To decide which case applies, compare the network parts. Take a workstation at `
 
 With a `/16`, you would compare only the first two octets. Prefixes larger than `/24` split the last octet itself, which catches people out. A `/26` divides it into four blocks of 64:
 
-<ul>
-<li><code>.0</code> to <code>.63</code></li>
-<li><code>.64</code> to <code>.127</code></li>
-<li><code>.128</code> to <code>.191</code></li>
-<li><code>.192</code> to <code>.255</code></li>
-</ul>
+<div style="display:flex;gap:2px;margin:1rem 0;font-family:var(--font-mono, ui-monospace, monospace);font-size:0.8em;text-align:center;">
+<span style="flex:1;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-accent) 14%, transparent);border-bottom:3px solid var(--rd-accent);">.0 – .63</span>
+<span style="flex:1;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-good, #16a34a) 14%, transparent);border-bottom:3px solid var(--rd-good, #16a34a);">.64 – .127</span>
+<span style="flex:1;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-warn, #d97706) 14%, transparent);border-bottom:3px solid var(--rd-warn, #d97706);">.128 – .191</span>
+<span style="flex:1;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-bad, #dc2626) 14%, transparent);border-bottom:3px solid var(--rd-bad, #dc2626);">.192 – .255</span>
+</div>
 
 So `10.0.0.70/26` and `10.0.0.130/26` sit on different subnets, even though their first three octets match.
 
