@@ -12,7 +12,13 @@ A large share of "the network is down" tickets on a help desk come down to one o
 
 ### Reading an IPv4 address
 
-An IPv4 address is 32 bits long. We write it as four numbers separated by dots, such as `192.168.1.25`. Each of those numbers is called an **octet**, because it stands for 8 bits, so each one can only run from 0 to 255. If you ever see an octet of 256 or higher, the address is not valid, and you are looking at a typo.
+An IPv4 address is 32 bits long, written as four numbers separated by dots, such as `192.168.1.25`.
+
+<ul>
+<li>Each of those numbers is called an <strong>octet</strong>, because it stands for 8 bits.</li>
+<li>So each octet can only run from 0 to 255.</li>
+<li>An octet of 256 or higher means the address is not valid, and you are looking at a typo.</li>
+</ul>
 
 Every address has two parts, much like a street address:
 
