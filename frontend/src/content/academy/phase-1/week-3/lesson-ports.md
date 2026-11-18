@@ -30,9 +30,11 @@ Two entries in the first table deserve special attention. Ports 22 and 3389 both
 
 At the same time, be careful not to read more into a port number than it can tell you. A port shows which door the traffic used, but it does not tell you the conversation was legitimate, because anyone can run any service on any port. So before you draw a conclusion, check:
 
-- The host involved
-- The direction the connection traveled
-- Whether that service has any reason to be running there at all
+<ul>
+<li>The host involved</li>
+<li>The direction the connection traveled</li>
+<li>Whether that service has any reason to be running there at all</li>
+</ul>
 
 ```match
 prompt: Which port would you expect to see for each of these?

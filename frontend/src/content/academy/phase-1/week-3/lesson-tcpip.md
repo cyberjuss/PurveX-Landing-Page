@@ -9,15 +9,19 @@ TCP/IP is the pair of protocols that solves those problems, one each, and keepin
 
 The first of the pair, **IP** (the Internet Protocol), handles the addressing. It gives every device an address, much like a building's street address, and moves data from one address to another across whatever equipment sits in between. IP only makes a best effort, though:
 
-- It tries to deliver your data
-- It does not promise that anything arrives
-- It does not check
+<ul>
+<li>It tries to deliver your data</li>
+<li>It does not promise that anything arrives</li>
+<li>It does not check</li>
+</ul>
 
 That is where the second protocol comes in. **TCP** (the Transmission Control Protocol) makes sure the data arrives complete and in the right order, a bit like a phone call where each person keeps checking the other heard them:
 
-- It numbers everything it sends
-- It waits for the other side to confirm each piece arrived
-- If something goes unconfirmed, it sends that piece again
+<ul>
+<li>It numbers everything it sends</li>
+<li>It waits for the other side to confirm each piece arrived</li>
+<li>If something goes unconfirmed, it sends that piece again</li>
+</ul>
 
 That split is worth committing to memory, because it tells you where to look when something goes wrong. **IP gets the data there, and TCP makes sure it arrives correctly.** So when a capture looks broken, your first question is which of the two failed:
 

@@ -14,9 +14,11 @@ Before any of that web traffic can happen, a device has to find the server, and 
 
 That ordering is what makes DNS so valuable to you as an analyst. Because almost every connection starts with a lookup, DNS logs are one of the best records you will get of what a machine tried to reach, including attempts that never succeeded. They are not complete, though, since some lookups never reach them:
 
-- Cached answers
-- Direct connections to an IP address
-- Encrypted DNS (DoH)
+<ul>
+<li>Cached answers</li>
+<li>Direct connections to an IP address</li>
+<li>Encrypted DNS (DoH)</li>
+</ul>
 
 Even so, a device looking up a name it has no business wanting is often the earliest sign that something is wrong.
 
@@ -33,13 +35,17 @@ Because DHCP is almost universal, an exception is interesting:
 
 Email splits its work across protocols that run in two directions:
 
-- **SMTP** carries mail outward toward its destination.
-- **POP3** and **IMAP** let a mail client pull messages down from a server so someone can read them.
+<ul>
+<li><strong>SMTP</strong> carries mail outward toward its destination.</li>
+<li><strong>POP3</strong> and <strong>IMAP</strong> let a mail client pull messages down from a server so someone can read them.</li>
+</ul>
 
 The useful question for an analyst is which machines should be speaking these protocols at all. The answer is a short list:
 
-- Mail servers
-- The mail clients of the people who read email
+<ul>
+<li>Mail servers</li>
+<li>The mail clients of the people who read email</li>
+</ul>
 
 So if you see SMTP coming from a host that has no reason to handle mail, follow it up, because sending messages is one of the most common uses of a compromised machine.
 
