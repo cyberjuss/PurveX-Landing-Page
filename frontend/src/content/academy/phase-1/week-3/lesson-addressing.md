@@ -1,6 +1,6 @@
 ### IP Addresses and Subnets
 
-In the TCP/IP lesson, we said that IP gives every device an address. Now we will learn to read one, because an address tells you more than where a device lives. It tells you:
+In the TCP/IP lesson, we said that IP gives every device an address. Now we will learn to read one. An address tells you more than where a device lives:
 
 <ul>
 <li>Which machines it can reach directly</li>
@@ -12,7 +12,7 @@ A large share of "the network is down" tickets on a help desk come down to one o
 
 ### Reading an IPv4 address
 
-An IPv4 address is 32 bits long, written as four numbers separated by dots, such as `192.168.1.25`.
+An IPv4 address is 32 bits long. We write it as four numbers separated by dots, such as `192.168.1.25`.
 
 <ul>
 <li>Each of those numbers is called an <strong>octet</strong>, because it stands for 8 bits.</li>
@@ -72,7 +72,7 @@ Two patterns in that table are worth committing to memory. First:
 <li>A subnet with prefix <code>/n</code> holds 2 to the power of (32 minus n) addresses, so every bit you add to the prefix cuts the subnet in half.</li>
 </ul>
 
-Second, the usable count is always two short, because two addresses in every subnet are reserved:
+Second, the usable count is always two short: two addresses in every subnet are reserved.
 
 <div style="display:flex;gap:2px;margin:1rem 0;font-family:var(--font-mono, ui-monospace, monospace);font-size:0.8em;text-align:center;">
 <span style="flex:0 0 72px;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-bad, #dc2626) 14%, transparent);border-bottom:3px solid var(--rd-bad, #dc2626);">.0<br><span style="font-size:0.82em;text-transform:uppercase;letter-spacing:0.04em;">network</span></span>
@@ -80,11 +80,11 @@ Second, the usable count is always two short, because two addresses in every sub
 <span style="flex:0 0 72px;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-bad, #dc2626) 14%, transparent);border-bottom:3px solid var(--rd-bad, #dc2626);">.255<br><span style="font-size:0.82em;text-transform:uppercase;letter-spacing:0.04em;">broadcast</span></span>
 </div>
 
-The <strong>network address</strong> names the subnet itself (<code>192.168.1.0</code>), and the <strong>broadcast address</strong> reaches every device on the subnet at once (<code>192.168.1.255</code>). Neither can be given to a computer.
+The <strong>network address</strong> names the subnet itself (<code>192.168.1.0</code>). The <strong>broadcast address</strong> reaches every device on the subnet at once (<code>192.168.1.255</code>). Neither can be given to a computer.
 
 ### Same subnet or not
 
-This is where addressing starts to matter on the job. Two devices on the same subnet talk to each other directly. When the destination is on a different subnet, the device cannot reach it on its own, so it hands the traffic to its **default gateway**, which is the router that connects its subnet to everything else.
+This is where addressing starts to matter on the job. Two devices on the same subnet talk to each other directly. When the destination is on a different subnet, the device cannot reach it on its own. It hands the traffic instead to its **default gateway**: the router that connects its subnet to everything else.
 
 To decide which case applies, compare the network parts. Take a workstation at `192.168.1.25/24`, where the first three octets are the network:
 
@@ -110,7 +110,7 @@ With a `/16`, you would compare only the first two octets. Prefixes larger than 
 
 So `10.0.0.70/26` and `10.0.0.130/26` sit on different subnets, even though their first three octets match.
 
-This explains one of the most recognizable help desk patterns. When a computer's default gateway is missing or wrong, it can still reach printers and machines on its own subnet, but it cannot reach anything beyond it. The user reports that "some things work and some do not," and the gateway is the first thing to check.
+This explains one of the most recognizable help desk patterns. When a computer's default gateway is missing or wrong, it can still reach printers and machines on its own subnet. It just cannot reach anything beyond it. The user reports that "some things work and some do not." The gateway is the first thing to check.
 
 ### Private and public addresses
 
@@ -138,7 +138,7 @@ Two more ranges are worth recognizing on sight:
 <li>An address starting with <code>169.254</code> means the device asked DHCP for an address and nobody answered, which we covered in the Protocols lesson.</li>
 </ul>
 
-For an analyst, the private ranges answer the first question you ask of any line in a capture, which is whether the traffic is internal or external. Internal machines talking to each other during working hours is ordinary. Two patterns deserve a closer look:
+For an analyst, the private ranges answer a basic question: is the traffic internal or external? Internal machines talking to each other during working hours is ordinary. Two patterns deserve a closer look:
 
 <ul>
 <li>An internal machine sending a large amount of data to a public address nobody recognizes</li>
@@ -147,13 +147,13 @@ For an analyst, the private ranges answer the first question you ask of any line
 
 ### Where to read it
 
-On Windows, `ipconfig /all` shows everything this lesson has covered, adapter by adapter. You will find the IPv4 address, the subnet mask and the default gateway, along with whether DHCP is enabled and which DNS servers the machine uses. When a computer cannot reach something, work through that output in order:
+On Windows, `ipconfig /all` shows everything this lesson has covered, adapter by adapter. You will find the IPv4 address, the subnet mask and the default gateway. It also shows whether DHCP is enabled and which DNS servers the machine uses. When a computer cannot reach something, work through that output in order:
 
 1. **Does it have a real address?** An address starting with 169.254 means DHCP failed.
 2. **Are the mask and gateway right?** A wrong gateway strands the machine on its own subnet.
 3. **Is the DNS server right?** If the machine can reach addresses but cannot resolve names, DNS is the problem. You have already seen this in the Home Lab, where a workstation cannot join the domain until its DNS server points at the domain controller.
 
-You will also notice a much longer address in that output, labeled Link-local IPv6 Address and starting with `fe80`. That is **IPv6**, the newer version of IP, which uses 128-bit addresses written in hexadecimal. Windows gives every adapter one automatically by default. You will meet IPv6 properly later, so for now it is enough to recognize it and know that it does not replace the IPv4 address next to it.
+You will also notice a much longer address in that output, labeled Link-local IPv6 Address and starting with `fe80`. That is **IPv6**, the newer version of IP. It uses 128-bit addresses written in hexadecimal. Windows gives every adapter one automatically by default. You will meet IPv6 properly later. For now, it is enough to recognize it: it does not replace the IPv4 address next to it.
 
 ```sort
 prompt: Private or public? Watch the edges of each range.
