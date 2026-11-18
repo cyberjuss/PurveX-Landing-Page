@@ -2,7 +2,13 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Weekend Incident Report</h3>
 <p class="ad-brief__ask">Three things went wrong at PurveX Financial over the weekend. Can you find each one in the firm's environment, name which part of the CIA triad it broke, and put it right?</p>
-<p>It's Monday, 8:15 AM. Three tickets landed before you'd finished your coffee: Wealth Management client data turned up somewhere it shouldn't be, Finance thinks a file of wire approvals was changed, and nobody in the firm can open a file share. All three are waiting in your lab, so work them on your domain controller.</p>
+<p>It is Monday, 8:15 AM, and three tickets landed before you had finished your coffee:</p>
+<ul>
+<li>Wealth Management client data turned up somewhere it should not be.</li>
+<li>Finance thinks a file of wire approvals was changed.</li>
+<li>Nobody in the firm can open a file share.</li>
+</ul>
+<p>All three are waiting in your lab, so work them on your domain controller.</p>
 </div>
 
 <div class="ad-progress">
