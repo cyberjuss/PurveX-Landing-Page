@@ -87,12 +87,12 @@ This is where addressing starts to matter on the job. Two devices on the same su
 To decide which case applies, compare the network parts. Take a workstation at `192.168.1.25/24`, where the first three octets are the network:
 
 <div style="display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;">
-<div style="flex:1 1 220px;padding:0.1rem 0 0.1rem 0.9rem;border-left:3px solid var(--rd-good, #16a34a);">
-<strong style="display:block;font-size:0.75em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-good, #16a34a);margin-bottom:2px;">Same subnet</strong>
+<div style="flex:1 1 220px;padding:0.9rem 1rem;border-radius:12px;background:color-mix(in srgb, var(--rd-good, #16a34a) 6%, var(--rd-surface));box-shadow:0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);">
+<strong style="display:block;font-size:0.72em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-good, #16a34a);margin-bottom:4px;">Same subnet</strong>
 <code>192.168.1.200</code> shares <code>192.168.1</code> with the workstation, so it reaches it directly.
 </div>
-<div style="flex:1 1 220px;padding:0.1rem 0 0.1rem 0.9rem;border-left:3px solid var(--rd-warn, #d97706);">
-<strong style="display:block;font-size:0.75em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-warn, #d97706);margin-bottom:2px;">Through the gateway</strong>
+<div style="flex:1 1 220px;padding:0.9rem 1rem;border-radius:12px;background:color-mix(in srgb, var(--rd-warn, #d97706) 6%, var(--rd-surface));box-shadow:0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);">
+<strong style="display:block;font-size:0.72em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-warn, #d97706);margin-bottom:4px;">Through the gateway</strong>
 <code>192.168.2.25</code> has a different third octet, so that traffic goes through the gateway.
 </div>
 </div>
@@ -123,9 +123,9 @@ Three ranges are set aside for private networks by a standard called RFC 1918:
 Routers on the internet do not carry these addresses, so any organization can reuse them internally. A router or firewall swaps one for a public address on the way out, called **NAT** (Network Address Translation):
 
 <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin:1rem 0 0.3rem;font-family:var(--font-mono, ui-monospace, monospace);font-size:0.95em;">
-<span style="padding:0.4rem 0.7rem;border-left:3px solid var(--rd-accent);">192.168.1.25</span>
+<span style="padding:0.5rem 0.9rem;border-radius:10px;background:color-mix(in srgb, var(--rd-accent) 8%, var(--rd-surface));box-shadow:0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);">192.168.1.25</span>
 <span aria-hidden style="color:var(--rd-ink-3, #94a3b8);">→ NAT →</span>
-<span style="padding:0.4rem 0.7rem;border-left:3px solid var(--rd-good, #16a34a);">203.0.113.9</span>
+<span style="padding:0.5rem 0.9rem;border-radius:10px;background:color-mix(in srgb, var(--rd-good, #16a34a) 8%, var(--rd-surface));box-shadow:0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);">203.0.113.9</span>
 </div>
 <p style="font-size:0.8em;color:var(--rd-ink-3, #94a3b8);margin:0 0 1.25rem;">The private address never leaves the building. Only its public stand-in does.</p>
 

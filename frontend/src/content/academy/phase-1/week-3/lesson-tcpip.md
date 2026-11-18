@@ -26,12 +26,12 @@ That is where the second protocol comes in. **TCP** (the Transmission Control Pr
 That split is worth committing to memory, because it tells you where to look when something goes wrong:
 
 <div style="display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;">
-<div style="flex:1 1 200px;padding:0.1rem 0 0.1rem 0.9rem;border-left:3px solid var(--rd-accent);">
-<strong style="display:block;font-size:0.75em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-accent);margin-bottom:2px;">IP</strong>
+<div style="flex:1 1 200px;padding:0.9rem 1rem;border-radius:12px;background:color-mix(in srgb, var(--rd-accent) 6%, var(--rd-surface));box-shadow:0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);">
+<strong style="display:block;font-size:0.72em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-accent);margin-bottom:4px;">IP</strong>
 Gets the data there
 </div>
-<div style="flex:1 1 200px;padding:0.1rem 0 0.1rem 0.9rem;border-left:3px solid var(--rd-good, #16a34a);">
-<strong style="display:block;font-size:0.75em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-good, #16a34a);margin-bottom:2px;">TCP</strong>
+<div style="flex:1 1 200px;padding:0.9rem 1rem;border-radius:12px;background:color-mix(in srgb, var(--rd-good, #16a34a) 6%, var(--rd-surface));box-shadow:0 1px 2px rgba(16,25,46,0.04), 0 14px 32px -26px rgba(16,25,46,0.18);">
+<strong style="display:block;font-size:0.72em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-good, #16a34a);margin-bottom:4px;">TCP</strong>
 Makes sure it arrives correctly
 </div>
 </div>
