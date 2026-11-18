@@ -23,7 +23,20 @@ That is where the second protocol comes in. **TCP** (the Transmission Control Pr
 <li>If something goes unconfirmed, it sends that piece again</li>
 </ul>
 
-That split is worth committing to memory, because it tells you where to look when something goes wrong. **IP gets the data there, and TCP makes sure it arrives correctly.** So when a capture looks broken, your first question is which of the two failed:
+That split is worth committing to memory, because it tells you where to look when something goes wrong:
+
+<div style="display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;">
+<div style="flex:1 1 200px;padding:0.1rem 0 0.1rem 0.9rem;border-left:3px solid var(--rd-accent);">
+<strong style="display:block;font-size:0.75em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-accent);margin-bottom:2px;">IP</strong>
+Gets the data there
+</div>
+<div style="flex:1 1 200px;padding:0.1rem 0 0.1rem 0.9rem;border-left:3px solid var(--rd-good, #16a34a);">
+<strong style="display:block;font-size:0.75em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-good, #16a34a);margin-bottom:2px;">TCP</strong>
+Makes sure it arrives correctly
+</div>
+</div>
+
+So when a capture looks broken, your first question is which of the two failed:
 
 - A packet that **never found the host** is an addressing or routing problem.
 - A host that **never confirmed receipt** got the data, but the conversation broke down. A few things can cause that:

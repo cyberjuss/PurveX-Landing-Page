@@ -22,10 +22,11 @@ To set up that encryption, TLS performs a handshake of its own, and the order is
 
 The clearest way to keep the two apart is by what each one produces:
 
-<ul>
-<li><strong>TCP's handshake</strong> sets up the <strong>connection</strong>.</li>
-<li><strong>TLS's handshake</strong> sets up the <strong>privacy</strong>.</li>
-</ul>
+<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin:1rem 0;font-size:0.92em;">
+<span style="padding:0.5rem 0.8rem;border-left:3px solid var(--rd-accent);">TCP handshake<br><span style="font-size:0.85em;color:var(--rd-ink-3, #94a3b8);">sets up the connection</span></span>
+<span aria-hidden style="color:var(--rd-ink-3, #94a3b8);">→</span>
+<span style="padding:0.5rem 0.8rem;border-left:3px solid var(--rd-good, #16a34a);">TLS handshake<br><span style="font-size:0.85em;color:var(--rd-ink-3, #94a3b8);">sets up the privacy</span></span>
+</div>
 
 This changes what you can expect from a capture, and it is better to adjust that expectation now than to spend an afternoon fighting it. If a conversation is HTTPS, you will not be able to read the payload in Wireshark. The good news is that encryption hides surprisingly little else, and you can still see:
 

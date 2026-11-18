@@ -100,6 +100,13 @@ Three ranges are set aside for private networks by a standard called RFC 1918:
 
 Routers on the internet do not carry these addresses, so any organization can reuse them internally. When a machine with a private address browses the web, the router or firewall at the edge of the network swaps its private address for a public one on the way out. That swap is called **NAT** (Network Address Translation).
 
+<div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin:1rem 0 0.3rem;font-family:var(--font-mono, ui-monospace, monospace);font-size:0.95em;">
+<span style="padding:0.4rem 0.7rem;border-left:3px solid var(--rd-accent);">192.168.1.25</span>
+<span aria-hidden style="color:var(--rd-ink-3, #94a3b8);">→ NAT →</span>
+<span style="padding:0.4rem 0.7rem;border-left:3px solid var(--rd-good, #16a34a);">203.0.113.9</span>
+</div>
+<p style="font-size:0.8em;color:var(--rd-ink-3, #94a3b8);margin:0 0 1.25rem;">The private address never leaves the building. Only its public stand-in does.</p>
+
 Two more ranges are worth recognizing on sight:
 
 <ul>
