@@ -46,9 +46,7 @@ The most common subnet mask is `255.255.255.0`. Read it octet by octet: 255 mean
 <span style="font-size:0.72em;text-transform:uppercase;letter-spacing:0.05em;color:var(--rd-ink-3, #94a3b8);">host</span>
 </div>
 
-For `192.168.1.25` with that mask, the network is `192.168.1` and the device is host 25 on it.
-
-Writing out the mask every time gets tedious, so engineers use a shorter form called **CIDR notation**. It simply counts how many bits belong to the network. The mask `255.255.255.0` gives the first 24 bits to the network, so the same address is written `192.168.1.25/24`. The number after the slash is called the **prefix**.
+Writing out the mask every time gets tedious, so engineers use a shorter form called **CIDR notation**: the mask `255.255.255.0` gives the first 24 bits to the network, so the same address is written `192.168.1.25/24`. The number after the slash is called the **prefix**.
 
 <div style="display:flex;align-items:baseline;gap:2px;font-family:var(--font-mono, ui-monospace, monospace);font-size:1.4em;margin:1.25rem 0 0.3rem;">
 <span style="color:var(--rd-accent);font-weight:700;">192.168.1</span><span style="color:var(--rd-ink-3, #94a3b8);">.25</span>
@@ -80,7 +78,7 @@ Second, the usable count is always two short: two addresses in every subnet are 
 <span style="flex:0 0 72px;padding:0.5rem 0.2rem;background:color-mix(in srgb, var(--rd-bad, #dc2626) 14%, transparent);border-bottom:3px solid var(--rd-bad, #dc2626);">.255<br><span style="font-size:0.82em;text-transform:uppercase;letter-spacing:0.04em;">broadcast</span></span>
 </div>
 
-The <strong>network address</strong> names the subnet itself (<code>192.168.1.0</code>). The <strong>broadcast address</strong> reaches every device on the subnet at once (<code>192.168.1.255</code>). Neither can be given to a computer.
+Neither can be given to a computer.
 
 ### Same subnet or not
 
@@ -122,7 +120,7 @@ Three ranges are set aside for private networks by a standard called RFC 1918:
 <li><code>192.168.0.0/16</code>, which is every address starting with 192.168</li>
 </ul>
 
-Routers on the internet do not carry these addresses, so any organization can reuse them internally. When a machine with a private address browses the web, the router or firewall at the edge of the network swaps its private address for a public one on the way out. That swap is called **NAT** (Network Address Translation).
+Routers on the internet do not carry these addresses, so any organization can reuse them internally. A router or firewall swaps one for a public address on the way out, called **NAT** (Network Address Translation):
 
 <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;margin:1rem 0 0.3rem;font-family:var(--font-mono, ui-monospace, monospace);font-size:0.95em;">
 <span style="padding:0.4rem 0.7rem;border-left:3px solid var(--rd-accent);">192.168.1.25</span>
