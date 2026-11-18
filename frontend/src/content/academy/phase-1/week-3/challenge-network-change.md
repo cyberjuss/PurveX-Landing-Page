@@ -1,9 +1,12 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Network Change That Went Wrong</h3>
-<p class="ad-brief__ask">A contractor ran a network change at PurveX Financial over the weekend. It's Monday, and the cleanup they promised never happened. Can you read their change log, find what they left behind, and put it right?</p>
-<p>The contractor's changes are already in your lab, and their change log is in the IT share. Read it the way you would on the job, treating every line as a change that someone now has to check.</p>
-<p>If you haven't yet, install <strong>Nmap</strong> and <strong>Wireshark</strong> on your domain controller from <code>nmap.org/download</code> and <code>wireshark.org/download</code>. When the installers offer the Npcap option, keep it ticked, loopback support included.</p>
+<p class="ad-brief__ask">A contractor ran a network change at PurveX Financial over the weekend. It is Monday, and the cleanup they promised never happened. Can you read their change log, find what they left behind, and put it right?</p>
+<ul>
+<li>The contractor's changes are already in your lab, and their change log is in the IT share.</li>
+<li>Read it the way you would on the job: treat every line as a change someone now has to check.</li>
+<li>If you have not yet, install <strong>Nmap</strong> and <strong>Wireshark</strong> from <code>nmap.org/download</code> and <code>wireshark.org/download</code>, and keep the Npcap option ticked for loopback support.</li>
+</ul>
 </div>
 
 <div class="ad-progress">
@@ -22,7 +25,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Before any connection can start, the name has to become an address. If DNS still points at a server that was switched off, every connection goes to a machine that isn't there.</p>
+<p>Before any connection can start, the name has to become an address. If DNS still points at a server that was switched off, every connection goes to a machine that is not there.</p>
 <ul>
 <li>Resolve <code>portal</code> and note the address it returns.</li>
 <li>Read CHG-3301 in <code>C:\PurveX\Shares\IT\Network_Change_Log_Nov.txt</code> to see where the portal lives now.</li>
@@ -36,7 +39,7 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="@dcip">That's the address it should point at now. Report the old address the record was stuck on.</div>
+<div class="ad-miss" data-guess="@dcip">That is the address it should point at now. Report the old address the record was stuck on.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -59,23 +62,29 @@
 <span class="ad-mission__num">Ticket 02 · Apply it · Three-Way Handshake · High · Nmap · INC-1092</span>
 <h4>Scan What the Change Left Open</h4>
 <p><strong>Alex Rivera · IT · 9:05 AM</strong><br>Before we trust anything in that change log, I want to see DC01 the way an attacker on our network would. Scan it and tell me what is listening that should not be.</p>
-<p><strong>Task:</strong> Scan the domain controller's own address with Nmap. Compare the open ports with what a domain controller normally runs, and report the port that doesn't belong.</p>
+<p><strong>Task:</strong> Scan the domain controller's own address with Nmap. Compare the open ports with what a domain controller normally runs, and report the port that does not belong.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Scan What the Change Left Open" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{23}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A connect scan, <code>-sT</code>, completes the three-way handshake with each port. A SYN-ACK back means open. A reset means closed. Silence means something filtered it. <code>-sV</code> also asks each open port what it is. Only scan systems you're authorized to scan, which on the job means a signed-off scope.</p>
+<p>A connect scan, <code>-sT</code>, completes the three-way handshake with each port:</p>
+<ul>
+<li>A SYN-ACK back means open.</li>
+<li>A reset means closed.</li>
+<li>Silence means something filtered it.</li>
+</ul>
+<p><code>-sV</code> also asks each open port what it is. Only scan systems you are authorized to scan, which on the job means a signed-off scope.</p>
 <ul>
 <li>Find the domain controller's address with <code>ipconfig</code>.</li>
 <li>Run <code>nmap -sT -sV</code> followed by that address.</li>
-<li>Read the PORT, STATE and SERVICE columns. A domain controller normally shows DNS, Kerberos, LDAP, SMB, RPC and Remote Desktop. Look for the one that isn't on that list.</li>
+<li>Read the PORT, STATE and SERVICE columns. A domain controller normally shows DNS, Kerberos, LDAP, SMB, RPC and Remote Desktop. Look for the one that is not on that list.</li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="53|88|135|139|389|445|464|593|636|3268|3269|3389|5985|9389">That's a normal domain controller service. Look down the list for a port and service that came from the contractor.</div>
-<div class="ad-miss" data-guess="25">Port 25 is outbound in the change log, so a scan of what DC01 listens on won't show it. Look for a port that's open inbound.</div>
+<div class="ad-miss" data-guess="53|88|135|139|389|445|464|593|636|3268|3269|3389|5985|9389">That is a normal domain controller service. Look down the list for a port and service that came from the contractor.</div>
+<div class="ad-miss" data-guess="25">Port 25 is outbound in the change log, so a scan of what DC01 listens on will not show it. Look for a port that is open inbound.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -119,7 +128,7 @@
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="chg-3301|chg-3303|3301|3303">That change is about something else. Find the one that started the console and opened its port.</div>
-<div class="ad-miss" data-guess="23">That's the port. Report the change number from the log that opened it.</div>
+<div class="ad-miss" data-guess="23">That is the port. Report the change number from the log that opened it.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -161,7 +170,7 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="25">That's the port. Name the protocol that uses it.</div>
+<div class="ad-miss" data-guess="25">That is the port. Name the protocol that uses it.</div>
 <div class="ad-miss" data-guess="pop3|imap">Those protocols pull mail down to a reader. This rule lets mail go out from the server.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -205,8 +214,8 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="svc-reportsync|svc-reportsync@purvexfinancial.local">That's the account name. Report the password after the colon in the Credentials field.</div>
-<div class="ad-miss" data-guess="c3ZjLXJlcG9ydHN5bmM6TGVkZ2VyLVN5bmMtNzc=">That's the Authorization header still Base64-encoded. Decode it, or read Wireshark's Credentials line under it.</div>
+<div class="ad-miss" data-guess="svc-reportsync|svc-reportsync@purvexfinancial.local">That is the account name. Report the password after the colon in the Credentials field.</div>
+<div class="ad-miss" data-guess="c3ZjLXJlcG9ydHN5bmM6TGVkZ2VyLVN5bmMtNzc=">That is the Authorization header still Base64-encoded. Decode it, or read Wireshark's Credentials line under it.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>

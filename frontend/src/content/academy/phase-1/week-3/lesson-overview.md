@@ -5,7 +5,7 @@
 
 ### Overview
 
-The first time you open a network capture, it can feel disorienting. Thousands of rows scroll past, every one full of numbers, and nothing in a packet announces itself as suspicious. A network that's working perfectly produces just as many rows as one that's been compromised.
+The first time you open a network capture, it can feel disorienting. Thousands of rows scroll past, every one full of numbers, and nothing in a packet announces itself as suspicious. A network that is working perfectly produces just as many rows as one that has been compromised.
 
 What makes a capture readable is knowing that every conversation is built from the same small set of pieces, always in the same order:
 
@@ -15,11 +15,22 @@ What makes a capture readable is knowing that every conversation is built from t
 - A **protocol**, governing what the two sides say
 - Often **encryption**, layered on top of all of it
 
-This week, we'll take those pieces one at a time, starting with addressing and the handshake, then moving on to ports and protocols, and finishing with how TLS wraps a connection once it's up.
+This week, we will take those pieces one at a time:
 
-After that, the challenge puts you on the job, cleaning up after a network change that went wrong in your own lab. Nothing you find there will be labeled "malicious". Instead, you'll be looking for what doesn't fit, and that only works once you know what normal looks like at each layer.
+- Addressing and the handshake
+- Ports and protocols
+- How TLS wraps a connection once it is up
 
-By the end of the week, every conversation in a capture should answer four questions for you. Where is it going? Which port did it use? Did the handshake complete? And could anybody watching the wire read what was said? Those answers tell you whether a conversation deserves more of your attention, and deciding that quickly is most of the job.
+After that, the challenge puts you on the job, cleaning up after a network change that went wrong in your own lab. Nothing you find there will be labeled "malicious." Instead, you will be looking for what does not fit, and that only works once you know what normal looks like at each layer.
+
+By the end of the week, every conversation in a capture should answer four questions for you:
+
+- Where is it going?
+- Which port did it use?
+- Did the handshake complete?
+- Could anybody watching the wire read what was said?
+
+Those answers tell you whether a conversation deserves more of your attention, and deciding that quickly is most of the job.
 
 ```order
 prompt: Every conversation in a capture is built from the same pieces. Put them in the order they come together.

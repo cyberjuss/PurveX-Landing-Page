@@ -1,8 +1,8 @@
 ### Common Ports
 
-Once the handshake has connected two machines, the port decides which service on the far machine you're talking to. If the IP address gets you to the building, the port gets you to the right door inside it. Every service listens on its own port, which is what lets one machine run a web server, a mail server and a remote login service all at once.
+Once the handshake has connected two machines, the port decides which service on the far machine you are talking to. If the IP address gets you to the building, the port gets you to the right door inside it. Every service listens on its own port, which is what lets one machine run a web server, a mail server and a remote login service all at once.
 
-Some ports are used so consistently that the number alone tells you which service is almost certainly on the other end. These are the ones you'll meet most often:
+Some ports are used so consistently that the number alone tells you which service is almost certainly on the other end. These are the ones you will meet most often:
 
 | Port | Protocol | Use |
 | :---- | :---- | :---- |
@@ -15,7 +15,7 @@ Some ports are used so consistently that the number alone tells you which servic
 | 443 | HTTPS | Web traffic (encrypted) |
 | 3389 | RDP | Remote desktop |
 
-A domain controller adds a set of its own. These are all normal on a DC, so it's worth learning them well enough that anything else on the list stands out:
+A domain controller adds a set of its own. These are all normal on a DC, so it is worth learning them well enough that anything else on the list stands out:
 
 | Port | Protocol | Use |
 | :---- | :---- | :---- |
@@ -28,7 +28,7 @@ A domain controller adds a set of its own. These are all normal on a DC, so it's
 
 Two entries in the first table deserve special attention. Ports 22 and 3389 both exist to let someone control a machine rather than just fetch something from it, which is why attackers reach for them once they have a foothold. So traffic on those ports between two internal machines that have no business talking to each other is one of the more useful things to watch for.
 
-At the same time, be careful not to read more into a port number than it can tell you. A port shows which door the traffic used, but it doesn't tell you the conversation was legitimate, because anyone can run any service on any port. So before you draw a conclusion, check:
+At the same time, be careful not to read more into a port number than it can tell you. A port shows which door the traffic used, but it does not tell you the conversation was legitimate, because anyone can run any service on any port. So before you draw a conclusion, check:
 
 - The host involved
 - The direction the connection traveled
