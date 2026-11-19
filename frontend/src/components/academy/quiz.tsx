@@ -10,6 +10,29 @@ import { TrailDock, type TrailLink } from "./trail-dock";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
+// The order options are shown in. The file lists the right answer second far
+// more often than chance, so showing them as written let "always B" pass.
+// Seeded by the question text, so the order is the same on every visit and
+// device, and saved picks stay indices into the options as written.
+export function optionOrder(question: string, count: number): number[] {
+  let seed = 2166136261;
+  for (let i = 0; i < question.length; i++) seed = Math.imul(seed ^ question.charCodeAt(i), 16777619);
+  const order = Array.from({ length: count }, (_, i) => i);
+  for (let i = count - 1; i > 0; i--) {
+    seed = Math.imul(seed ^ (seed >>> 15), 2246822507) >>> 0;
+    const j = seed % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
+function fingerprint(quiz: Quiz): string {
+  const text = quiz.questions.map((q) => [q.question, ...q.options].join("\u0001")).join("\u0002");
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619);
+  return (h >>> 0).toString(36);
+}
+
 export function QuizBlock({
   quiz,
   actionHost,
@@ -24,7 +47,9 @@ export function QuizBlock({
   // Picks are saved to the account as they are made, so leaving mid-quiz and
   // coming back, here or on another device, picks up where the student was.
   // A saved quiz whose question count no longer matches is ignored.
-  const quizKey = `${quiz.phaseSlug}:${quiz.weekSlug}`;
+  // The key carries a fingerprint of the questions, so after a quiz is edited
+  // old picks are dropped rather than scored against different questions.
+  const quizKey = `${quiz.phaseSlug}:${quiz.weekSlug}:${fingerprint(quiz)}`;
   const savedQuiz = () => {
     const s = getSaved().quizzes[quizKey];
     return s && s.answers.length === quiz.questions.length ? s : null;
@@ -148,7 +173,8 @@ export function QuizBlock({
           <p>{q.question}</p>
         </div>
         <div className="ax-quiz__opts">
-          {q.options.map((option, oi) => {
+          {optionOrder(q.question, q.options.length).map((oi, shown) => {
+            const option = q.options[oi];
             const isSelected = selected === oi;
             const showCorrect = submitted && oi === q.correctIndex;
             const showWrong = submitted && isSelected && oi !== q.correctIndex;
@@ -158,12 +184,19 @@ export function QuizBlock({
                 type="button"
                 onClick={() => selectOption(oi)}
                 disabled={submitted}
+                aria-pressed={isSelected}
                 className={`ax-quiz__opt ${
                   showCorrect ? "ax-quiz__opt--ok" : showWrong ? "ax-quiz__opt--bad" : isSelected ? "ax-quiz__opt--on" : ""
                 }`}
               >
-                <span className="ax-quiz__letter">{LETTERS[oi]}</span>
+                {/* Right and wrong were told apart by color alone. */}
+                <span className="ax-quiz__letter" aria-hidden={showCorrect || showWrong}>
+                  {showCorrect ? "✓" : showWrong ? "✗" : LETTERS[shown]}
+                </span>
                 <span>{option}</span>
+                {(showCorrect || showWrong) && (
+                  <span className="sr-only">{showCorrect ? " (correct answer)" : " (your answer, incorrect)"}</span>
+                )}
               </button>
             );
           })}

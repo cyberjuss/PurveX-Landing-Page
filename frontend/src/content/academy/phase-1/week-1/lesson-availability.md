@@ -23,7 +23,7 @@ You need all three because a service can go down for more than one reason: hardw
 prompt: Which availability control would get PurveX working again?
 level: 2
 Backups = Ransomware encrypted every file on the Finance share
-Redundancy = The office's only internet link went down at 9 AM
+Redundancy = The office's main internet link went down at 9 AM
 Patching = A published flaw lets anyone crash the VPN with one request
 ```
 
