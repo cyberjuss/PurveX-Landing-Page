@@ -682,9 +682,9 @@ export const quizzes: Quiz[] = [
     questions: [
       {
         question: "A ticket names IT-WKS01 instead of a person. In the Find dialog, which option do you pick?",
-        options: ["Users and Groups", "Computers", "Organizational Units", "Printers"],
+        options: ["Users, Contacts, and Groups", "Computers", "Organizational Units", "Printers"],
         correctIndex: 1,
-        explanation: "Find lets you search by what kind of object you are looking for. A person is Users and Groups. A machine, like IT-WKS01, is Computers. Finding the object is only the start, since you still read its folder and then its Member Of tab once it is open.",
+        explanation: "Find lets you search by what kind of object you are looking for. A person is Users, Contacts, and Groups. A machine, like IT-WKS01, is Computers. Finding the object is only the start, since you still read its folder and then its Member Of tab once it is open.",
       },
       {
         question: "Riley calls in locked out. They say they still remember their password, but mistyped it several times in a row. What is the right fix?",

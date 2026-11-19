@@ -18,6 +18,8 @@ import { phases } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { quizzes, shownOrder } from "@/content/academy/quizzes";
 
+const UI_LABELS = new Set(["Users, Contacts, and Groups"]);
+
 let failures = 0;
 function t(name: string, ok: boolean, detail = "") {
   if (!ok) failures += 1;
@@ -45,7 +47,8 @@ for (const quiz of quizzes) {
       order.length === q.options.length && order.every((o) => Number.isInteger(o) && o >= 0 && o < q.options.length) && new Set(order).size === order.length,
       order.join(",")
     );
-    t(`${label} has no commas in its options`, q.options.every((o) => !o.includes(",")));
+    // Exact on-screen Windows labels keep their commas so students recognise them.
+    t(`${label} has no commas in its options`, q.options.every((o) => !o.includes(",") || UI_LABELS.has(o)));
     t(`${label} has question and explanation text`, Boolean(q.question?.trim()) && Boolean(q.explanation?.trim()));
   });
 }
