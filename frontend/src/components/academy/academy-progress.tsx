@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { type PhaseDef, type WeekDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
@@ -208,58 +208,129 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
   // Once local state is in, pull the account's copy and merge it, so a new
   // browser or device restores the student's place. Sets only grow (union);
   // onboarding flags hydrate into localStorage for their synchronous readers.
-  // Guests and locked sessions just get a 401, caught, and localStorage stands.
+  //
+  // A failed pull used to count as done, so one slow or failed request on
+  // sign-in meant this session never saw the account's progress, and the
+  // student read that as nothing having been saved. It now retries with a
+  // growing wait. Saving does not wait for it: the server unions every save
+  // into what it has, so sending this browser's copy first never loses work.
   useEffect(() => {
-    if (!loaded || serverSynced) return;
+    if (!loaded) return;
     let cancelled = false;
-    (async () => {
+    let timer: number | undefined;
+    const attempt = async (n: number) => {
+      let done = false;
       try {
-        const res = await academyFetch("/academy/api/portal");
-        if (!res.ok || cancelled) return;
-        const { portal } = (await res.json()) as {
-          portal?: { completed?: string[]; quizPasses?: string[]; labsDone?: string[]; lastStop?: string | null; flags?: Record<string, boolean> };
-        };
-        if (!portal || cancelled) return;
-        if (portal.completed?.length) setCompleted((prev) => new Set([...prev, ...portal.completed!]));
-        if (portal.quizPasses?.length) setQuizPasses((prev) => new Set([...prev, ...portal.quizPasses!]));
-        if (portal.labsDone?.length) setLabsDone((prev) => new Set([...prev, ...portal.labsDone!]));
-        if (portal.lastStop) setLastStopState((prev) => prev ?? parseLastStop(portal.lastStop!));
-        if (portal.flags) {
-          for (const [flag, on] of Object.entries(portal.flags)) {
-            const lsKey = FLAG_LOCAL_KEYS[flag];
-            if (on && lsKey) {
-              try { window.localStorage.setItem(lsKey, "1"); } catch {}
+        const res = await academyFetch("/academy/api/portal", { cache: "no-store" });
+        if (cancelled) return;
+        // 401 is a guest or locked session: nothing to pull, and retrying will not change it.
+        if (res.status === 401) done = true;
+        else if (res.ok) {
+          const { portal } = (await res.json()) as {
+            portal?: { completed?: string[]; quizPasses?: string[]; labsDone?: string[]; lastStop?: string | null; flags?: Record<string, boolean> };
+          };
+          if (cancelled) return;
+          done = true;
+          if (portal) {
+            if (portal.completed?.length) setCompleted((prev) => new Set([...prev, ...portal.completed!]));
+            if (portal.quizPasses?.length) setQuizPasses((prev) => new Set([...prev, ...portal.quizPasses!]));
+            if (portal.labsDone?.length) setLabsDone((prev) => new Set([...prev, ...portal.labsDone!]));
+            if (portal.lastStop) setLastStopState((prev) => prev ?? parseLastStop(portal.lastStop!));
+            if (portal.flags) {
+              for (const [flag, on] of Object.entries(portal.flags)) {
+                const lsKey = FLAG_LOCAL_KEYS[flag];
+                if (on && lsKey) {
+                  try { window.localStorage.setItem(lsKey, "1"); } catch {}
+                }
+              }
             }
           }
         }
       } catch {
-        // Offline or no account -- localStorage remains the source of truth.
-      } finally {
-        if (!cancelled) setServerSynced(true);
+        // Offline or a dropped connection. Tried again below.
       }
-    })();
-    return () => { cancelled = true; };
-  }, [loaded, serverSynced]);
+      if (cancelled) return;
+      setServerSynced(true);
+      if (!done && n < 6) timer = window.setTimeout(() => void attempt(n + 1), Math.min(30000, 2000 * 2 ** n));
+    };
+    void attempt(0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [loaded]);
 
-  // Save progress to the account, debounced, after the server copy is merged in.
+  // Save progress to the account, debounced, after the first pull has run.
+  //
+  // The save used to be fire-and-forget on a 1.5s timer: a student who passed
+  // a quiz and closed the tab inside that window, or whose one request failed,
+  // kept the pass in this browser only. Now a failed save is retried, and
+  // leaving the page sends whatever is still waiting straight away.
+  const portalBody = JSON.stringify({
+    portal: {
+      completed: [...completed],
+      quizPasses: [...quizPasses],
+      labsDone: [...labsDone],
+      lastStop: lastStop ? entryKey(lastStop.phaseSlug, lastStop.entrySlug) : null,
+    },
+  });
+  const unsent = useRef<string | null>(null);
+  const sendPortal = useRef<(keepalive?: boolean) => void>(() => {});
   useEffect(() => {
-    if (!loaded || !serverSynced) return;
-    const t = setTimeout(() => {
+    let retry: number | undefined;
+    let failures = 0;
+    const send = (keepalive = false) => {
+      const body = unsent.current;
+      if (!body) return;
+      window.clearTimeout(retry);
       void academyFetch("/academy/api/portal", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          portal: {
-            completed: [...completed],
-            quizPasses: [...quizPasses],
-            labsDone: [...labsDone],
-            lastStop: lastStop ? entryKey(lastStop.phaseSlug, lastStop.entrySlug) : null,
-          },
-        }),
-      }).catch(() => {});
-    }, 1500);
+        body,
+        keepalive,
+      })
+        .then((r) => {
+          // A guest or locked session cannot save. Keep it here, stop asking.
+          if (r.status === 401) {
+            if (unsent.current === body) unsent.current = null;
+            return;
+          }
+          if (!r.ok) throw new Error(String(r.status));
+          failures = 0;
+          if (unsent.current === body) unsent.current = null;
+        })
+        .catch(() => {
+          if (keepalive) return;
+          failures += 1;
+          retry = window.setTimeout(() => send(), Math.min(60000, 2000 * 2 ** Math.min(failures, 5)));
+        });
+    };
+    sendPortal.current = send;
+    const onHide = () => send(true);
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") send(true);
+    };
+    window.addEventListener("pagehide", onHide);
+    document.addEventListener("visibilitychange", onVisibility);
+    const onOnline = () => send();
+    window.addEventListener("online", onOnline);
+    return () => {
+      window.clearTimeout(retry);
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("pagehide", onHide);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    // Marked unsent at once, so leaving the page sends it even before the
+    // first pull has finished; the timer only waits for that pull.
+    unsent.current = portalBody;
+    if (!serverSynced) return;
+    const t = setTimeout(() => sendPortal.current(), 1500);
     return () => clearTimeout(t);
-  }, [completed, quizPasses, labsDone, lastStop, loaded, serverSynced]);
+  }, [portalBody, loaded, serverSynced]);
 
   const totalCount = useMemo(() => countEntries(phases), [phases]);
 

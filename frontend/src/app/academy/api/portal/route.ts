@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { getAcademyStudent } from "@/lib/academy-student";
-import { loadMovedPortal, loadPortal, sanitizePortal, savePortal, type PortalState } from "@/lib/academy-store";
+import { loadMovedPortal, loadPortal, ProgressStoreError, sanitizePortal, updatePortal, type PortalState } from "@/lib/academy-store";
 
 export const runtime = "nodejs";
 
@@ -14,7 +14,14 @@ export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
   if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
-  const [portal, moved] = await Promise.all([loadPortal(student.id), loadMovedPortal(student.id)]);
+  let portal: PortalState;
+  let moved: PortalState;
+  try {
+    [portal, moved] = await Promise.all([loadPortal(student.id), loadMovedPortal(student.id)]);
+  } catch (err) {
+    if (err instanceof ProgressStoreError) return unavailable();
+    throw err;
+  }
   // A briefly-live build saved progress to academy_saved instead. Folded in
   // here; the page's next save writes the union back to the portal column.
   return NextResponse.json({ portal: mergePortal(portal, moved) });
@@ -44,17 +51,26 @@ export async function PUT(request: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
   const incoming = sanitizePortal((payload as { portal?: unknown })?.portal);
-  const saved = await loadPortal(student.id);
 
   // Progress only grows: union the sets so a second tab or device never erases
   // what another one recorded. Last stop takes the newest; flags OR together.
-  const merged: PortalState = {
-    completed: union(saved.completed, incoming.completed),
-    quizPasses: union(saved.quizPasses, incoming.quizPasses),
-    labsDone: union(saved.labsDone, incoming.labsDone),
-    lastStop: incoming.lastStop ?? saved.lastStop,
-    flags: { ...saved.flags, ...incoming.flags },
-  };
-  await savePortal(student.id, student.email, merged);
-  return NextResponse.json({ ok: true, portal: merged });
+  // updatePortal re-reads and reapplies this if another save lands first.
+  try {
+    const merged = await updatePortal(student.id, student.email, (saved) => ({
+      completed: union(saved.completed, incoming.completed),
+      quizPasses: union(saved.quizPasses, incoming.quizPasses),
+      labsDone: union(saved.labsDone, incoming.labsDone),
+      lastStop: incoming.lastStop ?? saved.lastStop,
+      flags: { ...saved.flags, ...incoming.flags },
+    }));
+    return NextResponse.json({ ok: true, portal: merged });
+  } catch (err) {
+    // Not saved. The page keeps its copy and tries again.
+    if (err instanceof ProgressStoreError) return unavailable();
+    throw err;
+  }
+}
+
+function unavailable() {
+  return NextResponse.json({ error: "Progress could not be reached. Try again." }, { status: 503 });
 }

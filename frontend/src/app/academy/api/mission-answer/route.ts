@@ -2,9 +2,9 @@ import { after, NextResponse } from "next/server";
 import { checkGuess, hasMissionKey, missFeedback, missionReveal, needsLabForAnswer } from "@/lib/academy-answers";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { labGate } from "@/lib/academy-mission-gate";
-import type { MissionResult } from "@/lib/academy-score";
+import type { MissionResult, Results } from "@/lib/academy-score";
 import { challengeTitle, discordWinsConfigured, finishedChallenge, finishedChallenges, postWin } from "@/lib/academy-discord";
-import { loadLabState, loadProfile, loadProgress, saveProgress } from "@/lib/academy-store";
+import { loadLabState, loadProfile, loadProgress, ProgressStoreError, updateProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -38,19 +38,32 @@ export async function POST(request: Request) {
   const gate = await labGate(student, id);
   if (!gate.passed) return NextResponse.json({ blocked: true, gate });
 
-  const results = await loadProgress(student.id);
-  const cur: MissionResult = results[id] ?? { solved: false, wrong: 0, hint: false };
-  if (cur.solved) return NextResponse.json({ correct: true, result: cur, reveal: missionReveal(id) });
-
   const lab = needsLabForAnswer(id) ? ((await loadLabState(student.id))?.snapshot ?? null) : null;
   const correct = checkGuess(id, guess, lab);
-  const next: MissionResult = correct
-    ? { ...cur, solved: true, at: new Date().toISOString() }
-    : { ...cur, wrong: Math.min(3, cur.wrong + 1), at: new Date().toISOString() };
-  if (next.solved) delete next.flagged;
-  const before = { ...results };
-  results[id] = next;
-  await saveProgress(student.id, student.email, results);
+  // Applied to the stored copy as it is at write time, so a lab gate poll or
+  // the page's own save landing at the same moment cannot undo this answer.
+  let cur: MissionResult = { solved: false, wrong: 0, hint: false };
+  let next: MissionResult = cur;
+  let before: Results = {};
+  let results: Results = {};
+  try {
+    results = await updateProgress(student.id, student.email, (stored) => {
+      before = stored;
+      cur = stored[id] ?? { solved: false, wrong: 0, hint: false };
+      if (cur.solved) return null;
+      next = correct
+        ? { ...cur, solved: true, at: new Date().toISOString() }
+        : { ...cur, wrong: Math.min(3, cur.wrong + 1), at: new Date().toISOString() };
+      if (next.solved) delete next.flagged;
+      return { ...stored, [id]: next };
+    });
+  } catch (err) {
+    if (err instanceof ProgressStoreError) {
+      return NextResponse.json({ error: "Your answer could not be saved. Try again in a moment." }, { status: 503 });
+    }
+    throw err;
+  }
+  if (cur.solved) return NextResponse.json({ correct: true, result: cur, reveal: missionReveal(id) });
   // The solve that finished a whole challenge goes to the Discord's #wins,
   // for a student who opted in. After the response, so Discord being slow
   // or down never holds up their answer.

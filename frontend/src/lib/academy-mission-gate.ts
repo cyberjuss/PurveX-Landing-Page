@@ -4,7 +4,7 @@ import { repairHostedLab, requestLabSync } from "@/lib/academy-hosted";
 import { formatLabAge, labIsLive } from "@/lib/academy-lab";
 import { checkMission, hasMissionObjects, hasTicketObjects, missingTickets, missionGate, PLANTED_TICKETS } from "@/lib/academy-mission-lab";
 import { missionTickets } from "@/lib/academy-answers";
-import { loadLabState, loadProgress, saveProgress, touchLabLive } from "@/lib/academy-store";
+import { loadLabState, loadProgress, touchLabLive, updateProgress } from "@/lib/academy-store";
 import { LIVE_MINUTES } from "@/lib/academy-verify";
 import { confirmOnLab } from "@/lib/academy-lab-pull";
 
@@ -95,13 +95,22 @@ export async function labGate(student: { id: string; email: string | null }, id:
         console.warn("lab report contradicted by the lab itself", student.id, id);
         return { gated: true, passed: false, results: pull.results, syncedAgo };
       }
-      results[id] = {
-        ...(results[id] ?? { solved: false, wrong: 0, hint: false }),
-        labOk: true,
-        ...(pull.status === "confirmed" ? { labVerified: true } : {}),
-        at: new Date().toISOString(),
-      };
-      await saveProgress(student.id, student.email, results);
+      // The pull above can take seconds. Written onto the stored copy as it is
+      // now, not the one read before it, so a solve saved meanwhile is kept.
+      const at = new Date().toISOString();
+      await updateProgress(student.id, student.email, (stored) =>
+        stored[id]?.labOk
+          ? null
+          : {
+              ...stored,
+              [id]: {
+                ...(stored[id] ?? { solved: false, wrong: 0, hint: false }),
+                labOk: true,
+                ...(pull.status === "confirmed" ? { labVerified: true } : {}),
+                at,
+              },
+            }
+      );
     }
   }
   return { gated: true, passed: false, ...checked, syncedAgo };

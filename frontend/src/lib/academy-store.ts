@@ -39,21 +39,111 @@ export async function loadProgress(userId: string): Promise<Results> {
   return memoryProgress.get(userId) || {};
 }
 
-/** Returns what was stored: the results with the best score and Ready level pinned. */
-export async function saveProgress(userId: string, email: string | null, scored: Results): Promise<Results> {
+/** The stored copy could not be read or written. A write never goes ahead on a
+ *  copy it could not read, so an outage is never saved over a student's work. */
+export class ProgressStoreError extends Error {}
+
+// Read-modify-write on the academy_progress row, safely.
+//
+// Every writer used to load the row, change it, and upsert the whole column
+// back. Two requests at once (a lab gate poll that waits seconds on the domain
+// controller, an answer, the page's own save) each wrote over the other, so a
+// solve or a quiz pass could vanish. And a failed read came back empty, so the
+// write that followed replaced the student's progress with nearly nothing.
+//
+// Now a failed read throws instead, and the write only lands if updated_at is
+// still what was read; if another write got there first, it reads again and
+// reapplies the change on top. Lost updates become retries.
+const WRITE_TRIES = 6;
+
+async function updateRow<T>(
+  userId: string,
+  email: string | null,
+  column: "results" | "portal",
+  parse: (raw: unknown) => T,
+  change: (current: T) => T | null,
+  memory: Map<string, T>,
+  empty: T
+): Promise<T> {
+  if (!supabaseAdmin) {
+    const next = change(memory.get(userId) ?? empty);
+    if (next !== null) memory.set(userId, next);
+    return next ?? memory.get(userId) ?? empty;
+  }
+  for (let attempt = 0; attempt < WRITE_TRIES; attempt++) {
+    const { data, error } = await supabaseAdmin
+      .from("academy_progress")
+      .select(`${column}, updated_at`)
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error) {
+      console.error(`academy_progress ${column} read failed`, error.message);
+      throw new ProgressStoreError(error.message);
+    }
+    const row = data as Record<string, unknown> | null;
+    const current = parse(row?.[column]);
+    const next = change(current);
+    if (next === null) return current;
+    const stamp = new Date().toISOString();
+    if (row) {
+      const { data: hit, error: werr } = await supabaseAdmin
+        .from("academy_progress")
+        .update({ [column]: next, email, updated_at: stamp })
+        .eq("user_id", userId)
+        .eq("updated_at", row.updated_at as string)
+        .select("user_id");
+      if (werr) {
+        console.error(`academy_progress ${column} update failed`, werr.message);
+        throw new ProgressStoreError(werr.message);
+      }
+      if (hit && hit.length > 0) {
+        memory.set(userId, next);
+        return next;
+      }
+    } else {
+      // A fresh row keeps the other column's default.
+      const { error: ierr } = await supabaseAdmin.from("academy_progress").insert({ user_id: userId, email, [column]: next, updated_at: stamp });
+      if (!ierr) {
+        memory.set(userId, next);
+        return next;
+      }
+      if (ierr.code !== "23505") {
+        console.error(`academy_progress ${column} insert failed`, ierr.message);
+        throw new ProgressStoreError(ierr.message);
+      }
+    }
+    // Someone else wrote first. Back off a touch and redo the change on their copy.
+    await new Promise((r) => setTimeout(r, 25 + Math.random() * 50 * (attempt + 1)));
+  }
+  throw new ProgressStoreError("academy_progress kept changing under this write");
+}
+
+/**
+ * Change a student's mission results without losing a concurrent write.
+ * `change` gets the stored results and returns the new ones, or null to leave
+ * them as they are; it can run more than once, so it must not have side
+ * effects. Returns what was stored, with the best score and Ready level pinned.
+ */
+export function updateProgress(userId: string, email: string | null, change: (current: Results) => Results | null): Promise<Results> {
   // Every save records the best Readiness and the Ready level, so later
   // course growth can only ever leave a student where they were or higher.
-  const results = pinReadiness(scored);
-  memoryProgress.set(userId, results);
-  if (!supabaseAdmin) return results;
-  const { error } = await supabaseAdmin.from("academy_progress").upsert({
-    user_id: userId,
+  return updateRow(
+    userId,
     email,
-    results,
-    updated_at: new Date().toISOString(),
-  });
-  if (error) console.error("academy_progress upsert failed", error.message);
-  return results;
+    "results",
+    (raw) => sanitizeResults(raw, true),
+    (current) => {
+      const next = change(current);
+      return next === null ? null : pinReadiness(next);
+    },
+    memoryProgress,
+    {}
+  );
+}
+
+/** Replaces the stored results outright. Kept for scripts; routes use updateProgress. */
+export async function saveProgress(userId: string, email: string | null, scored: Results): Promise<Results> {
+  return updateProgress(userId, email, () => scored);
 }
 
 /** Null when the stored copy could not be read, so a caller never mistakes an outage for an empty account. */
@@ -141,7 +231,12 @@ export function sanitizePortal(raw: unknown): PortalState {
 
 export async function loadPortal(userId: string): Promise<PortalState> {
   if (supabaseAdmin) {
-    const { data } = await supabaseAdmin.from("academy_progress").select("portal").eq("user_id", userId).maybeSingle();
+    const { data, error } = await supabaseAdmin.from("academy_progress").select("portal").eq("user_id", userId).maybeSingle();
+    // An outage is not an empty account: say so, so nothing is merged against it.
+    if (error) {
+      console.error("academy_progress portal read failed", error.message);
+      throw new ProgressStoreError(error.message);
+    }
     return sanitizePortal(data?.portal);
   }
   return memoryPortal.get(userId) || EMPTY_PORTAL;
@@ -156,18 +251,9 @@ export async function loadMovedPortal(userId: string): Promise<PortalState> {
   return error ? EMPTY_PORTAL : sanitizePortal(data?.data);
 }
 
-export async function savePortal(userId: string, email: string | null, portal: PortalState) {
-  memoryPortal.set(userId, portal);
-  if (!supabaseAdmin) return;
-  // Only this row's portal column is written, so a concurrent results save is
-  // left untouched, and a fresh insert keeps the column default for results.
-  const { error } = await supabaseAdmin.from("academy_progress").upsert({
-    user_id: userId,
-    email,
-    portal,
-    updated_at: new Date().toISOString(),
-  });
-  if (error) console.error("academy_progress portal upsert failed", error.message);
+/** Change a student's portal state without losing a concurrent write. Same rules as updateProgress. */
+export function updatePortal(userId: string, email: string | null, change: (current: PortalState) => PortalState | null): Promise<PortalState> {
+  return updateRow(userId, email, "portal", sanitizePortal, change, memoryPortal, EMPTY_PORTAL);
 }
 
 export async function readUsage(userId: string, day = todayStamp()): Promise<number> {

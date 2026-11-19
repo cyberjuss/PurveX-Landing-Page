@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { clearClassCookie, isAcademyUnlocked, readClassCookie } from "@/lib/academy-auth";
 import { findClassByCode, joinClass } from "@/lib/academy-classes";
 import { hasReadyBadge, levelBest, MISSION_SKILLS, pinReadiness, readinessBest, sanitizeResults, SERVER_MARKER_IDS, type Results } from "@/lib/academy-score";
-import { loadProgress, saveProgress } from "@/lib/academy-store";
+import { ProgressStoreError, updateProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { sendEmail } from "@/lib/email";
 import { studentJoinedEmail, studentWelcomeEmail } from "@/lib/academy-emails";
@@ -42,14 +42,26 @@ export async function GET(request: Request) {
   // missions now count, for one -- was never recorded and could later read
   // back lower. Pinning here too, on every read, closes that gap: the floor
   // can only ever rise, so this is safe to run as often as the page loads.
-  const results = await loadProgress(student.id);
-  const pinned = pinReadiness(results);
-  const raised =
-    readinessBest(pinned) > readinessBest(results) ||
-    (hasReadyBadge(pinned) && !hasReadyBadge(results)) ||
-    levelBest(pinned) > levelBest(results);
-  if (raised) await saveProgress(student.id, student.email, pinned);
-  return NextResponse.json({ results: raised ? pinned : results });
+  try {
+    const results = await updateProgress(student.id, student.email, (stored) => {
+      const pinned = pinReadiness(stored);
+      const raised =
+        readinessBest(pinned) > readinessBest(stored) ||
+        (hasReadyBadge(pinned) && !hasReadyBadge(stored)) ||
+        levelBest(pinned) > levelBest(stored);
+      return raised ? pinned : null;
+    });
+    return NextResponse.json({ results });
+  } catch (err) {
+    // An outage is not an empty account. Saying "no results" here made the
+    // page push this browser's copy up as if it were the whole of it.
+    if (err instanceof ProgressStoreError) return unavailable();
+    throw err;
+  }
+}
+
+function unavailable() {
+  return NextResponse.json({ error: "Progress could not be reached. Try again." }, { status: 503 });
 }
 
 export async function PUT(request: Request) {
@@ -74,32 +86,40 @@ export async function PUT(request: Request) {
 
   // Solves, tries and lab checks come from the server alone (mission-answer
   // and mission-check). A reset clears a mission but keeps what the lab confirmed.
-  const saved = await loadProgress(student.id);
-  const results: Results = {};
-  for (const [id, row] of Object.entries(saved)) {
-    if (!(id in MISSION_SKILLS)) continue;
-    if (!wiped(id)) results[id] = { ...row };
-    else if (row.labOk) results[id] = { solved: false, wrong: 0, hint: false, labOk: true, ...(row.labVerified ? { labVerified: true } : {}), ...(row.at ? { at: row.at } : {}) };
+  // Rebuilt from the stored copy each time it is written, so a solve the
+  // server records meanwhile (mission-answer, the lab gate) is kept.
+  const merge = (saved: Results): Results => {
+    const results: Results = {};
+    for (const [id, row] of Object.entries(saved)) {
+      if (!(id in MISSION_SKILLS)) continue;
+      if (!wiped(id)) results[id] = { ...row };
+      else if (row.labOk) results[id] = { solved: false, wrong: 0, hint: false, labOk: true, ...(row.labVerified ? { labVerified: true } : {}), ...(row.at ? { at: row.at } : {}) };
+    }
+    // The browser may add what only lowers a score: a hint used, a mission skipped.
+    for (const [id, row] of Object.entries(incoming)) {
+      if (!(id in MISSION_SKILLS) || wiped(id)) continue;
+      const cur = results[id] ?? { solved: false, wrong: 0, hint: false };
+      // A hint opened after the solve changes nothing: the points were already earned.
+      const next = { ...cur, hint: cur.hint || (row.hint && !cur.solved) };
+      if (row.flagged && !cur.solved) next.flagged = true;
+      if (!cur.solved && row.at && (!cur.at || row.at > cur.at)) next.at = row.at;
+      results[id] = next;
+    }
+    // Browser labs grade in the page and show their answers after each check, so a pass is completion, not proof.
+    if (!resetAll) for (const [id, row] of Object.entries(saved)) if (!(id in MISSION_SKILLS)) results[id] = row;
+    // A lab's first finished score is the one that counts. A later save can add a pass, never change the score.
+    for (const [id, row] of Object.entries(incoming)) {
+      // The best score and the Ready level are the server's to record (saveProgress).
+      if (id in MISSION_SKILLS || SERVER_MARKER_IDS.includes(id)) continue;
+      const cur = results[id];
+      results[id] = cur ? { ...cur, solved: cur.solved || row.solved, ...(cur.pts === undefined && row.pts !== undefined ? { pts: row.pts } : {}) } : row;
+    }
+    return results;
+  };
+  try {
+    return NextResponse.json({ ok: true, results: await updateProgress(student.id, student.email, merge) });
+  } catch (err) {
+    if (err instanceof ProgressStoreError) return unavailable();
+    throw err;
   }
-  // The browser may add what only lowers a score: a hint used, a mission skipped.
-  for (const [id, row] of Object.entries(incoming)) {
-    if (!(id in MISSION_SKILLS) || wiped(id)) continue;
-    const cur = results[id] ?? { solved: false, wrong: 0, hint: false };
-    // A hint opened after the solve changes nothing: the points were already earned.
-    const next = { ...cur, hint: cur.hint || (row.hint && !cur.solved) };
-    if (row.flagged && !cur.solved) next.flagged = true;
-    if (!cur.solved && row.at && (!cur.at || row.at > cur.at)) next.at = row.at;
-    results[id] = next;
-  }
-  // Browser labs grade in the page and show their answers after each check, so a pass is completion, not proof.
-  if (!resetAll) for (const [id, row] of Object.entries(saved)) if (!(id in MISSION_SKILLS)) results[id] = row;
-  // A lab's first finished score is the one that counts. A later save can add a pass, never change the score.
-  for (const [id, row] of Object.entries(incoming)) {
-    // The best score and the Ready level are the server's to record (saveProgress).
-    if (id in MISSION_SKILLS || SERVER_MARKER_IDS.includes(id)) continue;
-    const cur = results[id];
-    results[id] = cur ? { ...cur, solved: cur.solved || row.solved, ...(cur.pts === undefined && row.pts !== undefined ? { pts: row.pts } : {}) } : row;
-  }
-
-  return NextResponse.json({ ok: true, results: await saveProgress(student.id, student.email, results) });
 }
