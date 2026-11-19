@@ -32,7 +32,7 @@ type Item = { title: string; body: string; Icon: BrandIcon };
 
 
 const FEATURES: Item[] = [
-  { Icon: IconBook, title: "Guided course", body: "Weekly lessons from security basics to incident response." },
+  { Icon: IconBook, title: "Guided course", body: "Weekly lessons, starting with security basics, with detection and response on the way." },
   { Icon: IconShield, title: "Personal lab", body: "Their own company network, built on their own machine." },
   { Icon: IconTicket, title: "Real tickets", body: "Help desk tasks that are checked automatically." },
   { Icon: IconAlert, title: "Security alerts", body: "Investigate a suspicious login one step at a time." },
@@ -191,7 +191,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section tp-proof" id="proof">
         <div className="pg-head">
           <h2>Proof employers can check</h2>
-          <p>Every student gets a shareable portfolio of work confirmed in their own lab, and a credential ID any employer can verify. They add screenshots of their work and record themselves solving challenges, so an employer can watch the skill, not just read about it.</p>
+          <p>Every Pro and class student gets a shareable portfolio of work confirmed in their own lab, and a credential ID any employer can verify. They add screenshots of their work and record themselves solving challenges, so an employer can watch the skill, not just read about it.</p>
         </div>
         <div className="tp-proof__grid" data-r>
           <figure className="tp-proof__shot">
@@ -229,7 +229,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
 
       <section className="pg-section" id="course">
         <div className="pg-head">
-          <h2>The course, from basics to response</h2>
+          <h2>The course, starting with the basics</h2>
           <p>Three phases. Each one pairs short lessons with hands-on work in the lab.</p>
         </div>
         <Course outline={outline} />

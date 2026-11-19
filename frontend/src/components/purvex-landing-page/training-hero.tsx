@@ -48,7 +48,7 @@ const TOOL_ROWS: Tool[][] = [
     { name: "Active Directory", Icon: Network, use: "Manage accounts, groups, and who can access what." },
     { name: "Windows Server", Icon: Server, use: "Stand up the server that runs their company." },
     { name: "PowerShell", Icon: SquareTerminal, use: "Build the lab and script everyday fixes." },
-    { name: "Wireshark", Icon: Activity, use: "Read packet captures, including a real ransomware attack." },
+    { name: "Wireshark", Icon: Activity, use: "Capture traffic and see who talked to whom, on which port." },
     { name: "Group Policy", Icon: FileCog, use: "Set security rules for every computer at once." },
     { name: "Burp Suite", Icon: Bug, use: "Test whether a web app lets the wrong person in." },
   ],
