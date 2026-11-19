@@ -84,7 +84,7 @@ export const quizzes: Quiz[] = [
         question: "A vulnerability scan comes back with 200 findings on PurveX's servers. What is the right way to work through that list?",
         options: [
           "Fix all 200 in report order since any of them could be used",
-          "Ask whether a threat can reach each one and what it would cost and rank by that",
+          "Rank each one by whether a threat can reach it and what the damage would be",
           "Set it aside until an alert shows one is being attacked",
           "Rank them by the scanner's severity score alone and work down from the most critical one",
         ],
@@ -211,7 +211,7 @@ export const quizzes: Quiz[] = [
           "SHA-256 is not allowed on Windows",
         ],
         correctIndex: 2,
-        explanation: "SHA-256 is built to be fast, which is right for checking files and wrong for passwords. On one ordinary processor core it ran about 1.2 million times a second, while bcrypt at cost 12 managed about 3 or 4. The login waits once. The attacker waits on every guess.",
+        explanation: "SHA-256 is built to be fast, which is right for checking files and wrong for passwords. One high-end graphics card tries about 22 billion SHA-256 guesses a second, but only about 6,000 against bcrypt at cost 10. The login waits once. The attacker waits on every guess.",
       },
       {
         question: "The Security log shows one or two failed sign-ins (Event ID 4625) on each of 60 different accounts, all from one source, within ten minutes. What is the most likely attack?",
@@ -262,7 +262,7 @@ export const quizzes: Quiz[] = [
         options: [
           "Malware running as Sam because BitLocker keeps every file encrypted even while it is open",
           "A thief who grabs the laptop while it is unlocked and running",
-          "Nothing more this session. Malware running as Sam reads files as Sam can",
+          "Nothing more this session. Malware running as Sam can read whatever Sam can",
           "Sam forgetting their password because BitLocker can recover it",
         ],
         correctIndex: 2,
@@ -338,16 +338,16 @@ export const quizzes: Quiz[] = [
       },
       {
         question: "Which of these ports is normal to see traffic on from a Windows domain controller?",
-        options: ["23 (Telnet)", "88 (Kerberos)", "6667 (IRC)", "3306 if PurveX does not run MySQL"],
+        options: ["23 (Telnet)", "88 (Kerberos)", "6667 (IRC)", "3306 (MySQL)"],
         correctIndex: 1,
-        explanation: "Kerberos on 88 is how a domain controller issues sign-in tickets, so it is expected traffic on a DC, alongside LDAP (389/636), SMB (445) and the Global Catalog (3268/3269). Telnet, IRC and a database port nobody runs are the kind of thing that stands out once you know the normal list.",
+        explanation: "Kerberos on 88 is how a domain controller issues sign-in tickets, so it is expected traffic on a DC, alongside LDAP (389/636), SMB (445) and the Global Catalog (3268/3269). Telnet, IRC and a database port on a server that runs no database are the kind of thing that stands out once you know the normal list.",
       },
       {
         question: "Why do analysts treat DNS logs as one of the most valuable records they have, even though the logs are incomplete?",
         options: [
           "They capture every byte of every conversation a machine has whether it is encrypted or not",
           "Almost every connection starts with a lookup so they show what a machine tried to reach",
-          "They never miss a lookup the way every other log source does",
+          "They record every single lookup with none ever missed",
           "They are the only log in which IP addresses appear at all",
         ],
         correctIndex: 1,
@@ -368,7 +368,7 @@ export const quizzes: Quiz[] = [
         question: "SMTP traffic is seen leaving a workstation that has no reason to send mail. Why does that deserve a second look?",
         options: [
           "It doesn't. SMTP from a workstation is always a false positive from the mail client",
-          "Only mail servers and mail clients should send it and hacked machines often send mail",
+          "Only mail servers and mail clients should send it. Hacked machines often send spam",
           "SMTP should only ever run on the domain controllers",
           "It doesn't because SMTP traffic is always encrypted",
         ],
@@ -379,7 +379,7 @@ export const quizzes: Quiz[] = [
         question: "You capture an HTTPS session in Wireshark. You cannot read the page content or the password typed into a form. What can you still see?",
         options: [
           "Nothing at all because TLS hides the entire conversation",
-          "Who talked and on which ports plus how much data moved and the handshake and usually the site name",
+          "The endpoints and ports plus how much data moved and usually the site name",
           "Only the two IP addresses with no other detail at all",
           "The full page content and the site name but not what was typed into the password field",
         ],
@@ -629,7 +629,7 @@ export const quizzes: Quiz[] = [
         explanation: "They look the same in the console, both using a folder icon, but a Container is a different kind of object. GPOs and delegated control go on OUs, not on the built-in Users and Computers Containers, which is why the build script puts every account in a real OU instead.",
       },
       {
-        question: "Where does an account's Member Of tab tell you what the account can reach, versus where it lives?",
+        question: "Which part of an account tells you where it lives, and which tells you what it can reach?",
         options: [
           "The folder (OU) tells you what it can reach and Member Of tells you where it lives",
           "The folder (OU) tells you where it lives and Member Of tells you what it can reach",
@@ -653,7 +653,7 @@ export const quizzes: Quiz[] = [
       {
         question: "PurveX names its service account svc-backup-job, sets its password to never expire, and restricts its logon hours to the overnight backup window. Which of these would be a red flag during a review?",
         options: [
-          "The account lives in OU=ServiceAccounts apart from the department OUs and other service accounts",
+          "The account lives in OU=ServiceAccounts rather than in a department OU",
           "The account's Description names the backup job that it runs",
           "The account is a member of IT Users and can sign in to a desktop interactively",
           "The account's Logon Hours match its overnight backup window",
