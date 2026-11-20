@@ -4,7 +4,7 @@
 <p class="ad-brief__ask">Something on web01, the Ubuntu server, has been calling out to the domain controller every three minutes, day and night, and nobody on the current team remembers setting it up. Find out what it is, what it hands over, and shut it down the right way.</p>
 <p>Hosted lab required, with both machines reachable.</p>
 <ul>
-<li>The job is already running in your lab. web01 ships with tcpdump, tshark, Wireshark and Nmap installed, so there is nothing to download.</li>
+<li>The job is already running in your lab. web01 ships with Wireshark and Nmap installed, so there is nothing to download. You capture and read the traffic in Wireshark.</li>
 <li>Read a command before you run it as root. <code>sudo</code> does not ask twice.</li>
 </ul>
 </div>
@@ -94,10 +94,10 @@
 </div>
 
 <div class="ad-mission" data-id="w3-03" data-attempts="0">
-<span class="ad-mission__num">Ticket 03 · Apply it · Protocols · Critical · tcpdump · INC-1057</span>
+<span class="ad-mission__num">Ticket 03 · Apply it · Protocols · Critical · Wireshark · INC-1057</span>
 <h4>Capture the Bind</h4>
 <p><strong>Alex Rivera · IT · 8:50 AM</strong><br>Port 389, confirmed. Now capture the job itself. I want to know exactly what it hands the directory, not just that it can.</p>
-<p><strong>Task:</strong> Capture web01's traffic while the job runs, find the LDAP simple bind, and read the password it signs in with.</p>
+<p><strong>Task:</strong> Capture web01's traffic in Wireshark while the job runs, find the LDAP simple bind, and read the password it signs in with.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Capture the Bind" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Autumn2026}">Submit</button>
@@ -106,11 +106,11 @@
 <div class="ad-hint__text">
 <p>A simple bind sends the account name and password as plain bytes inside the LDAP message, not encrypted and not even Base64. You do not have to wait up to three minutes for the job: sudoers already lets you fire it on demand.</p>
 <ul>
-<li>Start a capture: <code>sudo tcpdump -i any -w /tmp/cap.pcap port 389</code>.</li>
-<li>In another terminal, trigger the job now: <code>sudo /usr/local/bin/settlement-push.sh</code>.</li>
-<li>Stop the capture after a few seconds with Ctrl-C.</li>
-<li>Read it: <code>tshark -r /tmp/cap.pcap -Y "ldap.protocolOp == 0" -V</code>, or open <code>cap.pcap</code> in Wireshark, filter on <code>ldap</code>, and open the bindRequest packet.</li>
-<li>Find the <strong>simple</strong> field under the bind's authentication choice. That is the password.</li>
+<li>Open Wireshark on the web01 desktop and double-click <code>ens5</code>, web01's network card, to start capturing.</li>
+<li>In a terminal, trigger the job now: <code>sudo /usr/local/bin/settlement-push.sh</code>.</li>
+<li>Back in Wireshark, type <code>ldap</code> in the display filter bar and press Enter. Once the LDAP packets show, click the red Stop button. Keep this capture open for the next ticket.</li>
+<li>Click the packet whose Info column reads <strong>bindRequest</strong>. In the middle pane, expand Lightweight Directory Access Protocol, then the bindRequest, then authentication.</li>
+<li>The <strong>simple</strong> field there is the password, in plain text.</li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -149,7 +149,7 @@
 <li>Disable the account: in Active Directory Users and Computers, find <strong>Service Settlements</strong> in the Service Accounts folder and disable it, or run <code>Disable-ADAccount svc-settlements</code> on the domain controller.</li>
 <li>On web01, remove the schedule: <code>sudo rm /etc/cron.d/purvex-settlement</code>.</li>
 <li>Remove the access that let it run as root without a password: <code>sudo rm /etc/sudoers.d/purvex-settlement</code>.</li>
-<li>Find the file in the same capture, or list the share it reads: <code>smbclient -L dc01 -N</code>, then browse the Finance share.</li>
+<li>Find the file in the capture from the last ticket: change the display filter to <code>smb2</code> and look for <strong>Create Request File</strong> in the Info column, or open File, Export Objects, SMB. If you closed it, capture again and rerun the job.</li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
