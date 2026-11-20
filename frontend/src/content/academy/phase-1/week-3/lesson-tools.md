@@ -17,6 +17,12 @@ This week's challenge uses the two tools network and security teams reach for mo
 | `dns` | Name lookups |
 | `http` | Unencrypted web traffic |
 | `tcp.port == 443` | Anything on port 443 |
+| `tcp.flags.syn == 1 && tcp.flags.ack == 1` | SYN-ACKs only: every port that said "yes, I am open" |
+| `dns.qry.name contains "portal"` | Lookups for one name, and their answers |
+
+Two more Wireshark moves do most of the work in the challenge. **Follow, then TCP Stream** (right-click any packet) shows a whole conversation as text, so an unencrypted protocol reads like a transcript. And a **SYN sent again and again with no SYN-ACK** back means nothing answered at that address and port, which is what a dead server or a blocked port looks like on the wire.
+
+The challenge works the same way every time: find the problem in a capture, make the change, then capture again to prove it is gone.
 
 One detail will matter in the challenge. Traffic between two programs on the same machine never touches the network card, so to see it, you capture on **Adapter for loopback traffic capture**.
 
@@ -46,6 +52,7 @@ Your domain controller's name and its IPv4 address, the same one `ipconfig` show
 prompt: Match each tool to the question it answers.
 Nmap = Which ports does this server expose?
 Wireshark = What crossed the wire, and what did it say?
+Follow TCP Stream = What did this one conversation say, as text?
 Resolve-DnsName = Which address does this name point to?
 Test-NetConnection = Can I reach this port from here?
 Get-NetTCPConnection = Which process is listening on this port?
