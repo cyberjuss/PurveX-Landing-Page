@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
 import { challengeHref, challengeTabHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
@@ -18,10 +18,6 @@ import {
   LEVELS,
   missionPoints,
   SCORE_READY,
-  SKILLS,
-  scoreTone,
-  skillCompetent,
-  skillWeak,
   summarize,
   type MissionResult,
   type Results,
@@ -48,10 +44,6 @@ const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb:
 ];
 
 type Tone = "good" | "warn" | "bad" | "live" | "none";
-
-function toneOfScore(score: number | null): Tone {
-  return scoreTone(score);
-}
 
 function missionStatus(r: MissionResult | undefined): { tone: Tone; label: string; points: number | null; needsHelp: boolean } {
   const points = missionPoints(r);
@@ -82,51 +74,19 @@ function joinNames(names: string[]) {
   return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
 }
 
-const CAN: Record<Summary["skills"][number]["key"], string> = {
-  accounts: "look up who is in a group and what access that group actually grants",
-  directory: "find an account or computer in the right folder",
-  troubleshooting: "check the directory before you take the action a ticket names",
-  security: "read an alert and decide the first response without wiping evidence",
-  logs: "count and time-line sign-in events to name the pattern behind them",
-  access: "work out what a person can open from their groups and the folder's permissions",
-  risk: "name what failed and rank fixes by likelihood and impact",
-};
-
-const WORK: Record<Summary["skills"][number]["key"], string> = {
-  accounts: "open Member Of and count before you add or remove anyone",
-  directory: "walk Departments and AccessLevels until you can find an object without searching",
-  troubleshooting: "open the account first and see if the caller is actually right",
-  security: "start The Credential Campaign and read the log before you change anything",
-  logs: "work the Ticket Queue and count the sign-in events before you name a pattern",
-  access: "start The Quarterly Access Review in Week 4 and check both share and NTFS permissions",
-  risk: "start The Weekend Incident Report in Week 1 and score likelihood and impact before you rank",
-};
-
-function verdict(s: Summary) {
+function verdict(s: Summary, badges: CompetencyBadge[]) {
   if (s.finished === 0) {
-    return "None of the competencies have work on them yet. Start Operation Day One and look people up in the directory to see what you can already do.";
+    return "Nothing is on record yet. Start Operation Day One and look people up in the directory to see what you can already do.";
   }
-  // A skill is only called competent or weak once half its missions are finished.
-  const strong = s.skills.filter(skillCompetent);
-  const weak = s.skills.filter(skillWeak);
-  const early = s.skills.filter((k) => k.score !== null && !k.rated);
-  const untouched = s.skills.filter((k) => k.score === null);
-  const strongNames = joinNames(strong.map((k) => k.label));
-  const weakNames = joinNames(weak.map((k) => k.label));
-  const can = strong.slice(0, 2).map((k) => CAN[k.key]);
-  const nextSkill = weak[0] ?? early[0] ?? untouched[0];
-  const next = nextSkill ? ` Next, ${WORK[nextSkill.key]}.` : "";
-  if (s.level === "ready" && weak.length === 0) {
-    return `You are competent in ${strongNames}, and you can ${joinNames(can)}. Redo one ticket on your own lab with the hint closed.`;
+  const strong = badges.filter((b) => b.tier === "proficient" || b.tier === "verified");
+  // The competency closest to its next tier is the quickest win.
+  const next = badges.filter((b) => b.tier !== "verified" && b.next).sort((a, b) => b.proven / b.total - a.proven / a.total)[0];
+  const nextLine = next?.next ? ` Next, ${next.title}: ${next.next.charAt(0).toLowerCase()}${next.next.slice(1)}` : "";
+  if (s.level === "ready" && strong.length === badges.length) {
+    return `You are proficient in all ${badges.length} competencies. Redo one ticket on your own lab with the hint closed.`;
   }
-  if (strong.length === 0 && weak.length === 0) {
-    return `You have started, but no competency has enough work finished to rate yet. Finish at least half the missions in one to get a rating.${next}`;
-  }
-  const parts: string[] = [];
-  if (strong.length) parts.push(`You are competent in ${strongNames}, and you can ${joinNames(can)}.`);
-  if (weak.length) parts.push(`${weakNames} still need${weak.length === 1 ? "s" : ""} work.`);
-  if (!weak.length) parts.push("Finish the remaining missions so this is a full rating.");
-  return parts.join(" ") + next;
+  if (!strong.length) return `You have started, but no competency is proficient yet.${nextLine}`;
+  return `You are proficient in ${joinNames(strong.map((b) => b.title))}.${nextLine}`;
 }
 
 /** A scored browser lab: its first finished score, or open. */
@@ -164,31 +124,17 @@ function MissionStrip({ results }: { results: Results }) {
   );
 }
 
-function RankAndBadges({ results }: { results: Results }) {
+function RankAndBadges({ results, badges }: { results: Results; badges: CompetencyBadge[] }) {
   const held = rankIndex(results);
   const rank = currentRank(results);
-  // Rated on the server from the portfolio's own task status, so a badge here
-  // is the same badge an employer sees. Every skill starts unearned until it loads.
-  const [badges, setBadges] = useState<CompetencyBadge[]>(() => competencyBadges([]));
-  useEffect(() => {
-    let live = true;
-    academyFetch("/academy/api/proof")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d: { competencies?: CompetencyBadge[] } | null) => {
-        if (live && d?.competencies?.length) setBadges(d.competencies);
-      })
-      .catch(() => {});
-    return () => {
-      live = false;
-    };
-  }, []);
   const earned = badges.filter((b) => b.tier).length;
   return (
+    <>
     <section className="rd-sec" id="rank">
       <div className="rd-sec__head">
         <span className="rd-sec__n">01</span>
-        <h2>Rank and badges</h2>
-        <p>Your title on the job ladder, and the core skills a help desk or SOC job asks for. Proficient and Verified skills show on your portfolio.</p>
+        <h2>Rank</h2>
+        <p>Your title on the job ladder.</p>
       </div>
       <div className="rb-rank">
         <div className="rb-rank__now">
@@ -208,11 +154,16 @@ function RankAndBadges({ results }: { results: Results }) {
           ))}
         </ol>
       </div>
-      <div className="rb-skillshead">
-        <h3>Core job skills</h3>
-        <span>
-          {earned} of {badges.length} earned
-        </span>
+    </section>
+
+    <section className="rd-sec" id="competencies">
+      <div className="rd-sec__head">
+        <span className="rd-sec__n">02</span>
+        <h2>Competencies</h2>
+        <p>
+          The core skills a help desk or SOC job asks for, rated from the work you prove in your lab. {earned} of {badges.length} earned. Proficient
+          and Verified ones show on your portfolio.
+        </p>
       </div>
       <ul className="rb-grid">
         {badges.map((b) => {
@@ -249,16 +200,31 @@ function RankAndBadges({ results }: { results: Results }) {
         })}
       </ul>
     </section>
+    </>
   );
 }
 
 export function ReadinessDashboard() {
   const results = useResults();
+  // Rated on the server from the portfolio's own task status, so a badge here
+  // is the same badge an employer sees. Every skill starts unearned until it loads.
+  const [badges, setBadges] = useState<CompetencyBadge[]>(() => competencyBadges([]));
+  useEffect(() => {
+    let live = true;
+    academyFetch("/academy/api/proof")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { competencies?: CompetencyBadge[] } | null) => {
+        if (live && d?.competencies?.length) setBadges(d.competencies);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
   const { ask } = useCoach();
   const s = summarize(results);
   const lv = LEVELS[s.level];
   const scoreTone: Tone = s.finished === 0 ? "none" : s.level === "ready" ? "good" : s.level === "almost" ? "warn" : s.level === "practice" ? "bad" : "live";
-  const focusKey = s.finished > 0 ? s.focus[0]?.key : undefined;
   // The mission log used to show every row of every challenge at once, which
   // read fine back when there were three challenges and unreadable once
   // readiness started counting every real one. Each group opens on its own
@@ -300,7 +266,7 @@ export function ReadinessDashboard() {
 
           <div className="rd-hero__verdict">
             <h1>Are you ready for the job?</h1>
-            <blockquote>{verdict(s)}</blockquote>
+            <blockquote>{verdict(s, badges)}</blockquote>
             <div className="rd-sign">
               <span>PurveX Coach, Senior Help Desk Lead</span>
               <button
@@ -336,68 +302,8 @@ export function ReadinessDashboard() {
         </div>
       </header>
 
-      {/* Rank and skill badges */}
-      <RankAndBadges results={results} />
-
-      {/* Competencies */}
-      <section className="rd-sec">
-        <div className="rd-sec__head">
-          <span className="rd-sec__n">02</span>
-          <h2>Competencies</h2>
-          <p>Measured against the bar for a Tier 1 hire.</p>
-        </div>
-        <div className="rd-ledger">
-          {s.skills.map((k) => {
-            // A score averages only finished missions, so one lucky solve out
-            // of a 25-mission skill reads as a mathematically perfect 100 --
-            // rated (at least half the bucket done) is what says that number
-            // means anything yet. The number stays "--" until then, so
-            // nothing here claims a grade it hasn't earned, but the bar
-            // still shows real movement: how much of the bucket is done, in
-            // the portal's own "in progress" accent rather than a graded
-            // red/yellow/green, so a started skill doesn't read as an
-            // untouched one.
-            const shown = k.rated ? k.score : null;
-            const inProgress = !k.rated && k.done > 0;
-            const tone = k.rated ? toneOfScore(shown) : inProgress ? "live" : "none";
-            const barPct = k.rated ? (shown ?? 0) : inProgress ? Math.round((k.done / k.total) * 100) : 0;
-            return (
-              <div key={k.key} className={`rd-row ${focusKey === k.key ? "rd-row--focus" : ""}`}>
-                <div className="rd-row__name">
-                  <strong>
-                    {k.label}
-                    {focusKey === k.key && <em>Focus</em>}
-                  </strong>
-                  <span>
-                    {k.done} of {k.total} done
-                    {k.done > 0 && !k.rated && " · too early to rate"}
-                  </span>
-                </div>
-                <div className="rd-scale">
-                  <div className={`rd-scale__fill rd-bg-${tone}`} style={{ width: `${barPct}%` }} />
-                  <i style={{ left: "65%" }} data-mark="Almost · 65" />
-                  <i style={{ left: "85%" }} data-mark="Ready · 85" />
-                </div>
-                <p className={`rd-row__score rd-text-${tone}`}>
-                  {shown === null ? "—" : shown}
-                  {shown !== null && <small>%</small>}
-                </p>
-                <button
-                  type="button"
-                  className="rd-link"
-                  onClick={() =>
-                    ask(
-                      `Help me get better at ${k.label} in my own lab. Do not read a score back or give mission answers.`
-                    )
-                  }
-                >
-                  Discuss <ArrowUpRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      {/* Rank and competencies */}
+      <RankAndBadges results={results} badges={badges} />
 
       {/* Mission log */}
       <section className="rd-sec">
@@ -457,7 +363,6 @@ export function ReadinessDashboard() {
                           {ticket && <code>{ticket}</code>}
                         </Link>
                       )}
-                      <span className="rd-log__skill">{SKILLS[m.skill].label}</span>
                       <span className={`rd-log__result rd-text-${st.tone}`}>{st.label}</span>
                       <span className="rd-log__pts">{st.points === null ? "" : st.points}</span>
                       <span className="rd-log__act">
@@ -513,7 +418,6 @@ export function ReadinessDashboard() {
                       {l.title}
                     </Link>
                   )}
-                  <span className="rd-log__skill">{SKILLS[l.skill].label}</span>
                   <span className={`rd-log__result rd-text-${st.tone}`}>{st.label}</span>
                   <span className="rd-log__pts">{st.points === null ? "" : st.points}</span>
                   <span className="rd-log__act" />

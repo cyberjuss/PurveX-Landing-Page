@@ -293,11 +293,11 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               )}
               {student?.email && <span>{student.email}</span>}
               <Link href={`${READINESS_PATH}#rank`} className="ax-account__rank" onClick={() => setOpen(false)}>
-                <span className="rd-kicker">Rank and badges</span>
+                <span className="rd-kicker">Rank and competencies</span>
                 <b>{rank ? rank.title : "Not ranked yet"}</b>
                 {skills && (
                   <small>
-                    {skills.earned} of {skills.total} core job skills earned
+                    {skills.earned} of {skills.total} competencies earned
                   </small>
                 )}
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden />

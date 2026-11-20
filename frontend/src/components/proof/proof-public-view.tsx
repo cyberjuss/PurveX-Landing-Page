@@ -248,9 +248,9 @@ export function ProofPublicView({
         {/* Only the skills worth an employer's attention: Proficient or Verified. */}
         {(data.competencies ?? []).some((c) => c.tier === "proficient" || c.tier === "verified") && (
           <section className="pp-sec">
-            <h2>Core job skills</h2>
+            <h2>Core competencies</h2>
             <p className="pp-note">
-              Rated from the hands-on tasks below. Proficient means at least half of a skill&apos;s tasks were proven, Verified means all of them.
+              Rated from the hands-on tasks below. Proficient means at least half of a competency&apos;s tasks were proven, Verified means all of them.
             </p>
             <ul className="pp-jobskills">
               {(data.competencies ?? [])

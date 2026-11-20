@@ -976,7 +976,7 @@ export function DrillRunner() {
               ))}
             </span>
             {rank && (
-              <Link href={`${READINESS_PATH}#rank`} className="dr-level dr-rank" title="Your rank and skill badges">
+              <Link href={`${READINESS_PATH}#rank`} className="dr-level dr-rank" title="Your rank and competencies">
                 {rank.title}
               </Link>
             )}
