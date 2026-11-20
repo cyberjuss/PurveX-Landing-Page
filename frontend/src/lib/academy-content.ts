@@ -182,7 +182,6 @@ const phase1HomeLabs: HomeLabDef[] = [
       { label: "Groups", file: "phase-1/home-lab-ad/groups.md" },
       { label: "Service Accounts", file: "phase-1/home-lab-ad/service-accounts.md" },
       { label: "Group Policy", file: "phase-1/home-lab-ad/group-policy.md" },
-      { label: "Challenge: Build Out the Directory", file: "phase-1/home-lab-ad/directory-challenge.md" },
     ],
   },
   {

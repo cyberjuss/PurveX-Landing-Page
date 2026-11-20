@@ -252,27 +252,6 @@ const MISSION_LAB = {
     { c: { t: "present", sam: "frontdesk.shared" }, label: "The access review is in this lab" },
     { c: { t: "member", sam: "priya.nair", group: "Domain Admins", want: false }, label: "priya.nair is not in Domain Admins" },
   ], { tickets: ["INC-1093"] }),
-  // Home Lab: Build Out the Directory. The student creates every object these
-  // check, under names no other challenge uses, so nothing needs planting and
-  // nothing here can change another challenge's answer.
-  "dr-01": G([{ c: { t: "computerAt", name: "IT-WKS09", ou: "OU=Workstations,OU=IT,OU=Departments" }, label: "IT-WKS09 is pre-staged in Departments, IT, Workstations" }]),
-  "dr-03": G([{ c: { t: "ou", path: "OU=Workstations,OU=Compliance,OU=Departments" }, label: "A Workstations OU exists under Compliance" }]),
-  "dr-05": G([
-    { c: { t: "exists", sam: "quinn.harper", ou: "OU=Users,OU=IT,OU=Departments" }, label: "quinn.harper is in the IT Users folder" },
-    { c: { t: "desc", sam: "quinn.harper", text: "Help Desk Technician" }, label: "quinn.harper's title is Help Desk Technician" },
-  ]),
-  "dr-07": G([
-    { c: { t: "member", sam: "quinn.harper", group: "IT Users", want: true }, label: "quinn.harper is in IT Users" },
-    { c: { t: "member", sam: "quinn.harper", group: "IT Admins", want: false }, label: "quinn.harper is not in IT Admins" },
-  ]),
-  "dr-09": G([
-    { c: { t: "exists", sam: "svc-print-queue", ou: "OU=ServiceAccounts" }, label: "svc-print-queue is in the ServiceAccounts OU" },
-    { c: { t: "noexpire", sam: "svc-print-queue", want: true }, label: "svc-print-queue's password never expires" },
-    { c: { t: "desc", sam: "svc-print-queue", text: "print" }, label: "svc-print-queue's Description says what job it runs" },
-  ]),
-  "dr-11": G([
-    { c: { t: "gpoLink", gpo: "PurveX - Compliance Workstations", ous: ["OU=Workstations,OU=Compliance,OU=Departments"], want: true }, label: "PurveX - Compliance Workstations is linked to the Compliance Workstations OU" },
-  ]),
   // Home Lab: A New Hire's First Week. The build plants maya.okafor (INC-1094)
   // in the wrong department on purpose, with a password that is not due a
   // change, so none of these checks pass before the work.

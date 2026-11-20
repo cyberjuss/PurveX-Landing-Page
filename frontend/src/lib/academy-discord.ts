@@ -19,7 +19,6 @@ const CHALLENGE_TITLES: Partial<Record<ChallengeKey, string>> = {
   "day-one": "Operation Day One",
   "ticket-queue": "the Ticket Queue",
   "client-data": "The Client Data Review",
-  "build-out-directory": "Build Out the Directory",
   "new-hire-week": "A New Hire's First Week",
   "weekend-incident-report": "The Weekend Incident Report",
   "tuesday-after-breach": "Tuesday After the Breach",

@@ -62,20 +62,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "w1-03": "troubleshooting",
   "w1-04": "risk",
   "w1-05": "risk",
-  // Home Lab: Build Out the Directory and A New Hire's First Week, the two
-  // reading sittings turned into graded challenges.
-  "dr-01": "directory",
-  "dr-02": "troubleshooting",
-  "dr-03": "directory",
-  "dr-04": "access",
-  "dr-05": "accounts",
-  "dr-06": "accounts",
-  "dr-07": "access",
-  "dr-08": "directory",
-  "dr-09": "accounts",
-  "dr-10": "security",
-  "dr-11": "directory",
-  "dr-12": "access",
+  // Home Lab: A New Hire's First Week, a reading sitting turned into a graded challenge.
   "dk-01": "directory",
   "dk-02": "troubleshooting",
   "dk-03": "troubleshooting",
