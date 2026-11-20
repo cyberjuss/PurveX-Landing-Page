@@ -35,15 +35,19 @@ const PLAY_SECONDS = 4 * 60 * 60;
 
 export const isChallengeKey = (v: unknown): v is ChallengeKey => typeof v === "string" && Object.hasOwn(CHALLENGE_PATHS, v);
 
-// A little slack on each side of the recording window, since recordedAt comes
-// from the browser's clock and a solve's timestamp from the server's.
+// A little slack on each side of the recording window. The route has already
+// moved recordedAt onto the server's clock, so this only covers network delay.
 const RECORDING_SLACK_MS = 30_000;
 
 /**
- * The latest correct answer, among the challenge's questions, that the student
- * reached while this recording was running. Null if none of them were solved
- * inside that window -- a challenge like Ticket Queue holds twenty-odd
- * questions, and a clip only has to prove the one it actually shows.
+ * The solve a clip is stamped with. First choice is the latest correct answer,
+ * among the challenge's questions, reached while this recording was running.
+ * A challenge like Ticket Queue holds twenty-odd questions, and a clip only has
+ * to prove the one it shows. Failing that, the latest solve in the challenge
+ * from before the recording ended: a student who solved a ticket and then
+ * recorded a walkthrough of it could otherwise never add the clip, because a
+ * solved question cannot be answered again. Null only when nothing in the
+ * challenge has been solved, which is the one case worth refusing.
  */
 export function recordingSolvedAt(
   results: Results,
@@ -65,7 +69,17 @@ export function recordingSolvedAt(
       return !Number.isNaN(t) && t >= from && t <= to;
     })
     .sort();
-  return times[times.length - 1] ?? null;
+  if (times.length) return times[times.length - 1];
+  const earlier = ids
+    .map((id) => results[id])
+    .filter((r): r is Results[string] & { at: string } => Boolean(r?.solved && r.at))
+    .map((r) => r.at)
+    .filter((at) => {
+      const t = Date.parse(at);
+      return !Number.isNaN(t) && t <= to;
+    })
+    .sort();
+  return earlier[earlier.length - 1] ?? null;
 }
 
 function fromRow(r: Record<string, unknown>): ChallengeClip {

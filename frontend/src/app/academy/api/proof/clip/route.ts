@@ -62,7 +62,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const a = await auth(request, true);
   if (a.error) return a.error;
-  let body: { challenge?: unknown; sizeBytes?: unknown; durationSec?: unknown; recordedAt?: unknown };
+  let body: { challenge?: unknown; sizeBytes?: unknown; durationSec?: unknown; recordedAt?: unknown; clientNow?: unknown };
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -75,14 +75,20 @@ export async function POST(request: Request) {
   if (size > CLIP_MAX_BYTES || seconds > CLIP_MAX_SECONDS) {
     return NextResponse.json({ error: "Clips can be up to 15 minutes. Record a shorter one to add it to your profile." }, { status: 413 });
   }
-  const recordedAt = typeof body.recordedAt === "string" && !Number.isNaN(Date.parse(body.recordedAt)) ? new Date(body.recordedAt).toISOString() : null;
-  if (!recordedAt) return NextResponse.json({ error: "Couldn't tell when that was recorded. Try again." }, { status: 400 });
+  const startedMs = typeof body.recordedAt === "string" ? Date.parse(body.recordedAt) : NaN;
+  if (Number.isNaN(startedMs)) return NextResponse.json({ error: "Couldn't tell when that was recorded. Try again." }, { status: 400 });
+  // recordedAt is read off the student's clock and every solve off ours. A
+  // computer even a minute out would otherwise never match its own solve, so
+  // move the start onto the server's clock by however far the browser is off.
+  const clientNow = typeof body.clientNow === "string" ? Date.parse(body.clientNow) : NaN;
+  const skew = Number.isNaN(clientNow) ? 0 : Date.now() - clientNow;
+  const recordedAt = new Date(startedMs + (Math.abs(skew) < 86_400_000 ? skew : 0)).toISOString();
   const progress = await loadProgress(a.student.id);
   const solvedAt = recordingSolvedAt(progress, body.challenge, recordedAt, seconds);
   if (!solvedAt) {
     const title = CHALLENGE_LABELS[body.challenge];
     return NextResponse.json(
-      { error: `No correct answer in ${title} landed while that recording was running. Answer one while recording, then add it.` },
+      { error: `Solve at least one question in ${title}, then add your recording of it.` },
       { status: 409 }
     );
   }

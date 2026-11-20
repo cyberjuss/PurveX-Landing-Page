@@ -168,7 +168,7 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
       const res = await academyFetch("/academy/api/proof/clip", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ challenge, sizeBytes: take.blob.size, durationSec: take.seconds, recordedAt: take.recordedAt }),
+        body: JSON.stringify({ challenge, sizeBytes: take.blob.size, durationSec: take.seconds, recordedAt: take.recordedAt, clientNow: new Date().toISOString() }),
       });
       const body = (await res.json().catch(() => ({}))) as { id?: string; uploadUrl?: string; posterUploadUrl?: string | null; error?: string; upgrade?: string };
       if (!res.ok || !body.id || !body.uploadUrl) return fail(body.error ?? "Couldn't add the clip. Try again.", res.status === 403);
@@ -177,7 +177,13 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
         headers: { "Content-Type": "video/webm", "x-upsert": "false" },
         body: take.blob,
       });
-      if (!put.ok) return fail("The upload didn't finish. Check your connection and try again.");
+      if (!put.ok) {
+        return fail(
+          put.status === 413
+            ? "That recording is too large to upload. Record a shorter clip and add that one."
+            : "The upload didn't finish. Check your connection and try again."
+        );
+      }
       if (body.posterUploadUrl && posterRef.current) {
         await fetch(body.posterUploadUrl, { method: "PUT", headers: { "Content-Type": "image/jpeg", "x-upsert": "false" }, body: posterRef.current }).catch(() => null);
       }
