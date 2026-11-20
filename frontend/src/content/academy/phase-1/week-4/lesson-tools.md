@@ -1,6 +1,6 @@
 ### Tools You'll Use
 
-This week's challenge is an access review, which means gathering evidence from the Security log and then fixing group membership in Active Directory. Let's look at the tools for each half.
+This week's challenge is an access review, which means gathering evidence from the Security log and then fixing group membership in Active Directory.
 
 For the evidence, you'll use **Event Viewer**. Open it with Win+R and `eventvwr.msc`, go to **Windows Logs → Security**, then choose **Filter Current Log** and type the event ID you want. The two you'll use most are these:
 

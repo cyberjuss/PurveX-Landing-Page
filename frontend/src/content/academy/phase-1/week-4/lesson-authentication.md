@@ -13,7 +13,7 @@ Authentication is the work of proving an identity. It answers one question, who 
 
 **Multi-factor authentication**, or MFA, requires proof from two different rows of that table. That's why a password plus a security question isn't multi-factor at all, since both are things you know, and both tend to get lost in the same breach.
 
-The reason MFA matters is blunt: passwords leak constantly and at scale, and a leaked password offers no protection to the account it guards. That's how attackers walked into Colonial Pipeline in 2021, through a VPN account with a leaked password and no second factor. Keep in mind, too, that MFA isn't simply on or off, because the methods vary a lot in strength. We'll rank them later in this lesson.
+MFA matters because passwords leak constantly and at scale, and a leaked password offers no protection to the account it guards. That's how attackers walked into Colonial Pipeline in 2021, through a VPN account with a leaked password and no second factor. MFA methods also vary a lot in strength.
 
 ```sort
 prompt: Which kind of factor is each one?
@@ -49,14 +49,14 @@ Password expired: Taylor's password reached the end of its allowed age
 
 ### Resets
 
-It's easy to think of a password or MFA reset as an administrative chore, but it's really an authentication decision. For the length of that call, you are the authentication system, able to set aside every control the organization has built, for one account. That's precisely why attackers target this call. In 2023, they reportedly got their first foothold at MGM Resorts without any technical exploit, simply by talking the help desk into resetting an employee's MFA.
+A password or MFA reset is an authentication decision, not an administrative chore. For the length of that call, you are the authentication system, able to set aside every control the organization has built, for one account. That's precisely why attackers target this call. In 2023, they reportedly got their first foothold at MGM Resorts without any technical exploit, simply by talking the help desk into resetting an employee's MFA.
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-There's one situation you should learn to recognize instantly. When a user reports MFA prompts they didn't trigger, someone already has their password and is waiting at the door for approval, so the second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and end their active sessions before you escalate. That last step matters, because a reset on its own leaves any session the attacker already opened untouched.
+When a user reports MFA prompts they didn't trigger, someone already has their password and is waiting at the door for approval, so the second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and end their active sessions before you escalate. That last step matters, because a reset on its own leaves any session the attacker already opened untouched.
 
 ### Escalate
 
@@ -69,7 +69,7 @@ Some signs mean you should pass the case up straight away rather than handle it 
 
 ### How strong is the MFA?
 
-Earlier, you saw that MFA methods differ in strength. Here they are in order, from weakest to strongest:
+MFA methods from weakest to strongest:
 
 1. **Text or voice codes.** Open to phishing and to SIM swapping, where an attacker moves the number to a new SIM.
 2. **Authenticator app codes.** A fake sign-in page can still capture the code and use it within seconds.

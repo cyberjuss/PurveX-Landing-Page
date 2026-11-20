@@ -2,7 +2,7 @@
 
 **The ticket:** Riley Kwan has two copies of a vendor installer, one from email and one from a download mirror. The vendor's site lists a SHA-256. "Which one is safe to run?"
 
-To answer Riley, you first need to know what that SHA-256 value is. A hash is a fixed-length value calculated from a file or a piece of text, and three properties make it useful:
+A hash is a fixed-length value calculated from a file or a piece of text, and three properties make it useful:
 
 - The same input always gives the same hash.
 - Changing one byte gives a completely different hash.
@@ -23,7 +23,7 @@ The two inputs differ by one character, yet the hashes have nothing in common. S
 
 ### Verify in three steps
 
-With that in mind, checking a download comes down to three steps:
+Checking a download comes down to three steps:
 
 1. **Take the reference hash from the vendor's own site**, not from the mirror that served the file.
 2. **Hash your copy.** In CyberChef, use SHA2 set to 256 and drag the file into Input. In PowerShell: `Get-FileHash .\setup.exe`
@@ -42,9 +42,9 @@ Run only the copy that matches, and escalate the other without deleting it
 
 ### What a hash cannot prove
 
-Knowing what the check proves is only half the picture, because you also need to know what it doesn't. A match tells you that your file is identical to the reference, but it says nothing about whether the reference was safe to begin with.
+A match tells you that your file is identical to the reference, but it says nothing about whether the reference was safe to begin with.
 
-This isn't a theoretical gap. CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware straight out of the vendor's own build process, and customers who checked found a correct hash and a valid signature, because the malware was already inside before either was calculated. So a verified hash tells you the file reached you intact. Whether it was clean at the start is a question a hash can't answer.
+CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware straight out of the vendor's own build process, and customers who checked found a correct hash and a valid signature, because the malware was already inside before either was calculated. So a verified hash tells you the file reached you intact. Whether it was clean at the start is a question a hash can't answer.
 
 ### Compare automatically
 
@@ -54,11 +54,11 @@ sha256sum setup.exe
 echo "PASTE-THE-VENDOR-HASH  setup.exe" | sha256sum -c
 ```
 
-Rather than comparing by eye, let a command do it, because eyes skip characters. The first command prints `True` or `False`, and the last prints `setup.exe: OK` or `FAILED`. Note that it needs two spaces before the file name, and on a Mac you'd use `shasum -a 256` instead.
+The first command prints `True` or `False`, and the last prints `setup.exe: OK` or `FAILED`. Note that it needs two spaces before the file name, and on a Mac you'd use `shasum -a 256` instead.
 
 ### The line-break trap
 
-There's one trap to know about when you hash text. `echo` adds an invisible line break, and that line break gets hashed along with your text:
+When you hash text, watch for one trap. `echo` adds an invisible line break, and that line break gets hashed along with your text:
 
 ```
 printf '%s' 'Harbor2026' | sha256sum   17e80eed5cd3...

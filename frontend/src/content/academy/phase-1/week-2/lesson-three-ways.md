@@ -2,7 +2,7 @@
 
 **The ticket:** Jordan Ellis finds this in a vendor script: `password: SGFyYm9yMjAyNg==`. "It's scrambled, so it's encrypted, right?"
 
-It's an easy mistake to make, because all three methods produce output a person can't read. What separates them has nothing to do with how scrambled the result looks. It comes down to one question: who can reverse it?
+All three methods produce output a person can't read. What separates them has nothing to do with how scrambled the result looks. It comes down to one question: who can reverse it?
 
 - **Encoding** can be undone by anybody.
 - **Encryption** can be undone only by somebody holding the key.
@@ -27,15 +27,15 @@ printf '%s' 'SGFyYm9yMjAyNg==' | base64 -d
 [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('SGFyYm9yMjAyNg=='))
 ```
 
-You don't need CyberChef for this, either. The first command works on Linux or a Mac, and the second does the same thing in PowerShell.
+The first command works on Linux or a Mac, and the second does the same thing in PowerShell.
 
 ### Attackers encode commands
 
-Attackers know about Base64 too, and they use it to hide commands. PowerShell will run Base64 text given after `-EncodedCommand`, which is often shortened to `-enc`, so when an analyst sees `powershell -enc` followed by a long string, they decode it before deciding anything. One detail trips people up here: the text inside is UTF-16, so in CyberChef you add **Decode text** set to UTF-16LE after From Base64. With that step added, `RwBlAHQALQBEAGEAdABlAA==` decodes to `Get-Date`.
+Attackers know about Base64 too, and they use it to hide commands. PowerShell will run Base64 text given after `-EncodedCommand`, which is often shortened to `-enc`, so when an analyst sees `powershell -enc` followed by a long string, they decode it before deciding anything. The text inside is UTF-16, so in CyberChef you add **Decode text** set to UTF-16LE after From Base64. With that step added, `RwBlAHQALQBEAGEAdABlAA==` decodes to `Get-Date`.
 
 ### Good encryption changes every time
 
-Encryption has a telltale habit of its own. Good encryption mixes in a random value each time, so encrypting the same thing twice with the same key gives two different results. If you ever see two identical encrypted values, treat that as a warning sign about how the encryption was built.
+Good encryption mixes in a random value each time, so encrypting the same thing twice with the same key gives two different results. If you ever see two identical encrypted values, treat that as a warning sign about how the encryption was built.
 
 ```sort
 prompt: You found these in PurveX files. Encoding, encryption or hashing?

@@ -8,7 +8,7 @@ You've just seen that TCP keeps checking the other side heard it. That checking 
 | **SYN-ACK** | The computer being contacted | Accepts, and states its own starting sequence number |
 | **ACK** | The computer opening the connection | Confirms it received the reply |
 
-Notice that data only starts to flow once all three steps are complete, and that distinction matters a great deal when you're reading a capture.
+Data only starts to flow once all three steps are complete.
 
 Those sequence numbers are the reason TCP can call itself reliable, because the handshake is where each side declares the number it will count from. UDP, the other transport protocol you'll meet constantly, skips the handshake and the acknowledgements entirely, trading reliability for speed. That's the right trade for voice and video calls, where a packet that arrives late is useless anyway.
 

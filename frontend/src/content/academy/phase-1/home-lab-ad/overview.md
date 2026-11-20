@@ -7,13 +7,13 @@
 
 You can't call something suspicious until you know what **normal** looks like, so that's where the Home Lab starts. Here, normal is PurveX Financial, a mid-sized wealth management firm whose systems hold client money and records regulated under GLBA and SOX, two US financial regulations. Keep that in mind, because it's what's at stake on every ticket you'll work.
 
-Fortunately, the firm is small enough to hold in your head, with five departments, nine people and a defined set of groups. A real desk works the same way: you learn who works where, and over time you get a feel for what normal looks like.
+The firm is small enough to hold in your head, with five departments, nine people and a defined set of groups. A real desk works the same way: you learn who works where, and over time you get a feel for what normal looks like.
 
 ### A Directory Built Like a Real Firm
 
 A textbook would give you `User1` inside `OU=Users` and explain everything for you. Real environments are messier than that, so this lab is too, with real departments and access groups, and tickets that may not tell you the whole story.
 
-One consequence of that messiness is that a job title doesn't set access. Group membership follows what the job needs, and a ticket has to approve it. Keep in mind, too, that callers and tickets can be wrong, which is why you verify what they tell you before you act on it.
+A job title doesn't set access. Group membership follows what the job needs, and a ticket has to approve it. Keep in mind, too, that callers and tickets can be wrong, which is why you verify what they tell you before you act on it.
 
 ### The Role You Play
 

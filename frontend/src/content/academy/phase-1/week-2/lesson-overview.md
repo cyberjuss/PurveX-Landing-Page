@@ -31,6 +31,4 @@ Encoding = A format change anybody can undo in one step. It guarantees nothing.
 
 Mixing these up has a real, documented cost. In 2012, about 6.5 million LinkedIn password hashes leaked, and because they'd been stored without a salt, identical passwords had identical hashes. That let attackers go after the whole set at once instead of one account at a time, and more than 60% of them were cracked within about a week.
 
-The good news is that the same ideas work just as well in your favor. In 2023, analysts tracked a poisoned 3CX installer across many organizations by sharing a single hash of the malicious file, which let any team check its own copies in seconds.
-
-By the end of this week, you'll be able to tell the three apart on sight and verify a download against a published hash. You'll also be able to explain why stored passwords need both a salt and a slow algorithm, which is what lets you work a vendor breach without guessing.
+The same ideas work in your favor, too. In 2023, analysts tracked a poisoned 3CX installer across many organizations by sharing a single hash of the malicious file, which let any team check its own copies in seconds.

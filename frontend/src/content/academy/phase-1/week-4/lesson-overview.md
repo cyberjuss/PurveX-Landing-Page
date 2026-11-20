@@ -13,9 +13,9 @@ Three pieces share that work:
 - **Authorization** takes an identity the system already trusts and decides what it may reach.
 - **Access control** enforces that decision on every single request, not just once at sign-in.
 
-Notice the gap between the last two. Deciding what someone may do and enforcing it on every request are different steps, and that gap is where most things go wrong. You'll also hear these ideas grouped as "Triple A": authentication, authorization and accounting, where accounting is the record of who did what.
+Deciding what someone may do and enforcing it on every request are different steps, and that gap is where most things go wrong. You'll also hear these ideas grouped as "Triple A": authentication, authorization and accounting, where accounting is the record of who did what.
 
-This matters because most real breaches start right here, rather than with clever malware. Each of these well-documented cases failed at a different point in that chain:
+Most real breaches start right here, rather than with clever malware. Each of these well-documented cases failed at a different point in that chain:
 
 | Breach | The way in | What it cost | What failed |
 |---|---|---|---|
@@ -23,7 +23,7 @@ This matters because most real breaches start right here, rather than with cleve
 | MGM Resorts, 2023 | A caller who reportedly talked the IT help desk into resetting an employee's MFA | Ransomware that disrupted hotels and casinos for days | **Authentication**, broken through a person |
 | First American Financial, 2019 | Changing one number in a web address, with no check that the visitor was allowed to see the document | About 885 million mortgage and banking documents left reachable | **Authorization** |
 
-Notice that none of them needed sophisticated tools. Two were a valid credential used by the wrong person, and the third was an application that never asked whether the visitor was entitled to the document. That pattern isn't a coincidence, either. Since 2021, broken access control has sat at number one on the OWASP Top 10, the best-known list of web application risks.
+None of them needed sophisticated tools. Two were a valid credential used by the wrong person, and the third was an application that never asked whether the visitor was entitled to the document. Since 2021, broken access control has sat at number one on the OWASP Top 10, the best-known list of web application risks.
 
 ```connect
 prompt: Connect each word to its job.
@@ -48,11 +48,3 @@ Over your career, you'll probably sit in each of these seats, and each one meets
 - **Help desk.** Resetting passwords and MFA makes you part of the authentication system itself, which is exactly why attackers call the desk.
 - **Systems administrator.** You decide who belongs to which group, and since groups grant permissions, every extra membership you hand out is a door someone may walk through later.
 - **SOC analyst.** You read the record the other two leave behind, where sign-in logs and group changes show when someone isn't who they claim or is reaching further than their job needs.
-
-By the end of the week, you'll be able to:
-
-- name the three kinds of proof, and rank MFA methods by how hard each one is to trick
-- handle a password or MFA reset without becoming the attacker's way in
-- explain least privilege, and read what an account can do from its groups
-- explain why the server has to re-check permissions on every request
-- find a broken access control flaw in the lab, exploit it, and describe the fix

@@ -2,7 +2,7 @@
 
 If a port is the door the traffic went through, a protocol is the set of rules for the conversation that happens once it's inside. Convention ties the two so closely that you can usually guess one from the other, but they're still separate things, and attackers use that gap to hide. A common trick is running their own traffic over port 443 so it passes for ordinary web browsing.
 
-Let's walk through the protocols you'll see most often, and what an analyst notices about each one.
+These are the protocols you'll see most often, and what an analyst notices about each one.
 
 #### HTTP and HTTPS
 

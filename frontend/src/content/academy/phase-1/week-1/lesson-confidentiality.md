@@ -1,6 +1,6 @@
 ### Confidentiality
 
-Confidentiality means that only the people who are allowed to see a piece of information can see it. Here's the part that catches people out: when confidentiality fails, the data usually hasn't gone anywhere. It's still sitting exactly where it was, and what's changed is that someone who was never supposed to have a copy now has one. That's why we call this failure a **leak**. And because nothing is missing, every system keeps reporting that it's healthy, so a leak can run for a long time before anyone notices.
+Confidentiality means that only the people who are allowed to see a piece of information can see it. When confidentiality fails, the data usually hasn't gone anywhere. It's still sitting exactly where it was, and what's changed is that someone who was never supposed to have a copy now has one. That's why we call this failure a **leak**. And because nothing is missing, every system keeps reporting that it's healthy, so a leak can run for a long time before anyone notices.
 
 Confidentiality matters most for information where simply seeing it does the damage, such as:
 
@@ -19,6 +19,15 @@ What sets this apart from the other two failures is that you can't undo it. You 
 - **Encryption** makes the data unreadable to anyone who gets hold of it some other way.
 
 Each of these covers a gap the other two leave open, which is why you use all three together. Of the three, encryption is the one people most often assume is switched on when it isn't, and that assumption is costly, because unencrypted traffic can be read by anyone on the network path between the two ends. So when a colleague asks whether it's safe to send something through a particular system, the question you're really answering is whether that traffic is encrypted while it travels.
+
+```check
+prompt: A laptop is stolen from a car. Its drive isn't encrypted, and nothing on the network changed. What failed, and which control would have helped?
+level: 2
+* Confidentiality, and encryption would have kept the files unreadable :: The thief can read every file, and encryption covers data someone gets hold of some other way.
+Integrity, and an audit log would have caught it :: Nothing was changed. The problem is who can now read the files.
+Availability, and a backup would have fixed it :: A backup gets the files back for their owner, but it does nothing about the thief reading them.
+why: Nothing done after the theft can take back what was read, so confidentiality controls only help if they're in place beforehand.
+```
 
 ```match
 prompt: Which control would have stopped each of these?

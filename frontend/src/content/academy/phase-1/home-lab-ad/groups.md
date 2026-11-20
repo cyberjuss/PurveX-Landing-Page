@@ -5,7 +5,7 @@
 
 ### Containers
 
-Before we get to groups, there's one look-alike to watch for. In the console, a **Container** looks just like an OU, because both use a folder icon. But a Container is a different kind of object, and the icon will fool you if you judge by appearance.
+In the console, a **Container** looks just like an OU, because both use a folder icon. But a Container is a different kind of object, and the icon will fool you if you judge by appearance.
 
 | | Organizational Unit | Container |
 | ----- | ----- | ----- |
@@ -25,7 +25,7 @@ Container: Windows builds it and you cannot make your own | CN=Computers | CN=Us
 
 ### Security Groups
 
-Now for groups themselves. A **Security Group** is a list of accounts that you use to grant permissions or apply Group Policy to the people who need them, whatever OU they live in. That's the big difference from a folder: while an account has exactly one OU, it can sit in any number of groups.
+A **Security Group** is a list of accounts that you use to grant permissions or apply Group Policy to the people who need them, whatever OU they live in. That's the big difference from a folder: while an account has exactly one OU, it can sit in any number of groups.
 
 At PurveX, every department has a standard access group:
 

@@ -2,9 +2,9 @@
 
 **The ticket:** a vendor several PurveX staff used was breached, and its user table is online. Alex Rivera asks: "How bad is this for us, and what do we do first?"
 
-To answer Alex, start with how passwords should be stored in the first place. A password system never needs to know your password. It only needs to recognize the right one when you type it again, so a well-built system stores a value calculated from the password, then runs the same calculation at sign-in and compares the two. Because the password itself is never written down, a stolen database doesn't immediately hand an attacker a set of working credentials.
+Start with how passwords should be stored. A password system never needs to know your password. It only needs to recognize the right one when you type it again, so a well-built system stores a value calculated from the password, then runs the same calculation at sign-in and compares the two. Because the password itself is never written down, a stolen database doesn't immediately hand an attacker a set of working credentials.
 
-That alone isn't enough, though. There are two further requirements, and they're where most real systems fall short:
+There are two further requirements, and they're where most real systems fall short:
 
 - Two users who chose the same password must still end up with **different stored values**, or the table itself reveals which accounts share a password.
 - The calculation has to be **slow enough that bulk guessing is impractical**, because an attacker with a copy of the table can guess as often as they like and the system never knows.
@@ -12,7 +12,7 @@ That alone isn't enough, though. There are two further requirements, and they're
 ### Good storage in one line
 <!-- art: salt -->
 
-Putting those requirements together, a system should store a **salted, slow hash** of each password, and each half of that phrase does a different job:
+So a system should store a **salted, slow hash** of each password, and each half of that phrase does a different job:
 
 - **Salt:** a random value added per user. Two people with the same password get different hashes, so reuse is hidden.
 - **Slow hash:** Argon2id or bcrypt. One high-end graphics card tries about 22 billion SHA-256 guesses a second. At bcrypt's minimum recommended cost of 10, the same card manages about 6,000.
@@ -28,7 +28,7 @@ Time to respond, reset anyway: Salted bcrypt at cost 12
 
 ### Why their breach is your problem
 
-You might wonder why another company's breach lands on your desk at all. The answer is that people reuse passwords across services, whatever any policy says, and attackers know it. They take a leaked list of emails and passwords and try the same pairs on other sign-in pages to see where else they work. That's called **credential stuffing**, and it takes no skill at all.
+Another company's breach lands on your desk because people reuse passwords across services, whatever any policy says, and attackers know it. They take a leaked list of emails and passwords and try the same pairs on other sign-in pages to see where else they work. That's called **credential stuffing**, and it takes no skill at all.
 
 The defense that holds up against it is **MFA**, because it changes what a stolen password is worth. With MFA turned on, a correct password on its own no longer gets anyone in.
 
@@ -61,23 +61,23 @@ $ openssl passwd -6 -salt N4tQ2x 'Harbor2026'
 $6$N4tQ2x$YkiZ5pKGVV3yPjoKhMV4oWEqyPJNVynJGzKwvp37hoCLb//X7KoVHJyXe8KXcZ2U7axpFTZFxABOn4py32W0v.
 ```
 
-It helps to be able to read one of these. The `$6$` at the start names the algorithm, and the salt and the hash follow it. Notice that the salt isn't hidden, because it doesn't need to be secret. Its only job is to make every hash unique.
+The `$6$` at the start names the algorithm, and the salt and the hash follow it. The salt isn't hidden, because it doesn't need to be secret. Its only job is to make every hash unique.
 
 A bcrypt hash follows the same idea: `$2b$12$1.A448CMPszJoJNh8XDqPeL1ZvsWBt7AjjvYj57Rfr1M4tDk/7Oye`. Here the `12` is the cost setting, which you raise over time as computers get faster.
 
 ### How Windows stores passwords
 
-Windows does things differently, and it's worth knowing how. Active Directory stores an **NT hash**, which is both fast and unsalted. Worse, an attacker who steals one can sometimes sign in with the hash itself, without ever cracking it, which is called **pass-the-hash**. That's why domain controllers and admin accounts are guarded so tightly, and why Windows LAPS gives every machine's local admin account its own password.
+Windows does it differently. Active Directory stores an **NT hash**, which is both fast and unsalted. Worse, an attacker who steals one can sometimes sign in with the hash itself, without ever cracking it, which is called **pass-the-hash**. That's why domain controllers and admin accounts are guarded so tightly, and why Windows LAPS gives every machine's local admin account its own password.
 
 ### Resetting a password safely
 
-All of this comes back to the help desk, where you'll reset passwords regularly. When you do:
+On the help desk, you'll reset passwords regularly. When you do:
 
 - Verify the caller with a callback to the number on file, never a number they give you.
 - Never ask for or learn a user's password. Set a temporary one and tick **User must change password at next logon**.
 - A locked account whose password is still right only needs unlocking. Find out why it locked first.
 
-Current NIST guidance supports this approach. It asks for at least 15 characters when the password is the only factor, with no forced symbol rules and no scheduled changes. Instead, passwords should change after a compromise, and known-breached passwords should be blocked.
+Current NIST guidance asks for at least 15 characters when the password is the only factor, with no forced symbol rules and no scheduled changes. Instead, passwords should change after a compromise, and known-breached passwords should be blocked.
 
 ### What password attacks look like in the logs
 

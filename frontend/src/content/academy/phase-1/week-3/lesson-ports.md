@@ -26,7 +26,7 @@ A domain controller adds a set of its own. These are all normal on a DC, so it's
 | 3268 / 3269 | Global Catalog | Directory lookups across the forest |
 | 5985 | WinRM | Remote PowerShell |
 
-Two entries in the first table deserve special attention. Ports 22 and 3389 both exist to let someone control a machine rather than just fetch something from it, which is why attackers reach for them once they have a foothold. So traffic on those ports between two internal machines that have no business talking to each other is one of the more useful things to watch for.
+Ports 22 and 3389 both exist to let someone control a machine rather than just fetch something from it, which is why attackers reach for them once they have a foothold. So traffic on those ports between two internal machines that have no business talking to each other is one of the more useful things to watch for.
 
 At the same time, be careful not to read more into a port number than it can tell you. A port shows which door the traffic used, but it doesn't tell you the conversation was legitimate, because anyone can run any service on any port. So before you draw a conclusion, check:
 

@@ -1,6 +1,6 @@
 ### Broken Access Control
 
-If authorization is the decision, access control is the enforcement. Deciding that a role may read a record achieves nothing on its own, because something still has to apply that decision on every request before any data goes back. **Broken access control** is what we call it when the server skips that check, letting a user reach data or take actions beyond their permissions. It has been the number one risk on the OWASP Top 10 since 2021, which tells you how often that check gets missed.
+If authorization is the decision, access control is the enforcement. Deciding that a role may read a record achieves nothing on its own, because something still has to apply that decision on every request before any data goes back. **Broken access control** is what we call it when the server skips that check, letting a user reach data or take actions beyond their permissions.
 
 ### The rule: never trust the client
 
@@ -18,7 +18,7 @@ Changing those values takes no special skill. The developer tools built into eve
 2. What role that person has.
 3. Whether that role may perform this action on this item.
 
-That's also why hiding a button is not access control, and the mistake is common enough to say plainly. Removing a link from a menu changes what a user is invited to do, but it changes nothing about what the server will do if someone types the address directly.
+That's also why hiding a button is not access control. Removing a link from a menu changes what a user is invited to do, but it changes nothing about what the server will do if someone types the address directly.
 
 ### Common forms
 
@@ -38,7 +38,7 @@ Parameter tampering: The sign-up form sends role=admin and the server accepts it
 
 ### Fixes
 
-Every one of the fixes follows from that same rule of never trusting the client:
+The fixes all follow from that rule:
 
 - **Check on the server, every time.** Take identity and role from the session rather than the request, and confirm ownership of each item before returning it.
 - **Deny by default.** An action stays closed unless a rule opens it for this role. A new feature is then safe until somebody decides otherwise, rather than exposed until somebody notices.
@@ -48,11 +48,11 @@ Every one of the fixes follows from that same rule of never trusting the client:
 
 ### Testing
 
-Before you try this yourself, a word of caution. Changing identifiers on a system you don't have written permission to test counts as unauthorized access, even if you only looked and even if the flaw was obvious. Good intentions aren't a defense, and finding a real vulnerability doesn't make the access authorized. Practice on the PortSwigger Web Security Academy labs instead, which exist for this purpose. On the job, this kind of testing always needs a signed scope, agreed in advance.
+Changing identifiers on a system you don't have written permission to test counts as unauthorized access, even if you only looked and even if the flaw was obvious. Good intentions aren't a defense, and finding a real vulnerability doesn't make the access authorized. Practice on the PortSwigger Web Security Academy labs instead, which exist for this purpose. On the job, this kind of testing always needs a signed scope, agreed in advance.
 
 ### When a user reports it
 
-Sometimes the flaw finds you, when a user reports seeing someone else's data. When that happens:
+When a user reports seeing someone else's data:
 
 1. Ask them not to try any more addresses.
 2. Record what they saw: the address, the time, their account and whose data appeared.

@@ -214,7 +214,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Taylor was still sitting in Operations with Operations access, so Compliance policies didn't apply and the old access stayed open. That's the key lesson here: an HR notice changes nothing in the directory until someone acts on it.</p>
+<p>Taylor was still sitting in Operations with Operations access, so Compliance policies didn't apply and the old access stayed open. An HR notice changes nothing in the directory until someone acts on it.</p>
 </div>
 <div>
 <span>What to do</span>

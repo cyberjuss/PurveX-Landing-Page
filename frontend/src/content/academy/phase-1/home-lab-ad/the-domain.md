@@ -14,7 +14,7 @@ Active Directory is the database that holds a firm's users, computers and groups
 
 ### Why one list matters
 
-To see why a domain matters, imagine the firm without one. Each computer would keep its own separate accounts, so a password reset on one PC would mean nothing on the next. The directory solves that by being the one list the whole firm trusts to say who someone is and which computers belong.
+Without a domain, each computer would keep its own separate accounts, so a password reset on one PC would mean nothing on the next. The directory solves that by being the one list the whole firm trusts to say who someone is and which computers belong.
 
 ### Authentication, authorization, and accounting
 
@@ -34,7 +34,7 @@ Those jobs connect straight back to the three CIA failures from Week 1, and each
 
 ### Promote the server
 
-With the background in place, it's time to promote your server. Open Server Manager on the Windows Server and add the role:
+Now promote your server. Open Server Manager on the Windows Server and add the role:
 
 1. Choose Manage, then Add Roles and Features.
 2. Keep Role-based selected.

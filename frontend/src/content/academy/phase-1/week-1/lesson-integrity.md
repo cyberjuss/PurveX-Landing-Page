@@ -13,9 +13,18 @@ The firewall rule is a good example of how quiet this can be. A changed rule doe
 
 **Controls:** hashing, digital signatures and audit logs.
 
-Notice that these controls work differently from the ones that protect confidentiality. None of them stops a change from happening. What they do is make the change **visible afterwards**, by giving you something reliable to compare against. Preventing the change in the first place is a separate job, and it belongs to access control.
+These controls work differently from the ones that protect confidentiality. None of them stops a change from happening. What they do is make the change **visible afterwards**, by giving you something reliable to compare against. Preventing the change in the first place is a separate job, and it belongs to access control.
 
 That difference shapes how you investigate, too. With confidentiality, you're asking whether anyone could have seen the data, while with integrity, you're asking whether the data is still what it was. You can only answer that second question if someone recorded the original beforehand, because memory and assumption don't count as evidence.
+
+```check
+prompt: Jordan saved a fingerprint of the wire file on Friday. What can that fingerprint do on Monday?
+level: 1
+* Show whether the file changed since Friday :: Integrity controls make a change visible afterwards by giving you something reliable to compare against.
+Stop anyone from changing the file :: Preventing a change is access control's job. Integrity controls show a change after it happens.
+Keep other departments from reading the file :: Keeping a file private is confidentiality, which is access control and encryption.
+why: Hashing, signatures and audit logs don't stop a change. They make it visible afterwards, and only because someone recorded the original first.
+```
 
 ```match
 prompt: Each property asks its own question. Match them.

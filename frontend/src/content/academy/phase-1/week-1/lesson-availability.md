@@ -1,3 +1,11 @@
+```predict
+prompt: Of the three failures, which one usually reaches the help desk first?
+* A lockout :: When people can't work, they notice straight away and call.
+A leak :: A leak usually goes unnoticed, because nothing is missing and every system says it's healthy.
+A lie :: A quiet change looks normal, so it can sit for weeks until the numbers stop matching.
+why: An availability failure is the most visible of the three, which is why it so often lands first in your queue.
+```
+
 ### Availability
 
 Availability means that systems and data are there when the people who need them go to use them. When it fails, nothing has leaked and nothing has changed, so the data is still intact and still private. What's stopped is the work itself, which is why we call this failure a **lockout**. It's also the most visible of the three, and usually the first to land in your queue, because the people affected notice straight away.
@@ -9,7 +17,7 @@ Availability matters most where being unreachable is the harm in itself, such as
 - the VPN
 - a payment page at checkout
 
-To see why, think about what each outage costs. A payment page that won't load loses money for every minute it stays down, and a time clock that's unreachable at shift change leaves someone fixing payroll by hand later.
+A payment page that won't load loses money for every minute it stays down, and a time clock that's unreachable at shift change leaves someone fixing payroll by hand later.
 
 **Controls:** backups, redundancy and patching.
 

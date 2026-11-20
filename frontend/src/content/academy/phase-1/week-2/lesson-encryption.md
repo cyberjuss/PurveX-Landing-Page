@@ -2,13 +2,13 @@
 
 **The ticket:** Sam Whitfield's laptop restarted for an update overnight. Now a blue screen says **BitLocker recovery** and asks for a 48-digit key. "Is my laptop broken?"
 
-The first thing to tell Sam is that the laptop is fine, and saying so early will settle the rest of the call. BitLocker encrypts the whole drive and simply won't unlock it until it's given the right key, so nothing has been damaged or lost. To work the call well, though, you need to understand what encryption is doing here, and why the key matters more than the algorithm.
+The first thing to tell Sam is that the laptop is fine, and saying so early will settle the rest of the call. BitLocker encrypts the whole drive and simply won't unlock it until it's given the right key, so nothing has been damaged or lost.
 
 ### What encryption does
 
 Encryption uses a key to transform data so that it looks like random characters to anyone who doesn't hold that key. Supply the same key and the transformation reverses, giving you back the original byte for byte.
 
-The key itself is a secret value, often derived from a passphrase such as `Tide-Lamp-42`, and notice how unforgiving the relationship is. Change even one character of the key and decryption doesn't return something close to the original. It fails outright, as the table shows.
+The key itself is a secret value, often derived from a passphrase such as `Tide-Lamp-42`. Change even one character of the key and decryption doesn't return something close to the original. It fails outright, as the table shows.
 
 | Encrypted note | Key tried | What comes out |
 |---|---|---|
@@ -16,11 +16,11 @@ The key itself is a secret value, often derived from a passphrase such as `Tide-
 | `U2FsdGVkX1+q3…` | `Tide-Lamp-41` | Nothing. Decryption fails. |
 | `U2FsdGVkX1+q3…` | No key | Nothing |
 
-That table captures where encryption sits among this week's three methods. Anybody can reverse encoding and nobody can reverse a hash, but encryption reverses fully for whoever holds the key. It follows that encrypted data is only as safe as its key, which is why attackers almost always go after the key rather than the mathematics.
+Anybody can reverse encoding and nobody can reverse a hash, but encryption reverses fully for whoever holds the key. It follows that encrypted data is only as safe as its key, which is why attackers almost always go after the key rather than the mathematics.
 
 ### Two kinds of keys
 
-Keys come in two arrangements, and you'll meet both constantly. The first, **symmetric encryption**, uses one shared key to both lock and unlock.
+The first, **symmetric encryption**, uses one shared key to both lock and unlock.
 
 - One key does both jobs, so it is fast.
 - That makes it the right choice wherever there is a lot of data.
@@ -44,7 +44,7 @@ Both together = Your browser agreeing a key with a site, then protecting the who
 
 ### Back to Sam: the recovery key call
 
-With that background, Sam's screen makes sense. BitLocker keeps the drive's key inside the laptop's TPM, a security chip on the motherboard, and the TPM only releases that key when the machine's startup looks the same as it did last time. That fussiness is deliberate, because a changed startup could mean someone is trying to get at the drive in a way its owner never intended.
+BitLocker keeps the drive's key inside the laptop's TPM, a security chip on the motherboard, and the TPM only releases that key when the machine's startup looks the same as it did last time. That fussiness is deliberate, because a changed startup could mean someone is trying to get at the drive in a way its owner never intended.
 
 Sam's overnight firmware update changed the startup, so the TPM did its job and held the key back. BitLocker then fell back to asking for the 48-digit recovery key, which IT saved to the directory when the drive was first encrypted. Your task on this call is to get that key to the right person, and only to the right person.
 
@@ -57,7 +57,7 @@ Sam's overnight firmware update changed the startup, so the TPM did its job and 
 
 ### Where encryption fails
 
-As you saw earlier, attackers rarely break AES itself. They go after the key, or after mistakes in how the encryption was set up, so when encrypted data leaks, these are the mistakes to check for:
+Attackers go after the key, or after mistakes in how the encryption was set up, so when encrypted data leaks, these are the mistakes to check for:
 
 - **The key sits next to the data.** A key saved in a config file on the same server is stolen in the same breach, and the attacker decrypts everything.
 - **The same input gives the same output.** Without a random value mixed in, users who share a password share an encrypted value.
@@ -85,7 +85,7 @@ You can watch that unforgiving key behavior for yourself. The first command encr
 | In transit | Signing in to a web portal | HTTPS, VPN |
 | In use | A file open in an app | Access control and endpoint security |
 
-It's important to be clear about the limits, too. Once Sam signs in, the drive is unlocked, so any malware running as Sam can read files exactly the way Sam does. BitLocker protects a laptop that's lost or stolen, but it does nothing against malware on a laptop that's already unlocked.
+Once Sam signs in, the drive is unlocked, so any malware running as Sam can read files exactly the way Sam does. BitLocker protects a laptop that's lost or stolen, but it does nothing against malware on a laptop that's already unlocked.
 
 ### Admin commands
 
@@ -98,7 +98,7 @@ When you need to check BitLocker yourself, these two commands cover most cases. 
 
 ### Two patterns the SOC watches
 
-Finally, encryption shows up on the attacking side too, in two patterns you'll learn to recognize:
+Encryption also shows up on the attacking side, in two patterns:
 
 - Ransomware uses the same encryption against its victims and sells the key back.
 - Phishing emails often carry an encrypted ZIP with the password in the email body. Mail scanners cannot look inside the ZIP, and attackers rely on that.

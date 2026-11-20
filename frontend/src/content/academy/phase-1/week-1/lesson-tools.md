@@ -1,6 +1,6 @@
 ### Tools You'll Use
 
-This week's challenge has you working on your own domain controller in an admin PowerShell window, so let's meet the commands before you need them.
+This week's challenge has you working on your own domain controller in an admin PowerShell window, using these commands.
 
 | Command | What it does |
 | :---- | :---- |
@@ -25,6 +25,15 @@ A short list of PurveX rules, each with an Action of Allow or Block and Enabled 
 
 </details>
 
+
+```check
+prompt: A firewall rule shows Action Block and Enabled False, and its port filter shows 3389. What is it doing right now?
+level: 2
+* Nothing. It would block Remote Desktop, but it's switched off :: Enabled False means the rule exists but isn't being applied.
+Blocking Remote Desktop :: Check Enabled first. A rule that's switched off blocks nothing.
+Allowing Remote Desktop :: The rule's action is Block. It just isn't switched on.
+why: Read a rule in three parts: what it does, whether it's on, and which port it covers. Together they tell you its real effect.
+```
 
 ```match
 prompt: Match each command to its job.

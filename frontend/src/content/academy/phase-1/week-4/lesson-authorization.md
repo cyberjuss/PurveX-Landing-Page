@@ -1,10 +1,10 @@
 ### Authorization
 
-Once authentication has settled who you are, authorization decides what you're allowed to reach. Notice that it assumes the first question was answered correctly, so everything here applies equally to a real employee and to an attacker signed in as one. That's why authorization is a security control and not just administrative housekeeping.
+Once authentication has settled who you are, authorization decides what you're allowed to reach. It assumes the first question was answered correctly, so everything here applies equally to a real employee and to an attacker signed in as one. That's why authorization is a security control and not just administrative housekeeping.
 
 ### Principles
 
-Three principles shape almost every authorization decision you'll make, and it's more useful to understand what each one is for than to memorize its definition:
+Three principles shape almost every authorization decision you'll make:
 
 - **Least privilege.** Each account gets only the access its job requires. The point isn't tidiness: a stolen account can only reach as far as its permissions, so whoever grants access is deciding the damage in advance.
 - **Need to know.** People get access to specific data only while a task requires it, not permanently because somebody once asked.
@@ -20,7 +20,7 @@ Separation of duties = Jordan can enter a wire, but someone else has to approve 
 
 ### Role-based access control
 
-To put those principles into practice, permissions are almost never given to people directly. They're granted to **security groups**, and people are added to those groups, so each group stands in for a role. That extra step buys you two things:
+To put those principles into practice, permissions are almost never given to people directly. They're granted to **security groups**, and people are added to those groups, so each group stands in for a role. That gives you two things:
 
 - Changing somebody's job becomes a matter of changing their groups.
 - You can read what an account can do from its memberships, rather than hunting through every system.
@@ -35,7 +35,7 @@ At PurveX, there's one standard group per department:
 
 On top of those, `IT Admins` adds admin rights beyond `IT Users`.
 
-Admin rights get the same careful treatment. Rather than being granted as one block, administrative power is split into three levels, so that the most dangerous rights sit with the fewest people. As you read the table, notice that the line each level must never cross matters just as much as what it controls.
+Administrative power is split into three levels, so that the most dangerous rights sit with the fewest people. The line each level must never cross matters as much as what it controls.
 
 | Level | Controls | Must never touch |
 |---|---|---|
@@ -62,11 +62,11 @@ icacls "C:\PurveX\Shares\Finance"
 
 These commands show you an account's groups and what those groups can reach. If you prefer the graphical tool, the **Member Of** tab in Active Directory Users and Computers lists the same groups.
 
-Shared folders add one wrinkle, because they carry two sets of permissions, **share** and **NTFS**, and over the network the stricter of the two wins. To cut through that, the folder's **Effective Access** tab shows what a named user can do once every group is counted.
+Shared folders carry two sets of permissions, **share** and **NTFS**, and over the network the stricter of the two wins. To cut through that, the folder's **Effective Access** tab shows what a named user can do once every group is counted.
 
 ### Common failures
 
-Here are the failures behind most of the authorization problems you'll meet. What they share is that they build up quietly over time, rather than arriving as an incident:
+These failures are behind most authorization problems, and they build up quietly over time rather than arriving as an incident:
 
 - **Privilege creep.** People change roles and keep the groups from the old one, until a long career produces an account that reaches almost everything. The fix is to remove old access in the same change that grants new access, because a separate ticket to do it later is one nobody raises.
 - **Stale accounts.** These are the same problem for people who have left entirely, and Colonial Pipeline is the cautionary example, since the VPN account the attackers used was no longer in use by anybody.

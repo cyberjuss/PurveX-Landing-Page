@@ -1,3 +1,10 @@
+```predict
+prompt: A storm cuts the power to PurveX's server room overnight. Nobody meant any harm. Does the storm count as a threat?
+* Yes :: A threat is anything that could take advantage of a weakness or cause harm, whether or not it means to.
+No, because a threat has to be a person who chooses to attack :: The list is wider than most people expect. Natural disasters sit on it next to criminal groups.
+why: Intent doesn't matter. You can't stop a storm any more than a criminal group, which is why your effort goes into the weakness and the damage.
+```
+
 ### Threats
 
 If a vulnerability is the weakness, a threat is something or someone that could take advantage of it. That includes:

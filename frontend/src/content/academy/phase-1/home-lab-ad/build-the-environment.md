@@ -2343,7 +2343,7 @@ If you'd like to preview what the script will do before it changes anything, run
 ./Build-Environment.ps1 -WhatIf
 ```
 
-If the script won't run, don't worry. The Check the Build tab lists the usual causes and how to fix each one.
+If the script won't run, the Check the Build tab lists the usual causes and how to fix each one.
 
 On that same run, the Range download also plants the data for the ticket-queue challenges, so the missions work as soon as your lab reports in. It adds these objects:
 
