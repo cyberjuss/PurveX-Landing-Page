@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BadgeCheck,
-  BookMarked,
   CheckSquare,
   Clock,
   FileText,
@@ -21,7 +20,6 @@ import {
   Palette,
   PlayCircle,
   Route,
-  Search,
   Server,
   ShieldAlert,
   Ticket,
@@ -199,31 +197,6 @@ const LESSON: Tour = {
   ],
 };
 
-const REFERENCE: Tour = {
-  key: "purvex.tour.reference.v1",
-  when: (p) => p.startsWith("/range/reference"),
-  min: 2,
-  kicker: "Getting started",
-  title: "Cheat sheet",
-  tiles: [
-    {
-      icon: BookMarked,
-      title: "Five sections",
-      body: "Fundamentals, Networking, Investigation, Home Lab and Coach, each a short stack of cards.",
-    },
-    {
-      icon: Search,
-      title: "Search the lot",
-      body: "Searching matches the card titles and the terms behind them, so wireshark finds the filter card.",
-    },
-    {
-      icon: Flag,
-      title: "Built for during, not before",
-      body: "Open this while you work a ticket. It is a lookup, not another thing to read end to end.",
-    },
-  ],
-};
-
 const READINESS: Tour = {
   key: "purvex.tour.readiness.v1",
   when: (p) => p.startsWith("/range/readiness"),
@@ -301,7 +274,7 @@ const SHIFT: Tour = {
 
 // Most specific first. PORTAL is the fallback for any page in the portal
 // that has no card of its own, so it has to stay last.
-const TOURS: Tour[] = [HOME, DRILLS, REFERENCE, READINESS, PORTFOLIO, SHIFT, LESSON, PORTAL];
+const TOURS: Tour[] = [HOME, DRILLS, READINESS, PORTFOLIO, SHIFT, LESSON, PORTAL];
 
 // One welcome, not one per page. Once the portal has shown the tour the first
 // time, this flag stops any other tour from firing on a first visit to drills,

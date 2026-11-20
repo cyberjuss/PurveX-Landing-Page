@@ -25,6 +25,10 @@ const nextConfig: NextConfig = {
   // Serve the course under /range too, so links we hand out say range, not
   // academy. Real routes (e.g. /range/join) win over this; everything else
   // falls through to the same /academy page.
+  // The cheat sheet was retired. Old links land on the course home.
+  async redirects() {
+    return [{ source: "/:base(range|academy)/reference", destination: "/range", permanent: false }];
+  },
   async rewrites() {
     return [{ source: "/range/:path*", destination: "/academy/:path*" }];
   }
