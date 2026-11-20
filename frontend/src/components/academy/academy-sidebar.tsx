@@ -9,6 +9,10 @@ import { entriesOf } from "@/lib/academy-entries";
 import { slugify, useAcademyProgress } from "./academy-progress";
 import { isPhaseLocked } from "@/lib/academy-locks";
 
+// Heads the challenges that come from the Home Lab sittings, in the Challenges
+// list. Not "Home Lab", which already names the list of sittings themselves.
+const LAB_CHALLENGES_HEADING = "Directory & Help Desk";
+
 export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
   const pathname = usePathname();
   const { isComplete, isPhaseComplete, requirements, completedCount, totalCount } = useAcademyProgress();
@@ -153,7 +157,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         for (const lab of labs) {
           for (const s of lab.sections.filter((x) => x.label.startsWith("Challenge:"))) {
             const short = s.label.replace(/^Challenge:\s*/, "");
-            const label = weekGroupCount ? "Home Lab" : null;
+            const label = weekGroupCount ? LAB_CHALLENGES_HEADING : null;
             const item = { key: `${lab.slug}:${s.label}`, label: short, href: `/range/${phase.slug}/${lab.slug}#${slugify(short)}` };
             const existing = challengeGroups.slice(weekGroupCount).find((g) => g.label === label);
             if (existing) existing.items.push(item);
@@ -164,7 +168,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
           for (const s of challenges.sections) {
             // With the weeks listed above it, an ungrouped Home Lab entry needs
             // its own heading, or its rows read as part of the last week.
-            const label = s.group ?? (weekGroupCount ? "Home Lab" : null);
+            const label = s.group ?? (weekGroupCount ? LAB_CHALLENGES_HEADING : null);
             // phase-entry.tsx strips "Challenge: " before SectionTabs ever sees
             // the label, so the hash is the slug of the stripped form.
             const short = s.label.replace(/^Challenge:\s*/, "");
