@@ -74,6 +74,10 @@ export type Check =
   | { t: "listening"; port: number; want: boolean }
   /** A lab app's setting, in C:\PurveX\Apps, contains this text. Path is relative to C:\PurveX. */
   | { t: "config"; path: string; key: string; has: string }
+  /** Hosted pods: DC01 can open a TCP connection to this port on web01. */
+  | { t: "reachWeb01"; port: number }
+  /** Hosted pods: the name resolves, through DNS, only to web01. */
+  | { t: "resolvesToWeb01"; name: string }
   | { t: "gpoLink"; gpo: string; ous: string[]; want: boolean }
   | { t: "file"; path: string; want: boolean }
   /** The file is there and its size is one of these, such as a file restored from its approved copy. */
@@ -974,7 +978,7 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
     const pc = s.computers.find((x) => x.name.toLowerCase() === c.name.toLowerCase());
     return Boolean(pc) && pc!.enabled === c.enabled;
   }
-  if (c.t === "taskOff" || c.t === "listening" || c.t === "config") {
+  if (c.t === "taskOff" || c.t === "listening" || c.t === "config" || c.t === "reachWeb01" || c.t === "resolvesToWeb01") {
     const infra = s.infra;
     if (!infra) return false;
     // A lab still on a collector older than v3 does not report these yet. It
@@ -986,6 +990,11 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
       return !task || task.state.toLowerCase() === "disabled";
     }
     if (c.t === "listening") return (infra.listening ?? []).includes(c.port) === c.want;
+    if (c.t === "reachWeb01") return Boolean((infra.probes ?? []).find((p) => p.port === c.port)?.ok);
+    if (c.t === "resolvesToWeb01") {
+      const ips = (infra.resolved ?? []).find((r) => r.name.toLowerCase() === c.name.toLowerCase())?.ips ?? [];
+      return Boolean(infra.web01Ip) && ips.length > 0 && ips.every((x) => x === infra.web01Ip);
+    }
     const file = (infra.configs ?? []).find((x) => x.path.toLowerCase() === c.path.toLowerCase());
     const key = file && Object.keys(file.values).find((k) => k.toLowerCase() === c.key.toLowerCase());
     return Boolean(key) && file!.values[key!].toLowerCase().includes(c.has.toLowerCase());

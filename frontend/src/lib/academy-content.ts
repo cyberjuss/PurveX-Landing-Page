@@ -91,6 +91,9 @@ const phase1Weeks: WeekDef[] = [
       { label: "SSL/TLS", file: "phase-1/week-3/lesson-tls.md" },
       { label: "Tools You'll Use", file: "phase-1/week-3/lesson-tools.md" },
       { label: "Challenge: The Network Change That Went Wrong", file: "phase-1/week-3/challenge-network-change.md" },
+      // The same morning on a hosted pod, with the apps on web01. Only one of
+      // the two shows: section-tabs.tsx picks by whether the lab has web01.
+      { label: "Challenge: Monday After the Cutover", file: "phase-1/week-3/challenge-web01.md" },
       { label: "Resources", file: "phase-1/week-3/resources.md" },
     ],
   },

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { useRouter } from "next/navigation";
 import { Check, ChevronLeft, ChevronRight, Flag, Wrench } from "lucide-react";
 import { Markdown } from "@/lib/markdown";
-import { CHALLENGE_PATHS, HANDS_ON_CHALLENGES, MISSION_CATALOG, challengeAt } from "@/lib/academy-missions";
+import { CHALLENGE_PATHS, HANDS_ON_CHALLENGES, HOSTED_VERSIONS, MISSION_CATALOG, challengeAt } from "@/lib/academy-missions";
 import { QuizBlock } from "./quiz";
 import { MissionPager } from "./mission-pager";
 import { ResourcesView } from "./resources-view";
@@ -13,7 +13,7 @@ import { isDeckable } from "@/lib/lesson-deck";
 import { weekScenes } from "./slide-art";
 import { TrailDock, type TrailLink } from "./trail-dock";
 import { useCoach } from "./coach-context";
-import { HostedLabSetupNote } from "./hosted-lab-button";
+import { HostedLabSetupNote, useHostedLab } from "./hosted-lab-button";
 import { TopicVideo } from "./topic-video";
 
 // Clicking a sidebar link to a different tab on this same page (the
@@ -115,7 +115,22 @@ export function SectionTabs({
     ...sections.map((s): Item => ({ kind: "section", label: s.label, markdown: s.markdown })),
     ...(quiz ? [{ kind: "quiz", label: "Quiz" } as Item] : []),
   ];
-  const challengeItems: Item[] = (challenges ?? []).map((c) => ({ kind: "challenge", label: c.label, markdown: c.markdown }));
+  // A challenge with a hosted-lab version shows one of the two: the hosted one
+  // on a pod with web01, the self-built one everywhere else. The pair sits in
+  // one slot, so the tabs after it never shift when the lab status arrives.
+  const hostedLab = useHostedLab();
+  const web01 = Boolean(hostedLab.status?.available && hostedLab.status?.linux);
+  const challengeKey = (label: string) => challengeAt(`/range/${phaseSlug}/${entrySlug}`, slugify(label.replace(/^Challenge:\s*/, "")));
+  const hostedKeys = new Set(Object.values(HOSTED_VERSIONS));
+  const challengeItems: Item[] = (challenges ?? [])
+    .flatMap((c) => {
+      const key = challengeKey(c.label);
+      if (key && hostedKeys.has(key)) return [];
+      const altKey = key ? HOSTED_VERSIONS[key] : undefined;
+      const hosted = altKey ? (challenges ?? []).find((x) => challengeKey(x.label) === altKey) : undefined;
+      return [web01 && hosted ? hosted : c];
+    })
+    .map((c) => ({ kind: "challenge", label: c.label, markdown: c.markdown }));
   const troubleshootingItems: Item[] = (troubleshooting ?? []).map((t) => ({ kind: "troubleshooting", label: t.label, markdown: t.markdown }));
   const items = [...numberedItems, ...challengeItems, ...troubleshootingItems];
 

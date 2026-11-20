@@ -79,6 +79,12 @@ export type LabInfra = {
   listening?: number[];
   /** The lab apps' .ini settings under C:\PurveX\Apps, by path relative to C:\PurveX. */
   configs?: { path: string; values: Record<string, string> }[];
+  /** Hosted pods: web01's address, from DC01's own DNS zone. */
+  web01Ip?: string;
+  /** Hosted pods: TCP ports on web01 that DC01 could actually connect to. */
+  probes?: { port: number; ok: boolean }[];
+  /** Hosted pods: what these names resolve to through DNS, as a client sees it. */
+  resolved?: { name: string; ips: string[] }[];
   dns: { name: string; ip: string }[];
   /** The domain controller's own addresses. */
   dcIps: string[];
@@ -261,6 +267,13 @@ function sanitizeInfra(raw: unknown): LabInfra | undefined {
             .map((v) => num(v, 65535))
             .filter((v): v is number => typeof v === "number" && v > 0)
             .slice(0, 300),
+          ...(ip(r.web01Ip) ? { web01Ip: ip(r.web01Ip) } : {}),
+          probes: rows(r.probes, 20)
+            .map((x) => ({ port: num(x.port, 65535) ?? 0, ok: bool(x.ok) }))
+            .filter((x) => x.port > 0),
+          resolved: rows(r.resolved, 20)
+            .map((x) => ({ name: str(x.name, 100), ips: list(x.ips, 10).map(ip).filter(Boolean) }))
+            .filter((x) => x.name),
           configs: rows(r.configs, 20)
             .map((x) => {
               const raw = x.values && typeof x.values === "object" ? (x.values as Record<string, unknown>) : {};

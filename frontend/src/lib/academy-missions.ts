@@ -27,6 +27,7 @@ export type MissionCatalogEntry = {
     | "weekend-incident-report"
     | "tuesday-after-breach"
     | "network-change"
+    | "network-change-hosted"
     | "access-review";
   title: string;
   prompt: string;
@@ -831,6 +832,49 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Scan the backup agent's port with Nmap, confirm with netstat that nothing listens, find who stopped it in the Application log, and bring it back.",
     skill: "troubleshooting",
   },
+  // The same morning on a hosted pod, with the apps on web01 (challenge-web01.md).
+  "w3h-01": {
+    id: "w3h-01",
+    challenge: "network-change-hosted",
+    title: "The Portal Spins and Gives Up",
+    prompt: "Use ping, nslookup and tracert from DC01 to show the portal's DNS record points at a dead address, and point it at web01.",
+    skill: "troubleshooting",
+  },
+  "w3h-02": {
+    id: "w3h-02",
+    challenge: "network-change-hosted",
+    title: "\"Server Not Found\" on the Dashboard",
+    prompt: "Read the dashboard's exact name and the No such name answer, confirm with nslookup, and recreate its CNAME to web01.",
+    skill: "troubleshooting",
+  },
+  "w3h-03": {
+    id: "w3h-03",
+    challenge: "network-change-hosted",
+    title: "Timesheets: \"Connection Refused\"",
+    prompt: "Reproduce the refusal with curl from DC01, find the timesheet service's binding on web01 with ss and journalctl, and fix it.",
+    skill: "troubleshooting",
+  },
+  "w3h-04": {
+    id: "w3h-04",
+    challenge: "network-change-hosted",
+    title: "Expense Claims Time Out",
+    prompt: "Show with Nmap that web01's Expenses API port is filtered, find the drops in the ufw log, and fix the firewall rule the upgrade left behind.",
+    skill: "troubleshooting",
+  },
+  "w3h-06": {
+    id: "w3h-06",
+    challenge: "network-change-hosted",
+    title: "The Backup Agent Nobody Turned Back On",
+    prompt: "Scan web01's backup agent port with Nmap, check the service with systemctl, find who stopped it in the sudo log, and bring it back.",
+    skill: "troubleshooting",
+  },
+  "w3h-05": {
+    id: "w3h-05",
+    challenge: "network-change-hosted",
+    title: "A Password Crossing the Wire",
+    prompt: "Capture the settlement job's LDAP simple bind from web01 to DC01 in Wireshark, read its password, and disable the account.",
+    skill: "security",
+  },
   "w4-06": {
     id: "w4-06",
     challenge: "access-review",
@@ -902,6 +946,7 @@ export const CHALLENGE_PATHS: Record<
   "weekend-incident-report": { href: "/range/phase-1/week-1", tab: "the-weekend-incident-report" },
   "tuesday-after-breach": { href: "/range/phase-1/week-2", tab: "tuesday-after-the-breach" },
   "network-change": { href: "/range/phase-1/week-3", tab: "the-network-change-that-went-wrong" },
+  "network-change-hosted": { href: "/range/phase-1/week-3", tab: "monday-after-the-cutover" },
   "access-review": { href: "/range/phase-1/week-4", tab: "the-quarterly-access-review" },
 };
 
@@ -932,8 +977,19 @@ export const HANDS_ON_CHALLENGES: ReadonlySet<MissionCatalogEntry["challenge"]> 
   "weekend-incident-report",
   "tuesday-after-breach",
   "network-change",
+  "network-change-hosted",
   "access-review",
 ]);
+
+/**
+ * Challenges that are another version of one above, for a different kind of
+ * lab: the hosted pod's, with its apps on web01, against the self-built lab's,
+ * which has only DC01. A student sees one tab of the pair, and finishing
+ * either one counts as finishing the week's challenge.
+ */
+export const HOSTED_VERSIONS: Partial<Record<MissionCatalogEntry["challenge"], MissionCatalogEntry["challenge"]>> = {
+  "network-change": "network-change-hosted",
+};
 
 /** The challenge a page's "Challenge: ..." tab runs, from the page and the tab's slug. */
 export function challengeAt(href: string, tab: string): MissionCatalogEntry["challenge"] | null {
@@ -1002,6 +1058,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "weekend-incident-report": "The Weekend Incident Report",
   "tuesday-after-breach": "Tuesday After the Breach",
   "network-change": "The Network Change That Went Wrong",
+  "network-change-hosted": "Monday After the Cutover",
   "access-review": "The Quarterly Access Review",
 };
 
@@ -1046,6 +1103,7 @@ export const LAB_GATED_MISSIONS = [
   "w1-01", "w1-02", "w1-03",
   "w2-02", "w2-04",
   "w3-01", "w3-02", "w3-03", "w3-04", "w3-05", "w3-06",
+  "w3h-01", "w3h-02", "w3h-03", "w3h-04", "w3h-05", "w3h-06",
   "w4-01", "w4-03", "w4-04",
 ];
 

@@ -47,6 +47,14 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "w3-04": "troubleshooting",
   "w3-05": "security",
   "w3-06": "troubleshooting",
+  // Week 3 on a hosted pod: the same tickets on web01. Scored as their
+  // self-built twins (MISSION_ALTERNATES), never twice.
+  "w3h-01": "troubleshooting",
+  "w3h-02": "troubleshooting",
+  "w3h-03": "troubleshooting",
+  "w3h-04": "troubleshooting",
+  "w3h-05": "security",
+  "w3h-06": "troubleshooting",
   "w4-06": "logs",
   "w4-01": "access",
   "w4-02": "access",
@@ -321,8 +329,29 @@ export function missionPhase(id: string): string | undefined {
  * phase that is still coming soon. A student cannot do work that is locked,
  * so counting it would keep everyone short of 100 and of Ready.
  */
+/**
+ * Missions that are another lab's version of a scored mission: the hosted
+ * pod's Week 3 tickets, on web01, against the self-built lab's. A student can
+ * only reach one of each pair, so readiness counts the pair once, at the
+ * better of the two, and nobody's score is held down by missions their lab
+ * cannot run.
+ */
+export const MISSION_ALTERNATES: Record<string, string> = {
+  "w3h-01": "w3-01",
+  "w3h-02": "w3-02",
+  "w3h-03": "w3-03",
+  "w3h-04": "w3-04",
+  "w3h-05": "w3-05",
+  "w3h-06": "w3-06",
+};
+const ALTERNATES_OF: Record<string, string[]> = Object.entries(MISSION_ALTERNATES).reduce<Record<string, string[]>>((acc, [alt, main]) => {
+  (acc[main] ??= []).push(alt);
+  return acc;
+}, {});
+
 export const SCORED_SKILLS: Record<string, Skill> = Object.fromEntries(
   Object.entries({ ...MISSION_SKILLS, ...(LAB_SKILLS as Record<string, Skill>) }).filter(([id]) => {
+    if (id in MISSION_ALTERNATES) return false;
     const phase = missionPhase(id);
     return !phase || !isPhaseLocked(phase);
   })
@@ -448,6 +477,16 @@ export function scoreTone(score: number | null): "good" | "warn" | "bad" | "none
   return score >= SCORE_READY ? "good" : score >= SCORE_SOLID ? "warn" : "bad";
 }
 
+/** A mission's points, or its other lab version's when that scored better. */
+function bestOfAlternates(id: string, results: Results): number | null {
+  let best = itemPoints(id, results[id]);
+  for (const alt of ALTERNATES_OF[id] ?? []) {
+    const p = itemPoints(alt, results[alt]);
+    if (p !== null && (best === null || p > best)) best = p;
+  }
+  return best;
+}
+
 export function summarize(results: Results): Summary {
   const ids = Object.keys(SCORED_SKILLS);
   const total = ids.length;
@@ -460,7 +499,7 @@ export function summarize(results: Results): Summary {
   for (const id of ids) {
     const skill = SCORED_SKILLS[id];
     per[skill].total += 1;
-    const p = itemPoints(id, results[id]);
+    const p = bestOfAlternates(id, results);
     if (p !== null) {
       finished += 1;
       sum += p;

@@ -5,9 +5,10 @@ import { type PhaseDef, type WeekDef } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { findQuiz } from "@/content/academy/quizzes";
 import { academyFetch, useResults } from "@/lib/academy-client";
-import { CHALLENGE_PATHS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
+import { CHALLENGE_PATHS, HOSTED_VERSIONS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import type { Results } from "@/lib/academy-score";
 import { isPhaseLocked } from "@/lib/academy-locks";
+import { useHostedLab } from "./hosted-lab-button";
 
 const STORAGE_KEY = "academy-progress-v1";
 const QUIZ_PASS_KEY = "academy-quiz-pass-v1";
@@ -54,12 +55,27 @@ function challengeDone(key: ChallengeKey, results: Results) {
 const challengeMark = (key: ChallengeKey) => `challenge-done:${key}`;
 const phaseMark = (phaseSlug: string) => `phase-done:${phaseSlug}`;
 
-/** Each "Challenge: ..." tab of an entry, with the challenge it runs. */
-function entryChallenges(phaseSlug: string, entry: WeekDef): { label: string; key: ChallengeKey }[] {
-  return entry.sections
+/** Each "Challenge: ..." tab of an entry, with the challenge it runs. A
+ *  challenge and its hosted-lab version are one requirement: the student sees
+ *  one of the two tabs, and finishing either counts. */
+function entryChallenges(phaseSlug: string, entry: WeekDef): { label: string; key: ChallengeKey; alt?: ChallengeKey; altLabel?: string }[] {
+  const all = entry.sections
     .filter((s) => s.label.startsWith("Challenge:"))
     .map((s) => ({ label: s.label, key: challengeFor(phaseSlug, entry.slug, slugify(s.label.replace(/^Challenge:\s*/, ""))) }))
     .filter((c): c is { label: string; key: ChallengeKey } => c.key !== null);
+  const hostedOnes = new Set(Object.values(HOSTED_VERSIONS));
+  return all
+    .filter((c) => !hostedOnes.has(c.key))
+    .map((c) => {
+      const alt = HOSTED_VERSIONS[c.key];
+      const hosted = alt ? all.find((x) => x.key === alt) : undefined;
+      return hosted ? { ...c, alt: hosted.key, altLabel: hosted.label } : c;
+    });
+}
+
+/** Done in either version: the challenge itself, or its hosted-lab version. */
+function eitherDone(c: { key: ChallengeKey; alt?: ChallengeKey }, labsDone: Set<string>, results: Results) {
+  return [c.key, ...(c.alt ? [c.alt] : [])].some((k) => labsDone.has(challengeMark(k)) || challengeDone(k, results));
 }
 
 function entryKey(phaseSlug: string, entrySlug: string) {
@@ -114,6 +130,10 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
   const [loaded, setLoaded] = useState(false);
   const [serverSynced, setServerSynced] = useState(false);
   const results = useResults();
+  // A hosted pod with web01 sees the hosted version of a challenge, so its
+  // requirement is named after that tab.
+  const hostedLab = useHostedLab();
+  const web01 = Boolean(hostedLab.status?.available && hostedLab.status?.linux);
 
   useEffect(() => {
     try {
@@ -342,12 +362,12 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
         const key = entryKey(phase.slug, entry.slug);
         const list: Requirement[] = [];
         if (findQuiz(phase.slug, entry.slug)) list.push({ label: "Quiz", done: quizPasses.has(key) });
-        for (const c of entryChallenges(phase.slug, entry)) list.push({ label: c.label, done: labsDone.has(challengeMark(c.key)) || challengeDone(c.key, results) });
+        for (const c of entryChallenges(phase.slug, entry)) list.push({ label: web01 && c.altLabel ? c.altLabel : c.label, done: eitherDone(c, labsDone, results) });
         map.set(key, list);
       }
     }
     return map;
-  }, [phases, quizPasses, labsDone, results]);
+  }, [phases, quizPasses, labsDone, results, web01]);
 
   // A week marks itself complete once its quiz and challenges are all done.
   // Nothing is ever unmarked here, so earlier progress stays.
@@ -367,7 +387,7 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
       // A phase without challenges falls back to every published week being complete.
       const complete =
         challenges.length > 0
-          ? challenges.every((c) => labsDone.has(challengeMark(c.key)) || challengeDone(c.key, results))
+          ? challenges.every((c) => eitherDone(c, labsDone, results))
           : live.length > 0 && live.every((e) => completed.has(entryKey(phase.slug, e.slug)));
       if (complete || labsDone.has(phaseMark(phase.slug))) done.add(phase.slug);
     }
@@ -380,7 +400,9 @@ export function AcademyProgressProvider({ phases, children }: { phases: PhaseDef
     const marks: string[] = [];
     for (const phase of phases) {
       for (const c of entriesOf(phase).flatMap((e) => entryChallenges(phase.slug, e))) {
-        if (!labsDone.has(challengeMark(c.key)) && challengeDone(c.key, results)) marks.push(challengeMark(c.key));
+        for (const k of [c.key, ...(c.alt ? [c.alt] : [])]) {
+          if (!labsDone.has(challengeMark(k)) && challengeDone(k, results)) marks.push(challengeMark(k));
+        }
       }
       if (phaseDone.has(phase.slug) && !labsDone.has(phaseMark(phase.slug))) marks.push(phaseMark(phase.slug));
     }

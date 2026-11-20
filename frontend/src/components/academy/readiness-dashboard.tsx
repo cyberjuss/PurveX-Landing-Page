@@ -5,7 +5,8 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
-import { challengeHref, challengeTabHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
+import { CHALLENGE_LABELS, challengeHref, challengeTabHref, HOSTED_VERSIONS, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
+import { useHostedLab } from "@/components/academy/hosted-lab-button";
 import { isLockedHref } from "@/lib/academy-locks";
 import {
   clearResults,
@@ -43,6 +44,16 @@ const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb:
   { key: "open-door", label: "The Open Door", blurb: "A forgotten firewall rule, exploited and closed." },
   { key: "keys-to-the-domain", label: "The Keys to the Domain", blurb: "Kerberoasting and DCSync, the two techniques CISA names most." },
 ];
+
+/** The rows this student sees: a hosted pod with web01 sees a challenge's hosted-lab version in its place. */
+function useChallengeRows() {
+  const { status } = useHostedLab();
+  const web01 = Boolean(status?.available && status?.linux);
+  return CHALLENGES.map((ch) => {
+    const hosted = web01 ? HOSTED_VERSIONS[ch.key] : undefined;
+    return hosted ? { ...ch, key: hosted, label: CHALLENGE_LABELS[hosted] } : ch;
+  });
+}
 
 type Tone = "good" | "warn" | "bad" | "live" | "none";
 
@@ -141,9 +152,10 @@ function ticketOf(title: string) {
 }
 
 function MissionStrip({ results }: { results: Results }) {
+  const rows = useChallengeRows();
   return (
     <div className="rd-strip" aria-label="Mission results">
-      {CHALLENGES.map((ch) => (
+      {rows.map((ch) => (
         <div key={ch.key} className="rd-strip__group">
           {Object.values(MISSION_CATALOG)
             .filter((m) => m.challenge === ch.key)
@@ -163,6 +175,7 @@ function MissionStrip({ results }: { results: Results }) {
 
 export function ReadinessDashboard() {
   const results = useResults();
+  const rows = useChallengeRows();
   const { ask } = useCoach();
   const s = summarize(results);
   const lv = LEVELS[s.level];
@@ -312,7 +325,7 @@ export function ReadinessDashboard() {
           <h2>Mission log</h2>
           <p>Every attempt, as it will look to a hiring manager.</p>
         </div>
-        {CHALLENGES.map((ch) => {
+        {rows.map((ch) => {
           const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === ch.key);
           const done = list.filter((m) => missionPoints(results[m.id]) !== null).length;
           const locked = isLockedHref(challengeTabHref(ch.key));

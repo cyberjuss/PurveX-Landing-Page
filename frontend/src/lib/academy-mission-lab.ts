@@ -253,6 +253,18 @@ const MISSION_LAB = {
   "w3-06": G([{ c: { t: "listening", port: 9500, want: true }, label: "The backup agent listens on DC01's network address, port 9500" }], {
     tickets: ["INC-1092", "INC-1092-2"],
   }),
+  // Week 3 on a hosted pod (Monday After the Cutover): the same outages on
+  // web01, graded the way a ticket is closed, from the client's side. DC01,
+  // standing in for a staff PC, resolves the name and opens the connection
+  // itself (Build-Environment.ps1's probes), so a fix only counts once it
+  // works across the network. INC-1095 is DC01's half; Range plants web01's
+  // half on the same repair.
+  "w3h-01": G([{ c: { t: "resolvesToWeb01", name: "portal" }, label: "portal resolves to web01" }], { tickets: ["INC-1095"] }),
+  "w3h-02": G([{ c: { t: "resolvesToWeb01", name: "rptdash" }, label: "rptdash resolves to web01" }], { tickets: ["INC-1095"] }),
+  "w3h-03": G([{ c: { t: "reachWeb01", port: 8085 }, label: "DC01 can connect to the timesheet service on web01, port 8085" }], { tickets: ["INC-1095"] }),
+  "w3h-04": G([{ c: { t: "reachWeb01", port: 8090 }, label: "DC01 can connect to the Expenses API on web01, port 8090" }], { tickets: ["INC-1095"] }),
+  "w3h-06": G([{ c: { t: "reachWeb01", port: 9500 }, label: "DC01 can connect to the backup agent on web01, port 9500" }], { tickets: ["INC-1095"] }),
+  "w3h-05": G([{ c: { t: "enabled", sam: "svc-settlements", want: false }, label: "svc-settlements is disabled" }], { tickets: ["INC-1057"] }),
   // The report sync's password was read off the wire, so the account is burned
   // and the job that keeps sending it is stopped.
   "w3-05": G([
@@ -339,7 +351,9 @@ export function hasMissionObjects(id: string, s: LabSnapshot) {
  * Every ticket the build script marks as planted in C:\PurveX\tickets.txt.
  * A hosted lab missing any of them was built before that ticket shipped, and
  * gets a repair. check:range:challenges fails if this list and
- * Build-Environment.ps1 disagree. INC-1057 is planted on hosted labs only.
+ * Build-Environment.ps1 disagree. INC-1057 is planted on hosted labs only,
+ * and INC-1095 on hosted labs with web01 only: a lab without it just gets a
+ * throttled repair that finds nothing to plant.
  */
 export const PLANTED_TICKETS = [
   "DATA-SAMPLE",
@@ -367,8 +381,10 @@ export const PLANTED_TICKETS = [
   "INC-1090",
   "INC-1091",
   "INC-1092",
+  "INC-1092-2",
   "INC-1093",
   "INC-1094",
+  "INC-1095",
 ] as const;
 
 /** Which of these tickets the lab has not planted yet. */

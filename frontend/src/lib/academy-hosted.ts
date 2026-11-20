@@ -37,6 +37,7 @@ import {
 import { isRangePro } from "@/lib/range-plan";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { throttle } from "@/lib/auth-guard";
+import { web01Week3Commands } from "@/lib/academy-web01-week3";
 
 // Hosted labs: each student's own two-machine pod in AWS. A Windows domain
 // controller cloned from the image lab-environment/hosted builds, and an Ubuntu
@@ -621,6 +622,9 @@ export function linuxCloudInit(dcIp: string, password: string): string {
     "chmod +x /home/student/Desktop/firefox.desktop 2>/dev/null || true",
     "adduser xrdp ssl-cert || true",
     "systemctl enable --now xrdp",
+    // Week 3's hosted challenge: the apps the help desk tickets break. Last,
+    // so nginx and the desktop are already in place (academy-web01-week3.ts).
+    ...web01Week3Commands(),
     "echo first boot finished",
   ].join("\n");
 }
@@ -1659,6 +1663,10 @@ export async function repairHostedLab(userId: string): Promise<boolean> {
   if (!(await ssmOnline(id))) return false;
   lastRepairAt.set(userId, Date.now());
   const url = cfg().syncUrl;
+  // web01, when the pod has one: plant Week 3's hosted outages there too (a
+  // pod built before them never ran the plant at first boot), and hand its
+  // address to the DC repair so DC01's side of Week 3 can point at it.
+  const web01Ip = await repairWeb01(userId);
   const scriptUrl = `${url}/lab-scripts/Build-Environment.ps1`;
   // Download the current script, read this pod's key out of the linked copy so
   // pod-only tickets plant, and run the repair only if the download really is
@@ -1674,7 +1682,7 @@ export async function repairHostedLab(userId: string): Promise<boolean> {
     "$linked=Join-Path $env:ProgramData 'PurveX\\Build-Environment.ps1'",
     "$key=''",
     "if(Test-Path $linked){ $sel=Select-String -LiteralPath $linked -Pattern \"'(pvl_[A-Za-z0-9_-]+)'\" | Select-Object -First 1; if($sel){ $key=$sel.Matches[0].Groups[1].Value } }",
-    `if((Get-Content -LiteralPath $f -Raw).Contains('Ensure-PurvexTicketObjects')){ & $f -RepairOnly -PurvexKey $key -PurvexUrl '${url}' }`,
+    `if((Get-Content -LiteralPath $f -Raw).Contains('Ensure-PurvexTicketObjects')){ & $f -RepairOnly -PurvexKey $key -PurvexUrl '${url}'${web01Ip ? ` -PurvexWeb01Ip '${web01Ip}'` : ""} }`,
   ].join("; ");
   try {
     await ssm().send(
@@ -1691,6 +1699,33 @@ export async function repairHostedLab(userId: string): Promise<boolean> {
     console.error("repairHostedLab failed", err instanceof Error ? err.message : err);
     return false;
   }
+}
+
+/**
+ * Run the Week 3 web01 plant over SSM, if the pod has a running web01 whose
+ * agent is online, and return web01's private address (or null). The plant
+ * is idempotent, so sending it to a web01 that already has it changes nothing.
+ * The address is AWS's own answer, never anything the lab reported.
+ */
+async function repairWeb01(userId: string): Promise<string | null> {
+  const row = await loadHostedLab(userId);
+  if (!row?.linuxInstanceId) return null;
+  const linux = await describe(row.linuxInstanceId).catch(() => null);
+  if (linux?.state !== "running" || !linux.privateIp || !/^\d{1,3}(\.\d{1,3}){3}$/.test(linux.privateIp)) return null;
+  if (await ssmOnline(row.linuxInstanceId)) {
+    await ssm()
+      .send(
+        new SendCommandCommand({
+          InstanceIds: [row.linuxInstanceId],
+          DocumentName: "AWS-RunShellScript",
+          Comment: "Range Week 3 web01 plant",
+          TimeoutSeconds: 300,
+          Parameters: { commands: web01Week3Commands() },
+        })
+      )
+      .catch((err) => console.error("web01 Week 3 plant failed", err instanceof Error ? err.message : err));
+  }
+  return linux.privateIp;
 }
 
 // ---- lab script freshness --------------------------------------------------

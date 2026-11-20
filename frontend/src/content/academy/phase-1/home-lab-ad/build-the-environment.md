@@ -92,7 +92,10 @@ param(
     [switch]$InstallSync,
     [switch]$UninstallSync,
     [string]$PurvexKey = "",
-    [string]$PurvexUrl = ""
+    [string]$PurvexUrl = "",
+    # A hosted pod's Ubuntu server (web01). Range passes it on a repair, from
+    # AWS's own record of the pod, so Week 3's hosted tickets can point at it.
+    [string]$PurvexWeb01Ip = ""
 )
 
 # Which published copy this is. Bumped by the signing script, and inside the
@@ -1178,6 +1181,36 @@ function Get-PurvexInfra {
             ForEach-Object { [int]$_.LocalPort } | Sort-Object -Unique | Select-Object -First 300)
     }
     catch { $infra.listening = @() }
+    # Hosted pods: what DC01, standing in for a staff PC, can actually reach on
+    # web01. Real network tests, all started at once and given a second, so a
+    # snapshot never waits more than about that. Names are resolved the way a
+    # client would, through DNS, not from the zone's records.
+    $infra.probes = @()
+    $infra.resolved = @()
+    if (Test-PurvexHostedPod) {
+        try {
+            $web = @(Get-DnsServerResourceRecord -ZoneName $Domain.DNSRoot -Name "web01" -RRType A -ErrorAction Stop | ForEach-Object { "$($_.RecordData.IPv4Address)" })
+            if ($web.Count) {
+                $infra.web01Ip = $web[0]
+                $tries = @(foreach ($port in 80, 8085, 8090, 9500) {
+                    $c = New-Object Net.Sockets.TcpClient
+                    [pscustomobject]@{ port = $port; client = $c; task = $c.ConnectAsync($web[0], $port) }
+                })
+                try { [void][Threading.Tasks.Task]::WaitAll(@($tries | ForEach-Object { $_.task }), 1200) } catch {}
+                $infra.probes = @($tries | ForEach-Object {
+                    $ok = $_.task.IsCompleted -and -not $_.task.IsFaulted -and $_.client.Connected
+                    $_.client.Close()
+                    [ordered]@{ port = $_.port; ok = [bool]$ok }
+                })
+            }
+            foreach ($name in "portal", "rptdash") {
+                $ips = @(Resolve-DnsName -Name "$name.$($Domain.DNSRoot)" -Type A -DnsOnly -NoHostsFile -QuickTimeout -ErrorAction SilentlyContinue |
+                    Where-Object { $_.Type -eq "A" } | ForEach-Object { "$($_.IPAddress)" })
+                $infra.resolved += [ordered]@{ name = $name; ips = $ips }
+            }
+        }
+        catch {}
+    }
     $infra.configs = @(Get-PurvexAppConfigFiles | ForEach-Object {
         $values = [ordered]@{}
         foreach ($line in @(Get-Content -LiteralPath $_.FullName -TotalCount 50 -ErrorAction SilentlyContinue)) {
@@ -1275,6 +1308,7 @@ function Ensure-StarterTickets {
 #   INC-1091  Week 2, Tuesday After the Breach
 #   INC-1092  Week 3, The Network Change That Went Wrong
 #   INC-1092-2  Week 3, the help desk outages its tickets are worked from
+#   INC-1095  Week 3 on a hosted pod: the same outages, moved to web01
 #   INC-1093  Week 4, The Quarterly Access Review
 #   INC-1094  Home Lab, A New Hire's First Week
 function Ensure-PhaseOneChallengeTickets {
@@ -1583,6 +1617,104 @@ function Ensure-PhaseOneChallengeTickets {
             Write-Host "  Planted INC-1092-2: the Week 3 help desk outages" -ForegroundColor Green
         }
         catch { Write-Host "  Could not plant INC-1092-2: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1095: Week 3 on a hosted pod. The apps move to web01, where a firm
+    # would run them, and DC01 becomes the IT workstation the technician works
+    # from (web01's side is planted by Range: academy-web01-week3.ts). Only on
+    # a pod, and only once Range has told this script where web01 is.
+    #  - web01 gets an A record, so the clients and the probes find it by name.
+    #  - portal goes back to PORTAL01's dead address: the portal now lives on
+    #    web01, and that record is the ticket.
+    #  - rptdash, the dashboard's CNAME, is removed (CHG-3302).
+    #  - The DC-side copies of the apps (INC-1092-2) are retired, and the
+    #    clients standing in for staff PCs now call web01.
+    $web01Ok = $PurvexWeb01Ip -match '^\d{1,3}(\.\d{1,3}){3}$'
+    if ((Test-PurvexHostedPod) -and $web01Ok -and -not (Test-PurvexTicketMark "INC-1095") -and $PSCmdlet.ShouldProcess("DC01", "Plant the Week 3 hosted outages")) {
+        try {
+            $web = @(Get-DnsServerResourceRecord -ZoneName $zone -Name "web01" -RRType A -ErrorAction SilentlyContinue)
+            if (-not ($web | Where-Object { "$($_.RecordData.IPv4Address)" -eq $PurvexWeb01Ip })) {
+                $web | ForEach-Object { Remove-DnsServerResourceRecord -ZoneName $zone -InputObject $_ -Force -ErrorAction SilentlyContinue }
+                Add-DnsServerResourceRecordA -ZoneName $zone -Name "web01" -IPv4Address $PurvexWeb01Ip
+            }
+            foreach ($name in "portal", "rptdash") {
+                Get-DnsServerResourceRecord -ZoneName $zone -Name $name -ErrorAction SilentlyContinue |
+                    ForEach-Object { Remove-DnsServerResourceRecord -ZoneName $zone -InputObject $_ -Force -ErrorAction SilentlyContinue }
+            }
+            Add-DnsServerResourceRecordA -ZoneName $zone -Name "portal" -IPv4Address "10.255.255.10"
+
+            foreach ($old in "PurveX Intranet Portal", "PurveX Timesheet Service", "PurveX Expenses API", "PurveX Backup Agent") {
+                if (Get-ScheduledTask -TaskName $old -ErrorAction SilentlyContinue) {
+                    Stop-ScheduledTask -TaskName $old -ErrorAction SilentlyContinue
+                    Unregister-ScheduledTask -TaskName $old -Confirm:$false -ErrorAction SilentlyContinue
+                }
+            }
+            Get-CimInstance Win32_Process -Filter "Name = 'powershell.exe'" -ErrorAction SilentlyContinue |
+                Where-Object { $_.CommandLine -match 'portal-web\.ps1|timesheet-service\.ps1|expenses-api\.ps1|backup-agent\.ps1' } |
+                ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+            foreach ($rule in "PurveX Intranet Portal - HTTP", "PurveX Timesheet - HTTP", "PurveX Backup Agent - TCP") {
+                Remove-NetFirewallRule -DisplayName $rule -ErrorAction SilentlyContinue
+            }
+            Remove-Item -LiteralPath (Join-Path $PurvexLabRoot "Apps\Timesheet") -Recurse -Force -ErrorAction SilentlyContinue
+
+            $apps = Join-Path $PurvexLabRoot "Apps"
+            New-Item -ItemType Directory -Path (Join-Path $apps "Expenses") -Force | Out-Null
+            Set-Content -LiteralPath (Join-Path $apps "Expenses\expenses.ini") -Encoding ASCII -Value @(
+                "; PurveX Expense Sync settings.",
+                ("ApiUrl=http://web01." + $zone + ":8090/api/v2/expenses")
+            )
+            Set-Content -LiteralPath (Join-Path $jobs "dashboard-refresh.ps1") -Encoding ASCII -Value @(
+                'Clear-DnsClientCache',
+                ('try { Invoke-WebRequest -Uri "http://rptdash.' + $zone + '/" -UseBasicParsing -TimeoutSec 10 | Out-Null } catch {}')
+            )
+            Set-Content -LiteralPath (Join-Path $jobs "timesheet-client.ps1") -Encoding ASCII -Value @(
+                ('try { Invoke-WebRequest -Uri "http://web01.' + $zone + ':8085/submit" -Method Post -Body "week=46&amp;hours=37.5" -UseBasicParsing -TimeoutSec 10 | Out-Null } catch {}')
+            )
+            Set-Content -LiteralPath (Join-Path $jobs "expense-sync.ps1") -Encoding ASCII -Value @(
+                '$cfg = @{}; Get-Content "C:\PurveX\Apps\Expenses\expenses.ini" | ForEach-Object { if ($_ -match "^\s*(\w+)\s*=\s*(.*?)\s*$") { $cfg[$Matches[1]] = $Matches[2] } }',
+                'try { Invoke-WebRequest -Uri $cfg.ApiUrl -Method Post -Body "claim=EXP-2291&amp;amount=148.20" -UseBasicParsing -TimeoutSec 15 | Out-Null } catch {}'
+            )
+            $ps = "-NoProfile -ExecutionPolicy Bypass -File"
+            foreach ($t in @(
+                @{ Name = "PurveX Reports Dashboard Refresh"; File = "dashboard-refresh.ps1" },
+                @{ Name = "PurveX Timesheet Client"; File = "timesheet-client.ps1" },
+                @{ Name = "PurveX Expense Sync"; File = "expense-sync.ps1" }
+            )) {
+                if (-not (Get-ScheduledTask -TaskName $t.Name -ErrorAction SilentlyContinue)) {
+                    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "$ps $(Join-Path $jobs $t.File)"
+                    $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1)
+                    Register-ScheduledTask -TaskName $t.Name -Action $action -Trigger $trigger -User "SYSTEM" -RunLevel Highest -Force | Out-Null
+                }
+            }
+
+            New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Shares\IT") -Force | Out-Null
+            Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\Backup_Report_Mon.txt") -Encoding ASCII -Value @(
+                "PurveX Backup Server - nightly report, Monday 06:00",
+                "",
+                "Client   Agent port   Status        Last good backup",
+                "FS01     9500         OK            Monday 02:00",
+                "WEB01    9500         UNREACHABLE   before the weekend change",
+                "",
+                "WEB01: could not connect to the backup agent. Scheduled backups missed."
+            )
+            Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\Network_Change_Log_Nov.txt") -Encoding ASCII -Value @(
+                "PurveX Financial - network change log, weekend of Nov 8",
+                "Contractor: NetBridge Services       Approved by: Alex Rivera (IT)",
+                "",
+                "CHG-3301  Intranet portal moved off PORTAL01 onto WEB01, the application",
+                "          server. PORTAL01 powered off Saturday. DNS cut over.",
+                "CHG-3302  Removed the DNS records PORTAL01 no longer needs.",
+                "CHG-3303  Timesheet service upgraded to v3 on WEB01. Settings now live in",
+                "          /etc/purvex/timesheet.conf.",
+                "CHG-3304  Expenses API upgraded to v2 on WEB01. It now listens on 8090.",
+                "          Firewall updated.",
+                "",
+                "Status: cutover complete Sunday 22:40. Nothing outstanding."
+            )
+            Add-PurvexTicketMark "INC-1095"
+            Write-Host "  Planted INC-1095: the Week 3 outages on web01" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1095: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
 
     # INC-1093: a shared reception login with five failed guesses in the Security
