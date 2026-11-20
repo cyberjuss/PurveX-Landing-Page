@@ -33,7 +33,7 @@ import {
 const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb: string }[] = [
   { key: "weekend-incident-report", label: "The Weekend Incident Report", blurb: "Find and fix a confidentiality, integrity and availability failure." },
   { key: "tuesday-after-breach", label: "Tuesday After the Breach", blurb: "Decode, hash, crack and contain on a real IT desk morning." },
-  { key: "network-change", label: "The Network Change That Went Wrong", blurb: "Clean up after a contractor's weekend network change." },
+  { key: "network-change", label: "The Three-Minute Job", blurb: "Trace a cron job leaking a password, and shut it down the right way." },
   { key: "access-review", label: "The Quarterly Access Review", blurb: "Find and remove access that should not exist." },
   { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory." },
   { key: "ticket-queue", label: "Ticket Queue", blurb: "Help desk tickets you change in the directory." },

@@ -792,36 +792,36 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
   "w3-01": {
     id: "w3-01",
     challenge: "network-change",
-    title: "Fix the Portal's Address",
-    prompt: "Find why the intranet portal stopped resolving after the weekend change, point it at its new home, and report the address it was stuck on.",
+    title: "What's Calling Out Every Three Minutes",
+    prompt: "Find the cron job on web01 behind a recurring connection to the domain controller, and report the script it runs.",
     skill: "troubleshooting",
   },
   "w3-02": {
     id: "w3-02",
     challenge: "network-change",
-    title: "Scan What the Change Left Open",
-    prompt: "Scan the domain controller with Nmap and report the open port that doesn't belong on it.",
+    title: "Scan the Door It Knocks On",
+    prompt: "Scan the domain controller from web01 with Nmap and report which directory port, plain or encrypted, is actually open.",
     skill: "security",
   },
   "w3-03": {
     id: "w3-03",
     challenge: "network-change",
-    title: "Close the Vendor's Door",
-    prompt: "Close the vendor's Telnet rule and console, and name the change that opened them.",
+    title: "Capture the Bind",
+    prompt: "Capture the job's LDAP simple bind and read the password it signs in with.",
     skill: "security",
   },
   "w3-04": {
     id: "w3-04",
     challenge: "network-change",
-    title: "Why Is the DC Sending Mail?",
-    prompt: "Find the outbound rule that lets the domain controller send mail, switch it off, and name the protocol.",
+    title: "Take the Account Out of Service",
+    prompt: "Disable the exposed service account and the job behind it, and report the file it pulled off the share unencrypted.",
     skill: "security",
   },
   "w3-05": {
     id: "w3-05",
     challenge: "network-change",
-    title: "Read the Password Off the Wire",
-    prompt: "Capture the legacy report sync with Wireshark, read its password from the HTTP Basic sign-in, and disable the account.",
+    title: "Name the Fix",
+    prompt: "Name the encrypted protocol that should have carried the bind instead of plain LDAP.",
     skill: "security",
   },
   "w4-06": {
@@ -894,7 +894,7 @@ export const CHALLENGE_PATHS: Record<
   "new-hire-week": { href: "/range/phase-1/home-lab-desk", tab: "a-new-hire-s-first-week" },
   "weekend-incident-report": { href: "/range/phase-1/week-1", tab: "the-weekend-incident-report" },
   "tuesday-after-breach": { href: "/range/phase-1/week-2", tab: "tuesday-after-the-breach" },
-  "network-change": { href: "/range/phase-1/week-3", tab: "the-network-change-that-went-wrong" },
+  "network-change": { href: "/range/phase-1/week-3", tab: "the-three-minute-job" },
   "access-review": { href: "/range/phase-1/week-4", tab: "the-quarterly-access-review" },
 };
 
@@ -994,7 +994,7 @@ export const CHALLENGE_LABELS: Record<MissionCatalogEntry["challenge"], string> 
   "new-hire-week": "A New Hire's First Week",
   "weekend-incident-report": "The Weekend Incident Report",
   "tuesday-after-breach": "Tuesday After the Breach",
-  "network-change": "The Network Change That Went Wrong",
+  "network-change": "The Three-Minute Job",
   "access-review": "The Quarterly Access Review",
 };
 
@@ -1038,7 +1038,7 @@ export const LAB_GATED_MISSIONS = [
   "dk-02", "dk-04", "dk-05", "dk-06", "dk-07", "dk-10",
   "w1-01", "w1-02", "w1-03",
   "w2-02", "w2-04",
-  "w3-01", "w3-03", "w3-04", "w3-05",
+  "w3-04",
   "w4-01", "w4-03", "w4-04",
 ];
 

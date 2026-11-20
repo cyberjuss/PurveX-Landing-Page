@@ -23,7 +23,7 @@ const CHALLENGE_TITLES: Partial<Record<ChallengeKey, string>> = {
   "new-hire-week": "A New Hire's First Week",
   "weekend-incident-report": "The Weekend Incident Report",
   "tuesday-after-breach": "Tuesday After the Breach",
-  "network-change": "The Network Change That Went Wrong",
+  "network-change": "The Three-Minute Job",
   "access-review": "The Quarterly Access Review",
 };
 
