@@ -117,7 +117,7 @@ alter table public.academy_drill_daily enable row level security;
 alter table public.academy_drill_log add column if not exists level integer not null default 1;
 alter table public.academy_drill_log add column if not exists detail jsonb not null default '[]'::jsonb;
 alter table public.academy_drill_log drop constraint if exists academy_drill_log_mode_check;
-alter table public.academy_drill_log add constraint academy_drill_log_mode_check check (mode in ('daily', 'timed', 'ctf', 'coach'));
+alter table public.academy_drill_log add constraint academy_drill_log_mode_check check (mode in ('daily', 'timed', 'ctf', 'coach', 'shift'));
 
 alter table public.academy_drill_daily add column if not exists kind text not null default 'daily';
 alter table public.academy_drill_daily drop constraint if exists academy_drill_daily_pkey;
