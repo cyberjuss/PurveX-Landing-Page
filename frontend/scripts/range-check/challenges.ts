@@ -100,7 +100,7 @@ const UBUNTU_OK = new Set<string>([]);
 for (const t of chTabs) {
   const md = t.md ?? "";
   if (!/Ubuntu/.test(md) || UBUNTU_OK.has(t.file)) continue;
-  if (!/hosted lab required|needs the cloud lab|cloud lab required/i.test(md)) add("K. Ubuntu challenge with no hosted-lab note", `${href(t)} "${t.label}"`);
+  if (!/hosted lab required|need your hosted lab|needs the cloud lab|cloud lab required/i.test(md)) add("K. Ubuntu challenge with no hosted-lab note", `${href(t)} "${t.label}"`);
 }
 
 // L. HANDS_ON_CHALLENGES (academy-missions.ts) decides whether Record Your
