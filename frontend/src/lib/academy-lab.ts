@@ -70,13 +70,15 @@ export type LabEvents = {
 export type LabInfra = {
   /** Ticket ids the build planted, from C:\PurveX\tickets.txt. */
   planted: string[];
-  /** Which collector sent this. 3 added tasks, listening and remotePort; older reports leave them out. */
+  /** Which collector sent this. 3 added tasks, listening and configs; older reports leave them out. */
   version?: number;
-  firewall: { name: string; enabled: boolean; direction: string; action: string; localPort: string; remotePort?: string; remoteAddress: string }[];
+  firewall: { name: string; enabled: boolean; direction: string; action: string; localPort: string; remoteAddress: string }[];
   /** Scheduled tasks at the root of Task Scheduler, by name, with Ready, Running or Disabled. */
   tasks?: { name: string; state: string }[];
   /** TCP ports listening on an address the network can reach (not loopback). */
   listening?: number[];
+  /** The lab apps' .ini settings under C:\PurveX\Apps, by path relative to C:\PurveX. */
+  configs?: { path: string; values: Record<string, string> }[];
   dns: { name: string; ip: string }[];
   /** The domain controller's own addresses. */
   dcIps: string[];
@@ -239,15 +241,13 @@ function sanitizeInfra(raw: unknown): LabInfra | undefined {
   return {
     version,
     planted: list(r.planted, 50).map((s) => s.slice(0, 20)),
-    // Room for the lab's rules plus any outbound blocks a student adds.
-    firewall: rows(r.firewall, 100)
+    firewall: rows(r.firewall, 50)
       .map((x) => ({
         name: str(x.name, 120),
         enabled: bool(x.enabled),
         direction: str(x.direction, 20),
         action: str(x.action, 20),
         localPort: str(x.localPort, 60),
-        remotePort: str(x.remotePort, 60),
         remoteAddress: str(x.remoteAddress, 200),
       }))
       .filter((x) => x.name),
@@ -261,6 +261,14 @@ function sanitizeInfra(raw: unknown): LabInfra | undefined {
             .map((v) => num(v, 65535))
             .filter((v): v is number => typeof v === "number" && v > 0)
             .slice(0, 300),
+          configs: rows(r.configs, 20)
+            .map((x) => {
+              const raw = x.values && typeof x.values === "object" ? (x.values as Record<string, unknown>) : {};
+              const values: Record<string, string> = {};
+              for (const [k, v] of Object.entries(raw).slice(0, 50)) if (/^[A-Za-z0-9_]{1,60}$/.test(k)) values[k] = str(v, 300);
+              return { path: str(x.path, 260), values };
+            })
+            .filter((x) => x.path && !x.path.includes("..")),
         }
       : {}),
     dns: rows(r.dns, 100)

@@ -944,10 +944,7 @@ function Get-PurvexFirewallRules {
         $item = Get-Item -LiteralPath $PurvexFirewallKey -ErrorAction Stop
         foreach ($valueName in $item.GetValueNames()) {
             $data = [string]$item.GetValue($valueName)
-            # The lab's own rules, plus any outbound block, which is how a student
-            # closes an egress port (Week 3's SMTP ticket) with a rule of their own.
-            $outBlock = ($data -match '\|Dir=Out(\||$)') -and ($data -match '\|Action=Block(\||$)')
-            if ($data -notmatch $PurvexLabRuleMatch -and -not $outBlock) { continue }
+            if ($data -notmatch $PurvexLabRuleMatch) { continue }
             $f = @{}
             foreach ($pair in $data.Split('|')) {
                 $kv = $pair.Split('=', 2)
@@ -959,7 +956,6 @@ function Get-PurvexFirewallRules {
                 direction     = "$($f['Dir'])"
                 action        = "$($f['Action'])"
                 localPort     = "$($f['LPort'])"
-                remotePort    = "$($f['RPort'])"
                 remoteAddress = $(if ($f["RA4"]) { $f["RA4"] } else { "Any" })
             }
         }
@@ -975,7 +971,6 @@ function Get-PurvexFirewallRules {
                     direction     = "$($_.Direction)"
                     action        = "$($_.Action)"
                     localPort     = "$(($_ | Get-NetFirewallPortFilter).LocalPort -join ',')"
-                    remotePort    = "$(($_ | Get-NetFirewallPortFilter).RemotePort -join ',')"
                     remoteAddress = "$(($_ | Get-NetFirewallAddressFilter).RemoteAddress -join ',')"
                 }
             })
@@ -983,6 +978,13 @@ function Get-PurvexFirewallRules {
         catch {}
     }
     return $rules
+}
+
+# The .ini settings files of the lab's own apps, under C:\PurveX\Apps.
+function Get-PurvexAppConfigFiles {
+    $dir = Join-Path $PurvexLabRoot "Apps"
+    if (-not (Test-Path -LiteralPath $dir)) { return @() }
+    return @(Get-ChildItem -LiteralPath $dir -Recurse -File -Filter "*.ini" -Force -ErrorAction SilentlyContinue | Select-Object -First 20)
 }
 
 function Get-PurvexLabFiles {
@@ -1065,13 +1067,13 @@ function Get-PurvexInfraPrint {
         $item = Get-Item -LiteralPath $PurvexFirewallKey -ErrorAction Stop
         foreach ($valueName in $item.GetValueNames()) {
             $data = [string]$item.GetValue($valueName)
-            # Outbound blocks too, so a student's own egress rule reports as quickly as a lab rule.
-            $outBlock = ($data -match '\|Dir=Out(\||$)') -and ($data -match '\|Action=Block(\||$)')
-            if ($data -match $PurvexLabRuleMatch -or $outBlock) { $parts += "$valueName=$data" }
+            if ($data -match $PurvexLabRuleMatch) { $parts += "$valueName=$data" }
         }
     }
     catch {}
     $parts += @(Get-PurvexLabFiles | ForEach-Object { "$($_.FullName)|$($_.Length)" })
+    # App settings files, so an edited setting reports within a second.
+    $parts += @(Get-PurvexAppConfigFiles | ForEach-Object { "$($_.FullName)|$($_.Length)|$($_.LastWriteTimeUtc.Ticks)" })
     return (@($parts) | Sort-Object) -join "`n"
 }
 
@@ -1122,8 +1124,9 @@ function Get-PurvexInfra {
         $infra.dcIps = @($records | Where-Object { $_.HostName -eq "@" -or $_.HostName -eq $env:COMPUTERNAME } | ForEach-Object { "$($_.RecordData.IPv4Address)" } | Select-Object -Unique)
     }
     catch {}
-    # v3: what is running and what is listening, so a ticket can check that a
-    # program was stopped and a port really closed, not only that a rule was.
+    # v3: what is running, what is listening and how the lab's apps are set
+    # up, so a ticket can check that a service really came back on the right
+    # address or that an app points at the right place, not only a rule.
     try {
         $infra.tasks = @(Get-ScheduledTask -TaskPath "\" -ErrorAction Stop | Select-Object -First 100 | ForEach-Object {
             [ordered]@{ name = "$($_.TaskName)"; state = "$($_.State)" }
@@ -1137,6 +1140,13 @@ function Get-PurvexInfra {
             ForEach-Object { [int]$_.LocalPort } | Sort-Object -Unique | Select-Object -First 300)
     }
     catch { $infra.listening = @() }
+    $infra.configs = @(Get-PurvexAppConfigFiles | ForEach-Object {
+        $values = [ordered]@{}
+        foreach ($line in @(Get-Content -LiteralPath $_.FullName -TotalCount 50 -ErrorAction SilentlyContinue)) {
+            if ("$line" -match '^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$') { $values[$Matches[1]] = $Matches[2] }
+        }
+        [ordered]@{ path = $_.FullName.Substring($PurvexLabRoot.Length + 1); values = $values }
+    })
     $infra.gpos = @((Get-PurvexGpoNames -DomainDN $Domain.DistinguishedName).Values)
     $infra.gpoLinks = @($GpoLinks)
     $infra.files = @(Get-PurvexLabFiles | ForEach-Object {
@@ -1226,7 +1236,7 @@ function Ensure-StarterTickets {
 #   INC-1090  Week 1, The Weekend Incident Report
 #   INC-1091  Week 2, Tuesday After the Breach
 #   INC-1092  Week 3, The Network Change That Went Wrong
-#   INC-1092-2  Week 3, the evidence its tickets are worked from
+#   INC-1092-2  Week 3, the help desk outages its tickets are worked from
 #   INC-1093  Week 4, The Quarterly Access Review
 #   INC-1094  Home Lab, A New Hire's First Week
 function Ensure-PhaseOneChallengeTickets {
@@ -1310,7 +1320,7 @@ function Ensure-PhaseOneChallengeTickets {
     }
 
     # The contractor's change log for INC-1092. It says what was done, not what
-    # it broke: no addresses or ports, so every ticket is answered from the lab.
+    # it broke: no addresses, names or ports, so every ticket is found on the wire.
     $week3Log = @(
         "PurveX Financial - network change log, weekend of Nov 8",
         "Contractor: NetBridge Services       Approved by: Alex Rivera (IT)",
@@ -1318,37 +1328,27 @@ function Ensure-PhaseOneChallengeTickets {
         "CHG-3301  Intranet portal moved off PORTAL01. PORTAL01 powered off Saturday.",
         "          The portal is now served from DC01 until the new server arrives.",
         "          DNS cut over.",
-        "CHG-3302  Started the NetBridge switch console on DC01 and opened its port",
-        "          inbound so our engineers could reach it during the upgrade.",
-        "          Remove after cutover.",
-        "CHG-3303  Set up a scanner-to-email relay test on DC01 and added an outbound",
-        "          firewall rule for it. Remove after test.",
+        "CHG-3302  Removed the DNS records PORTAL01 no longer needs.",
+        "CHG-3303  Timesheet service upgraded to v3 on DC01. Its settings now live in",
+        "          C:\PurveX\Apps\Timesheet\timesheet.ini.",
+        "CHG-3304  Expenses API upgraded to v2 on DC01. v1 retired.",
+        "          Clients need no changes.",
         "",
-        "Status: cutover complete Sunday 22:40. Cleanup items not confirmed."
+        "Status: cutover complete Sunday 22:40. Nothing outstanding."
     )
 
-    # INC-1092: what a contractor's network change left behind. A stale DNS record,
-    # a console answering on port 23 with a rule letting it in, an outbound SMTP
-    # rule, and a report sync that posts its password with HTTP Basic auth to a
-    # local service every minute. HTTP rather than a directory sign-in, so the
+    # INC-1092: what a contractor's network change left behind. A stale DNS record
+    # and a report sync that posts its password with HTTP Basic auth to a local
+    # service every minute. (Builds before script v29 also planted a Telnet
+    # console and an outbound mail rule; INC-1092-2 removes them.) HTTP rather than a directory sign-in, so the
     # Security log stays clean for the sign-in challenges that read it.
     if (-not (Test-PurvexTicketMark "INC-1092") -and $PSCmdlet.ShouldProcess("DC01", "Plant the Week 3 network change")) {
         try {
             if (-not (Get-DnsServerResourceRecord -ZoneName $zone -Name "portal" -ErrorAction SilentlyContinue)) {
                 Add-DnsServerResourceRecordA -ZoneName $zone -Name "portal" -IPv4Address "10.255.255.10"
             }
-            if (-not (Get-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet" -ErrorAction SilentlyContinue)) {
-                New-NetFirewallRule -DisplayName "PurveX Legacy - Vendor Telnet" -Group "PurveX Lab" -Direction Inbound -Protocol TCP -LocalPort 23 -Action Allow | Out-Null
-            }
-            if (-not (Get-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail" -ErrorAction SilentlyContinue)) {
-                New-NetFirewallRule -DisplayName "PurveX Relay - Outbound Mail" -Group "PurveX Lab" -Direction Outbound -Protocol TCP -RemotePort 25 -Action Allow | Out-Null
-            }
-            Set-Content -LiteralPath (Join-Path $jobs "vendor-console.ps1") -Encoding ASCII -Value @(
-                '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Any, 23); $s.Start()',
-                'while ($true) { $c = $s.AcceptTcpClient(); $w = New-Object IO.StreamWriter($c.GetStream()); $w.AutoFlush = $true; $w.WriteLine("NetBridge switch console 2.1"); $w.Write("login: "); Start-Sleep 3; $c.Close() }'
-            )
-            # The reporting service only listens on loopback, so a scan of the DC's
-            # address never shows it and ticket 2 has one odd port, not two.
+            # The reporting service only listens on loopback: the job and the
+            # service share DC01, which is why ticket 5 captures on loopback.
             Set-Content -LiteralPath (Join-Path $jobs "report-service.ps1") -Encoding ASCII -Value @(
                 '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback, 8080); $s.Start()',
                 'while ($true) {',
@@ -1378,7 +1378,6 @@ function Ensure-PhaseOneChallengeTickets {
             )
             $ps = "-NoProfile -ExecutionPolicy Bypass -File"
             foreach ($t in @(
-                @{ Name = "NetBridge Vendor Console"; File = "vendor-console.ps1"; Trigger = (New-ScheduledTaskTrigger -AtStartup); Start = $true },
                 @{ Name = "PurveX Report Service"; File = "report-service.ps1"; Trigger = (New-ScheduledTaskTrigger -AtStartup); Start = $true },
                 @{ Name = "PurveX Legacy Report Sync"; File = "report-sync.ps1"; Trigger = (New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1)); Start = $false }
             )) {
@@ -1396,73 +1395,112 @@ function Ensure-PhaseOneChallengeTickets {
         catch { Write-Host "  Could not plant INC-1092: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
 
-    # INC-1092-2: the evidence the Week 3 tickets are worked from. Added after
-    # INC-1092 shipped, under its own mark, so labs that already have INC-1092
-    # get it too. Nothing here undoes a fix a student already made.
-    #  - A portal that really answers on DC01, so a fixed record can be tested.
-    #  - IT's approved-services list for DC01, so a scan is compared with
-    #    something written down rather than with a list in a hint.
-    #  - The change log without the answers in it.
-    #  - The relay test CHG-3303 left running. It dials 203.0.113.25, a
-    #    TEST-NET-3 address (RFC 5737) that no network routes, so no mail is
-    #    ever sent: the repeated SYNs are what the student captures. The
-    #    outbound Allow rule INC-1092 planted never mattered, because Windows
-    #    allows outbound traffic by default. Ticket 04 teaches exactly that.
-    if (-not (Test-PurvexTicketMark "INC-1092-2") -and $PSCmdlet.ShouldProcess("DC01", "Plant the Week 3 evidence")) {
+    # INC-1092-2: the help desk outages the Week 3 tickets are worked from. Added
+    # after INC-1092 shipped, under its own mark, so labs that already have
+    # INC-1092 get them too. Each one looks different on the wire:
+    #  - portal       DNS gives a dead address, so SYNs go unanswered (INC-1092's record)
+    #  - rptdash      DNS says no such name, so no connection is ever tried
+    #  - Timesheet    the service listens on 127.0.0.1 only, so DC01's address answers RST
+    #  - Expenses     TCP and HTTP work, but the client calls a retired API: 410 Gone
+    # The clients run every minute as scheduled tasks, standing in for the apps
+    # on staff PCs, so there is always fresh traffic to capture. Everything
+    # stays on DC01. Nothing is undone that a student already fixed: the plant
+    # runs once, before any of these tickets can be worked.
+    if (-not (Test-PurvexTicketMark "INC-1092-2") -and $PSCmdlet.ShouldProcess("DC01", "Plant the Week 3 outages")) {
         try {
+            # Retire the Telnet console and mail rule that builds before v29 planted.
+            foreach ($old in "NetBridge Vendor Console", "NetBridge Relay Test") {
+                if (Get-ScheduledTask -TaskName $old -ErrorAction SilentlyContinue) {
+                    Stop-ScheduledTask -TaskName $old -ErrorAction SilentlyContinue
+                    Unregister-ScheduledTask -TaskName $old -Confirm:$false -ErrorAction SilentlyContinue
+                }
+            }
+            Get-CimInstance Win32_Process -Filter "Name = 'powershell.exe'" -ErrorAction SilentlyContinue |
+                Where-Object { $_.CommandLine -match 'vendor-console\.ps1|relay-test\.ps1' } |
+                ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+            foreach ($rule in "PurveX Legacy - Vendor Telnet", "PurveX Relay - Outbound Mail") {
+                Remove-NetFirewallRule -DisplayName $rule -ErrorAction SilentlyContinue
+            }
+            Remove-Item -LiteralPath (Join-Path $jobs "vendor-console.ps1"), (Join-Path $jobs "relay-test.ps1") -Force -ErrorAction SilentlyContinue
+
             New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Shares\IT") -Force | Out-Null
             Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\Network_Change_Log_Nov.txt") -Encoding ASCII -Value $week3Log
-            Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\DC01_Approved_Services.txt") -Encoding ASCII -Value @(
-                "DC01 - approved services",
-                "Owner: Alex Rivera (IT). Last reviewed: Nov 1.",
-                "Anything listening on DC01 that is not on this list needs a change ticket.",
-                "",
-                "Inbound TCP   Service",
-                "53            DNS",
-                "80            HTTP - intranet portal (temporary, CHG-3301)",
-                "88            Kerberos",
-                "135           RPC endpoint mapper",
-                "139           NetBIOS session",
-                "389           LDAP",
-                "445           SMB file sharing",
-                "464           Kerberos password change",
-                "593           RPC over HTTP",
-                "636           LDAP over TLS",
-                "3268, 3269    Global Catalog",
-                "3389          Remote Desktop (IT only)",
-                "5357          Web Services for Devices (Windows built-in)",
-                "5985, 47001   WinRM / PowerShell remoting",
-                "9389          Active Directory Web Services",
-                "49152-65535   RPC dynamic ports (Windows built-in)",
-                "",
-                "Outbound",
-                "DC01 reaches the internet for Windows Update only.",
-                "DC01 never sends email. Mail goes through the mail server."
+
+            # CHG-3302 took out rptdash, the Reports Dashboard's name.
+            Get-DnsServerResourceRecord -ZoneName $zone -Name "rptdash" -ErrorAction SilentlyContinue |
+                ForEach-Object { Remove-DnsServerResourceRecord -ZoneName $zone -InputObject $_ -Force -ErrorAction SilentlyContinue }
+
+            $apps = Join-Path $PurvexLabRoot "Apps"
+            New-Item -ItemType Directory -Path (Join-Path $apps "Timesheet"), (Join-Path $apps "Expenses") -Force | Out-Null
+            Set-Content -LiteralPath (Join-Path $apps "Timesheet\timesheet.ini") -Encoding ASCII -Value @(
+                "; PurveX Timesheet service v3 settings (CHG-3303).",
+                "; Restart the PurveX Timesheet Service task after changing this file.",
+                "ListenAddress=127.0.0.1",
+                "Port=8085"
             )
-            if (-not (Get-NetFirewallRule -DisplayName "PurveX Intranet Portal - HTTP" -ErrorAction SilentlyContinue)) {
-                New-NetFirewallRule -DisplayName "PurveX Intranet Portal - HTTP" -Group "PurveX Lab" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow | Out-Null
+            Set-Content -LiteralPath (Join-Path $apps "Expenses\expenses.ini") -Encoding ASCII -Value @(
+                "; PurveX Expense Sync settings.",
+                "ApiUrl=http://127.0.0.1:8090/api/v1/expenses"
+            )
+            foreach ($rule in @(
+                @{ Name = "PurveX Intranet Portal - HTTP"; Port = 80 },
+                @{ Name = "PurveX Timesheet - HTTP"; Port = 8085 }
+            )) {
+                if (-not (Get-NetFirewallRule -DisplayName $rule.Name -ErrorAction SilentlyContinue)) {
+                    New-NetFirewallRule -DisplayName $rule.Name -Group "PurveX Lab" -Direction Inbound -Protocol TCP -LocalPort $rule.Port -Action Allow | Out-Null
+                }
             }
-            Set-Content -LiteralPath (Join-Path $jobs "portal-web.ps1") -Encoding ASCII -Value @(
-                '$page = "<html><head><title>PurveX Intranet</title></head><body><h1>PurveX Financial Intranet</h1><p>Served from DC01 (CHG-3301).</p></body></html>"',
-                '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Any, 80); $s.Start()',
-                'while ($true) {',
-                '  $c = $s.AcceptTcpClient()',
+
+            # A small HTTP responder the services share. $route turns a request
+            # line into a status and a body.
+            $serve = @(
+                'function Send-Http($c, $route) {',
                 '  try {',
-                '    $st = $c.GetStream(); $st.ReadTimeout = 5000; $r = New-Object IO.StreamReader($st)',
-                '    while ($null -ne ($line = $r.ReadLine()) -and $line -ne "") { }',
-                '    $w = New-Object IO.StreamWriter($st); $w.Write("HTTP/1.1 200 OK`r`nContent-Type: text/html`r`nContent-Length: $($page.Length)`r`nConnection: close`r`n`r`n$page"); $w.Flush()',
+                '    $st = $c.GetStream(); $st.ReadTimeout = 5000; $r = New-Object IO.StreamReader($st); $first = $r.ReadLine(); $len = 0',
+                '    while ($null -ne ($line = $r.ReadLine()) -and $line -ne "") { if ($line -match "^Content-Length:\s*(\d+)") { $len = [int]$Matches[1] } }',
+                '    if ($len -gt 0) { $buf = New-Object char[] $len; [void]$r.Read($buf, 0, $len) }',
+                '    $status, $body = & $route "$first"',
+                '    $w = New-Object IO.StreamWriter($st); $w.Write("HTTP/1.1 $status`r`nContent-Type: text/plain`r`nContent-Length: $($body.Length)`r`nConnection: close`r`n`r`n$body"); $w.Flush()',
                 '  } catch {} finally { $c.Close() }',
                 '}'
             )
-            Set-Content -LiteralPath (Join-Path $jobs "relay-test.ps1") -Encoding ASCII -Value @(
-                '# NetBridge relay test (CHG-3303): checks DC01 can reach the mail relay on TCP 25.',
-                '$c = New-Object Net.Sockets.TcpClient',
-                'try { [void]$c.ConnectAsync("203.0.113.25", 25).Wait(15000) } catch {} finally { $c.Close() }'
+            Set-Content -LiteralPath (Join-Path $jobs "portal-web.ps1") -Encoding ASCII -Value ($serve + @(
+                '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Any, 80); $s.Start()',
+                'while ($true) { Send-Http ($s.AcceptTcpClient()) { "200 OK", "PurveX Financial Intranet. Served from DC01 (CHG-3301)." } }'
+            ))
+            Set-Content -LiteralPath (Join-Path $jobs "timesheet-service.ps1") -Encoding ASCII -Value ($serve + @(
+                '$cfg = @{}; Get-Content "C:\PurveX\Apps\Timesheet\timesheet.ini" | ForEach-Object { if ($_ -match "^\s*(\w+)\s*=\s*(.*?)\s*$") { $cfg[$Matches[1]] = $Matches[2] } }',
+                '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Parse($cfg.ListenAddress), [int]$cfg.Port); $s.Start()',
+                'while ($true) { Send-Http ($s.AcceptTcpClient()) { "200 OK", "Timesheet saved." } }'
+            ))
+            Set-Content -LiteralPath (Join-Path $jobs "expenses-api.ps1") -Encoding ASCII -Value ($serve + @(
+                '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback, 8090); $s.Start()',
+                'while ($true) { Send-Http ($s.AcceptTcpClient()) { param($req) if ($req -match "^\S+ /api/v2/expenses") { "200 OK", "Expense received." } else { "410 Gone", "Expenses API v1 was retired on Nov 8 (CHG-3304). Use /api/v2/expenses." } } }'
+            ))
+            # The clients: the dashboard tile, the timesheet app on staff PCs, and
+            # the expense sync. The dashboard clears the DNS cache first, so every
+            # run really asks, and a fixed record shows within a minute.
+            Set-Content -LiteralPath (Join-Path $jobs "dashboard-refresh.ps1") -Encoding ASCII -Value @(
+                'Clear-DnsClientCache',
+                ('try { Invoke-WebRequest -Uri "http://rptdash.' + $zone + '/" -UseBasicParsing -TimeoutSec 10 | Out-Null } catch {}')
+            )
+            Set-Content -LiteralPath (Join-Path $jobs "timesheet-client.ps1") -Encoding ASCII -Value @(
+                '$ip = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -notlike "127.*" -and $_.IPAddress -notlike "169.254.*" } | Select-Object -First 1).IPAddress',
+                'try { Invoke-WebRequest -Uri "http://$($ip):8085/submit" -Method Post -Body "week=46&hours=37.5" -UseBasicParsing -TimeoutSec 10 | Out-Null } catch {}'
+            )
+            Set-Content -LiteralPath (Join-Path $jobs "expense-sync.ps1") -Encoding ASCII -Value @(
+                '$cfg = @{}; Get-Content "C:\PurveX\Apps\Expenses\expenses.ini" | ForEach-Object { if ($_ -match "^\s*(\w+)\s*=\s*(.*?)\s*$") { $cfg[$Matches[1]] = $Matches[2] } }',
+                'try { Invoke-WebRequest -Uri $cfg.ApiUrl -Method Post -Body "claim=EXP-2291&amount=148.20" -UseBasicParsing -TimeoutSec 10 | Out-Null } catch {}'
             )
             $ps = "-NoProfile -ExecutionPolicy Bypass -File"
+            $everyMinute = { New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1) }
             foreach ($t in @(
                 @{ Name = "PurveX Intranet Portal"; File = "portal-web.ps1"; Trigger = (New-ScheduledTaskTrigger -AtStartup); Start = $true },
-                @{ Name = "NetBridge Relay Test"; File = "relay-test.ps1"; Trigger = (New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1)); Start = $false }
+                @{ Name = "PurveX Timesheet Service"; File = "timesheet-service.ps1"; Trigger = (New-ScheduledTaskTrigger -AtStartup); Start = $true },
+                @{ Name = "PurveX Expenses API"; File = "expenses-api.ps1"; Trigger = (New-ScheduledTaskTrigger -AtStartup); Start = $true },
+                @{ Name = "PurveX Reports Dashboard Refresh"; File = "dashboard-refresh.ps1"; Trigger = (& $everyMinute); Start = $false },
+                @{ Name = "PurveX Timesheet Client"; File = "timesheet-client.ps1"; Trigger = (& $everyMinute); Start = $false },
+                @{ Name = "PurveX Expense Sync"; File = "expense-sync.ps1"; Trigger = (& $everyMinute); Start = $false }
             )) {
                 if (-not (Get-ScheduledTask -TaskName $t.Name -ErrorAction SilentlyContinue)) {
                     $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "$ps $(Join-Path $jobs $t.File)"
@@ -1471,7 +1509,7 @@ function Ensure-PhaseOneChallengeTickets {
                 }
             }
             Add-PurvexTicketMark "INC-1092-2"
-            Write-Host "  Planted INC-1092-2: the Week 3 evidence" -ForegroundColor Green
+            Write-Host "  Planted INC-1092-2: the Week 3 help desk outages" -ForegroundColor Green
         }
         catch { Write-Host "  Could not plant INC-1092-2: $($_.Exception.Message)" -ForegroundColor Yellow }
     }

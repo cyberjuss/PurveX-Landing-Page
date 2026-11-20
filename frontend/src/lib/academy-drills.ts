@@ -70,10 +70,10 @@ export type Check =
   | { t: "fwRuleOff"; name: string }
   /** A scheduled task is disabled or gone, so the program it ran no longer starts. */
   | { t: "taskOff"; name: string }
-  /** Nothing listens on this TCP port on an address the network can reach. */
-  | { t: "notListening"; port: number }
-  /** An enabled outbound Block rule covers this remote TCP port. */
-  | { t: "fwBlocksOut"; port: number }
+  /** Something listens (want true) or nothing listens (want false) on this TCP port, on an address the network can reach. */
+  | { t: "listening"; port: number; want: boolean }
+  /** A lab app's setting, in C:\PurveX\Apps, contains this text. Path is relative to C:\PurveX. */
+  | { t: "config"; path: string; key: string; has: string }
   | { t: "gpoLink"; gpo: string; ous: string[]; want: boolean }
   | { t: "file"; path: string; want: boolean }
   /** The file is there and its size is one of these, such as a file restored from its approved copy. */
@@ -969,22 +969,12 @@ export function jobLine(entries: DrillEntry[], results?: Results, snapshot?: Lab
 // The tasks come from a real audit of the student's own lab (see academy-audit.ts).
 // Checking a fix is a plain comparison against their next snapshot.
 
-/** Whether a firewall port field such as "25", "25,587" or "20-30" includes this port. */
-function portCovers(field: string, port: number): boolean {
-  return field.split(",").some((part) => {
-    const p = part.trim();
-    const range = p.match(/^(\d+)-(\d+)$/);
-    if (range) return Number(range[1]) <= port && port <= Number(range[2]);
-    return Number(p) === port;
-  });
-}
-
 export function evalCheck(s: LabSnapshot, c: Check): boolean {
   if (c.t === "computer") {
     const pc = s.computers.find((x) => x.name.toLowerCase() === c.name.toLowerCase());
     return Boolean(pc) && pc!.enabled === c.enabled;
   }
-  if (c.t === "taskOff" || c.t === "notListening" || c.t === "fwBlocksOut") {
+  if (c.t === "taskOff" || c.t === "listening" || c.t === "config") {
     const infra = s.infra;
     if (!infra) return false;
     // A lab still on a collector older than v3 does not report these yet. It
@@ -995,10 +985,10 @@ export function evalCheck(s: LabSnapshot, c: Check): boolean {
       const task = (infra.tasks ?? []).find((x) => x.name.toLowerCase() === c.name.toLowerCase());
       return !task || task.state.toLowerCase() === "disabled";
     }
-    if (c.t === "notListening") return !(infra.listening ?? []).includes(c.port);
-    return infra.firewall.some(
-      (r) => r.enabled && r.direction.toLowerCase().startsWith("out") && r.action.toLowerCase() === "block" && portCovers(r.remotePort ?? "", c.port)
-    );
+    if (c.t === "listening") return (infra.listening ?? []).includes(c.port) === c.want;
+    const file = (infra.configs ?? []).find((x) => x.path.toLowerCase() === c.path.toLowerCase());
+    const key = file && Object.keys(file.values).find((k) => k.toLowerCase() === c.key.toLowerCase());
+    return Boolean(key) && file!.values[key!].toLowerCase().includes(c.has.toLowerCase());
   }
   if (c.t === "dnsToDc" || c.t === "fwRuleOff" || c.t === "gpoLink" || c.t === "file" || c.t === "fileSize") {
     // Lives outside Active Directory. A lab script older than these tickets sends no infra.

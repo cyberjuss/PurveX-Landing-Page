@@ -235,29 +235,21 @@ const MISSION_LAB = {
     { c: { t: "file", path: "Shares\\Finance\\Wire_Approvals_Nov.sha256", want: true }, label: "The weekend's incidents are in this lab" },
     { c: { t: "fwRuleOff", name: "PurveX Maint - Block File Sharing" }, label: "The maintenance block rule is disabled or removed" },
   ], { tickets: ["INC-1090"] }),
-  // Week 3: The Network Change That Went Wrong. The build plants the stale DNS
-  // record, both leftover rules, the report sync and the change log (INC-1092).
-  // The log proves the plant landed, since a rule never made would read as off.
-  // Week 3: The Network Change That Went Wrong. INC-1092 is the change itself;
-  // INC-1092-2 is the evidence the tickets are worked from (a portal that
-  // answers, IT's approved-services list, the relay test), planted on labs
-  // that already had INC-1092. Closing a port means the program is stopped and
-  // nothing listens, not only that a rule was switched off: a scan from the
-  // DC itself skips the DC's own firewall, so the rule alone never changes it.
+  // Week 3: The Network Change That Went Wrong, four help desk outages and a
+  // stretch. INC-1092 is the change and the report sync; INC-1092-2 plants the
+  // outages (the dashboard name, the timesheet service, the expenses API) on
+  // labs that already had INC-1092. Every check reads the fix, not the finding:
+  // the finding is in the student's capture.
   "w3-01": G([{ c: { t: "dnsToDc", name: "portal" }, label: "portal resolves to the domain controller" }], { tickets: ["INC-1092", "INC-1092-2"] }),
-  "w3-03": G([
-    { c: { t: "taskOff", name: "NetBridge Vendor Console" }, label: "The NetBridge Vendor Console task is disabled" },
-    { c: { t: "notListening", port: 23 }, label: "Nothing is listening on port 23" },
-    { c: { t: "fwRuleOff", name: "PurveX Legacy - Vendor Telnet" }, label: "The vendor Telnet rule is disabled or removed" },
-  ], { tickets: ["INC-1092", "INC-1092-2"] }),
-  // Windows allows outbound traffic by default, so the contractor's Allow rule
-  // never mattered. Stopping the test stops this sender; a Block rule stops
-  // the next one, which is the control the approved-services list asks for.
-  "w3-04": G([
-    { c: { t: "taskOff", name: "NetBridge Relay Test" }, label: "The NetBridge Relay Test task is disabled" },
-    { c: { t: "fwBlocksOut", port: 25 }, label: "An outbound rule blocks TCP 25 from DC01" },
-    { c: { t: "fwRuleOff", name: "PurveX Relay - Outbound Mail" }, label: "The contractor's outbound mail rule is disabled or removed" },
-  ], { tickets: ["INC-1092", "INC-1092-2"] }),
+  "w3-02": G([{ c: { t: "dnsToDc", name: "rptdash" }, label: "rptdash resolves to the domain controller" }], { tickets: ["INC-1092", "INC-1092-2"] }),
+  // Listening on DC01's own address, not just loopback: listening leaves loopback out.
+  "w3-03": G([{ c: { t: "listening", port: 8085, want: true }, label: "The timesheet service listens on DC01's network address, port 8085" }], {
+    tickets: ["INC-1092", "INC-1092-2"],
+  }),
+  "w3-04": G(
+    [{ c: { t: "config", path: "Apps\\Expenses\\expenses.ini", key: "ApiUrl", has: "/api/v2/expenses" }, label: "Expense Sync calls /api/v2/expenses" }],
+    { tickets: ["INC-1092", "INC-1092-2"] }
+  ),
   // The report sync's password was read off the wire, so the account is burned
   // and the job that keeps sending it is stopped.
   "w3-05": G([
