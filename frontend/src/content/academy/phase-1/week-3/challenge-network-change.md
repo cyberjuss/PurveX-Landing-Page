@@ -256,7 +256,7 @@
 <li>Find out what happened to it. Open Event Viewer with <code>eventvwr.msc</code>, go to Windows Logs, then Application, and look for events from the backup agent.</li>
 </ol>
 <p><strong>Fix it:</strong> the agent runs as the <strong>PurveX Backup Agent</strong> task. Enable it and start it.</p>
-<p><strong>Prove it:</strong> netstat shows the port LISTENING, and the same nmap scan shows it <strong>open</strong>, with the agent's own name in the VERSION column.</p>
+<p><strong>Prove it:</strong> netstat shows the port LISTENING, and the same nmap scan shows it <strong>open</strong>. Nmap does not recognise the agent, so its SERVICE column only guesses from the port number, but the fingerprint it prints under the results contains the agent's own greeting, <strong>PurveX Backup Agent</strong>.</p>
 <p><strong>Fixed when:</strong> the backup agent is listening on its port on DC01's network address.</p>
 <p><strong>Report:</strong> the account that stopped the agent, without the domain.</p>
 <div class="ad-guess">

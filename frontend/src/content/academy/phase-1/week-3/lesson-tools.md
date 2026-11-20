@@ -13,7 +13,7 @@ Each of these answers one question, and together they take you outward one layer
 | `tracert -d <address>` | How far does traffic get on the way there? | Each line is one router. Lines of `*` mean no reply from that hop |
 | `netstat -ano` | What is listening on this machine, and on which address? | Local Address and State. `0.0.0.0` means every address, `127.0.0.1` means this machine only. The last column is the process ID |
 | `curl.exe -i <URL>` | What does a web service actually reply? | The status line at the top, then the body. Type `curl.exe`, since `curl` in Windows PowerShell is a different command |
-| `nmap -sV -p <port> <address>` | Is this port open, closed or filtered, and what answers it? | STATE and VERSION |
+| `nmap -sV -p <port> <address>` | Is this port open, closed or filtered, and what answers it? | STATE, then SERVICE and VERSION. For a service Nmap does not recognise, SERVICE is only a guess from the port number, and what the service sent appears in a fingerprint printed under the results |
 | `Test-NetConnection <name> -Port <port>` | Can I open a TCP connection to that port? | RemoteAddress and TcpTestSucceeded |
 
 On Linux and macOS you will meet the same jobs under other names: `dig` for nslookup, `traceroute` for tracert, `ss` for netstat, and `ip addr` for ipconfig.
@@ -75,7 +75,7 @@ Not every problem is a wrong setting. When a user says "it's slow" or "it stoppe
 
 | Where to look | What it tells you |
 | :---- | :---- |
-| `netstat -e` or `Get-NetAdapterStatistics` | Bytes sent and received, plus errors and discards. Errors that keep climbing point at a bad cable, port or driver rather than a setting |
+| `netstat -e`, or `Get-NetAdapterStatistics \| Format-List *` | Bytes sent and received, plus errors and discards. Without `Format-List *`, Get-NetAdapterStatistics shows only bytes and packets. Errors that keep climbing point at a bad cable, port or driver rather than a setting |
 | Resource Monitor (`resmon`), Network tab | Which process is using the bandwidth right now, and to which address |
 | Event Viewer (`eventvwr.msc`), Windows Logs, Application and System | Services starting, stopping and failing, with the time and often the account |
 | Windows Firewall log, `%SystemRoot%\System32\LogFiles\Firewall\pfirewall.log` | Connections the firewall dropped or allowed, once logging is turned on in the firewall profile's properties |
