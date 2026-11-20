@@ -252,6 +252,10 @@ const CHUNK_CHARS = 200;
 export function chunkParagraph(raw: string): string[] {
   const text = raw.trim();
   if (text.length <= CHUNK_CHARS * 1.2) return [text];
+  // A paragraph holding HTML, such as an inline <svg> diagram, is never cut.
+  // A full stop inside an attribute looked like a sentence end, so the tag was
+  // split in two and the drawing showed as raw markup.
+  if (/<[a-z][\w-]*[\s>]/i.test(text)) return [text];
   const codes: string[] = [];
   const safe = text.replace(/`[^`]*`/g, (m) => `\u0000${codes.push(m) - 1}\u0000`);
   const sentences: string[] = [];
