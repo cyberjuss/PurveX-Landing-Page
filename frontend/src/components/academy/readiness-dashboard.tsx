@@ -7,6 +7,7 @@ import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
 import { challengeHref, challengeTabHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import { isLockedHref } from "@/lib/academy-locks";
+import { badgeInitials, currentRank, rankIndex, RANKS, skillBadges, TIER_LABEL } from "@/lib/academy-badges";
 import {
   clearResults,
   LAB_CATALOG,
@@ -161,6 +162,54 @@ function MissionStrip({ results }: { results: Results }) {
   );
 }
 
+function RankAndBadges({ results }: { results: Results }) {
+  const held = rankIndex(results);
+  const rank = currentRank(results);
+  const badges = skillBadges(results);
+  const earned = badges.filter((b) => b.tier).length;
+  return (
+    <section className="rd-sec" id="rank">
+      <div className="rd-sec__head">
+        <span className="rd-sec__n">01</span>
+        <h2>Rank and badges</h2>
+        <p>Your title on the job ladder, and the skills your work has proved.</p>
+      </div>
+      <div className="rb-rank">
+        <div className="rb-rank__now">
+          <span className="rd-kicker">Current rank</span>
+          <strong>{rank ? rank.title : "Not ranked yet"}</strong>
+          <span>{RANKS[held]?.soon ? "The next rank opens with the next phase." : RANKS[held] ? `Next: ${RANKS[held].title}. ${RANKS[held].earn}` : "You hold the top rank open today."}</span>
+        </div>
+        <ol className="rb-ladder" aria-label="Rank ladder">
+          {RANKS.map((r, i) => (
+            <li key={r.id} className={i < held ? "is-held" : r.soon ? "is-soon" : ""} aria-current={i === held - 1 ? "step" : undefined}>
+              <i aria-hidden />
+              <span>{r.title}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <p className="rb-count">
+        {earned} of {badges.length} skill badges earned
+      </p>
+      <ul className="rb-grid">
+        {badges.map((b) => (
+          <li key={b.skill} className={`rb-badge${b.tier ? ` is-${b.tier}` : ""}`}>
+            <span className="rb-badge__seal" aria-hidden>
+              {badgeInitials(b.title)}
+            </span>
+            <span className="rb-badge__body">
+              <strong>{b.title}</strong>
+              <em>{b.tier ? TIER_LABEL[b.tier] : "Not earned yet"}</em>
+              {b.next && <small>{b.next}</small>}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function ReadinessDashboard() {
   const results = useResults();
   const { ask } = useCoach();
@@ -245,10 +294,13 @@ export function ReadinessDashboard() {
         </div>
       </header>
 
+      {/* Rank and skill badges */}
+      <RankAndBadges results={results} />
+
       {/* Competencies */}
       <section className="rd-sec">
         <div className="rd-sec__head">
-          <span className="rd-sec__n">01</span>
+          <span className="rd-sec__n">02</span>
           <h2>Competencies</h2>
           <p>Measured against the bar for a Tier 1 hire.</p>
         </div>
@@ -308,7 +360,7 @@ export function ReadinessDashboard() {
       {/* Mission log */}
       <section className="rd-sec">
         <div className="rd-sec__head">
-          <span className="rd-sec__n">02</span>
+          <span className="rd-sec__n">03</span>
           <h2>Mission log</h2>
           <p>Every attempt, as it will look to a hiring manager.</p>
         </div>

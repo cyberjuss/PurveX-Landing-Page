@@ -6,7 +6,8 @@ import Link from "next/link";
 import { ArrowRight, Check, ClipboardList, Flame, RefreshCw, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { useHostedLab } from "@/components/academy/hosted-lab-button";
-import { academyFetch, localDay } from "@/lib/academy-client";
+import { academyFetch, localDay, READINESS_PATH, useResults } from "@/lib/academy-client";
+import { currentRank } from "@/lib/academy-badges";
 import { askForProofShot } from "@/lib/academy-proof";
 import { SKILLS, type Skill } from "@/lib/academy-score";
 import { useMounted } from "@/lib/use-mounted";
@@ -466,6 +467,7 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
 
 export function DrillRunner() {
   const { ask } = useCoach();
+  const rank = currentRank(useResults());
   // The lab's own state as well as whether they have one. A stopped lab is
   // never going to send anything, so "waiting for your lab" is a lie told to
   // somebody who only needs to be handed the start button.
@@ -973,8 +975,13 @@ export function DrillRunner() {
                 </i>
               ))}
             </span>
-            <span className="dr-level">
-              Level {status.level.n} · {status.level.name}
+            {rank && (
+              <Link href={`${READINESS_PATH}#rank`} className="dr-level dr-rank" title="Your rank and skill badges">
+                {rank.title}
+              </Link>
+            )}
+            <span className="dr-difficulty" title="How hard today's cases are, from how your recent answers went">
+              Cases · {status.level.name}
             </span>
           </div>
 
