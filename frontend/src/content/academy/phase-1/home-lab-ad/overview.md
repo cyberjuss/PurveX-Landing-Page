@@ -31,6 +31,15 @@ A job title doesn't set access. Group membership follows what the job needs, and
 
 ### Start With the Baseline
 
-The next four tabs lay out the firm for you: the org chart, the access levels, the data and the full user directory. It's worth learning them before you build the lab, because every check you make later is measured against them.
+The next four tabs lay out the firm for you:
+
+<ul>
+<li>The org chart</li>
+<li>The access levels</li>
+<li>The data</li>
+<li>The full user directory</li>
+</ul>
+
+Learn them before you build the lab, because every check you make later is measured against them.
 
 ***Domain: purvexfinancial.local***

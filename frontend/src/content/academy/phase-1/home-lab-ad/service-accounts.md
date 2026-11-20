@@ -15,7 +15,15 @@ You met service accounts briefly on the Accounts tab. A **service account** give
 
 ### Onboarding by Mirroring Group Membership
 
-Group membership also gives you a quick way to set up new staff, because the fastest way to onboard someone into an existing role is to copy a peer's groups. If PurveX hires a second Help Desk Technician, for example, you'd open Priya's **Member Of** tab, note every group, and add the same ones to the new hire. Keep both windows side by side so you don't miss one.
+Group membership also gives you a quick way to set up new staff, because the fastest way to onboard someone into an existing role is to copy a peer's groups. If PurveX hires a second Help Desk Technician, for example:
+
+<ul>
+<li>Open Priya's <strong>Member Of</strong> tab</li>
+<li>Note every group</li>
+<li>Add the same ones to the new hire</li>
+</ul>
+
+Keep both windows side by side so you don't miss one.
 
 One caution, though: mirroring also copies any access the peer shouldn't have, so check the peer's groups against The Environment tab before you copy anything. That same side-by-side comparison helps during an investigation, too, since an account with more groups than its peers and no record to explain them is worth asking about.
 

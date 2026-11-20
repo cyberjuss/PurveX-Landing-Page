@@ -77,7 +77,14 @@ On the help desk, you'll reset passwords regularly. When you do:
 - Never ask for or learn a user's password. Set a temporary one and tick **User must change password at next logon**.
 - A locked account whose password is still right only needs unlocking. Find out why it locked first.
 
-Current NIST guidance asks for at least 15 characters when the password is the only factor, with no forced symbol rules and no scheduled changes. Instead, passwords should change after a compromise, and known-breached passwords should be blocked.
+Current NIST guidance asks for:
+
+<ul>
+<li>At least 15 characters when the password is the only factor</li>
+<li>No forced symbol rules</li>
+<li>No scheduled changes. Passwords change after a compromise instead</li>
+<li>Known-breached passwords blocked</li>
+</ul>
 
 ### What password attacks look like in the logs
 

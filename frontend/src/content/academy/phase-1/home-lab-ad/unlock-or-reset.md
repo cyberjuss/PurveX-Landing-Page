@@ -32,9 +32,20 @@ Sometimes you'll get both at once, when a forgotten password also locked the acc
 </div>
 </div>
 
-To see how that plays out, say Riley Kwan in Operations calls in, locked out after too many failed attempts. The one question that decides the fix is whether they still remember their password. If they do, unlock the account. If they don't, reset it and force a change at next logon, because a temporary password should never become a long-term one.
+To see how that plays out, say Riley Kwan in Operations calls in, locked out after too many failed attempts. The one question that decides the fix is whether they still remember their password:
 
-Whichever it turns out to be, check the Account tab before you change anything. If **Account is disabled** is ticked, neither an unlock nor a reset will restore sign-in, because a disabled account needs a different fix. And once you've made your change, reopen the tab and confirm it took.
+<ul>
+<li><strong>They do:</strong> unlock the account</li>
+<li><strong>They don't:</strong> reset it and force a change at next logon, because a temporary password should never become a long-term one</li>
+</ul>
+
+Whichever it turns out to be:
+
+<ul>
+<li>Check the Account tab before you change anything</li>
+<li>If <strong>Account is disabled</strong> is ticked, neither an unlock nor a reset will restore sign-in, because a disabled account needs a different fix</li>
+<li>Once you've made your change, reopen the tab and confirm it took</li>
+</ul>
 
 <style>
 .ad-decision { margin: 1.25rem 0; }

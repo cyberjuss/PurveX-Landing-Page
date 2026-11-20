@@ -12,7 +12,12 @@ The friendly tabs you've used so far only show part of the picture, because Acti
 - `pwdLastSet`
 - `memberOf`
 
-With these, you can replace a hunch with a real time or a real list of groups. One caution about those times. With more than one domain controller, `lastLogon` is kept separately on each one, while `lastLogonTimestamp` is shared between them but can lag by up to 14 days.
+With these, you can replace a hunch with a real time or a real list of groups. One caution about those times, once there is more than one domain controller:
+
+<ul>
+<li><code>lastLogon</code> is kept separately on each domain controller</li>
+<li><code>lastLogonTimestamp</code> is shared between them, but can lag by up to 14 days</li>
+</ul>
 
 Source: [Microsoft Learn: Last-Logon-Timestamp attribute](https://learn.microsoft.com/en-us/windows/win32/adschema/a-lastlogontimestamp)
 

@@ -75,7 +75,13 @@ $ openssl enc -d -aes-256-cbc -pbkdf2 -a -in memo.enc -pass pass:Tide-Lamp-42
 Fee schedule v3 is approved.
 ```
 
-You can watch that unforgiving key behavior for yourself. The first command encrypts the memo, the second uses a key that's one character off and fails, and the third uses the right key and returns the memo exactly.
+You can watch that unforgiving key behavior for yourself:
+
+<ul>
+<li>The first command encrypts the memo</li>
+<li>The second uses a key that is one character off, and fails</li>
+<li>The third uses the right key and returns the memo exactly</li>
+</ul>
 
 ### What encryption does not cover
 
@@ -118,6 +124,14 @@ Here's one to think through before the challenge. A caller says they're Morgan L
 <details class="lk-answer">
 <summary>Compare your answer</summary>
 
-You don't send it. Verify the caller with a callback to the number on file, match the Key ID on their screen to the stored recovery key, and read the digits out only over that verified call. A recovery key never goes to a personal email address. Notice the pressure in the request, too: travel, urgency and a new channel are exactly how attackers talk their way past disk encryption, so document the call and escalate if they push back.
+You don't send it. Instead:
+
+<ul>
+<li>Verify the caller with a callback to the number on file</li>
+<li>Match the Key ID on their screen to the stored recovery key</li>
+<li>Read the digits out only over that verified call</li>
+</ul>
+
+A recovery key never goes to a personal email address. Notice the pressure in the request, too: travel, urgency and a new channel are exactly how attackers talk their way past disk encryption, so document the call and escalate if they push back.
 
 </details>

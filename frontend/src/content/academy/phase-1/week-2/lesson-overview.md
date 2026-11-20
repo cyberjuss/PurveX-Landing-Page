@@ -5,7 +5,15 @@
 
 ### Overview
 
-A lot of the data you'll handle on the desk arrives looking unreadable, whether it's a string in a config file, a column of leaked passwords or a long value printed next to a download link. The natural instinct is to call all of it "encrypted" and move on. That instinct causes real damage, because there are three different ways to scramble data, and each one offers a very different guarantee.
+A lot of the data you'll handle on the desk arrives looking unreadable:
+
+<ul>
+<li>A string in a config file</li>
+<li>A column of leaked passwords</li>
+<li>A long value printed next to a download link</li>
+</ul>
+
+The natural instinct is to call all of it "encrypted" and move on. That instinct causes real damage, because there are three different ways to scramble data, and each one offers a very different guarantee.
 
 - **Encryption** keeps data private, reversible only by whoever holds the key.
 - **Hashing** proves data was not changed, and cannot be reversed by anybody at all.

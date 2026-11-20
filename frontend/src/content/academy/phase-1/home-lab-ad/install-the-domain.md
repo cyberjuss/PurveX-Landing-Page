@@ -9,7 +9,14 @@ As you saw on the last tab, the departments and accounts have nowhere to live un
 
 **Before you run it.** Open an elevated PowerShell window (Run as administrator) on a fresh Windows Server that isn't a domain controller yet.
 
-When it runs, the script asks you to type one password twice. That's the DSRM recovery password, which is only used for Directory Services Restore Mode and never by a user. It needs at least 8 characters, using three of these: lowercase letters, uppercase letters, numbers and symbols.
+When it runs, the script asks you to type one password twice. That's the DSRM recovery password, which is only used for Directory Services Restore Mode and never by a user. It needs at least 8 characters, using three of these:
+
+<ul>
+<li>Lowercase letters</li>
+<li>Uppercase letters</li>
+<li>Numbers</li>
+<li>Symbols</li>
+</ul>
 
 **What you should see at the end.** The server reboots on its own. When it comes back, sign in as `PURVEXFINANCIAL\Administrator` and go to the Build the Environment tab, where the download is linked to your Range account.
 

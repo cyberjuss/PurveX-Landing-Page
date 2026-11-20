@@ -18,7 +18,12 @@ Jordan's question matters because the answer changes what happens next. If the v
 | **Encryption** | Random characters that grow with the input | Only with the key |
 | **Hash** | Always the same length: SHA-256 is 64 characters | Never |
 
-Using that table, you can see that Jordan's line is Base64, because the letters, the digits and the trailing `=` are its signature. CyberChef's **From Base64** turns it into `Harbor2026` in a single click, with no key involved at all. So the answer to Jordan is no, it was never encrypted. The password should be treated as exposed and changed, and the script should be fixed so the next person doesn't inherit the same assumption.
+Using that table, you can see that Jordan's line is Base64, because the letters, the digits and the trailing `=` are its signature. CyberChef's **From Base64** turns it into `Harbor2026` in a single click, with no key involved at all. So the answer to Jordan is no, it was never encrypted. Two things follow:
+
+<ul>
+<li>Treat the password as exposed and change it</li>
+<li>Fix the script so the next person doesn't inherit the same assumption</li>
+</ul>
 
 ### Decode Base64 without CyberChef
 
@@ -52,6 +57,12 @@ Here's a situation to think through before moving on. A log shows `powershell.ex
 <details class="lk-answer">
 <summary>Compare your answer</summary>
 
-It isn't hidden at all, because Base64 is encoding, and anyone can reverse it. Decode it first, with From Base64 and then Decode text set to UTF-16LE, so you can read exactly what it runs before you judge it. Then look at who ran it and whether anything like it is normal for that laptop. If the decoded command downloads something or connects out, that's when you escalate and isolate the machine.
+It isn't hidden at all, because Base64 is encoding, and anyone can reverse it. Work it in this order:
+
+<ul>
+<li>Decode it with From Base64, then Decode text set to UTF-16LE, so you can read exactly what it runs</li>
+<li>Look at who ran it, and whether anything like it is normal for that laptop</li>
+<li>If the decoded command downloads something or connects out, escalate and isolate the machine</li>
+</ul>
 
 </details>

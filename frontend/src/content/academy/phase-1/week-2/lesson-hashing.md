@@ -90,6 +90,11 @@ Here's one to think through. The vendor emails you a new installer and puts the 
 <details class="lk-answer">
 <summary>Compare your answer</summary>
 
-No. The hash arrived through the same channel as the file, so anyone who could swap the installer could swap the hash in that email too. A match only proves the two came from the same place. Get the reference hash from the vendor's own website, or confirm it with them another way, and check the file's digital signature as well.
+No. The hash arrived through the same channel as the file, so anyone who could swap the installer could swap the hash in that email too. A match only proves the two came from the same place. Instead:
+
+<ul>
+<li>Get the reference hash from the vendor's own website, or confirm it with them another way</li>
+<li>Check the file's digital signature as well</li>
+</ul>
 
 </details>

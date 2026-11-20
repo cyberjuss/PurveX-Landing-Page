@@ -5,7 +5,15 @@
 
 ### User Accounts
 
-A **user account** represents a person in the directory, and `jordan.ellis` is how you'd find Jordan Ellis. It's the object you'll open on most tickets: its folder tells you where the person lives, and its Member Of tab tells you what they can reach. Their title, on the other hand, is just a field on the account. So when a ticket names a person, check the folder and Member Of against The Environment tab rather than trusting the title.
+A **user account** represents a person in the directory, and `jordan.ellis` is how you'd find Jordan Ellis. It's the object you'll open on most tickets:
+
+<ul>
+<li><strong>Its folder</strong> tells you where the person lives</li>
+<li><strong>Its Member Of tab</strong> tells you what they can reach</li>
+<li><strong>Its title</strong> is just a field, and tells you nothing about access</li>
+</ul>
+
+So when a ticket names a person, check the folder and Member Of against The Environment tab rather than trusting the title.
 
 ### Computer Objects
 

@@ -56,7 +56,16 @@ A password or MFA reset is an authentication decision, not an administrative cho
 3. **Do not skip steps** for urgency or seniority. Pressure is the most common social engineering move.
 4. **Document** the caller, the verification method and the change.
 
-When a user reports MFA prompts they didn't trigger, someone already has their password and is waiting at the door for approval, so the second factor is the only thing still holding. Tell them to deny every prompt, then reset the password and end their active sessions before you escalate. That last step matters, because a reset on its own leaves any session the attacker already opened untouched.
+When a user reports MFA prompts they didn't trigger, someone already has their password and is waiting at the door for approval, so the second factor is the only thing still holding. In this order:
+
+<ul>
+<li>Tell them to deny every prompt</li>
+<li>Reset the password</li>
+<li>End their active sessions</li>
+<li>Escalate</li>
+</ul>
+
+Ending the sessions matters, because a reset on its own leaves any session the attacker already opened untouched.
 
 ### Escalate
 
@@ -93,7 +102,13 @@ All of these sign-ins leave a record you can read. Event **4624** is a successfu
 | 3 | Over the network, such as a file share |
 | 10 | Remote Desktop |
 
-Its partner, event **4625**, is a failed sign-in. Two fields tell you why it failed: **Status** and **Sub Status**. For a bad password or a bad username, Status reads `0xC000006D`, a general "sign-in failed", so look at Sub Status for the reason. A Sub Status of `0xC000006A` means a wrong password for a real account. `0xC0000064` means an account name that doesn't exist, which is a sign that someone is guessing usernames. A locked account shows `0xC0000234`.
+Its partner, event **4625**, is a failed sign-in. Two fields tell you why it failed: **Status** and **Sub Status**. For a bad password or a bad username, Status reads `0xC000006D`, a general "sign-in failed", so look at Sub Status for the reason:
+
+<ul>
+<li><code>0xC000006A</code> (Sub Status): a wrong password for a real account</li>
+<li><code>0xC0000064</code> (Sub Status): an account name that doesn't exist, a sign that someone is guessing usernames</li>
+<li><code>0xC0000234</code> (Status): the account is locked out</li>
+</ul>
 
 ### Check yourself
 

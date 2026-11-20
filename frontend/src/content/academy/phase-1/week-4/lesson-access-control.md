@@ -75,6 +75,14 @@ Here's one to think through before the challenge. A developer tells you the admi
 <details class="lk-answer">
 <summary>Compare your answer</summary>
 
-Ask whether the server checks the user's role when the admin page is requested directly, not just whether the menu hides the link. To prove it, on a test system you're authorized to test, sign in as an ordinary user and type the admin address straight into the browser. The server should refuse with a 403. If the page loads, hiding the link was the only thing protecting it.
+Ask whether the server checks the user's role when the admin page is requested directly, not just whether the menu hides the link. To prove it, on a test system you're authorized to test:
+
+<ul>
+<li>Sign in as an ordinary user</li>
+<li>Type the admin address straight into the browser</li>
+<li>Expect the server to refuse with a 403</li>
+</ul>
+
+If the page loads, hiding the link was the only thing protecting it.
 
 </details>

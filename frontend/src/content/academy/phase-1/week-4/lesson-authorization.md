@@ -105,6 +105,14 @@ Here's one to think through. `svc-backup-job` appears in a 4624 event with logon
 <details class="lk-answer">
 <summary>Compare your answer</summary>
 
-It tells you someone is using the service account's credentials interactively, which is either misuse or a compromise, because the job itself never needs a desktop. Check where the sign-in came from, what groups the account holds, and whether its password changed recently. Then escalate, because an attacker sitting in a service account often has far more access than a person would.
+It tells you someone is using the service account's credentials interactively, which is either misuse or a compromise, because the job itself never needs a desktop. Check:
+
+<ul>
+<li>Where the sign-in came from</li>
+<li>What groups the account holds</li>
+<li>Whether its password changed recently</li>
+</ul>
+
+Then escalate, because an attacker sitting in a service account often has far more access than a person would.
 
 </details>

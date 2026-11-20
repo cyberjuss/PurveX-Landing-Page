@@ -25,7 +25,15 @@ A payment page that won't load loses money for every minute it stays down, and a
 - **Redundancy** keeps a second path open when the first one fails.
 - **Patching** closes the defects that could otherwise be used to knock a service over.
 
-You need all three because a service can go down for more than one reason: hardware fails, a change goes wrong, or someone attacks it on purpose. That last case has a name you'll hear often. A **distributed denial of service** (DDoS) attack floods a service with more requests than it can answer, until real users can't get through. Nothing is stolen and nothing is changed, which makes it a useful reminder that an incident doesn't have to involve data leaving the building.
+You need all three because a service can go down for more than one reason:
+
+<ul>
+<li>Hardware fails</li>
+<li>A change goes wrong</li>
+<li>Someone attacks it on purpose</li>
+</ul>
+
+That last case has a name you'll hear often. A **distributed denial of service** (DDoS) attack floods a service with more requests than it can answer, until real users can't get through. Nothing is stolen and nothing is changed, which makes it a useful reminder that an incident doesn't have to involve data leaving the building.
 
 ```match
 prompt: Which availability control would get PurveX working again?
