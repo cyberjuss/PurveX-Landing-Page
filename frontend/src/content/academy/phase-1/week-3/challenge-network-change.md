@@ -38,7 +38,8 @@
 <li>Confirm it: <code>Test-NetConnection portal -Port 80</code> reports <strong>TcpTestSucceeded : False</strong>. In Wireshark on Ethernet, the SYNs to that address go out again and again with nothing coming back.</li>
 </ol>
 <p><strong>Fix it:</strong> CHG-3301 says where the portal lives now. Point the <code>portal</code> record there.</p>
-<p><strong>Prove it:</strong> run <code>Clear-DnsClientCache</code>, then <code>nslookup portal</code> again. It now returns DC01's address, <code>ping portal</code> gets replies, and <code>curl.exe http://portal/</code> returns the intranet page.</p>
+<p><strong>Prove it:</strong> clear the DNS cache and test the name again. nslookup now returns DC01's address, ping gets replies, and the portal answers with the intranet page.</p>
+<p class="ad-cmd"><code>Clear-DnsClientCache; nslookup portal; ping portal; curl.exe http://portal/</code></p>
 <p><strong>Fixed when:</strong> <code>portal</code> resolves to DC01.</p>
 <p><strong>Report:</strong> the address <code>portal</code> resolved to before your fix.</p>
 <div class="ad-guess">

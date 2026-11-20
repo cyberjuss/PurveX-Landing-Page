@@ -39,7 +39,8 @@
 <li>Compare with web01, where CHG-3301 says the portal lives now: <code>ping web01</code> and <code>curl.exe http://web01/</code>. The server is up and the portal answers there.</li>
 </ol>
 <p><strong>Fix it:</strong> DNS still sends <code>portal</code> to PORTAL01's old address. Point it at web01. An alias, a CNAME to <code>web01</code>, is the usual way: when web01's address ever changes, the portal follows it.</p>
-<p><strong>Prove it:</strong> run <code>Clear-DnsClientCache</code>, then <code>nslookup portal</code> again. It now shows web01, and <code>curl.exe http://portal/</code> returns the intranet page.</p>
+<p><strong>Prove it:</strong> clear DC01's DNS cache and look the name up again. It now shows web01, and the portal answers by name with the intranet page.</p>
+<p class="ad-cmd"><code>Clear-DnsClientCache; nslookup portal; curl.exe http://portal/</code></p>
 <p><strong>Fixed when:</strong> <code>portal</code> resolves to web01, as a client sees it.</p>
 <p><strong>Report:</strong> the address <code>portal</code> resolved to before your fix.</p>
 <div class="ad-guess">
@@ -92,7 +93,7 @@
 <li>Check it from the command line: <code>nslookup</code> followed by that name. Note what it says instead of an address.</li>
 </ol>
 <p><strong>Fix it:</strong> CHG-3302 removed the records PORTAL01 "no longer needs". The dashboard is served by the same nginx as the portal, on web01. Recreate the name as a CNAME to <code>web01</code>.</p>
-<p><strong>Prove it:</strong> <code>nslookup</code> for the name now lists it under <strong>Aliases</strong> with web01's address, and <code>curl.exe</code> to it returns the intranet page. In Wireshark, the dashboard's next query gets an answer and its HTTP request follows on the Ethernet adapter.</p>
+<p><strong>Prove it:</strong> nslookup for the name now lists it under <strong>Aliases</strong> with web01's address, and curl to it returns the intranet page. In Wireshark, the dashboard's next query gets an answer and its HTTP request follows on the Ethernet adapter.</p>
 <p><strong>Fixed when:</strong> the name the dashboard asks for resolves to web01.</p>
 <p><strong>Report:</strong> the name the dashboard looks up, without the domain.</p>
 <div class="ad-guess">
@@ -145,7 +146,8 @@
 <li>On web01, see what is listening: <code>sudo ss -ltnp | grep 8085</code>. Read the Local Address column.</li>
 <li>Check the service and its log: <code>systemctl status purvex-timesheet</code>, then <code>journalctl -u purvex-timesheet -n 20</code>.</li>
 </ol>
-<p><strong>Fix it:</strong> the service's settings are in <code>/etc/purvex/timesheet.conf</code>. Set it to listen on every address, <code>0.0.0.0</code>, then restart it with <code>sudo systemctl restart purvex-timesheet</code>.</p>
+<p><strong>Fix it:</strong> the service's settings are in <code>/etc/purvex/timesheet.conf</code>. Set it to listen on every address, <code>0.0.0.0</code>, then restart the service on web01:</p>
+<p class="ad-cmd"><code>sudo systemctl restart purvex-timesheet</code></p>
 <p><strong>Prove it:</strong> <code>ss</code> now shows <code>0.0.0.0:8085</code>, and the same curl command from DC01 returns <strong>Timesheet saved.</strong></p>
 <p><strong>Fixed when:</strong> DC01 can connect to the timesheet service on web01.</p>
 <p><strong>Report:</strong> the address the service was listening on before your fix.</p>
@@ -200,7 +202,8 @@
 <li>Find the evidence in the firewall log: <code>sudo grep "DPT=&lt;the port&gt;" /var/log/ufw.log | tail -5</code>. Each line is a packet ufw dropped. Read its SRC and DST.</li>
 </ol>
 <p><strong>Fix it:</strong> CHG-3304 moved the API to a new port and says "Firewall updated". Allow the new port, and remove the rule the upgrade left behind.</p>
-<p><strong>Prove it:</strong> nmap shows the port <strong>open</strong>, <code>curl.exe -i -X POST</code> to the sync's ApiUrl returns <strong>200 OK</strong>, and no new drops appear in the log.</p>
+<p><strong>Prove it:</strong> nmap shows the port <strong>open</strong>, a POST to the sync's ApiUrl returns <strong>200 OK</strong>, and no new drops appear in the log. From DC01, with the ApiUrl from expenses.ini:</p>
+<p class="ad-cmd"><code>curl.exe -i -X POST &lt;ApiUrl&gt;</code></p>
 <p><strong>Fixed when:</strong> DC01 can connect to the Expenses API on web01.</p>
 <p><strong>Report:</strong> the port the old firewall rule still allowed.</p>
 <div class="ad-guess">
@@ -253,8 +256,9 @@
 <li>On web01: <code>systemctl status purvex-backup-agent</code>. Read the <strong>Loaded</strong> and <strong>Active</strong> lines.</li>
 <li>Find who did it. Every sudo command is logged: <code>sudo grep purvex-backup-agent /var/log/auth.log</code>.</li>
 </ol>
-<p><strong>Fix it:</strong> enable the agent and start it: <code>sudo systemctl enable --now purvex-backup-agent</code>.</p>
-<p><strong>Prove it:</strong> <code>systemctl status</code> shows it enabled and active, and the same nmap scan from DC01 shows the port <strong>open</strong>. Nmap does not recognise the agent, so its SERVICE column only guesses from the port number, but the fingerprint it prints under the results contains the agent's own greeting.</p>
+<p><strong>Fix it:</strong> enable the agent, so it starts at boot, and start it now, on web01:</p>
+<p class="ad-cmd"><code>sudo systemctl enable --now purvex-backup-agent</code></p>
+<p><strong>Prove it:</strong> systemctl status shows it enabled and active, and the same nmap scan from DC01 shows the port <strong>open</strong>. Nmap does not recognise the agent, so its SERVICE column only guesses from the port number, but the fingerprint it prints under the results contains the agent's own greeting.</p>
 <p><strong>Fixed when:</strong> DC01 can connect to the backup agent on web01.</p>
 <p><strong>Report:</strong> the account that stopped the agent.</p>
 <div class="ad-guess">
