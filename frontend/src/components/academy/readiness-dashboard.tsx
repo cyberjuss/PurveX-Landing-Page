@@ -208,22 +208,45 @@ function RankAndBadges({ results }: { results: Results }) {
           ))}
         </ol>
       </div>
-      <p className="rb-count">
-        {earned} of {badges.length} core job skills earned
-      </p>
+      <div className="rb-skillshead">
+        <h3>Core job skills</h3>
+        <span>
+          {earned} of {badges.length} earned
+        </span>
+      </div>
       <ul className="rb-grid">
-        {badges.map((b) => (
-          <li key={b.id} className={`rb-badge${b.tier ? ` is-${b.tier}` : ""}`} title={b.why}>
-            <span className="rb-badge__seal" aria-hidden>
-              {badgeInitials(b.title)}
-            </span>
-            <span className="rb-badge__body">
-              <strong>{b.title}</strong>
-              <em>{b.tier ? TIER_LABEL[b.tier] : "Not earned yet"} · {b.proven} of {b.total} tasks proven</em>
-              {b.next && <small>{b.next}</small>}
-            </span>
-          </li>
-        ))}
+        {badges.map((b) => {
+          const status = b.tier ? TIER_LABEL[b.tier] : b.proven > 0 ? "In progress" : "Not started";
+          return (
+            <li key={b.id} className={`rb-badge${b.tier ? ` is-${b.tier}` : ""}`}>
+              <div className="rb-badge__top">
+                <span className="rb-badge__seal" aria-hidden>
+                  {badgeInitials(b.title)}
+                </span>
+                <div>
+                  <strong>{b.title}</strong>
+                  <em>{status}</em>
+                </div>
+              </div>
+              <p className="rb-badge__why">{b.why}</p>
+              <div
+                className="rb-meter"
+                role="img"
+                aria-label={`${b.proven} of ${b.total} tasks proven`}
+                style={{ ["--pct" as string]: `${Math.round((b.proven / b.total) * 100)}%` }}
+              >
+                <i />
+                <b style={{ left: `${(Math.ceil(b.total / 2) / b.total) * 100}%` }} title="Proficient" />
+              </div>
+              <p className="rb-badge__foot">
+                <span>
+                  {b.proven} of {b.total} tasks proven
+                </span>
+                {b.next && <small>{b.next}</small>}
+              </p>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
