@@ -107,7 +107,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Ask the same question as yesterday. Does Maya still know the password this time?</p>
+<p>Ask the same question as yesterday: does Maya still know the password this time?</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Maya still knows the password, so a reset throws away a perfectly good one and adds another temporary password to the world.</div>
@@ -129,7 +129,7 @@
 <div class="ad-mission" data-id="dk-04" data-attempts="0">
 <span class="ad-mission__num">Call 04 · Apply it · Move an Account · Wednesday · INC-1094</span>
 <h4>Put Maya in the Right Folder</h4>
-<p><strong>Sam Whitfield · Wealth Management · Wednesday · 10:15 AM</strong><br>Maya can't see any of our team's settings, and the screen lock is behaving like it does for Operations. HR says Maya was hired into Wealth Management. Can you check where the account lives?</p>
+<p><strong>Sam Whitfield · Wealth Management · Wednesday · 10:15 AM</strong><br>Maya can't see any of our team's settings, and the screen lock is behaving like it does for Operations. HR says Maya was hired into Wealth Management, so can you check where the account lives?</p>
 <p><strong>Task:</strong> Move <code>maya.okafor</code> into Departments, WealthManagement, Users. Then report the department OU the account was in before you moved it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Put Maya in the Right Folder" placeholder="a department OU" autocomplete="off" autocapitalize="off" spellcheck="false">

@@ -25,7 +25,7 @@
 <ul>
 <li>Open Event Viewer, Windows Logs → Security, and filter for Event ID 4769.</li>
 <li>Find the request where the Service Name is <code>svc-reports</code>.</li>
-<li>Read Ticket Encryption Type in the General tab. It is written as a hex code.</li>
+<li>Read Ticket Encryption Type in the General tab, which is written as a hex code.</li>
 </ul>
 <p>In PowerShell:</p>
 <ul>

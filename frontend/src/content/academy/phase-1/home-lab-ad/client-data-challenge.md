@@ -58,7 +58,7 @@
 <span class="ad-mission__num">Task 02 · Warm-up · Data inventory · Low</span>
 <h4>Counting the Book</h4>
 <p><strong>Situation:</strong> If the register ever leaked, the firm would have to notify every client in it, so Compliance needs that number now rather than after an incident.</p>
-<p><strong>Task:</strong> Count the clients in the register you found. Type the number.</p>
+<p><strong>Task:</strong> Count the clients in the register you found, and type the number.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Counting the Book" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{8}" data-accept="eight">Submit</button>

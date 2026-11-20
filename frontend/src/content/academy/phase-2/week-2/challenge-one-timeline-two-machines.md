@@ -58,7 +58,7 @@ sudo journalctl -u ssh -n 20
 <div class="ad-mission" data-id="la2-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1142 · Medium</span>
 <p><strong>SOC Queue · Baseline Review · 2:00 PM</strong><br>Your DC sign-in and SSH session a few minutes later were both genuinely you. Now suppose the SOC saw that same pattern on jordan.ellis's account instead. In weeks of history, that account has never once signed in to the DC and then opened an SSH session to the Ubuntu server. Taken one at a time, neither event looks unusual.</p>
-<p><strong>Task:</strong> What does the pair together suggest? Type its letter.<br><strong>A</strong> Nothing. If each event is fine on its own, the pair is fine too.<br><strong>B</strong> The pair is more worth a second look than either event alone, since it is a pattern of movement across the pod that this account has never shown before.<br><strong>C</strong> Two separate machines' logs can never be analyzed together, only one at a time.</p>
+<p><strong>Task:</strong> What does the pair together suggest? Type its letter.<br><strong>A</strong> Nothing, because if each event is fine on its own, the pair is fine too.<br><strong>B</strong> The pair is more worth a second look than either event alone, since it is a pattern of movement across the pod that this account has never shown before.<br><strong>C</strong> Two separate machines' logs can never be analyzed together, only one at a time.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what an unfamiliar pattern across two machines suggests" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

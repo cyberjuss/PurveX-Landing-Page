@@ -13,7 +13,7 @@
 <div class="ad-mission" data-id="w4-02" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Finding 01 · Warm-up · Authentication · Executive Request · INC-1093</span>
 <h4>The MFA Exemption Request</h4>
-<p><strong>CFO · 8:45 AM</strong><br>The MFA prompts slow me down when I'm approving payments between meetings. Can IT turn MFA off for the executive team? We're careful with our passwords.<br><strong>A</strong> Agree. Executives are busy, and their passwords are long.<br><strong>B</strong> Keep MFA on, and offer a faster method, such as number matching on the phone app or a hardware key. Executives who approve payments are exactly who attackers phish.<br><strong>C</strong> Turn MFA off, but make executives change their password every month instead.</p>
+<p><strong>CFO · 8:45 AM</strong><br>The MFA prompts slow me down when I'm approving payments between meetings. Can IT turn MFA off for the executive team? We're careful with our passwords.<br><strong>A</strong> Agree, since executives are busy and their passwords are long.<br><strong>B</strong> Keep MFA on, and offer a faster method, such as number matching on the phone app or a hardware key. Executives who approve payments are exactly who attackers phish.<br><strong>C</strong> Turn MFA off, but make executives change their password every month instead.</p>
 <p><strong>Task:</strong> Select how IT should answer and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The MFA Exemption Request" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">

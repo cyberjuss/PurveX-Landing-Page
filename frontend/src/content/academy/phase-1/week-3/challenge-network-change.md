@@ -69,7 +69,7 @@
 <ul>
 <li>Run <code>nmap -sT -sV dc01</code> from a terminal on web01.</li>
 <li>Find the two LDAP-related lines in the output.</li>
-<li>One of them answers. Report that port number.</li>
+<li>One of them answers, so report that port number.</li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -96,7 +96,7 @@
 <div class="ad-mission" data-id="w3-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Protocols · Critical · Wireshark · INC-1057</span>
 <h4>Capture the Bind</h4>
-<p><strong>Alex Rivera · IT · 8:50 AM</strong><br>Port 389, confirmed. Now capture the job itself. I want to know exactly what it hands the directory, not just that it can.</p>
+<p><strong>Alex Rivera · IT · 8:50 AM</strong><br>Port 389, confirmed, so now capture the job itself. I want to know exactly what it hands the directory, not just that it can.</p>
 <p><strong>Task:</strong> Capture web01's traffic in Wireshark while the job runs, find the LDAP simple bind, and read the password it signs in with.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Capture the Bind" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">

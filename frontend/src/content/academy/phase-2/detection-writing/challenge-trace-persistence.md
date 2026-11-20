@@ -13,7 +13,7 @@
 <div class="ad-mission" data-id="tr-01" data-attempts="0">
 <span class="ad-mission__num">T · Technique · INC-1150 · Medium</span>
 <p><strong>Detection Engineering · Theo Walsh · 10:00 AM</strong><br>You found this by hand in Week 2. Theo Walsh doesn't want another one-off manual hunt the next time it happens, so they want a standing detection for it.</p>
-<p><strong>Task:</strong> Name the ATT&CK technique ID this detection hunts. Use the same format as the lesson: <code>T####.###</code>.</p>
+<p><strong>Task:</strong> Name the ATT&CK technique ID this detection hunts, using the same format as the lesson: <code>T####.###</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the ATT&CK technique ID" placeholder="T####.###" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{t1053.005}">Submit</button>
@@ -149,7 +149,7 @@
 
 <div class="ad-mission" data-id="tr-06" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1150 · Medium</span>
-<p><strong>Task:</strong> You picked a 7-day window and a threshold of 20 from reasoning alone. Now check the real task. On your own domain controller, run <code>(Get-ScheduledTask -TaskName "WindowsDiagnosticsSync").Triggers.Repetition.Interval</code>. It returns an ISO 8601 duration like <code>PT15M</code>. Type the number of minutes it represents.</p>
+<p><strong>Task:</strong> You picked a 7-day window and a threshold of 20 from reasoning alone, so now check the real task by running this on your own domain controller: <code>(Get-ScheduledTask -TaskName "WindowsDiagnosticsSync").Triggers.Repetition.Interval</code>. It returns an ISO 8601 duration like <code>PT15M</code>, so type the number of minutes it represents.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the real repetition interval in minutes" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{15}">Submit</button>

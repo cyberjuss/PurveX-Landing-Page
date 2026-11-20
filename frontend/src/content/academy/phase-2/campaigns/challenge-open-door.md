@@ -208,7 +208,7 @@
 <p>Every other file on this share belongs to Compliance's own review work, so look for the one that doesn't fit.</p>
 <ul>
 <li>Open <code>C:\PurveX\Shares\Compliance</code> in File Explorer.</li>
-<li>Read every file name. Compliance's own files are about KYC reviews.</li>
+<li>Read every file name, keeping in mind that Compliance's own files are about KYC reviews.</li>
 <li>Find the one named like an Operations export, not a compliance review.</li>
 </ul>
 <p>In PowerShell:</p>

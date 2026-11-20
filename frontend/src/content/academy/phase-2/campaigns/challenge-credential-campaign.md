@@ -64,7 +64,7 @@
 <ul>
 <li>Filter the Security log for event 4624 (successful logon).</li>
 <li>For each success, check whether a 4625 for the same account appears right before it.</li>
-<li>One success has no failure anywhere near it. Read its Account Name.</li>
+<li>One success has no failure anywhere near it, so read its Account Name.</li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>

@@ -127,7 +127,7 @@
 <div class="ad-mission" data-id="dr-08" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 04 · Warm-up · Groups</span>
 <h4>OU or Container?</h4>
-<p><strong>Priya Nair · IT · 2:02 PM</strong><br>Someone created a test account in the default Users folder last month. IT links its screen-lock GPO to <code>OU=IT</code>. Does that GPO reach the test account?</p>
+<p><strong>Priya Nair · IT · 2:02 PM</strong><br>Someone created a test account in the default Users folder last month, and IT links its screen-lock GPO to <code>OU=IT</code>. Does that GPO reach the test account?</p>
 <p><strong>Task:</strong> Type <code>yes</code> or <code>no</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for OU or Container?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -334,7 +334,7 @@
 <div class="ad-mission" data-id="dr-10" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 09 · Stretch · Service Accounts</span>
 <h4>A Job Running Outside Its Window</h4>
-<p><strong>SOC Queue · Alert Review · 2:22 PM</strong><br>The Security log shows an interactive sign-in by <code>svc-print-queue</code> at 2:15 PM. Its Description says it runs from 02:00 to 02:30. How should you interpret that?<br><strong>A</strong> This is normal. Service accounts sign in whenever their job requires it.<br><strong>B</strong> This is a red flag. Determine who or what signed in, and from where, before taking any other action.<br><strong>C</strong> Widen the account's Logon Hours so the alert stops.</p>
+<p><strong>SOC Queue · Alert Review · 2:22 PM</strong><br>The Security log shows an interactive sign-in by <code>svc-print-queue</code> at 2:15 PM, but its Description says it runs from 02:00 to 02:30. How should you interpret that?<br><strong>A</strong> This is normal, since service accounts sign in whenever their job requires it.<br><strong>B</strong> This is a red flag. Determine who or what signed in, and from where, before taking any other action.<br><strong>C</strong> Widen the account's Logon Hours so the alert stops.</p>
 <p><strong>Task:</strong> Select the correct reading and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for A Job Running Outside Its Window" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">

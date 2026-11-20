@@ -22,7 +22,7 @@ Notice that two different answers sit side by side here. Inbound traffic that no
 
 <div class="ad-mission" data-id="sm2-03" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1131 · Low</span>
-<p><strong>Task:</strong> Run the command above. What does your domain controller's Default Outbound Action report?</p>
+<p><strong>Task:</strong> After running the command above, what does your domain controller's Default Outbound Action report?</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for the default outbound action" placeholder="Allow or Block" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{allow}">Submit</button>

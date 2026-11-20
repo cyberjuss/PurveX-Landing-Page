@@ -13,7 +13,7 @@
 <div class="ad-mission" data-id="tq-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · Warm-up · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
-<p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email. Everyone else on my team has. Can you check my access?</p>
+<p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email, even though everyone else on my team has. Can you check my access?</p>
 <p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if they are missing. Then report how many members the group has.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Missing Announcements" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -66,7 +66,7 @@
 <ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>riley.kwan</code>.</li>
-<li>Open the account and go to the Account tab. Check both Unlock account and Account is disabled.</li>
+<li>Open the account, go to the Account tab, and check both Unlock account and Account is disabled.</li>
 <li>The Unlock account box is grayed out when nothing is locked. Read that as a finding and keep going.</li>
 <li>Fix the setting that is blocking them, then submit the cause rather than the word they used.</li>
 </ul>
@@ -246,7 +246,7 @@
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>kai.mendes</code>.</li>
 <li>Open the account and read the sponsor in Description on the General tab.</li>
-<li>Remove <code>Operations Users</code> on the Member Of tab. Then right-click the account and choose Disable Account.</li>
+<li>Remove <code>Operations Users</code> on the Member Of tab, then right-click the account and choose Disable Account.</li>
 <li>The account icon gains a small down arrow once it is disabled. That is the confirmation.</li>
 </ul>
 <p>In PowerShell:</p>
@@ -335,7 +335,7 @@
 <li>Run the search below in PowerShell on the domain controller.</li>
 <li>Skip the service account and note the person's username.</li>
 <li>Open that account in Active Directory Users and Computers and go to the Account tab.</li>
-<li>Account options is a list that scrolls. Clear Password never expires there and click Apply.</li>
+<li>Account options is a list that scrolls, so clear Password never expires there and click Apply.</li>
 </ul>
 <p>In PowerShell:</p>
 <ul>
@@ -381,7 +381,7 @@
 <li>Expand <code>purvexfinancial.local</code> and look inside the default folders until you find <code>FIN-LT14</code>.</li>
 <li>A folder that looks empty is usually the view filter. View → Filter Options, show all types of objects.</li>
 <li>Right-click the laptop and choose Move, then select Departments → FinanceAccounting → Workstations.</li>
-<li>Press F5 if the move does not show. The console keeps the view it drew first.</li>
+<li>Press F5 if the move does not show, because the console keeps the view it drew first.</li>
 </ul>
 <p>In PowerShell:</p>
 <ul>
@@ -426,7 +426,7 @@
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand Departments, Operations, Workstations.</li>
 <li>Open the computer Properties and read the Description on the General tab.</li>
-<li>Right-click it and choose Disable Account. Do not delete it.</li>
+<li>Right-click it and choose Disable Account, but do not delete it.</li>
 </ul>
 <p>In PowerShell:</p>
 <ul>
@@ -516,7 +516,7 @@
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Inbound Rules and sort by Name or Group to find the vendor rule.</li>
 <li>Read its Protocols and Ports and its Scope tabs, then right-click the rule and choose Disable Rule.</li>
-<li>Leave the built-in Remote Desktop rules enabled. Disabling those closes the port you are connected through.</li>
+<li>Leave the built-in Remote Desktop rules enabled, because disabling those closes the port you are connected through.</li>
 </ul>
 <p>In PowerShell:</p>
 <ul>

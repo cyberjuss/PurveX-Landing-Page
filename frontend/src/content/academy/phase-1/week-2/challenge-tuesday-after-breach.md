@@ -98,7 +98,7 @@
 <ul>
 <li>On your lab's domain controller, read the published value in <code>C:\PurveX\Shares\IT\checksums.txt</code>.</li>
 <li>In PowerShell, run <code>Get-FileHash C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-a.txt</code>, then the same command on mirror-b and mirror-c, and compare each Hash value to the one in checksums.txt.</li>
-<li>Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>. Moving keeps it as evidence.</li>
+<li>Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>, since moving it keeps it as evidence.</li>
 </ul>
 <p>In PowerShell, checking all three mirrors in one command:</p>
 <ul>
