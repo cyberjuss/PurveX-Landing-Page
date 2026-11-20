@@ -368,6 +368,56 @@ button.lkd__card:hover { border-color: var(--rd-accent); }
 .lkd__step.is-dragging { border-color: var(--rd-accent); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22); background: color-mix(in srgb, var(--rd-accent) 10%, var(--rd-surface)); }
 .lkd__step.is-right { border-color: color-mix(in srgb, var(--rd-good) 60%, transparent); }
 .lkd__step.is-wrong { border-color: color-mix(in srgb, var(--rd-bad) 60%, transparent); }
+
+/* Concept diagrams written inline in a lesson as <svg class="lk-fig">.
+   Shapes and words take theme colors from these classes, so one drawing
+   reads in light and dark. */
+.lk-fig { display: block; width: 100%; max-width: 620px; height: auto; margin: 6px 0 4px; overflow: visible; }
+.lk-fig .f-box { fill: var(--rd-surface); stroke: var(--rd-line); stroke-width: 1.5; }
+.lk-fig .f-acc { fill: color-mix(in srgb, var(--rd-accent) 9%, var(--rd-surface)); stroke: var(--rd-accent); stroke-width: 1.5; }
+.lk-fig .f-bad { fill: color-mix(in srgb, var(--rd-bad) 10%, var(--rd-surface)); stroke: var(--rd-bad); stroke-width: 1.5; }
+.lk-fig .f-good { fill: color-mix(in srgb, var(--rd-good) 10%, var(--rd-surface)); stroke: var(--rd-good); stroke-width: 1.5; }
+.lk-fig .f-line { fill: none; stroke: var(--rd-ink-3); stroke-width: 1.6; }
+.lk-fig .f-line--acc { stroke: var(--rd-accent); }
+.lk-fig .f-head { fill: var(--rd-ink-3); }
+.lk-fig .f-head--acc { fill: var(--rd-accent); }
+.lk-fig .f-t { fill: var(--rd-ink); font-family: var(--font-display); font-size: 15px; font-weight: 650; }
+.lk-fig .f-s { fill: var(--rd-ink-2); font-size: 12.5px; }
+.lk-fig .f-k { fill: var(--rd-accent); font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; }
+.lk-fig .f-kb { fill: var(--rd-bad); font-family: var(--font-mono, ui-monospace, monospace); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; }
+.lk-fig .f-heat1 { fill: color-mix(in srgb, var(--rd-good) 18%, var(--rd-surface)); stroke: var(--rd-line); }
+.lk-fig .f-heat2 { fill: color-mix(in srgb, #d99a1e 22%, var(--rd-surface)); stroke: var(--rd-line); }
+.lk-fig .f-heat3 { fill: color-mix(in srgb, var(--rd-bad) 26%, var(--rd-surface)); stroke: var(--rd-line); }
+.lk-fig .f-dot { fill: var(--rd-ink); }
+
+/* Check and predict: one question, a column of answers. */
+.lkc__opts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.lkc__opt {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--rd-line);
+  background: var(--rd-surface);
+  color: var(--rd-ink);
+  font-size: 14.5px;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 160ms, background 160ms;
+}
+.lkc__opt:hover:not(:disabled) { border-color: var(--rd-accent); }
+.lkc__opt:disabled { cursor: default; }
+.lkc__opt.is-right { border-color: color-mix(in srgb, var(--rd-good) 65%, transparent); background: color-mix(in srgb, var(--rd-good) 8%, var(--rd-surface)); }
+.lkc__opt.is-wrong { border-color: color-mix(in srgb, var(--rd-bad) 60%, transparent); color: var(--rd-ink-2); }
+.lkc__opt.is-chosen { border-color: var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 8%, var(--rd-surface)); }
+.lkc__mark { display: grid; place-items: center; height: 21px; font-weight: 700; }
+.lkc__opt.is-right .lkc__mark { color: var(--rd-good); }
+.lkc__opt.is-wrong .lkc__mark { color: var(--rd-bad); }
+.lkc__why { margin: 6px 0 2px 32px; font-size: var(--ty-note, 13px); line-height: 1.5; color: var(--rd-ink-2); animation: lka-in 0.3s ease both; }
+.lkc__explain { margin: 0; padding: 10px 14px; border-left: 3px solid var(--rd-good); background: color-mix(in srgb, var(--rd-good) 6%, transparent); font-size: 14px; line-height: 1.5; color: var(--rd-ink); animation: lka-in 0.3s ease both; }
 .lkd__num { font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; font-weight: 700; color: var(--rd-ink-3); text-align: center; }
 .lkd__step.is-right .lkd__num { color: var(--rd-good); }
 .lkd__step.is-wrong .lkd__num { color: var(--rd-bad); }

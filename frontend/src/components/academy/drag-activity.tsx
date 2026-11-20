@@ -568,7 +568,92 @@ function CoachNudge({ prompt, wrong }: { prompt: string; wrong: string | null })
   );
 }
 
+// One question, a handful of answers. A check marks a wrong pick red, says
+// why it does not fit and lets the student try again, because finding the
+// right answer after a miss is what makes it stick. A predict asks before
+// the lesson teaches the idea: the guess locks, nothing turns red, and the
+// answer is shown as what the next slides explain. Guessing first, even
+// wrongly, is what makes the explanation land.
+function ChoiceActivity({ activity }: { activity: Extract<DeckActivity, { kind: "choice" }> }) {
+  const options = useMemo(() => seeded(activity.options.map((o, i) => ({ ...o, i })), activity.prompt), [activity]);
+  const [tried, setTried] = useState<number[]>([]);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const predict = activity.mode === "predict";
+  const last = tried.length ? activity.options[tried[tried.length - 1]] : null;
+  const done = predict ? tried.length > 0 : Boolean(last?.correct);
+
+  function pick(i: number) {
+    if (done || tried.includes(i)) return;
+    setTried((t) => [...t, i]);
+    if (!predict && activity.options[i].correct && tried.length === 0) {
+      window.setTimeout(() => confettiFrom(rootRef.current, 30), 120);
+    }
+  }
+
+  const note = !last
+    ? ""
+    : predict
+      ? last.correct
+        ? "Here's why."
+        : "Hold that thought. Here's what the next slides show."
+      : last.correct
+        ? tried.length === 1
+          ? "Right on the first try."
+          : "That's the one."
+        : "Not this one. Try another.";
+
+  return (
+    <div className="lkd lkc" ref={rootRef}>
+      <p className="lkd__prompt">{curlyQuotes(dropLonePeriod(activity.prompt))}</p>
+      <p className="lkd__how">{predict ? "Make your best guess before you read on" : "Pick the best answer"}</p>
+      <ul className="lkc__opts">
+        {options.map((o) => {
+          const picked = tried.includes(o.i);
+          const state = !picked && !(done && o.correct)
+            ? ""
+            : o.correct
+              ? " is-right"
+              : predict
+                ? " is-chosen"
+                : " is-wrong";
+          return (
+            <li key={o.i}>
+              <button
+                type="button"
+                className={`lkc__opt${state}`}
+                onClick={() => pick(o.i)}
+                disabled={done || picked}
+                aria-pressed={picked}
+              >
+                <span className="lkc__mark" aria-hidden>
+                  {state === " is-right" ? <Check className="h-4 w-4" /> : state === " is-wrong" ? "✗" : null}
+                </span>
+                <span>{curlyQuotes(o.text)}</span>
+              </button>
+              {picked && o.why ? (
+                <p className="lkc__why">{curlyQuotes(o.why)}</p>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
+      {done && activity.why ? <p className="lkc__explain">{curlyQuotes(activity.why)}</p> : null}
+      <div className="lkd__foot">
+        <span className="lkd__note" aria-live="polite">{note}</span>
+        {done ? (
+          <span className="lkd__done">
+            <Check className="h-4 w-4" /> {predict ? "Locked in" : "Done"}
+          </span>
+        ) : last && !predict ? (
+          <CoachNudge prompt={activity.prompt} wrong={`"${last.text}"`} />
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function DragActivity({ activity }: { activity: DeckActivity }) {
+  if (activity.kind === "choice") return <ChoiceActivity activity={activity} />;
   if (activity.kind === "order") return <OrderActivity activity={activity} />;
   return activity.layout === "connect" ? <ConnectActivity activity={activity} /> : <SortActivity activity={activity} />;
 }

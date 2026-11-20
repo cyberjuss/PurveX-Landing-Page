@@ -366,6 +366,40 @@ Colonial Pipeline = A VPN account with a leaked password and no MFA
 MGM Resorts = A caller talked the help desk into resetting an employee's MFA
 ```
 
+A `check` block is one question with one right answer, marked `*`. Text
+after ` :: ` is what the student reads when they pick that option, so every
+wrong answer says why it does not fit. A wrong pick turns red and the student
+tries again. `why:` is shown once they find the right one.
+
+```check
+prompt: A laptop with an unencrypted drive is stolen. What failed?
+level: 2
+* Confidentiality :: The thief can read every file.
+Integrity :: Nothing was changed.
+why: Once a secret has been read, it stays read.
+```
+
+A `predict` block is written the same way but goes before the slides that
+teach the idea, usually first on the tab. The student commits to a guess,
+nothing turns red, and `why:` previews what the next slides explain. Use it
+where most people would guess wrong, because that is where it teaches most.
+
+Every lesson tab should give the student something to do, not only read:
+at least one `check` or drag activity, and a `predict` on tabs that open a
+new idea. Ask the student to apply the idea to a situation ("the drive is
+stolen, what failed?") rather than repeat a definition. The week's last
+teaching tab closes with a mixed activity across the whole week.
+
+A diagram is inline SVG with `class="lk-fig"`, a `viewBox`, `role="img"` and
+an `aria-label` that says in words what the picture shows. Keep the whole
+`<svg>` on one line, because a blank line inside ends the HTML block. Color
+comes only from these classes, so it works in light and dark: shapes
+`f-box`, `f-acc`, `f-bad`, `f-good`, heat cells `f-heat1` to `f-heat3`,
+lines `f-line` (add `f-line--acc` for the accent), arrow heads `f-head`,
+dots `f-dot`, and text `f-t` (a label), `f-s` (a note) and `f-k` (a small
+capital heading). Draw the mechanism the slide teaches, such as a chain, a
+grid or a flow, not decoration. A slide with a diagram drops its drawing.
+
 Drawings never repeat inside a week. Each tab keeps the drawing that best
 fits its own name, and the concept explainers (`leak`, `lie`, `lockout`,
 `riskmix`, `avalanche`, `salt`, `wrongkey`, `mfa`) only appear where their

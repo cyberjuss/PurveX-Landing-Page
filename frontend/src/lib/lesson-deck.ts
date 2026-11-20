@@ -6,7 +6,13 @@ export type ActivityLevel = 1 | 2 | 3;
 
 export type DeckActivity =
   | { kind: "sort"; prompt: string; buckets: { name: string; items: string[] }[]; layout?: "match" | "connect"; level?: ActivityLevel }
-  | { kind: "order"; prompt: string; items: string[]; level?: ActivityLevel };
+  | { kind: "order"; prompt: string; items: string[]; level?: ActivityLevel }
+  | { kind: "choice"; mode: "check" | "predict"; prompt: string; options: ChoiceOption[]; why?: string; level?: ActivityLevel };
+
+/** One answer on a check or predict slide, with what to say if it is picked. */
+export type ChoiceOption = { text: string; correct: boolean; why?: string };
+
+const ACTIVITY_LANGS = new Set(["sort", "order", "match", "connect", "check", "predict"]);
 
 export interface DeckSlide {
   /** The heading the slide sits under, or the section label before any heading. */
@@ -119,11 +125,26 @@ function plain(text: string) {
  *     Server replies SYN-ACK
  *     ```
  *
+ * A check block is one question with one right answer, marked with `*`.
+ * Text after ` :: ` is what the student reads when they pick that option,
+ * and `why:` is said once they find the right one. A predict block is
+ * written the same way, but it comes before the slides that teach the idea:
+ * the student commits to a guess, nothing turns red, and `why:` gives the
+ * answer the next slides explain.
+ *
+ *     ```check
+ *     prompt: The office's main internet link fails. Which control helps?
+ *     * Redundancy :: A second path was already in place.
+ *     Backups :: Nothing was lost, so there is nothing to restore.
+ *     why: Availability failed, and redundancy keeps a second path open.
+ *     ```
+ *
  * Any block may add `level: 1`, `2` or `3` (warm-up, apply it, on the job),
  * so a week's exercises can climb from recall to judgment.
  */
 export function parseActivity(lang: string, body: string): DeckActivity | null {
   const lines = body.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (lang === "check" || lang === "predict") return parseChoice(lang, lines);
   let prompt =
     lang === "sort"
       ? "Drag each card to where it belongs."
@@ -166,6 +187,29 @@ export function parseActivity(lang: string, body: string): DeckActivity | null {
   return buckets.length >= 2 ? { kind: "sort", prompt, buckets, level } : null;
 }
 
+function parseChoice(mode: "check" | "predict", lines: string[]): DeckActivity | null {
+  let prompt = "";
+  let why: string | undefined;
+  let level: ActivityLevel | undefined;
+  const options: ChoiceOption[] = [];
+  for (const line of lines) {
+    const p = /^prompt:\s*(.+)$/i.exec(line);
+    const w = /^why:\s*(.+)$/i.exec(line);
+    const lv = /^level:\s*([123])$/i.exec(line);
+    if (p) prompt = p[1];
+    else if (w) why = w[1];
+    else if (lv) level = Number(lv[1]) as ActivityLevel;
+    else {
+      const correct = line.startsWith("* ");
+      const [text, note] = line.replace(/^[-*]\s+/, "").split(/\s+::\s+/, 2);
+      if (text.trim()) options.push({ text: text.trim(), correct, ...(note?.trim() ? { why: note.trim() } : {}) });
+    }
+  }
+  // Exactly one right answer, or the block is a typo rather than a question.
+  if (!prompt || options.length < 2 || options.filter((o) => o.correct).length !== 1) return null;
+  return { kind: "choice", mode, prompt, options, ...(why ? { why } : {}), ...(level ? { level } : {}) };
+}
+
 // Splits a lesson section into slides the way a deck would: one per heading,
 // and a long heading broken at a paragraph so no slide is a wall of text.
 // Lists, code and tables stay with the paragraph that introduces them, and
@@ -199,7 +243,7 @@ export function splitLessonIntoDeck(markdown: string, label: string): DeckSlide[
       current().art = note[1].toLowerCase();
       continue;
     }
-    if (depth === 0 && token.type === "code" && (token.lang === "sort" || token.lang === "order" || token.lang === "match" || token.lang === "connect")) {
+    if (depth === 0 && token.type === "code" && ACTIVITY_LANGS.has(token.lang ?? "")) {
       const activity = parseActivity(token.lang, token.text);
       if (activity) {
         slides.push({ title, cont: Boolean(current()), raw: [], words: 0, activity });
