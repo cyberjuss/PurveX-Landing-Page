@@ -70,7 +70,13 @@ export type LabEvents = {
 export type LabInfra = {
   /** Ticket ids the build planted, from C:\PurveX\tickets.txt. */
   planted: string[];
-  firewall: { name: string; enabled: boolean; direction: string; action: string; localPort: string; remoteAddress: string }[];
+  /** Which collector sent this. 3 added tasks, listening and remotePort; older reports leave them out. */
+  version?: number;
+  firewall: { name: string; enabled: boolean; direction: string; action: string; localPort: string; remotePort?: string; remoteAddress: string }[];
+  /** Scheduled tasks at the root of Task Scheduler, by name, with Ready, Running or Disabled. */
+  tasks?: { name: string; state: string }[];
+  /** TCP ports listening on an address the network can reach (not loopback). */
+  listening?: number[];
   dns: { name: string; ip: string }[];
   /** The domain controller's own addresses. */
   dcIps: string[];
@@ -229,18 +235,34 @@ function sanitizeInfra(raw: unknown): LabInfra | undefined {
     const s = str(v, 40).trim();
     return IPV4.test(s) ? s : "";
   };
+  const version = num(r.v, 100) ?? 2;
   return {
+    version,
     planted: list(r.planted, 50).map((s) => s.slice(0, 20)),
-    firewall: rows(r.firewall, 50)
+    // Room for the lab's rules plus any outbound blocks a student adds.
+    firewall: rows(r.firewall, 100)
       .map((x) => ({
         name: str(x.name, 120),
         enabled: bool(x.enabled),
         direction: str(x.direction, 20),
         action: str(x.action, 20),
         localPort: str(x.localPort, 60),
+        remotePort: str(x.remotePort, 60),
         remoteAddress: str(x.remoteAddress, 200),
       }))
       .filter((x) => x.name),
+    ...(version >= 3
+      ? {
+          tasks: rows(r.tasks, 100)
+            .map((x) => ({ name: str(x.name, 200), state: str(x.state, 20) }))
+            .filter((x) => x.name),
+          // PowerShell 5.1 sends a one-item list as the bare item.
+          listening: (Array.isArray(r.listening) ? r.listening : r.listening === undefined ? [] : [r.listening])
+            .map((v) => num(v, 65535))
+            .filter((v): v is number => typeof v === "number" && v > 0)
+            .slice(0, 300),
+        }
+      : {}),
     dns: rows(r.dns, 100)
       .map((x) => ({ name: str(x.name, 100), ip: ip(x.ip) }))
       .filter((x) => x.name && x.ip),

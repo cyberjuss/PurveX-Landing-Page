@@ -66,7 +66,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 28
+$PurvexScriptVersion = 29
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -944,7 +944,10 @@ function Get-PurvexFirewallRules {
         $item = Get-Item -LiteralPath $PurvexFirewallKey -ErrorAction Stop
         foreach ($valueName in $item.GetValueNames()) {
             $data = [string]$item.GetValue($valueName)
-            if ($data -notmatch $PurvexLabRuleMatch) { continue }
+            # The lab's own rules, plus any outbound block, which is how a student
+            # closes an egress port (Week 3's SMTP ticket) with a rule of their own.
+            $outBlock = ($data -match '\|Dir=Out(\||$)') -and ($data -match '\|Action=Block(\||$)')
+            if ($data -notmatch $PurvexLabRuleMatch -and -not $outBlock) { continue }
             $f = @{}
             foreach ($pair in $data.Split('|')) {
                 $kv = $pair.Split('=', 2)
@@ -956,6 +959,7 @@ function Get-PurvexFirewallRules {
                 direction     = "$($f['Dir'])"
                 action        = "$($f['Action'])"
                 localPort     = "$($f['LPort'])"
+                remotePort    = "$($f['RPort'])"
                 remoteAddress = $(if ($f["RA4"]) { $f["RA4"] } else { "Any" })
             }
         }
@@ -971,6 +975,7 @@ function Get-PurvexFirewallRules {
                     direction     = "$($_.Direction)"
                     action        = "$($_.Action)"
                     localPort     = "$(($_ | Get-NetFirewallPortFilter).LocalPort -join ',')"
+                    remotePort    = "$(($_ | Get-NetFirewallPortFilter).RemotePort -join ',')"
                     remoteAddress = "$(($_ | Get-NetFirewallAddressFilter).RemoteAddress -join ',')"
                 }
             })
@@ -1060,7 +1065,9 @@ function Get-PurvexInfraPrint {
         $item = Get-Item -LiteralPath $PurvexFirewallKey -ErrorAction Stop
         foreach ($valueName in $item.GetValueNames()) {
             $data = [string]$item.GetValue($valueName)
-            if ($data -match $PurvexLabRuleMatch) { $parts += "$valueName=$data" }
+            # Outbound blocks too, so a student's own egress rule reports as quickly as a lab rule.
+            $outBlock = ($data -match '\|Dir=Out(\||$)') -and ($data -match '\|Action=Block(\||$)')
+            if ($data -match $PurvexLabRuleMatch -or $outBlock) { $parts += "$valueName=$data" }
         }
     }
     catch {}
@@ -1100,7 +1107,7 @@ function Get-PurvexOuLinks {
 # Group Policy links and the lab shares.
 function Get-PurvexInfra {
     param($Domain, [array]$GpoLinks = @())
-    $infra = [ordered]@{ v = 2 }
+    $infra = [ordered]@{ v = 3 }
     # "$_" on purpose. Get-Content hands back strings decorated with PSPath,
     # PSDrive and PSProvider, and ConvertTo-Json serialises those too: seven
     # ticket ids came to 2.6 MB of provider metadata, which the upload refused
@@ -1115,6 +1122,21 @@ function Get-PurvexInfra {
         $infra.dcIps = @($records | Where-Object { $_.HostName -eq "@" -or $_.HostName -eq $env:COMPUTERNAME } | ForEach-Object { "$($_.RecordData.IPv4Address)" } | Select-Object -Unique)
     }
     catch {}
+    # v3: what is running and what is listening, so a ticket can check that a
+    # program was stopped and a port really closed, not only that a rule was.
+    try {
+        $infra.tasks = @(Get-ScheduledTask -TaskPath "\" -ErrorAction Stop | Select-Object -First 100 | ForEach-Object {
+            [ordered]@{ name = "$($_.TaskName)"; state = "$($_.State)" }
+        })
+    }
+    catch { $infra.tasks = @() }
+    try {
+        # Loopback-only listeners are left out: the question is what the network can reach.
+        $infra.listening = @(Get-NetTCPConnection -State Listen -ErrorAction Stop |
+            Where-Object { $_.LocalAddress -ne "127.0.0.1" -and $_.LocalAddress -ne "::1" } |
+            ForEach-Object { [int]$_.LocalPort } | Sort-Object -Unique | Select-Object -First 300)
+    }
+    catch { $infra.listening = @() }
     $infra.gpos = @((Get-PurvexGpoNames -DomainDN $Domain.DistinguishedName).Values)
     $infra.gpoLinks = @($GpoLinks)
     $infra.files = @(Get-PurvexLabFiles | ForEach-Object {
@@ -1204,6 +1226,7 @@ function Ensure-StarterTickets {
 #   INC-1090  Week 1, The Weekend Incident Report
 #   INC-1091  Week 2, Tuesday After the Breach
 #   INC-1092  Week 3, The Network Change That Went Wrong
+#   INC-1092-2  Week 3, the evidence its tickets are worked from
 #   INC-1093  Week 4, The Quarterly Access Review
 #   INC-1094  Home Lab, A New Hire's First Week
 function Ensure-PhaseOneChallengeTickets {
@@ -1286,6 +1309,24 @@ function Ensure-PhaseOneChallengeTickets {
         catch { Write-Host "  Could not plant INC-1091: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
 
+    # The contractor's change log for INC-1092. It says what was done, not what
+    # it broke: no addresses or ports, so every ticket is answered from the lab.
+    $week3Log = @(
+        "PurveX Financial - network change log, weekend of Nov 8",
+        "Contractor: NetBridge Services       Approved by: Alex Rivera (IT)",
+        "",
+        "CHG-3301  Intranet portal moved off PORTAL01. PORTAL01 powered off Saturday.",
+        "          The portal is now served from DC01 until the new server arrives.",
+        "          DNS cut over.",
+        "CHG-3302  Started the NetBridge switch console on DC01 and opened its port",
+        "          inbound so our engineers could reach it during the upgrade.",
+        "          Remove after cutover.",
+        "CHG-3303  Set up a scanner-to-email relay test on DC01 and added an outbound",
+        "          firewall rule for it. Remove after test.",
+        "",
+        "Status: cutover complete Sunday 22:40. Cleanup items not confirmed."
+    )
+
     # INC-1092: what a contractor's network change left behind. A stale DNS record,
     # a console answering on port 23 with a rule letting it in, an outbound SMTP
     # rule, and a report sync that posts its password with HTTP Basic auth to a
@@ -1348,23 +1389,91 @@ function Ensure-PhaseOneChallengeTickets {
                 }
             }
             New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Shares\IT") -Force | Out-Null
-            Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\Network_Change_Log_Nov.txt") -Encoding ASCII -Value @(
-                "PurveX Financial - network change log, weekend of Nov 8",
-                "Contractor: NetBridge Services",
-                "",
-                "CHG-3301  Intranet portal moved off PORTAL01 (10.255.255.10). PORTAL01 retired.",
-                "          The portal now runs on DC01 until the new server arrives.",
-                "CHG-3302  Started our switch console on DC01 and opened its port inbound for the upgrade.",
-                "          Remove after cutover.",
-                "CHG-3303  Allowed outbound TCP 25 from DC01 to test the scanner-to-email relay.",
-                "          Remove after test.",
-                "",
-                "Status: cutover complete Sunday 22:40. Cleanup items not confirmed."
-            )
+            Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\Network_Change_Log_Nov.txt") -Encoding ASCII -Value $week3Log
             Add-PurvexTicketMark "INC-1092"
             Write-Host "  Planted INC-1092: the contractor's network change" -ForegroundColor Green
         }
         catch { Write-Host "  Could not plant INC-1092: $($_.Exception.Message)" -ForegroundColor Yellow }
+    }
+
+    # INC-1092-2: the evidence the Week 3 tickets are worked from. Added after
+    # INC-1092 shipped, under its own mark, so labs that already have INC-1092
+    # get it too. Nothing here undoes a fix a student already made.
+    #  - A portal that really answers on DC01, so a fixed record can be tested.
+    #  - IT's approved-services list for DC01, so a scan is compared with
+    #    something written down rather than with a list in a hint.
+    #  - The change log without the answers in it.
+    #  - The relay test CHG-3303 left running. It dials 203.0.113.25, a
+    #    TEST-NET-3 address (RFC 5737) that no network routes, so no mail is
+    #    ever sent: the repeated SYNs are what the student captures. The
+    #    outbound Allow rule INC-1092 planted never mattered, because Windows
+    #    allows outbound traffic by default. Ticket 04 teaches exactly that.
+    if (-not (Test-PurvexTicketMark "INC-1092-2") -and $PSCmdlet.ShouldProcess("DC01", "Plant the Week 3 evidence")) {
+        try {
+            New-Item -ItemType Directory -Path (Join-Path $PurvexLabRoot "Shares\IT") -Force | Out-Null
+            Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\Network_Change_Log_Nov.txt") -Encoding ASCII -Value $week3Log
+            Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\DC01_Approved_Services.txt") -Encoding ASCII -Value @(
+                "DC01 - approved services",
+                "Owner: Alex Rivera (IT). Last reviewed: Nov 1.",
+                "Anything listening on DC01 that is not on this list needs a change ticket.",
+                "",
+                "Inbound TCP   Service",
+                "53            DNS",
+                "80            HTTP - intranet portal (temporary, CHG-3301)",
+                "88            Kerberos",
+                "135           RPC endpoint mapper",
+                "139           NetBIOS session",
+                "389           LDAP",
+                "445           SMB file sharing",
+                "464           Kerberos password change",
+                "593           RPC over HTTP",
+                "636           LDAP over TLS",
+                "3268, 3269    Global Catalog",
+                "3389          Remote Desktop (IT only)",
+                "5357          Web Services for Devices (Windows built-in)",
+                "5985, 47001   WinRM / PowerShell remoting",
+                "9389          Active Directory Web Services",
+                "49152-65535   RPC dynamic ports (Windows built-in)",
+                "",
+                "Outbound",
+                "DC01 reaches the internet for Windows Update only.",
+                "DC01 never sends email. Mail goes through the mail server."
+            )
+            if (-not (Get-NetFirewallRule -DisplayName "PurveX Intranet Portal - HTTP" -ErrorAction SilentlyContinue)) {
+                New-NetFirewallRule -DisplayName "PurveX Intranet Portal - HTTP" -Group "PurveX Lab" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow | Out-Null
+            }
+            Set-Content -LiteralPath (Join-Path $jobs "portal-web.ps1") -Encoding ASCII -Value @(
+                '$page = "<html><head><title>PurveX Intranet</title></head><body><h1>PurveX Financial Intranet</h1><p>Served from DC01 (CHG-3301).</p></body></html>"',
+                '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Any, 80); $s.Start()',
+                'while ($true) {',
+                '  $c = $s.AcceptTcpClient()',
+                '  try {',
+                '    $st = $c.GetStream(); $st.ReadTimeout = 5000; $r = New-Object IO.StreamReader($st)',
+                '    while ($null -ne ($line = $r.ReadLine()) -and $line -ne "") { }',
+                '    $w = New-Object IO.StreamWriter($st); $w.Write("HTTP/1.1 200 OK`r`nContent-Type: text/html`r`nContent-Length: $($page.Length)`r`nConnection: close`r`n`r`n$page"); $w.Flush()',
+                '  } catch {} finally { $c.Close() }',
+                '}'
+            )
+            Set-Content -LiteralPath (Join-Path $jobs "relay-test.ps1") -Encoding ASCII -Value @(
+                '# NetBridge relay test (CHG-3303): checks DC01 can reach the mail relay on TCP 25.',
+                '$c = New-Object Net.Sockets.TcpClient',
+                'try { [void]$c.ConnectAsync("203.0.113.25", 25).Wait(15000) } catch {} finally { $c.Close() }'
+            )
+            $ps = "-NoProfile -ExecutionPolicy Bypass -File"
+            foreach ($t in @(
+                @{ Name = "PurveX Intranet Portal"; File = "portal-web.ps1"; Trigger = (New-ScheduledTaskTrigger -AtStartup); Start = $true },
+                @{ Name = "NetBridge Relay Test"; File = "relay-test.ps1"; Trigger = (New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(1) -RepetitionInterval (New-TimeSpan -Minutes 1)); Start = $false }
+            )) {
+                if (-not (Get-ScheduledTask -TaskName $t.Name -ErrorAction SilentlyContinue)) {
+                    $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "$ps $(Join-Path $jobs $t.File)"
+                    Register-ScheduledTask -TaskName $t.Name -Action $action -Trigger $t.Trigger -User "SYSTEM" -RunLevel Highest -Force | Out-Null
+                    if ($t.Start) { Start-ScheduledTask -TaskName $t.Name }
+                }
+            }
+            Add-PurvexTicketMark "INC-1092-2"
+            Write-Host "  Planted INC-1092-2: the Week 3 evidence" -ForegroundColor Green
+        }
+        catch { Write-Host "  Could not plant INC-1092-2: $($_.Exception.Message)" -ForegroundColor Yellow }
     }
 
     # INC-1093: a shared reception login with five failed guesses in the Security

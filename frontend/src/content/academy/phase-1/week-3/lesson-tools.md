@@ -20,7 +20,19 @@ This week's challenge uses the two tools network and security teams reach for mo
 
 One detail will matter in the challenge. Traffic between two programs on the same machine never touches the network card, so to see it, you capture on **Adapter for loopback traffic capture**.
 
-Finally, `Resolve-DnsName <name>` in PowerShell shows you which address a name points to. **Try it** with `Resolve-DnsName $env:COMPUTERNAME` and check that the address matches your domain controller.
+Two facts about Windows Firewall matter in the challenge too. A scan of a machine run from that same machine skips its own firewall, so it shows everything listening, not only what the network can reach. And Windows allows **outbound** traffic unless a rule blocks it, so adding an outbound Allow rule usually changes nothing. Stopping traffic going out takes a Block rule.
+
+Three PowerShell commands round out the kit:
+
+| Command | What it answers |
+| :---- | :---- |
+| `Resolve-DnsName <name>` | Which address does this name point to? |
+| `Test-NetConnection <name> -Port <port>` | Can I reach that port, and at which address? Read **RemoteAddress** and **TcpTestSucceeded**. |
+| `Get-NetTCPConnection -LocalPort <port> -State Listen` | Which process is listening on this port? Its **OwningProcess** is the process ID, and `Get-CimInstance Win32_Process -Filter "ProcessId = <ID>"` shows the command that started it. |
+
+`netstat -ano` is the classic version of the last one and works the same way.
+
+Start with the first one. `Resolve-DnsName <name>` in PowerShell shows you which address a name points to. **Try it** with `Resolve-DnsName $env:COMPUTERNAME` and check that the address matches your domain controller.
 
 <details class="lk-answer">
 <summary>What you should see</summary>
@@ -35,4 +47,6 @@ prompt: Match each tool to the question it answers.
 Nmap = Which ports does this server expose?
 Wireshark = What crossed the wire, and what did it say?
 Resolve-DnsName = Which address does this name point to?
+Test-NetConnection = Can I reach this port from here?
+Get-NetTCPConnection = Which process is listening on this port?
 ```

@@ -238,17 +238,32 @@ const MISSION_LAB = {
   // Week 3: The Network Change That Went Wrong. The build plants the stale DNS
   // record, both leftover rules, the report sync and the change log (INC-1092).
   // The log proves the plant landed, since a rule never made would read as off.
-  "w3-01": G([{ c: { t: "dnsToDc", name: "portal" }, label: "portal resolves to the domain controller" }], { tickets: ["INC-1092"] }),
+  // Week 3: The Network Change That Went Wrong. INC-1092 is the change itself;
+  // INC-1092-2 is the evidence the tickets are worked from (a portal that
+  // answers, IT's approved-services list, the relay test), planted on labs
+  // that already had INC-1092. Closing a port means the program is stopped and
+  // nothing listens, not only that a rule was switched off: a scan from the
+  // DC itself skips the DC's own firewall, so the rule alone never changes it.
+  "w3-01": G([{ c: { t: "dnsToDc", name: "portal" }, label: "portal resolves to the domain controller" }], { tickets: ["INC-1092", "INC-1092-2"] }),
   "w3-03": G([
-    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is in this lab" },
+    { c: { t: "taskOff", name: "NetBridge Vendor Console" }, label: "The NetBridge Vendor Console task is disabled" },
+    { c: { t: "notListening", port: 23 }, label: "Nothing is listening on port 23" },
     { c: { t: "fwRuleOff", name: "PurveX Legacy - Vendor Telnet" }, label: "The vendor Telnet rule is disabled or removed" },
-  ], { tickets: ["INC-1092"] }),
+  ], { tickets: ["INC-1092", "INC-1092-2"] }),
+  // Windows allows outbound traffic by default, so the contractor's Allow rule
+  // never mattered. Stopping the test stops this sender; a Block rule stops
+  // the next one, which is the control the approved-services list asks for.
   "w3-04": G([
-    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is in this lab" },
-    { c: { t: "fwRuleOff", name: "PurveX Relay - Outbound Mail" }, label: "The outbound mail rule is disabled or removed" },
+    { c: { t: "taskOff", name: "NetBridge Relay Test" }, label: "The NetBridge Relay Test task is disabled" },
+    { c: { t: "fwBlocksOut", port: 25 }, label: "An outbound rule blocks TCP 25 from DC01" },
+    { c: { t: "fwRuleOff", name: "PurveX Relay - Outbound Mail" }, label: "The contractor's outbound mail rule is disabled or removed" },
+  ], { tickets: ["INC-1092", "INC-1092-2"] }),
+  // The report sync's password was read off the wire, so the account is burned
+  // and the job that keeps sending it is stopped.
+  "w3-05": G([
+    { c: { t: "enabled", sam: "svc-reportsync", want: false }, label: "svc-reportsync is disabled" },
+    { c: { t: "taskOff", name: "PurveX Legacy Report Sync" }, label: "The PurveX Legacy Report Sync task is disabled" },
   ], { tickets: ["INC-1092"] }),
-  // The report sync's password was read off the wire, so the account is burned.
-  "w3-05": G([{ c: { t: "enabled", sam: "svc-reportsync", want: false }, label: "svc-reportsync is disabled" }], { tickets: ["INC-1092"] }),
   // Week 4: The Quarterly Access Review. frontdesk.shared and priya.nair's
   // Domain Admins membership come from the build (INC-1093). noor.ahmadi is the
   // INC-1071 account every lab already plants.
