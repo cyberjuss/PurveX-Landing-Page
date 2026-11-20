@@ -438,6 +438,8 @@ export function SectionTabs({
       {/* One horizontal strip instead of a column of its own. The course rail
           already occupies the left of the screen, so a second vertical list
           beside it left the lesson reading in two thirds of the width. */}
+      {/* A page of challenges only has no tabs to show, and an empty strip still drew its line. */}
+      {visibleTabs.length > 0 && (
       <div className={`ax-lesshead${edges.start ? " has-start" : ""}${edges.end ? " has-end" : ""}`}>
         {edges.start && (
           <button type="button" className="ax-lessroll ax-lessroll--start" aria-label="Earlier sections" onClick={() => roll(-1)}>
@@ -478,6 +480,7 @@ export function SectionTabs({
         ))}
         </nav>
       </div>
+      )}
 
       <div className="ax-lessbody" ref={bodyRef}>
       <div className="ax-panel">
