@@ -63,19 +63,6 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
           <div className="ax-titleblock">
             <h1>{entry.title}</h1>
             <p>{entry.summary}</p>
-            {/* Closed by default, so the week's first lesson stays in view. */}
-            {entry.objectives && entry.objectives.length > 0 && (
-              <details className="ax-objectives">
-                <summary>
-                  What you&apos;ll be able to do <span>{entry.objectives.length}</span>
-                </summary>
-                <ul>
-                  {entry.objectives.map((o) => (
-                    <li key={o}>{o}</li>
-                  ))}
-                </ul>
-              </details>
-            )}
           </div>
           {sections.length > 0 && <MarkCompleteButton phaseSlug={phase.slug} entrySlug={entry.slug} />}
         </div>
