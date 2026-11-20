@@ -1390,7 +1390,6 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
   animation: lk-build var(--ax-dur-slow) var(--ax-ease) 160ms both;
 }
 .lk-question__text.is-long { max-width: 24ch; font-size: clamp(26px, 3vw, 38px); line-height: 1.12; }
-.lk-question__hint { margin: 0; max-width: 52ch; font-size: 15px; line-height: 1.6; color: var(--rd-ink-2); animation: lk-build var(--ax-dur) var(--ax-ease) 300ms both; }
 
 /* Where the section goes: its first headings, numbered, on one hairline. */
 .lk-question__path { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 20px; width: 100%; max-width: 520px; margin: 4px 0 0; padding: 0; list-style: none; box-shadow: inset 1px 0 0 var(--rd-line); }
@@ -1429,7 +1428,7 @@ button.lk__art { padding: 0; width: 100%; font: inherit; color: var(--rd-accent)
   .lk-question__mark { font-size: 56px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .lk-question__mark, .lk-question .rd-kicker, .lk-question__text, .lk-question__hint, .lk-question__path li, .lk-question__ring { animation: none; }
+  .lk-question__mark, .lk-question .rd-kicker, .lk-question__text, .lk-question__path li, .lk-question__ring { animation: none; }
 }
 
 /* ==== Layout and stage polish (from looking at the real page) ====

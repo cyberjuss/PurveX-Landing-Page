@@ -282,7 +282,6 @@ export function LessonDeck({
                   <HelpCircle aria-hidden /> The week&apos;s question
                 </span>
                 <p className={`lk-question__text${slide.question.length > 60 ? " is-long" : ""}`}>{curlyQuotes(slide.question)}</p>
-                <p className="lk-question__hint">Hold on to it. By the end of the week you will be able to answer it in your own words.</p>
                 {path.length > 0 && (
                   <ol className="lk-question__path" aria-label="This week walks through">
                     {path.map((t, i) => (
