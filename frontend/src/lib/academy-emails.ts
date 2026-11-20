@@ -77,7 +77,6 @@ export function studentWelcomeEmail(student: Named, cls: AcademyClass, o: string
     h(`Welcome to ${cls.name}`) +
     p(`Hi ${esc(first(student.name))}, welcome to ${esc(cls.name)}. The training is ready, with hands-on labs graded against a live environment, so you build the skills the job actually asks for rather than test-taking ones.`) +
     button(`${url}/range`, "Start training") +
-    discordInvite() +
     note("You can sign in with this email any time and pick up where you left off.");
   return { subject: `Welcome to ${cls.name} on PurveX Range`, html };
 }

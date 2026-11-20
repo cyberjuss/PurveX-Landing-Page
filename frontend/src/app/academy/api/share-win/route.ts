@@ -3,6 +3,7 @@ import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { sanitizeProfile } from "@/lib/academy-certs";
 import { discordWinsConfigured, finishedChallenges, postWin } from "@/lib/academy-discord";
 import { loadProgress, readProfile, saveProfile } from "@/lib/academy-store";
+import { isClassMember } from "@/lib/academy-classes";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -16,7 +17,7 @@ export async function POST(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
   if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
-  if (!discordWinsConfigured()) return NextResponse.json({ error: "Sharing wins is not set up." }, { status: 404 });
+  if (!discordWinsConfigured() || (await isClassMember(student.id))) return NextResponse.json({ error: "Sharing wins is not set up." }, { status: 404 });
 
   let body: { challenge?: unknown };
   try {

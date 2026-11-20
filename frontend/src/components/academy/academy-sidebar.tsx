@@ -14,7 +14,7 @@ import { isPhaseLocked } from "@/lib/academy-locks";
 const LAB_CHALLENGES_HEADING = "Directory & Help Desk";
 const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
 
-export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onNavigate?: () => void }) {
+export function AcademySidebar({ phases, onNavigate, discord = false }: { phases: PhaseDef[]; onNavigate?: () => void; discord?: boolean }) {
   const pathname = usePathname();
   const { isComplete, isPhaseComplete, requirements, completedCount, totalCount } = useAcademyProgress();
   // What the reader chose for each group (a phase or a Home Lab list): open
@@ -355,7 +355,7 @@ export function AcademySidebar({ phases, onNavigate }: { phases: PhaseDef[]; onN
         );
       })}
 
-      {DISCORD_URL && (
+      {DISCORD_URL && discord && (
         <a
           href={DISCORD_URL}
           target="_blank"

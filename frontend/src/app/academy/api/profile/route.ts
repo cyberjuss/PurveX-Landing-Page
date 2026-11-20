@@ -26,7 +26,8 @@ export async function GET(request: Request) {
   const { profile, failed } = await readProfile(a.student.id);
   // A failed read is "try again", never "no answers yet": the page would ask the questions all over.
   if (failed) return NextResponse.json({ error: "Couldn't load your goals. Try again." }, { status: 503 });
-  return NextResponse.json({ profile });
+  // Class students have no Discord, so the page hides every way in.
+  return NextResponse.json({ profile, discord: !(await isClassMember(a.student.id)) });
 }
 
 export async function PUT(request: Request) {

@@ -36,12 +36,15 @@ const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
 export function GoalsPanel({
   profile,
   accountName,
+  discord = false,
   onClose,
   onSaved,
 }: {
   profile: StudentProfile;
   /** What the greeting says today, so the field can offer it rather than sit empty. */
   accountName?: string | null;
+  /** Class students have no Discord. */
+  discord?: boolean;
   onClose: () => void;
   onSaved: (profile: StudentProfile) => void;
 }) {
@@ -318,7 +321,7 @@ export function GoalsPanel({
               <input type="text" maxLength={200} placeholder="e.g. English is my second language, keep answers short" value={notes} onChange={(e) => setNotes(e.target.value)} />
             </label>
           </section>
-          {DISCORD_URL && (
+          {DISCORD_URL && discord && (
             <section className="gp-sec">
               <h3>Community</h3>
               <label className="gp-check">

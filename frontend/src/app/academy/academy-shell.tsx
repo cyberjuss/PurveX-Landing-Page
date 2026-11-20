@@ -89,6 +89,13 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
   const [editingGoals, setEditingGoals] = useState(false);
   // The mission handlers below read the profile outside React, so it is kept in a ref too, set at the same moment.
   const profileRef = useRef<StudentProfile | null>(null);
+  // Whether this student may see the Discord. Class students may not. Hidden until the server says.
+  const [discordOk, setDiscordOkState] = useState(false);
+  const discordOkRef = useRef(false);
+  const setDiscordOk = (ok: boolean) => {
+    discordOkRef.current = ok;
+    setDiscordOkState(ok);
+  };
   const setProfile = (next: StudentProfile | null | undefined) => {
     profileRef.current = next ?? null;
     setProfileState(next);
@@ -192,8 +199,9 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     const attempt = (n: number) => {
       academyFetch("/academy/api/profile")
         .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-        .then((data: { profile?: unknown }) => {
+        .then((data: { profile?: unknown; discord?: boolean }) => {
           if (cancelled) return;
+          setDiscordOk(data.discord === true);
           const server = sanitizeProfile(data.profile);
           if (server) {
             saveCachedProfile(studentId, server);
@@ -864,6 +872,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         wireCommandCopy(body);
         wireBlockCopy(body);
       }
+      root.querySelector(".ad-hint-card__discord")?.toggleAttribute("hidden", !discordOkRef.current);
       root.dataset.open = "true";
       // The coach button needs the ticket's name, and the card outlives the
       // element it was opened from.
@@ -1546,7 +1555,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
               <ChevronLeft className={`h-4 w-4 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`} />
             </button>
             <div className={`h-[calc(100%-45px)] transition-opacity duration-200 ${collapsed ? "pointer-events-none opacity-0" : "opacity-100"}`}>
-              <AcademySidebar phases={phases} />
+              <AcademySidebar phases={phases} discord={discordOk} />
             </div>
           </aside>
 
@@ -1581,7 +1590,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
                 </button>
               </div>
               <div className="ax-scroll h-[calc(100%-65px)] overflow-y-auto pb-[env(safe-area-inset-bottom)]">
-                <AcademySidebar phases={phases} onNavigate={() => setSidebarOpen(false)} />
+                <AcademySidebar phases={phases} discord={discordOk} onNavigate={() => setSidebarOpen(false)} />
               </div>
             </div>
           </div>
@@ -1595,6 +1604,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           <GoalsPanel
             profile={profile}
             accountName={accountFirstName(student)}
+            discord={discordOk}
             onClose={() => setEditingGoals(false)}
             onSaved={(next) => {
               if (studentId) saveCachedProfile(studentId, next);
