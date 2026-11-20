@@ -14,7 +14,13 @@ In the console, a **Container** looks just like an OU, because both use a folder
 | Can you create your own in the console? | Yes, anywhere | No, Windows builds the default set |
 | Examples in this domain | `OU=IT`, `OU=Compliance` | `CN=Users`, `CN=Computers` |
 
-The two you'll meet most are the default `Users` and `Computers` folders, which Windows creates as Containers. Since no GPO can link to a Container, an account left there misses every policy linked to an OU. That's why the build script puts every account in a real OU. So if you find someone in a default folder, that account isn't where it belongs.
+The two you'll meet most are the default `Users` and `Computers` folders, which Windows creates as Containers:
+
+<ul>
+<li>No GPO can link to a Container, so an account left there misses every policy linked to an OU</li>
+<li>That's why the build script puts every account in a real OU</li>
+<li>If you find someone in a default folder, that account isn't where it belongs</li>
+</ul>
 
 ```sort
 prompt: Organizational Unit or Container?

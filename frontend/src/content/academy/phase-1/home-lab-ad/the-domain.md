@@ -5,7 +5,13 @@
 
 ### The database
 
-Active Directory is the database that holds a firm's users, computers and groups. An ordinary Windows Server becomes that database once you install Active Directory Domain Services and promote the server to a domain controller. From then on, it checks every sign-in using a protocol called Kerberos. In this lab, the domain is `purvexfinancial.local`, and until that promotion is finished, the departments and accounts have nowhere to live.
+Active Directory is the database that holds a firm's users, computers and groups:
+
+<ul>
+<li>An ordinary Windows Server becomes that database once you install Active Directory Domain Services and promote the server to a domain controller</li>
+<li>From then on, it checks every sign-in using a protocol called Kerberos</li>
+<li>In this lab, the domain is <code>purvexfinancial.local</code>, and until that promotion is finished, the departments and accounts have nowhere to live</li>
+</ul>
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/add-roles.png" alt="Server roles list with Active Directory Domain Services checked" />

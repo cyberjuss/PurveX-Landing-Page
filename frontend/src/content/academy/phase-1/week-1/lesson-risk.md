@@ -1,6 +1,12 @@
 ### Risk
 
-Once you know the weakness and the threat, risk is the idea that ties them together. It's how likely it is that a threat exploits a vulnerability, combined with how much damage that would do. It lets you compare problems that otherwise have nothing in common, so you aren't ranking your work by how alarming each item sounds.
+Once you know the weakness and the threat, risk is the idea that ties them together:
+
+<ul>
+<li>It's how likely a threat is to exploit a vulnerability, combined with how much damage that would do</li>
+<li>It lets you compare problems that otherwise have nothing in common</li>
+<li>So you rank your work by cost, not by how alarming each item sounds</li>
+</ul>
 
 **Risk = Threat × Vulnerability × Impact**
 

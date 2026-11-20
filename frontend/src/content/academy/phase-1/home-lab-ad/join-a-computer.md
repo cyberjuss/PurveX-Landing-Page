@@ -5,7 +5,13 @@
 
 ### Point DNS at the domain controller
 
-Before a workstation can join the domain, it has to find `purvexfinancial.local`, and it does that through DNS. On a production network, the right DNS address is usually handed out automatically, but in this lab you'll set the workstation's DNS server to the domain controller's IP address yourself. If that address is wrong, the join fails even though the domain controller is up, which in Week 1 terms is an availability failure rather than a password problem.
+Before a workstation can join the domain, it has to find `purvexfinancial.local`, and it does that through DNS:
+
+<ul>
+<li>On a production network, the right DNS address is usually handed out automatically</li>
+<li>In this lab, you set the workstation's DNS server to the domain controller's IP address yourself</li>
+<li>If that address is wrong, the join fails even though the domain controller is up. In Week 1 terms, that's an availability failure rather than a password problem</li>
+</ul>
 
 1. Press Win+R and run `ncpa.cpl`. Right-click the adapter and choose Properties.
 2. Select Internet Protocol Version 4, then Properties.

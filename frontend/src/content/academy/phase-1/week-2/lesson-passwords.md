@@ -2,7 +2,13 @@
 
 **The ticket:** a vendor several PurveX staff used was breached, and its user table is online. Alex Rivera asks: "How bad is this for us, and what do we do first?"
 
-Start with how passwords should be stored. A password system never needs to know your password. It only needs to recognize the right one when you type it again, so a well-built system stores a value calculated from the password, then runs the same calculation at sign-in and compares the two. Because the password itself is never written down, a stolen database doesn't immediately hand an attacker a set of working credentials.
+Start with how passwords should be stored. A password system never needs to know your password:
+
+<ul>
+<li>It only needs to recognize the right one when you type it again</li>
+<li>So it stores a value calculated from the password, then runs the same calculation at sign-in and compares the two</li>
+<li>The password itself is never written down, so a stolen database doesn't immediately hand an attacker working credentials</li>
+</ul>
 
 There are two further requirements, and they're where most real systems fall short:
 
@@ -44,7 +50,12 @@ Here's the order to work in when a vendor is breached:
 2. Force resets for affected staff, starting with those confirmed as exposed.
 3. Turn on MFA for those accounts, and watch their sign-ins.
 
-While you work through those steps, there are two things you should never do. Don't test the leaked passwords against real accounts to see which still work, because that produces the same sign-in pattern as a credential-stuffing attack and may lock out the very people you're protecting. And never email anyone their password, since that puts a working credential on mail servers you don't control.
+While you work through those steps, there are two things you should never do:
+
+<ul>
+<li><strong>Don't test the leaked passwords against real accounts.</strong> That produces the same sign-in pattern as a credential-stuffing attack, and may lock out the very people you're protecting</li>
+<li><strong>Never email anyone their password.</strong> That puts a working credential on mail servers you don't control</li>
+</ul>
 
 ```order
 prompt: A vendor was breached. Put your first moves in order.
@@ -67,7 +78,13 @@ A bcrypt hash follows the same idea: `$2b$12$1.A448CMPszJoJNh8XDqPeL1ZvsWBt7Ajjv
 
 ### How Windows stores passwords
 
-Windows does it differently. Active Directory stores an **NT hash**, which is both fast and unsalted. Worse, an attacker who steals one can sometimes sign in with the hash itself, without ever cracking it, which is called **pass-the-hash**. That's why domain controllers and admin accounts are guarded so tightly, and why Windows LAPS gives every machine's local admin account its own password.
+Windows does it differently:
+
+<ul>
+<li>Active Directory stores an <strong>NT hash</strong>, which is both fast and unsalted</li>
+<li>An attacker who steals one can sometimes sign in with the hash itself, without ever cracking it. That's called <strong>pass-the-hash</strong></li>
+<li>That's why domain controllers and admin accounts are guarded so tightly, and why Windows LAPS gives every machine's local admin account its own password</li>
+</ul>
 
 ### Resetting a password safely
 

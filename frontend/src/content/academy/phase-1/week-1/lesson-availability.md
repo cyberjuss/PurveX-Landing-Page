@@ -8,7 +8,15 @@ why: An availability failure is the most visible of the three, which is why it s
 
 ### Availability
 
-Availability means that systems and data are there when the people who need them go to use them. When it fails, nothing has leaked and nothing has changed, so the data is still intact and still private. What's stopped is the work itself, which is why we call this failure a **lockout**. It's also the most visible of the three, and usually the first to land in your queue, because the people affected notice straight away.
+Availability means that systems and data are there when the people who need them go to use them. When it fails:
+
+<ul>
+<li>Nothing has leaked, and nothing has changed</li>
+<li>The data is still intact and still private</li>
+<li>The work itself has stopped, which is why we call this failure a <strong>lockout</strong></li>
+</ul>
+
+It's also the most visible of the three, and usually the first to land in your queue, because the people affected notice straight away.
 
 Availability matters most where being unreachable is the harm in itself, such as:
 
@@ -33,7 +41,15 @@ You need all three because a service can go down for more than one reason:
 <li>Someone attacks it on purpose</li>
 </ul>
 
-That last case has a name you'll hear often. A **distributed denial of service** (DDoS) attack floods a service with more requests than it can answer, until real users can't get through. Nothing is stolen and nothing is changed, which makes it a useful reminder that an incident doesn't have to involve data leaving the building.
+That last case has a name you'll hear often, a **distributed denial of service** (DDoS) attack:
+
+<ul>
+<li>It floods a service with more requests than it can answer</li>
+<li>Real users can't get through</li>
+<li>Nothing is stolen, and nothing is changed</li>
+</ul>
+
+It's a useful reminder that an incident doesn't have to involve data leaving the building.
 
 ```match
 prompt: Which availability control would get PurveX working again?

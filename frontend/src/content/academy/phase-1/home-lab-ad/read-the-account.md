@@ -21,11 +21,22 @@ With these, you can replace a hunch with a real time or a real list of groups. O
 
 Source: [Microsoft Learn: Last-Logon-Timestamp attribute](https://learn.microsoft.com/en-us/windows/win32/adschema/a-lastlogontimestamp)
 
-To save yourself some scrolling, filter the list to **Show only attributes that have values**. And one quirk to know about: open the object from the tree rather than from the Find dialog. An object opened from Find results doesn't show the Attribute Editor tab.
+Two tips for the Attribute Editor:
+
+<ul>
+<li>Filter the list to <strong>Show only attributes that have values</strong> to save scrolling</li>
+<li>Open the object from the tree, not from the Find dialog. An object opened from Find results doesn't show the Attribute Editor tab</li>
+</ul>
 
 ### Managing Computer Objects
 
-Everything you've learned about reading users applies to computers too, and IT-WKS01 is a good one to practice on. Start with where it lives, then check **Member Of** for groups such as one that grants automatic Wi-Fi or VPN access. Finally, look up its last logon in the Attribute Editor, which tells you whether the machine is active or dormant, a distinction that matters a lot once you're investigating.
+Everything you've learned about reading users applies to computers too, and IT-WKS01 is a good one to practice on:
+
+<ul>
+<li>Start with where it lives</li>
+<li>Check <strong>Member Of</strong> for groups, such as one that grants automatic Wi-Fi or VPN access</li>
+<li>Look up its last logon in the Attribute Editor, which tells you whether the machine is active or dormant</li>
+</ul>
 
 ```match
 prompt: An investigator has questions about an account. Which attribute answers each one?

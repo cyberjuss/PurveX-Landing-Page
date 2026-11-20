@@ -44,7 +44,12 @@ Run only the copy that matches, and escalate the other without deleting it
 
 A match tells you that your file is identical to the reference, but it says nothing about whether the reference was safe to begin with.
 
-CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware straight out of the vendor's own build process, and customers who checked found a correct hash and a valid signature, because the malware was already inside before either was calculated. So a verified hash tells you the file reached you intact. Whether it was clean at the start is a question a hash can't answer.
+CCleaner in 2017, SolarWinds in 2020 and 3CX in 2023 all shipped malware straight out of the vendor's own build process. Customers who checked found a correct hash and a valid signature, because the malware was already inside before either was calculated. So:
+
+<ul>
+<li>A verified hash tells you the file reached you intact</li>
+<li>Whether it was clean at the start is a question a hash can't answer</li>
+</ul>
 
 ### Compare automatically
 
@@ -69,11 +74,24 @@ To avoid it, use `printf '%s'`, and make sure nothing follows the text in CyberC
 
 ### Old algorithms
 
-Not every hash algorithm is still safe to rely on. MD5 (32 characters) and SHA-1 (40 characters) are broken, because researchers can now create two different files with the same hash. They're still fine for spotting duplicate files, but for proving a file hasn't been touched, use SHA-256.
+Not every hash algorithm is still safe to rely on:
+
+<ul>
+<li><strong>MD5</strong> (32 characters) and <strong>SHA-1</strong> (40 characters) are broken, because researchers can now create two different files with the same hash</li>
+<li>They're still fine for spotting duplicate files</li>
+<li>For proving a file hasn't been touched, use <strong>SHA-256</strong></li>
+</ul>
 
 ### Digital signatures
 
-A hash tells you a file is intact, while a signature tells you who published it. To check one, open **Properties → Digital Signatures** on the file or run `Get-AuthenticodeSignature .\setup.exe`, and look for `Valid` alongside a publisher name you expect. Keep in mind that the CCleaner and 3CX files were signed too, which is why no single check is ever enough on its own.
+A hash tells you a file is intact, while a signature tells you who published it. To check one:
+
+<ul>
+<li>Open <strong>Properties → Digital Signatures</strong> on the file, or run <code>Get-AuthenticodeSignature .\setup.exe</code></li>
+<li>Look for <code>Valid</code> alongside a publisher name you expect</li>
+</ul>
+
+Keep in mind that the CCleaner and 3CX files were signed too, which is why no single check is ever enough on its own.
 
 ### How the SOC uses hashes
 

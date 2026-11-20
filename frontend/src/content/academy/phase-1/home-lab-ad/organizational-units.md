@@ -100,7 +100,12 @@ At PurveX Financial, each of the five departments is its own OU, with a `Users` 
   </div>
 </div>
 
-Every account lives in exactly one OU, and the OU records where an account lives, not what it can access. That's why `AccessLevels` sits outside `Departments` on purpose. `Server Admins` and `Helpdesk` grant access across the whole domain, which is a different thing from belonging to a department. Keeping them in a folder of their own stops you from mistaking a list of privileges for a team.
+Every account lives in exactly one OU, and the OU records where an account lives, not what it can access. That's why `AccessLevels` sits outside `Departments` on purpose:
+
+<ul>
+<li><code>Server Admins</code> and <code>Helpdesk</code> grant access across the whole domain, which is different from belonging to a department</li>
+<li>Keeping them in a folder of their own stops you from mistaking a list of privileges for a team</li>
+</ul>
 
 OUs also let you hand out control in small pieces. For example, Helpdesk could be allowed to reset passwords only for accounts inside `OU=Users,OU=IT,OU=Departments`, leaving the rest of the domain untouched.
 

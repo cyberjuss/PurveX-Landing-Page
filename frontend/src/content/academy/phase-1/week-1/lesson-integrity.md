@@ -1,6 +1,12 @@
 ### Integrity
 
-Integrity means that information stays accurate, and changes only when someone with permission changes it on purpose. When integrity fails, the data still looks completely normal and every system says it's working fine. What you've lost is the ability to trust what you're reading, which is why we call this failure a **lie**. Since nobody is stopped from working, people keep making decisions from that data, and those decisions stay wrong until someone notices the numbers don't match reality.
+Integrity means that information stays accurate, and changes only when someone with permission changes it on purpose. When integrity fails:
+
+<ul>
+<li>The data still looks completely normal, and every system says it's working fine</li>
+<li>You can no longer trust what you're reading, which is why we call this failure a <strong>lie</strong></li>
+<li>Nobody is stopped from working, so people keep making decisions from that data, and those decisions stay wrong until someone notices the numbers don't match reality</li>
+</ul>
 
 Integrity matters most where a quiet change is the harm in itself, such as:
 
@@ -13,7 +19,13 @@ The firewall rule is a good example of how quiet this can be. A changed rule doe
 
 **Controls:** hashing, digital signatures and audit logs.
 
-These controls work differently from the ones that protect confidentiality. None of them stops a change from happening. What they do is make the change **visible afterwards**, by giving you something reliable to compare against. Preventing the change in the first place is a separate job, and it belongs to access control.
+These controls work differently from the ones that protect confidentiality:
+
+<ul>
+<li>None of them stops a change from happening</li>
+<li>They make the change <strong>visible afterwards</strong>, by giving you something reliable to compare against</li>
+<li>Preventing the change in the first place is a separate job, and it belongs to access control</li>
+</ul>
 
 That difference shapes how you investigate, too:
 

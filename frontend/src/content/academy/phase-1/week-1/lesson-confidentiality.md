@@ -1,6 +1,12 @@
 ### Confidentiality
 
-Confidentiality means that only the people who are allowed to see a piece of information can see it. When confidentiality fails, the data usually hasn't gone anywhere. It's still sitting exactly where it was, and what's changed is that someone who was never supposed to have a copy now has one. That's why we call this failure a **leak**. And because nothing is missing, every system keeps reporting that it's healthy, so a leak can run for a long time before anyone notices.
+Confidentiality means that only the people who are allowed to see a piece of information can see it. When confidentiality fails:
+
+<ul>
+<li>The data usually hasn't gone anywhere. It's still sitting exactly where it was</li>
+<li>Someone who was never supposed to have a copy now has one, which is why we call this failure a <strong>leak</strong></li>
+<li>Nothing is missing, so every system keeps reporting that it's healthy, and a leak can run for a long time before anyone notices</li>
+</ul>
 
 Confidentiality matters most for information where simply seeing it does the damage, such as:
 
@@ -18,7 +24,13 @@ What sets this apart from the other two failures is that you can't undo it. You 
 - **Access control** decides what that person is allowed to reach.
 - **Encryption** makes the data unreadable to anyone who gets hold of it some other way.
 
-Each of these covers a gap the other two leave open, which is why you use all three together. Of the three, encryption is the one people most often assume is switched on when it isn't, and that assumption is costly, because unencrypted traffic can be read by anyone on the network path between the two ends. So when a colleague asks whether it's safe to send something through a particular system, the question you're really answering is whether that traffic is encrypted while it travels.
+Each of these covers a gap the other two leave open, which is why you use all three together. Watch encryption in particular:
+
+<ul>
+<li>It's the one people most often assume is switched on when it isn't</li>
+<li>Unencrypted traffic can be read by anyone on the network path between the two ends</li>
+<li>So when a colleague asks whether it's safe to send something through a system, the real question is whether that traffic is encrypted while it travels</li>
+</ul>
 
 ```check
 prompt: A laptop is stolen from a car. Its drive isn't encrypted, and nothing on the network changed. What failed, and which control would have helped?

@@ -8,7 +8,12 @@ All three methods produce output a person can't read. What separates them has no
 - **Encryption** can be undone only by somebody holding the key.
 - **Hashing** cannot be undone by anybody, under any circumstances.
 
-Jordan's question matters because the answer changes what happens next. If the value were really encrypted, how exposed the password is would depend on whether the key leaked too. If it's only encoded, though, the password is already known to anyone who has read that script.
+Jordan's question matters because the answer changes what happens next:
+
+<ul>
+<li><strong>If it's encrypted</strong>, how exposed the password is depends on whether the key leaked too</li>
+<li><strong>If it's only encoded</strong>, anyone who has read that script already knows the password</li>
+</ul>
 
 ### How to tell them apart
 
@@ -36,7 +41,15 @@ The first command works on Linux or a Mac, and the second does the same thing in
 
 ### Attackers encode commands
 
-Attackers know about Base64 too, and they use it to hide commands. PowerShell will run Base64 text given after `-EncodedCommand`, which is often shortened to `-enc`, so when an analyst sees `powershell -enc` followed by a long string, they decode it before deciding anything. The text inside is UTF-16, so in CyberChef you add **Decode text** set to UTF-16LE after From Base64. With that step added, `RwBlAHQALQBEAGEAdABlAA==` decodes to `Get-Date`.
+Attackers know about Base64 too, and they use it to hide commands:
+
+<ul>
+<li>PowerShell runs Base64 text given after <code>-EncodedCommand</code>, often shortened to <code>-enc</code></li>
+<li>When an analyst sees <code>powershell -enc</code> followed by a long string, they decode it before deciding anything</li>
+<li>The text inside is UTF-16, so in CyberChef you add <strong>Decode text</strong> set to UTF-16LE after From Base64</li>
+</ul>
+
+With that step added, `RwBlAHQALQBEAGEAdABlAA==` decodes to `Get-Date`.
 
 ### Good encryption changes every time
 

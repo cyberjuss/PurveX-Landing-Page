@@ -5,7 +5,14 @@
 
 ### Overview
 
-Every sign-in, and every click that follows it, answers two separate questions. First, who are you? And second, now that the system knows, what are you allowed to do? In everyday speech we squash both into one word, "access", but keeping them apart is the foundation of this week, because they fail separately, get attacked separately and get fixed by different people.
+Every sign-in, and every click that follows it, answers two separate questions:
+
+<ul>
+<li><strong>Who are you?</strong></li>
+<li><strong>Now that the system knows, what are you allowed to do?</strong></li>
+</ul>
+
+In everyday speech we squash both into one word, "access", but keeping them apart is the foundation of this week, because they fail separately, get attacked separately and get fixed by different people.
 
 Three pieces share that work:
 
@@ -23,7 +30,14 @@ Most real breaches start right here, rather than with clever malware. Each of th
 | MGM Resorts, 2023 | A caller who reportedly talked the IT help desk into resetting an employee's MFA | Ransomware that disrupted hotels and casinos for days | **Authentication**, broken through a person |
 | First American Financial, 2019 | Changing one number in a web address, with no check that the visitor was allowed to see the document | About 885 million mortgage and banking documents left reachable | **Authorization** |
 
-None of them needed sophisticated tools. Two were a valid credential used by the wrong person, and the third was an application that never asked whether the visitor was entitled to the document. Since 2021, broken access control has sat at number one on the OWASP Top 10, the best-known list of web application risks.
+None of them needed sophisticated tools:
+
+<ul>
+<li>Two were a valid credential used by the wrong person</li>
+<li>The third was an application that never asked whether the visitor was entitled to the document</li>
+</ul>
+
+Since 2021, broken access control has sat at number one on the OWASP Top 10, the best-known list of web application risks.
 
 ```connect
 prompt: Connect each word to its job.

@@ -37,6 +37,12 @@ Encoding = A format change anybody can undo in one step. It guarantees nothing.
 
 ### Why It Matters
 
-Mixing these up has a real, documented cost. In 2012, about 6.5 million LinkedIn password hashes leaked, and because they'd been stored without a salt, identical passwords had identical hashes. That let attackers go after the whole set at once instead of one account at a time, and more than 60% of them were cracked within about a week.
+Mixing these up has a real, documented cost. In 2012:
+
+<ul>
+<li>About 6.5 million LinkedIn password hashes leaked</li>
+<li>They'd been stored without a salt, so identical passwords had identical hashes</li>
+<li>Attackers went after the whole set at once instead of one account at a time, and more than 60% were cracked within about a week</li>
+</ul>
 
 The same ideas work in your favor, too. In 2023, analysts tracked a poisoned 3CX installer across many organizations by sharing a single hash of the malicious file, which let any team check its own copies in seconds.

@@ -32,7 +32,14 @@ The second, **asymmetric encryption**, uses a pair of keys instead.
 - Anything locked with one of the pair opens only with the other.
 - Pairs are much slower, so they are not used for bulk data. Their job is establishing trust between parties who have never met, and signing files to prove who published them.
 
-HTTPS is a good example of the two working together. Your browser and the website use their key pairs to agree on a fresh shared key for the session, usually AES, and that shared key protects everything sent afterwards. In other words, the slow method solves the problem of agreeing on a secret in public, and then the fast method does the actual work.
+HTTPS is a good example of the two working together:
+
+<ul>
+<li>Your browser and the website use their key pairs to agree on a fresh shared key for the session, usually AES</li>
+<li>That shared key protects everything sent afterwards</li>
+</ul>
+
+In other words, the slow method solves the problem of agreeing on a secret in public, and then the fast method does the actual work.
 
 ```match
 prompt: Which kind of encryption is doing the work in each case?
@@ -46,7 +53,15 @@ Both together = Your browser agreeing a key with a site, then protecting the who
 
 BitLocker keeps the drive's key inside the laptop's TPM, a security chip on the motherboard, and the TPM only releases that key when the machine's startup looks the same as it did last time. That fussiness is deliberate, because a changed startup could mean someone is trying to get at the drive in a way its owner never intended.
 
-Sam's overnight firmware update changed the startup, so the TPM did its job and held the key back. BitLocker then fell back to asking for the 48-digit recovery key, which IT saved to the directory when the drive was first encrypted. Your task on this call is to get that key to the right person, and only to the right person.
+Here's what happened on Sam's laptop:
+
+<ul>
+<li>The overnight firmware update changed the startup, so the TPM did its job and held the key back</li>
+<li>BitLocker fell back to asking for the 48-digit recovery key</li>
+<li>IT saved that key to the directory when the drive was first encrypted</li>
+</ul>
+
+Your task on this call is to get that key to the right person, and only to the right person.
 
 1. **Verify the caller** with the approved method, such as a callback to the number on file. The recovery key unlocks every file on the drive.
 2. **Match the Key ID** on Sam's screen to the recovery key stored for that laptop in Active Directory or Microsoft Entra ID.

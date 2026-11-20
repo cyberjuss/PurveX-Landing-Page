@@ -11,7 +11,12 @@ A vulnerability is a weakness that someone could take advantage of. It's a flaw 
 
 ### Reading a scanner report
 
-A vulnerability scan returns every weakness it can find, often hundreds of them, with no sense of which ones anything could actually reach. If you treated that output as a queue of emergencies, it would keep a whole team busy forever. So for each finding, the useful question isn't how bad it looks on its own. It's whether anything is in a position to exploit it, and what that would cost if it did.
+A vulnerability scan returns every weakness it can find, often hundreds of them, with no sense of which ones anything could actually reach. Treated as a queue of emergencies, it would keep a whole team busy forever. So for each finding, don't ask how bad it looks on its own. Ask:
+
+<ul>
+<li>Is anything in a position to exploit it?</li>
+<li>What would that cost if it did?</li>
+</ul>
 
 Vulnerabilities are also the part you control most. You usually can't get rid of the people who would attack you, but you can:
 

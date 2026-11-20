@@ -1,6 +1,12 @@
 ### How It All Connects
 
-You've now met every piece of this week, and they fit together as a chain that runs in one direction. A vulnerability gives a threat a way in, and if that threat succeeds, one or more parts of the CIA triad fail. Risk sits over the whole chain as your estimate, made in advance, of how likely it is to run all the way through and what it would cost if it did.
+You've now met every piece of this week, and they fit together as a chain that runs in one direction:
+
+<ul>
+<li>A <strong>vulnerability</strong> gives a <strong>threat</strong> a way in</li>
+<li>If the threat succeeds, one or more parts of the <strong>CIA triad</strong> fail</li>
+<li><strong>Risk</strong> sits over the whole chain: your estimate, made in advance, of how likely it is to run all the way through and what it would cost</li>
+</ul>
 
 Because the chain runs in that order, it's also the order to work through when something lands in front of you:
 
@@ -29,7 +35,14 @@ The three properties also pull against each other:
 - Stronger **confidentiality**, such as extra MFA prompts, makes data harder for the wrong person to reach, but also harder for the right one.
 - Easier **availability**, such as a file share open to everyone, means people can always reach their work, but it removes the barrier that keeps the wrong people out.
 
-Since no setup gets the most out of all three at once, security work turns out to be a series of decisions rather than a checklist. For the data in front of you, decide which property matters most, then choose your control knowing what you're giving up. Patient records and a public status page need opposite answers, and both answers are right for their own data.
+Since no setup gets the most out of all three at once, security work is a series of decisions rather than a checklist:
+
+<ul>
+<li>Decide which property matters most for the data in front of you</li>
+<li>Choose your control knowing what you're giving up</li>
+</ul>
+
+Patient records and a public status page need opposite answers, and both answers are right for their own data.
 
 ```check
 prompt: To stop the help desk calls, someone opens the Finance share to everyone in the firm. Which property got stronger, and which one paid for it?

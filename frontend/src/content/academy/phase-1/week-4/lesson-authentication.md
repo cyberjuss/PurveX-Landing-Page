@@ -49,7 +49,13 @@ Password expired: Taylor's password reached the end of its allowed age
 
 ### Resets
 
-A password or MFA reset is an authentication decision, not an administrative chore. For the length of that call, you are the authentication system, able to set aside every control the organization has built, for one account. That's precisely why attackers target this call. In 2023, they reportedly got their first foothold at MGM Resorts without any technical exploit, simply by talking the help desk into resetting an employee's MFA.
+A password or MFA reset is an authentication decision, not an administrative chore:
+
+<ul>
+<li>For the length of that call, you are the authentication system, able to set aside every control the organization has built, for one account</li>
+<li>That's precisely why attackers target this call</li>
+<li>In 2023, they reportedly got their first foothold at MGM Resorts without any technical exploit, simply by talking the help desk into resetting an employee's MFA</li>
+</ul>
 
 1. **Verify** with a method the caller cannot fake, such as a callback to the number on file. Caller ID can be spoofed.
 2. **Treat an MFA change** as at least as sensitive as a password reset.
@@ -88,7 +94,13 @@ MFA methods from weakest to strongest:
 
 ### What the system issues after sign-in
 
-Once you've signed in, the system doesn't ask for your password on every click. It issues a **session token**, usually a cookie, which the browser sends with every request so it stands in for the password from then on. That's why a stolen token is so dangerous: it bypasses both the password and MFA.
+Once you've signed in, the system doesn't ask for your password on every click:
+
+<ul>
+<li>It issues a <strong>session token</strong>, usually a cookie</li>
+<li>The browser sends it with every request, so it stands in for the password from then on</li>
+<li>That's why a stolen token is so dangerous: it bypasses both the password and MFA</li>
+</ul>
 
 In a Windows domain, **Kerberos** plays the same role. The domain controller checks the password once, then issues a ticket that the computer shows to other services instead.
 

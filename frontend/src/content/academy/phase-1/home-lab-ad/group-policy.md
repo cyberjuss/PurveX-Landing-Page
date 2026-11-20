@@ -11,9 +11,24 @@ A **GPO**, or Group Policy Object, is a bundle of settings that the domain appli
 - Screen-lock timeout
 - Software restrictions
 
-A GPO can only link to a **Site**, a **Domain** or an **OU**, never to a Container or directly to a group. That's the reason every account in this lab sits in an OU. For example, a GPO linked to `OU=IT` could set a shorter screen-lock timeout for IT staff while leaving every other department untouched.
+A GPO can only link to:
 
-Password policy is the one exception. For domain accounts, it only takes effect from a GPO linked at the domain itself, so if one group needs stricter rules, you'd use a fine-grained password policy instead. Groups still play a part elsewhere, though, because security filtering lets a group narrow down who inside an OU the GPO applies to.
+<ul>
+<li>A <strong>Site</strong></li>
+<li>A <strong>Domain</strong></li>
+<li>An <strong>OU</strong></li>
+</ul>
+
+It never links to a Container or directly to a group, which is why every account in this lab sits in an OU. For example, a GPO linked to `OU=IT` could set a shorter screen-lock timeout for IT staff while leaving every other department untouched.
+
+Password policy is the one exception:
+
+<ul>
+<li>For domain accounts, it only takes effect from a GPO linked at the domain itself</li>
+<li>If one group needs stricter rules, use a fine-grained password policy instead</li>
+</ul>
+
+Groups still play a part elsewhere, though, because security filtering lets a group narrow down who inside an OU the GPO applies to.
 
 So if a setting isn't applying, ask where the object lives before you blame the GPO. An account in a Container still gets policy linked at the domain, but it never gets anything linked to an OU.
 

@@ -13,7 +13,12 @@ The firm is small enough to hold in your head, with five departments, nine peopl
 
 A textbook would give you `User1` inside `OU=Users` and explain everything for you. Real environments are messier than that, so this lab is too, with real departments and access groups, and tickets that may not tell you the whole story.
 
-A job title doesn't set access. Group membership follows what the job needs, and a ticket has to approve it. Keep in mind, too, that callers and tickets can be wrong, which is why you verify what they tell you before you act on it.
+A job title doesn't set access:
+
+<ul>
+<li>Group membership follows what the job needs, and a ticket has to approve it</li>
+<li>Callers and tickets can be wrong, so verify what they tell you before you act on it</li>
+</ul>
 
 ### The Role You Play
 

@@ -13,7 +13,14 @@ why: Security is three separate jobs, and each one fails in its own way. Naming 
 
 ### Overview
 
-People call systems "secure" all the time, but the word on its own doesn't tell you what to check or what to fix. That's because security isn't one property. It's three separate jobs running at once, and whenever something goes wrong, one of those three jobs has failed. So the first skill we'll build this week is naming which one.
+People call systems "secure" all the time, but the word on its own doesn't tell you what to check or what to fix. That's because security isn't one property:
+
+<ul>
+<li>It's three separate jobs running at once</li>
+<li>Whenever something goes wrong, one of those three jobs has failed</li>
+</ul>
+
+So the first skill we'll build this week is naming which one.
 
 Each job fails in its own recognizable way:
 
@@ -23,7 +30,12 @@ Each job fails in its own recognizable way:
 
 <svg class="lk-fig" viewBox="0 0 560 290" role="img" aria-label="The CIA triad. Three jobs protect the same data. Confidentiality fails as a leak, integrity fails as a lie, and availability fails as a lockout."><path class="f-line" d="M255 80 L130 220 M305 80 L430 220 M195 250 L365 250"/><rect class="f-acc" x="195" y="22" width="170" height="58" rx="10"/><text class="f-t" x="280" y="47" text-anchor="middle">Confidentiality</text><text class="f-s" x="280" y="67" text-anchor="middle">fails as a leak</text><rect class="f-acc" x="25" y="220" width="170" height="58" rx="10"/><text class="f-t" x="110" y="245" text-anchor="middle">Integrity</text><text class="f-s" x="110" y="265" text-anchor="middle">fails as a lie</text><rect class="f-acc" x="365" y="220" width="170" height="58" rx="10"/><text class="f-t" x="450" y="245" text-anchor="middle">Availability</text><text class="f-s" x="450" y="265" text-anchor="middle">fails as a lockout</text><text class="f-k" x="280" y="165" text-anchor="middle">THE SAME DATA</text><text class="f-s" x="280" y="185" text-anchor="middle">three jobs, three ways to fail</text></svg>
 
-Together, these three are known as the CIA triad. Telling them apart matters because each failure goes to different people and gets contained in a different way. If you label one wrong, you'll spend your time chasing the wrong problem while the real one keeps going.
+Together, these three are known as the CIA triad. Telling them apart matters:
+
+<ul>
+<li>Each failure goes to different people and gets contained in a different way</li>
+<li>Label one wrong and you'll chase the wrong problem while the real one keeps going</li>
+</ul>
 
 ### Naming Danger Before It Does Damage
 

@@ -21,7 +21,13 @@ Machines get accounts too. A **computer object** represents a machine in the sam
 
 ### Service Accounts
 
-There's a third kind to know about. A **service account** is a user object that gives an identity to a job, such as a scheduled task, rather than to a person. This lab's is `svc-backup-job`, and because it isn't a person, it doesn't belong in a staff group. So if you find it in `IT Users`, that's leftover access, not someone who works in IT.
+There's a third kind to know about. A **service account** is a user object that gives an identity to a job, such as a scheduled task, rather than to a person:
+
+<ul>
+<li>This lab's is <code>svc-backup-job</code></li>
+<li>It isn't a person, so it doesn't belong in a staff group</li>
+<li>If you find it in <code>IT Users</code>, that's leftover access, not someone who works in IT</li>
+</ul>
 
 ```sort
 prompt: Person, machine or job? Sort each object you might open.
