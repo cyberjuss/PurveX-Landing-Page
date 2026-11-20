@@ -408,8 +408,8 @@ button.lkd__card:hover { border-color: var(--rd-accent); }
   cursor: pointer;
   transition: border-color 160ms, background 160ms;
 }
-.lkc__opt:hover:not(:disabled) { border-color: var(--rd-accent); }
-.lkc__opt:disabled { cursor: default; }
+.lkc__opt:hover:not([aria-disabled="true"]) { border-color: var(--rd-accent); }
+.lkc__opt[aria-disabled="true"] { cursor: default; }
 .lkc__opt.is-right { border-color: color-mix(in srgb, var(--rd-good) 65%, transparent); background: color-mix(in srgb, var(--rd-good) 8%, var(--rd-surface)); }
 .lkc__opt.is-wrong { border-color: color-mix(in srgb, var(--rd-bad) 60%, transparent); color: var(--rd-ink-2); }
 .lkc__opt.is-chosen { border-color: var(--rd-accent); background: color-mix(in srgb, var(--rd-accent) 8%, var(--rd-surface)); }

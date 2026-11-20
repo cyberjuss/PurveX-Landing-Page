@@ -622,7 +622,7 @@ function ChoiceActivity({ activity }: { activity: Extract<DeckActivity, { kind: 
                 type="button"
                 className={`lkc__opt${state}`}
                 onClick={() => pick(o.i)}
-                disabled={done || picked}
+                aria-disabled={done || picked}
                 aria-pressed={picked}
               >
                 <span className="lkc__mark" aria-hidden>

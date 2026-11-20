@@ -320,13 +320,18 @@ export function ReadinessDashboard() {
           return (
             <div key={ch.key} className="rd-log">
               <div className="rd-log__head">
-                <button type="button" className="rd-log__toggle" onClick={() => toggleLog(ch.key)} aria-expanded={open}>
-                  <ChevronDown className={`rd-log__chevron h-4 w-4 ${open ? "" : "-rotate-90"}`} aria-hidden />
-                  <span>
-                    <h3>{ch.label}</h3>
-                    <p>{ch.blurb}</p>
-                  </span>
-                </button>
+                {/* The heading holds the button, not the other way round: a button
+                    may only contain inline content, and a heading inside one is lost
+                    to screen readers. */}
+                <h3 className="rd-log__h">
+                  <button type="button" className="rd-log__toggle" onClick={() => toggleLog(ch.key)} aria-expanded={open}>
+                    <ChevronDown className={`rd-log__chevron h-4 w-4 ${open ? "" : "-rotate-90"}`} aria-hidden />
+                    <span>
+                      <span className="rd-log__title">{ch.label}</span>
+                      <span className="rd-log__blurb">{ch.blurb}</span>
+                    </span>
+                  </button>
+                </h3>
                 <span className="rd-log__count">
                   {done}/{list.length}
                 </span>
@@ -385,13 +390,15 @@ export function ReadinessDashboard() {
         {LAB_CATALOG.length > 0 && (
         <div className="rd-log">
           <div className="rd-log__head">
-            <button type="button" className="rd-log__toggle" onClick={() => toggleLog("labs")} aria-expanded={logOpen("labs")}>
-              <ChevronDown className={`rd-log__chevron h-4 w-4 ${logOpen("labs") ? "" : "-rotate-90"}`} aria-hidden />
-              <span>
-                <h3>Scored labs</h3>
-                <p>Your first finished score counts, so later replays do not change it.</p>
-              </span>
-            </button>
+            <h3 className="rd-log__h">
+              <button type="button" className="rd-log__toggle" onClick={() => toggleLog("labs")} aria-expanded={logOpen("labs")}>
+                <ChevronDown className={`rd-log__chevron h-4 w-4 ${logOpen("labs") ? "" : "-rotate-90"}`} aria-hidden />
+                <span>
+                  <span className="rd-log__title">Scored labs</span>
+                  <span className="rd-log__blurb">Your first finished score counts, so later replays do not change it.</span>
+                </span>
+              </button>
+            </h3>
             <span className="rd-log__count">
               {LAB_CATALOG.filter((l) => labPoints(results[l.id]) !== null).length}/{LAB_CATALOG.length}
             </span>

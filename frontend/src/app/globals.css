@@ -4611,8 +4611,9 @@ html:active-view-transition .ax-page { animation: none }
 .rd-log + .rd-log { margin-top: 36px; }
 .rd-log__head { display: flex; align-items: flex-end; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--rd-ink); }
 .rd-log__head > div { flex: 1; min-width: 0; }
-.rd-log__head h3 { font-family: var(--font-display); font-size: var(--ty-h4); font-weight: 600; color: var(--rd-ink); }
-.rd-log__head p { font-size: var(--ty-note); color: var(--rd-ink-3); }
+.rd-log__h { display: flex; flex: 1; min-width: 0; margin: 0; font: inherit; }
+.rd-log__title { display: block; font-family: var(--font-display); font-size: var(--ty-h4); font-weight: 600; color: var(--rd-ink); }
+.rd-log__blurb { display: block; font-size: var(--ty-note); color: var(--rd-ink-3); }
 .rd-log__count { font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note); font-weight: 700; color: var(--rd-ink-2); }
 /* The group header is a toggle now, collapsed by default -- thirteen compact
    rows to scan beats a hundred mission rows expanded at once. */
@@ -5355,7 +5356,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-quiz__opts { display: flex; flex-direction: column; gap: 0; margin-top: 14px; }
 .ax-quiz__opt { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; text-align: left; font-size: var(--ty-body); line-height: 1.5; color: var(--rd-ink-2); }
 .ax-quiz__opt + .ax-quiz__opt { border: none; }
-.ax-quiz__opt:hover:not(:disabled) { color: var(--rd-ink); }
+.ax-quiz__opt:hover:not([aria-disabled="true"]) { color: var(--rd-ink); }
 .ax-quiz__opt--on { color: var(--rd-ink); font-weight: 600; }
 .ax-quiz__opt--ok { color: var(--rd-good); }
 .ax-quiz__opt--bad { color: var(--rd-bad); }

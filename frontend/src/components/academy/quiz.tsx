@@ -190,7 +190,9 @@ export function QuizBlock({
                 key={oi}
                 type="button"
                 onClick={() => selectOption(oi)}
-                disabled={submitted || answered}
+                // aria-disabled, not disabled: a disabled button drops keyboard focus
+                // to the top of the page the moment the student answers.
+                aria-disabled={submitted || answered}
                 aria-pressed={isSelected}
                 className={`ax-quiz__opt ${
                   showCorrect ? "ax-quiz__opt--ok" : showWrong ? "ax-quiz__opt--bad" : isSelected ? "ax-quiz__opt--on" : ""
@@ -209,7 +211,7 @@ export function QuizBlock({
           })}
         </div>
         {answered && (
-          <div className="ax-quiz__note">
+          <div className="ax-quiz__note" role="status">
             <strong className={isCorrect ? "rd-text-good" : ""}>{isCorrect ? "Correct" : "Explanation"}</strong>
             {q.explanation}
           </div>

@@ -108,6 +108,14 @@ export function ReviewSession({ onClose }: { onClose: () => void }) {
     if (done && known > 0) window.setTimeout(() => confettiFrom(panelRef.current, 70), 200);
   }, [done, known]);
 
+  // Focus moves into the card when it opens and back to whatever opened it
+  // when it closes, so a keyboard or screen reader user lands in the review.
+  useEffect(() => {
+    const before = document.activeElement as HTMLElement | null;
+    panelRef.current?.focus();
+    return () => before?.focus?.();
+  }, []);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -129,7 +137,7 @@ export function ReviewSession({ onClose }: { onClose: () => void }) {
   return (
     <div className="rv-modal" role="dialog" aria-modal="true" aria-label="Daily review">
       <div className="rv-scrim" onClick={onClose} />
-      <div className="rv-panel" ref={panelRef}>
+      <div className="rv-panel" ref={panelRef} tabIndex={-1}>
         <div className="rv-head">
           <span className="rd-kicker">Daily review</span>
           <div className="rv-pips" aria-hidden>
