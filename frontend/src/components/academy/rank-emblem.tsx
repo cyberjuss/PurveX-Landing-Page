@@ -12,7 +12,7 @@ const MARK: Record<string, { text: string; fill: string }> = {
   "incident-responder": { text: "IR", fill: "#b23a48" },
 };
 
-export function RankEmblem({ rank, ready = false, size = 28 }: { rank: Rank; ready?: boolean; size?: number }) {
+export function RankEmblem({ rank, ready = false, size = 28 }: { rank: Pick<Rank, "id" | "title">; ready?: boolean; size?: number }) {
   const mark = MARK[rank.id] ?? MARK.trainee;
   const label = `${rank.title}${ready ? ", Ready" : ""}`;
   return (

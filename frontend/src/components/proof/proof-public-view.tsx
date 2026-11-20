@@ -3,6 +3,7 @@ import { ProofGallery } from "@/components/proof/proof-gallery";
 import { ProofPrintButton } from "@/components/proof/proof-print-button";
 import { certStatusText, SHOTS_PER_ITEM } from "@/lib/academy-proof";
 import { badgeInitials, TIER_LABEL } from "@/lib/academy-competencies";
+import { RankEmblem } from "@/components/academy/rank-emblem";
 import type { ProofData } from "@/lib/academy-proof-data";
 import type { ProofSettings } from "@/lib/academy-proof-store";
 import "./proof-public.css";
@@ -73,7 +74,7 @@ export function ProofPublicView({
   printable = true,
 }: {
   settings: ProofSettings;
-  data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & Partial<Pick<ProofData, "roleNames" | "certs" | "clips" | "competencies">> & { shots: Shot[] };
+  data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & Partial<Pick<ProofData, "roleNames" | "certs" | "clips" | "competencies" | "rank" | "ready">> & { shots: Shot[] };
   /** Where each screenshot loads from. The student's own preview uses blob URLs. */
   shotSrc?: (id: string) => string;
   /** Where each challenge clip streams from. Null shows the card without a player. */
@@ -138,6 +139,16 @@ export function ProofPublicView({
             {avatarSrc && <img className="pp-avatar" src={avatarSrc} alt={settings.displayName} />}
             <div>
               <h1>{settings.displayName}</h1>
+              {data.rank && (
+                <p className={`pp-rank${data.ready ? " is-ready" : ""}`}>
+                  <RankEmblem rank={data.rank} ready={data.ready} size={22} />
+                  <span>
+                    {data.rank.title}
+                    {data.ready && <em>Ready</em>}
+                  </span>
+                  <small>PurveX Range rank</small>
+                </p>
+              )}
               {roleLine && <p className="pp-role">{roleLine}</p>}
               {(tags.length > 0 || certsInHead) && (
                 <ul className="pp-tags">

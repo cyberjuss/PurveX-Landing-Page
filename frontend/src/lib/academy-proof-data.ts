@@ -4,6 +4,8 @@ import { buildSkills, buildWorkItems, TRACK_FOR_ROLE, type Track, type WorkItem 
 import { listClips } from "@/lib/academy-clips";
 import { competencyBadges, type CompetencyBadge } from "@/lib/academy-competencies";
 import { jobProgress } from "@/lib/academy-drills";
+import { currentRank } from "@/lib/academy-badges";
+import { summarize } from "@/lib/academy-score";
 import { CHALLENGE_LABELS } from "@/lib/academy-missions";
 import { listShots, loadProofSettings, type ProofSettings, type ProofShot } from "@/lib/academy-proof-store";
 import { loadDrills, loadLabState, loadProfile, loadProgress } from "@/lib/academy-store";
@@ -25,6 +27,10 @@ export type ProofData = {
   clips: ProofClip[];
   /** The core job skills, rated from the same task status the work items come from. */
   competencies: CompetencyBadge[];
+  /** The rank badge an employer sees, from Help Desk Analyst up. Trainee is not worth showing. */
+  rank: { id: string; title: string } | null;
+  /** At or above the Ready bar, which adds the gold rim. */
+  ready: boolean;
 };
 
 export type ProofClip = { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null; hasPoster: boolean };
@@ -55,8 +61,15 @@ export async function loadProofData(userId: string): Promise<ProofData> {
     settings,
     shots,
     competencies,
+    rank: rankShown(results),
+    ready: summarize(results).level === "ready",
     clips: clips.map((c) => ({ id: c.id, title: CHALLENGE_LABELS[c.challenge], durationSec: c.durationSec, solvedAt: c.solvedAt, recordedAt: c.recordedAt, hasPoster: Boolean(c.posterPath) })),
   };
+}
+
+function rankShown(results: Parameters<typeof currentRank>[0]): ProofData["rank"] {
+  const r = currentRank(results);
+  return r && r.id !== "trainee" ? { id: r.id, title: r.title } : null;
 }
 
 /** Why the profile cannot be shared yet. Empty means it can. */
