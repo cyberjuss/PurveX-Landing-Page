@@ -145,7 +145,7 @@ const phase1Weeks: WeekDef[] = [
 const phase1HomeLabs: HomeLabDef[] = [
   {
     slug: "home-lab-setup",
-    title: "Home Lab — Set Up",
+    title: "Set Up",
     summary: "Learn the PurveX Financial environment, then build it on your own machine.",
     objectives: [
       "Know the firm you protect",
@@ -167,7 +167,7 @@ const phase1HomeLabs: HomeLabDef[] = [
   },
   {
     slug: "home-lab-directory",
-    title: "Home Lab — The Directory",
+    title: "The Directory",
     summary: "What lives in Active Directory and how the firm's accounts, groups and policy fit together.",
     objectives: [
       "Join a computer to the domain",
@@ -187,7 +187,7 @@ const phase1HomeLabs: HomeLabDef[] = [
   },
   {
     slug: "home-lab-desk",
-    title: "Home Lab — Working the Desk",
+    title: "Working the Desk",
     summary: "The four jobs a help desk does all day, done in your own directory.",
     objectives: [
       "Find any account in seconds",
