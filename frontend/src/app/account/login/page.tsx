@@ -28,7 +28,14 @@ function getErrorMessage(err: unknown, fallback: string) {
 // Only ever a relative in-app path (e.g. "/pricing?plan=paid") -- never
 // follow an absolute/external "next" value, which would be an open redirect.
 function safeNext(raw: string | null | undefined): string {
-  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  // Only a path on this site. Browsers read "/\evil.com" as "//evil.com", so a
+  // check on the first characters alone let a sign-in link send people off-site.
+  if (!raw || !raw.startsWith("/") || /[\\\s]/.test(raw)) return "/pricing";
+  try {
+    const base = "https://purvex.invalid";
+    const u = new URL(raw, base);
+    if (u.origin === base) return u.pathname + u.search + u.hash;
+  } catch {}
   return "/pricing";
 }
 

@@ -29,7 +29,14 @@ function getErrorMessage(err: unknown, fallback: string) {
 // "next" value, which would be an open redirect. Same guard as the login
 // page's.
 function safeNext(raw: string | null | undefined): string | null {
-  if (raw && raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  // Only a path on this site. Browsers read "/\evil.com" as "//evil.com", so a
+  // check on the first characters alone let a sign-in link send people off-site.
+  if (!raw || !raw.startsWith("/") || /[\\\s]/.test(raw)) return null;
+  try {
+    const base = "https://purvex.invalid";
+    const u = new URL(raw, base);
+    if (u.origin === base) return u.pathname + u.search + u.hash;
+  } catch {}
   return null;
 }
 
