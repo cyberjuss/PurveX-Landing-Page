@@ -334,7 +334,13 @@ export function SectionTabs({
       ? { label: nextWeek.label, go: () => router.push(nextWeek.href) }
       : null;
   useEffect(() => {
-    const apply = () => setActive(indexForHash(window.location.hash, items));
+    // A link to a challenge on another week changes the URL while this page is
+    // still on screen, fading out. Its hash matches none of these tabs, so
+    // reading it here flipped the page you were leaving to its first tab.
+    const here = window.location.pathname;
+    const apply = () => {
+      if (window.location.pathname === here) setActive(indexForHash(window.location.hash, items));
+    };
     apply();
     window.addEventListener("hashchange", apply);
     // Covers the same-page tab links that only ever change the hash through
