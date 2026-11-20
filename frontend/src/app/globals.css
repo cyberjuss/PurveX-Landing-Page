@@ -4745,6 +4745,13 @@ html:active-view-transition .ax-page { animation: none }
 .ax-titleblock { padding: 8px 0 8px; }
 .ax-titleblock h1 { font-family: var(--font-display); font-size: clamp(32px, 5vw, 48px); line-height: 1.05; font-weight: 600; letter-spacing: -0.03em; color: var(--rd-ink); }
 .ax-titleblock p { margin-top: 14px; max-width: 58ch; font-size: var(--ty-lead); line-height: 1.6; color: var(--rd-ink-2); }
+.ax-objectives { margin-top: 14px; max-width: 62ch; }
+.ax-objectives summary { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker, 11px); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-accent); }
+.ax-objectives summary span { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: color-mix(in srgb, var(--rd-accent) 12%, transparent); letter-spacing: 0; }
+.ax-objectives summary:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 3px; }
+.ax-objectives ul { margin: 10px 0 0; padding-left: 20px; list-style: disc; display: grid; gap: 6px; }
+.ax-objectives li { font-size: var(--ty-body); line-height: 1.5; color: var(--rd-ink-2); }
+.ax-objectives li::marker { color: var(--rd-accent); }
 .ax-entryhead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding-bottom: 6px; }
 .ax-entryhead .ax-titleblock { padding-bottom: 0; flex: 1; min-width: 0; }
 /* Phones: the complete button drops under the summary instead of

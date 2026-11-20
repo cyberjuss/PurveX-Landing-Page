@@ -24,6 +24,10 @@ export interface WeekDef {
   slug: string;
   title: string;
   summary: string;
+  /** What a student can do by the end, each one something the week's lessons,
+   *  quiz or challenge has them do and checks. Shown on the week's page and
+   *  the one place a syllabus should read them from. */
+  objectives?: string[];
   sections: ContentSection[];
 }
 
@@ -48,6 +52,14 @@ const phase1Weeks: WeekDef[] = [
     slug: "week-1",
     title: "Week 1 — CIA Triad",
     summary: "Name what failed, then separate a threat from a vulnerability before ranking the risk.",
+    objectives: [
+      "Classify an incident as a confidentiality, integrity or availability failure",
+      "Distinguish a vulnerability from a threat in a real finding",
+      "Rank findings by likelihood and impact, and justify the order",
+      "Select the control that addresses each kind of failure",
+      "Use PowerShell to find, read and disable a Windows Firewall rule",
+      "Verify a file's integrity by comparing its SHA-256 hash with a saved value",
+    ],
     sections: [
       { label: "Overview", file: "phase-1/week-1/lesson-overview.md" },
       { label: "Confidentiality", file: "phase-1/week-1/lesson-confidentiality.md" },
@@ -66,6 +78,14 @@ const phase1Weeks: WeekDef[] = [
     slug: "week-2",
     title: "Week 2 — Encryption & Hashing",
     summary: "Prove a file was not changed, and tell encoding, encryption and hashing apart in a real password breach.",
+    objectives: [
+      "Identify whether a value is encoded, encrypted or hashed, and state who can reverse it",
+      "Decode hex and Base64 values with CyberChef and PowerShell",
+      "Verify a download against a published SHA-256 checksum",
+      "Explain why stored passwords need a salt and a slow hashing algorithm",
+      "Crack an unsalted hash with a wordlist, then force the affected accounts to change their passwords",
+      "Apply a caller-verification procedure before releasing a BitLocker recovery key",
+    ],
     sections: [
       { label: "Overview", file: "phase-1/week-2/lesson-overview.md" },
       { label: "Encoding vs Encryption vs Hashing", file: "phase-1/week-2/lesson-three-ways.md" },
@@ -81,6 +101,14 @@ const phase1Weeks: WeekDef[] = [
     slug: "week-3",
     title: "Week 3 — Networking",
     summary: "Read a network capture by checking the address, the handshake, the port, and the protocol, and then decide whether the traffic is ordinary.",
+    objectives: [
+      "Explain how IP, TCP, ports and protocols combine to carry a connection",
+      "Interpret the three-way handshake and Nmap's open, closed and filtered port states",
+      "Scan a server with Nmap and identify a service that should not be running",
+      "Capture and filter traffic with Wireshark, including traffic on the loopback adapter",
+      "Identify what TLS protects and what stays visible in an encrypted connection",
+      "Correct a stale DNS record and disable an unneeded firewall rule",
+    ],
     sections: [
       { label: "Overview", file: "phase-1/week-3/lesson-overview.md" },
       { label: "TCP/IP", file: "phase-1/week-3/lesson-tcpip.md" },
@@ -97,6 +125,14 @@ const phase1Weeks: WeekDef[] = [
     slug: "week-4",
     title: "Week 4 — Authentication, Authorization & Access Control",
     summary: "Prove who someone is, give them only what their job needs, and check it on every request. Then break an app that forgot to.",
+    objectives: [
+      "Distinguish authentication, authorization and access control in a given incident",
+      "Rank MFA methods by how well they resist phishing",
+      "Perform a password or MFA reset using a caller-verification procedure",
+      "Determine what an account can reach from its group memberships, and remove access it should not have",
+      "Find failed sign-ins for an account in the Security log (event 4625)",
+      "Identify broken access control in a web request and describe the server-side fix",
+    ],
     sections: [
       { label: "Overview", file: "phase-1/week-4/lesson-overview.md" },
       { label: "Authentication", file: "phase-1/week-4/lesson-authentication.md" },
@@ -118,6 +154,12 @@ const phase1HomeLabs: HomeLabDef[] = [
     slug: "home-lab-setup",
     title: "Home Lab — Set Up",
     summary: "Learn the PurveX Financial environment, then build it on your own machine.",
+    objectives: [
+      "Describe PurveX Financial's departments, access levels and most sensitive data",
+      "Build a Windows Server and a Windows workstation on a shared virtual network",
+      "Promote a Windows Server to a domain controller",
+      "Run the build script and verify the directory against the baseline",
+    ],
     sections: [
       { label: "Overview", file: "phase-1/home-lab-ad/overview.md" },
       { label: "The Org Chart", file: "phase-1/home-lab-ad/the-org-chart.md" },
@@ -135,6 +177,14 @@ const phase1HomeLabs: HomeLabDef[] = [
     slug: "home-lab-directory",
     title: "Home Lab — The Directory",
     summary: "What lives in Active Directory and how the firm's accounts, groups and policy fit together.",
+    objectives: [
+      "Join a workstation to the domain, including pointing its DNS at the domain controller",
+      "Distinguish an organizational unit, a container and a security group",
+      "Create user, computer and service accounts in the correct organizational unit",
+      "Configure a service account with restricted logon hours and a description of its job",
+      "Link a Group Policy Object and predict which accounts it will reach",
+      "Decide where to delegate a task so it covers only the accounts intended",
+    ],
     sections: [
       { label: "Join a Computer", file: "phase-1/home-lab-ad/join-a-computer.md" },
       { label: "Organizational Units", file: "phase-1/home-lab-ad/organizational-units.md" },
@@ -149,6 +199,12 @@ const phase1HomeLabs: HomeLabDef[] = [
     slug: "home-lab-desk",
     title: "Home Lab — Working the Desk",
     summary: "The four jobs a help desk does all day, done in your own directory.",
+    objectives: [
+      "Find any user or computer in Active Directory by name, username or job title",
+      "Decide whether an account needs an unlock or a password reset, then carry it out",
+      "Transfer an account by moving its organizational unit and changing its groups in one change",
+      "Read raw attributes such as pwdLastSet and lastLogonTimestamp to confirm an account's state",
+    ],
     sections: [
       { label: "Find an Account", file: "phase-1/home-lab-ad/find-an-account.md" },
       { label: "Unlock or Reset", file: "phase-1/home-lab-ad/unlock-or-reset.md" },
@@ -161,6 +217,12 @@ const phase1HomeLabs: HomeLabDef[] = [
     slug: "home-lab-challenges",
     title: "Home Lab — Challenges",
     summary: "A first day on the desk, a full ticket queue and a client data review, graded against your own lab.",
+    objectives: [
+      "Verify a ticket's claims against the directory before changing anything",
+      "Resolve help desk tickets across Active Directory, DNS, the firewall, Group Policy and file shares",
+      "Inventory the sensitive data on file shares and identify who can read it",
+      "Record each change on the account or ticket so an auditor can trace it",
+    ],
     sections: [
       { label: "Challenge: Operation Day One", file: "phase-1/home-lab-ad/ctf-challenge.md" },
       { label: "Challenge: Ticket Queue", file: "phase-1/home-lab-ad/ticket-queue-challenge.md" },
