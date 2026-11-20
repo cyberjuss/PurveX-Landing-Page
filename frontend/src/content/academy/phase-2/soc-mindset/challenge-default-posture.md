@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>What the Firewall Does With What You Never Mentioned</h3>
-<p class="ad-brief__ask">Every firewall has already decided what to do with traffic you never mentioned. Can you read that default?</p>
-<p>Hosted lab required, with the domain controller reachable.</p>
+<p class="ad-brief__ask">Can you read the default every firewall has already chosen for traffic you never mentioned?</p>
+<p>You'll need your hosted lab running, with the domain controller reachable.</p>
 </div>
 
 <div class="ad-progress">

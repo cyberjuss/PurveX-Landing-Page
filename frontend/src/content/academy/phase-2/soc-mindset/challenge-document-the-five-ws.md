@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Turn a Vague Alert Into a Documented Account</h3>
-<p class="ad-brief__ask">A vague alert says a sign-in failed. Can you document it in a way Tier 2 can act on?</p>
-<p>Hosted lab required, with the domain controller reachable.</p>
+<p class="ad-brief__ask">When a vague alert says a sign-in failed, can you document it in a way Tier 2 can act on?</p>
+<p>You'll need your hosted lab running, with the domain controller reachable.</p>
 </div>
 
 <div class="ad-progress">

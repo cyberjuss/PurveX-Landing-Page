@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Campaign 3 of 4</p>
 <h3>The Open Door</h3>
-<p class="ad-brief__ask">An intrusion that starts with a door already open. Can you find it, prove it, and close the chain?</p>
+<p class="ad-brief__ask">When an intrusion starts with a door that was already open, can you find it, prove it and close the chain?</p>
 <p>Most steps check your Phase 1 lab, so keep it running.</p>
 </div>
 

@@ -2,10 +2,10 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Three-Minute Job</h3>
 <p class="ad-brief__ask">Something on web01, the Ubuntu server, has been calling out to the domain controller every three minutes, day and night, and nobody on the current team remembers setting it up. Find out what it is, what it hands over, and shut it down the right way.</p>
-<p>Hosted lab required, with both machines reachable.</p>
+<p>You'll need your hosted lab running, with both machines reachable.</p>
 <ul>
-<li>The job is already running in your lab. web01 ships with Wireshark and Nmap installed, so there is nothing to download. You capture and read the traffic in Wireshark.</li>
-<li>Read a command before you run it as root. <code>sudo</code> does not ask twice.</li>
+<li>The job is already running in your lab, and web01 ships with Wireshark and Nmap, so there's nothing to download before you capture and read the traffic.</li>
+<li>Read a command before you run it as root, because <code>sudo</code> does not ask twice.</li>
 </ul>
 </div>
 

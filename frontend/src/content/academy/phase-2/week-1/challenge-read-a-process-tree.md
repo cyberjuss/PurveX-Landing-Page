@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Follow the Process Tree to What Keeps It Alive</h3>
-<p class="ad-brief__ask">An alert says a process ran. Can you hunt it to what keeps it alive, and shut that down without destroying the evidence?</p>
-<p>Hosted lab required, with the domain controller reachable. Sysmon is installed.</p>
+<p class="ad-brief__ask">When an alert says a process ran, can you hunt it down to whatever keeps it alive, then shut that down without destroying the evidence?</p>
+<p>You'll need your hosted lab running, with the domain controller reachable, and Sysmon is already installed.</p>
 </div>
 
 <div class="ad-progress">

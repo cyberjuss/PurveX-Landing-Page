@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Prove the Signature Match, Then Find Its Limit</h3>
-<p class="ad-brief__ask">Antivirus matches files against known signatures. Can you create one real enough to trigger an alert, and read it?</p>
-<p>Hosted lab required, with the domain controller reachable. Defender is on by default.</p>
+<p class="ad-brief__ask">Since antivirus matches files against known signatures, can you create one real enough to trigger an alert, then read what it caught?</p>
+<p>You'll need your hosted lab running, with the domain controller reachable, and Defender is on by default.</p>
 </div>
 
 <div class="ad-progress">

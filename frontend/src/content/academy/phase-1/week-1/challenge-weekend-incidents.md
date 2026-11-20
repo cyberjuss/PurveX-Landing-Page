@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Weekend Incident Report</h3>
-<p class="ad-brief__ask">Three things went wrong at PurveX Financial over the weekend. Can you find each one in the firm's environment, name which part of the CIA triad it broke, and put it right?</p>
-<p>It is 8:15 AM Monday. Three tickets landed before you had finished your coffee:</p>
+<p class="ad-brief__ask">Can you find the three things that went wrong at PurveX Financial over the weekend, name which part of the CIA triad each one broke, and put it right?</p>
+<p>It's 8:15 AM on Monday, and three tickets landed before you'd finished your coffee:</p>
 <ul>
 <li>Wealth Management client data turned up somewhere it should not be.</li>
 <li>Finance thinks a file of wire approvals was changed.</li>

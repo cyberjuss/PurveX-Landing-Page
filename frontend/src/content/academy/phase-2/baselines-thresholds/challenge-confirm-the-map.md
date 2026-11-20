@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Ask the Machine, Not the Lesson</h3>
-<p class="ad-brief__ask">A lesson names five services. Can you read the real list straight off the machine?</p>
-<p>Hosted lab required, with the domain controller reachable.</p>
+<p class="ad-brief__ask">A lesson names five services, but can you read the real list straight off the machine?</p>
+<p>You'll need your hosted lab running, with the domain controller reachable.</p>
 </div>
 
 <div class="ad-progress">

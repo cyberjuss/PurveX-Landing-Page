@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Build Out the Directory</h3>
-<p class="ad-brief__ask">You've read how the directory fits together. Can you build each piece of it yourself, in your own lab, and explain why it goes where it does?</p>
-<p>PurveX Financial is growing, and your job this afternoon is to get the directory ready for it. Where a question asks you to build something, your lab has to show it before your answer counts.</p>
+<p class="ad-brief__ask">You've read how the directory fits together, so can you build each piece of it yourself, in your own lab, and explain why it goes where it does?</p>
+<p>PurveX Financial is growing and your job this afternoon is to get the directory ready for it, so wherever a question asks you to build something, your lab has to show it before your answer counts.</p>
 </div>
 
 <div class="ad-progress">
