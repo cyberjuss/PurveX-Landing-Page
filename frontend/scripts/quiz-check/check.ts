@@ -16,6 +16,7 @@
 import { phases } from "@/lib/academy-content";
 import { entriesOf } from "@/lib/academy-entries";
 import { quizzes } from "@/content/academy/quizzes";
+import { shownOrder } from "@/components/academy/quiz";
 
 let failures = 0;
 function t(name: string, ok: boolean, detail = "") {
@@ -39,6 +40,10 @@ for (const quiz of quizzes) {
     t(`${label}'s correctIndex is in range`, q.correctIndex >= 0 && q.correctIndex < q.options.length, `${q.correctIndex} of ${q.options.length}`);
     t(`${label} has no duplicate options`, new Set(q.options).size === q.options.length);
     t(`${label} has question and explanation text`, Boolean(q.question?.trim()) && Boolean(q.explanation?.trim()));
+    // The page shows options in a shuffled order. Every option must appear exactly once,
+    // or the student sees a blank row and a real answer, sometimes the right one, vanishes.
+    const shown = shownOrder(q.question, q.options.length);
+    t(`${label} shows every option exactly once`, shown.length === q.options.length && [...shown].sort((a, b) => a - b).every((v, j) => v === j), JSON.stringify(shown));
   });
 }
 

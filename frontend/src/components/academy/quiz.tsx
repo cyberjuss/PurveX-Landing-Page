@@ -17,14 +17,16 @@ const LETTERS = ["A", "B", "C", "D", "E", "F"];
  * same on every visit and device, and the saved pick (an index into the
  * source list) still points at the option the student chose.
  */
-function shownOrder(question: string, count: number): number[] {
+export function shownOrder(question: string, count: number): number[] {
   let seed = 2166136261;
   for (let i = 0; i < question.length; i++) seed = Math.imul(seed ^ question.charCodeAt(i), 16777619) >>> 0;
   const order = Array.from({ length: count }, (_, i) => i);
   for (let i = count - 1; i > 0; i--) {
     seed = Math.imul(seed ^ (seed >>> 15), 2246822507) >>> 0;
     seed = Math.imul(seed ^ (seed >>> 13), 3266489909) >>> 0;
-    const j = (seed ^ (seed >>> 16)) % (i + 1);
+    // >>> 0 keeps it unsigned. A negative value gave a negative index, which
+    // swapped in undefined, so a blank option showed and a real one vanished.
+    const j = ((seed ^ (seed >>> 16)) >>> 0) % (i + 1);
     [order[i], order[j]] = [order[j], order[i]];
   }
   return order;
