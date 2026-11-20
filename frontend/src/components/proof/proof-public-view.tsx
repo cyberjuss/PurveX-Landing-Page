@@ -241,7 +241,7 @@ export function ProofPublicView({
             <p className="pp-note">
               Rated from the hands-on tasks below. Proficient means at least half of a skill&apos;s tasks were proven, Verified means all of them.
             </p>
-            <ul className="pp-skills">
+            <ul className="pp-jobskills">
               {(data.competencies ?? [])
                 .filter((c) => c.tier === "proficient" || c.tier === "verified")
                 .sort((a, b) => Number(b.tier === "verified") - Number(a.tier === "verified"))
@@ -310,7 +310,11 @@ export function ProofPublicView({
               {data.skills.map((g) => (
                 <div key={g.group}>
                   <dt>{g.group}</dt>
-                  <dd>{g.items.join(", ")}</dd>
+                  <dd>
+                    {g.items.map((k) => (
+                      <span key={k}>{k}</span>
+                    ))}
+                  </dd>
                 </div>
               ))}
             </dl>

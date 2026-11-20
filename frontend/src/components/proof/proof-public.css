@@ -100,9 +100,10 @@
 
 /* Skills: category on the left, a plain list on the right. */
 .pp-skills { margin: 16px 0 0; display: grid; }
-.pp-skills > div { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-top: 1px solid var(--pp-line); font-size: var(--ty-body); }
+.pp-skills > div { display: grid; grid-template-columns: 220px minmax(0, 1fr); align-items: baseline; gap: 16px; padding: 12px 0; border-top: 1px solid var(--pp-line); font-size: var(--ty-body); }
 .pp-skills dt { font-weight: 600; color: var(--pp-ink); }
-.pp-skills dd { margin: 0; color: var(--pp-ink-2); }
+.pp-skills dd { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.pp-skills dd span { padding: 3px 9px; font-size: 13px; line-height: 1.4; color: var(--pp-ink-2); background: var(--pp-bg-2); border: 1px solid var(--pp-line); }
 
 /* Closing call to action. */
 .pp-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 28px; padding: 28px 0; border-bottom: 1px solid var(--pp-line); }
@@ -181,7 +182,7 @@
 }
 
 /* Core job skills: the competency badges an employer sees. */
-.pp-skills { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin: 14px 0 0; padding: 0; list-style: none; }
+.pp-jobskills { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin: 14px 0 0; padding: 0; list-style: none; }
 .pp-skill { display: flex; align-items: flex-start; gap: 14px; padding: 16px; border: 1px solid var(--pp-line); background: var(--pp-bg); }
 .pp-skill__seal { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: #fff; background: var(--pp-accent); }
 .pp-skill h3 { margin: 0; font-size: 15px; font-weight: 600; color: var(--pp-ink); }

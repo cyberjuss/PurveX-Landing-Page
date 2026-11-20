@@ -468,15 +468,19 @@ const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "resp
 
 export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean, results: Results = {}): { group: string; items: string[] }[] {
   const identity = new Set<string>();
+  const systems = new Set<string>();
+  const integrity = new Set<string>();
   const monitoring = new Set<string>();
   const network = new Set<string>();
   const response = new Set<string>();
-  if (hasLab || items.length) identity.add("Active Directory");
+  if (hasLab || items.length) systems.add("Active Directory");
   for (const it of items) {
     for (const k of it.keywords) {
       if (/audit|event|log/i.test(k)) monitoring.add(k);
       else if (/dns|network|firewall|attack surface/i.test(k)) network.add(k);
       else if (/malware|incident/i.test(k)) response.add(k);
+      else if (/hash|integrity|supply chain|crypt|checksum|encrypt/i.test(k)) integrity.add(k);
+      else if (/active directory|group policy|gpo|organizational unit|powershell/i.test(k)) systems.add(k);
       else identity.add(k);
     }
   }
@@ -493,11 +497,12 @@ export function buildSkills(items: WorkItem[], hasLab: boolean, didCtf: boolean,
   }
   const groups = [
     { group: "Identity and Access Management (IAM)", items: [...identity] },
+    { group: "Systems Administration", items: [...new Set([...systems, ...(hasLab ? ["PowerShell"] : [])])] },
+    { group: "Data Integrity and Cryptography", items: [...integrity] },
     { group: "Security Monitoring", items: [...monitoring] },
     { group: "Networking and Infrastructure", items: [...network] },
     { group: "Incident Response", items: [...response] },
     { group: "Security Analysis", items: (Object.keys(LAB_PASS_SKILLS) as LabPassId[]).filter((id) => results[id]?.solved).flatMap((id) => LAB_PASS_SKILLS[id]) },
-    { group: "Scripting", items: hasLab ? ["PowerShell"] : [] },
   ];
   return groups.filter((g) => g.items.length);
 }
