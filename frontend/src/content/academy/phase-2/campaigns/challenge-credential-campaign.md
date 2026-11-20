@@ -22,12 +22,12 @@
 </div>
 <div class="ad-hint__text">
 <p>A spray and a brute force look alike until you check one thing: is it one account failing many times, or many accounts failing once each?</p>
-<ol>
+<ul>
 <li>Open Event Viewer, Windows Logs → Security.</li>
 <li>Right-click Security and choose Filter Current Log, then filter by Event ID 4625.</li>
 <li>Sort by time and find the burst, every one landing within a few seconds of the last.</li>
 <li>Open a few and read Account For Which Logon Failed on the General tab. Count the distinct names in the burst.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-WinEvent -LogName Security -FilterHashtable @{Id=4625} -MaxEvents 50 | Format-List TimeCreated, Message</code></li>
@@ -61,11 +61,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Every other account in this log either failed outright or failed before it succeeded. Look for the one that did neither.</p>
-<ol>
+<ul>
 <li>Filter the Security log for event 4624 (successful logon).</li>
 <li>For each success, check whether a 4625 for the same account appears right before it.</li>
 <li>One success has no failure anywhere near it. Read its Account Name.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="petra.lindqvist">Any success on that account comes after a string of failures and a lockout. Find the account whose success has nothing in front of it.</div>
@@ -95,11 +95,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Remember that unlocking the account is part of the task, not just something to read about.</p>
-<ol>
+<ul>
 <li>Filter the Security log for event 4740 and read the Account That Was Locked Out.</li>
 <li>Open Active Directory Users and Computers and confirm the account shows as locked on its Account tab.</li>
 <li>Tick "Unlock account" and apply, or run <code>Unlock-ADAccount -Identity &lt;account&gt;</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="svc-night-index">That account signed in cleanly. Read event 4740 to find the one that was actually locked out.</div>
@@ -129,11 +129,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Start with the machine before you read any logs. Its OU is the department folder the computer lives in.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>Departments</code> and open the <code>Workstations</code> folder under each department until you find <code>WM-WKS07</code>.</li>
 <li>The department folder above that Workstations folder is your answer.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADComputer WM-WKS07).DistinguishedName</code></li>
@@ -176,10 +176,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Event 4625 is a failed sign-in and 4624 is a successful one. You'll only find these events in the export on this page, not in your lab's Security log.</p>
-<ol>
+<ul>
 <li>Read the export from top to bottom.</li>
 <li>Count the 4625 rows that appear before the first 4624.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="4625">That's the Event ID itself. Count how many rows carry it before the first success.</div>
@@ -209,11 +209,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A department group such as IT Users only grants standard access, so look for the group on Alex's account that grants more.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>alex.rivera</code>.</li>
 <li>Open the account and find the group on Member Of that goes beyond department access.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADPrincipalGroupMembership alex.rivera | Select-Object Name</code></li>
@@ -229,17 +229,17 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>So the session that followed the guessing ran with admin-level rights. With a stolen admin login, an attacker can reset passwords and change group memberships, and then cover their tracks.</p>
+<p>As a result, the session that followed the guessing ran with admin-level rights. With a stolen admin login, an attacker can reset passwords and change group memberships, and then cover their tracks.</p>
 </div>
 </div>
 </div>
 </div>
 
-<div class="ad-mission" data-id="tq-09" data-attempts="0">
+<div class="ad-mission" data-id="tq-09" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 2 · Exploitation · T1110.001 Password Guessing · INC-1046 · Critical</span>
 <h4>Mistake or Attack?</h4>
-<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Here's what you have so far: four failed logons two seconds apart, then a success, at 2 AM, with an admin account, on a workstation outside IT. Which explanation fits?<br><strong>A</strong> Alex mistyped the password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
-<p><strong>Task:</strong> Choose the explanation that fits all of the evidence and type its letter.</p>
+<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Here is what you have so far: four failed logons two seconds apart, then a success, at 2 AM, with an admin account, on a workstation outside IT. Which explanation fits?<br><strong>A</strong> Alex mistyped the password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
+<p><strong>Task:</strong> Select the explanation that fits all of the evidence and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Mistake or Attack?" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -267,11 +267,11 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="tq-10" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="tq-10" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 2 · Exploitation · T1110.001 Password Guessing · INC-1046 · Critical</span>
 <h4>The First Move</h4>
-<p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>It's 2:12 AM, and you believe an admin account has been compromised and is in use on a Wealth Management machine. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera and isolate WM-WKS07 from the network while keeping the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
-<p><strong>Task:</strong> Choose the best first move and type its letter.</p>
+<p><strong>SIEM Alert · Part 5 of 5 · Automated detection · 2:12 AM</strong><br>It is 2:12 AM, and you believe an admin account has been compromised and is in use on a Wealth Management machine. What do you do first?<br><strong>A</strong> Wipe and reimage WM-WKS07 right now.<br><strong>B</strong> Disable alex.rivera and isolate WM-WKS07 from the network while keeping the logs.<br><strong>C</strong> Email Alex and wait for an answer.<br><strong>D</strong> Clear the failed logon events so the alert stops repeating.</p>
+<p><strong>Task:</strong> Select the best first move and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Your First Move" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -292,7 +292,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Disable the account and isolate the machine, and keep the logs while you do it. Bear in mind that containing the session now doesn't undo whatever twelve minutes of admin access may already have been used for. So the next thing to check is whether anything was planted on the domain controller while that session was live.</p>
+<p>Disable the account and isolate the machine while keeping the logs, since containing the session now doesn't undo whatever those twelve minutes of admin access were already used for.</p>
 </div>
 </div>
 </div>
@@ -310,11 +310,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A task built to blend in will have a name that sounds like routine maintenance, so read what it runs, not just what it's called.</p>
-<ol>
+<ul>
 <li>Open Task Scheduler with Win+R and <code>taskschd.msc</code>.</li>
 <li>Open Task Scheduler Library and sort by Name.</li>
 <li>Find the task nobody on the team recognizes, then open its Actions tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ScheduledTask | Where-Object TaskPath -eq "\" | Select-Object TaskName, State</code></li>
@@ -347,11 +347,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The task's Actions tab named the address it was reaching, so find the outbound rule that allows traffic to that same address.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Outbound Rules and sort by Group to find the PurveX Lab rules.</li>
 <li>Read each rule's Remote Address against what the task's Actions tab named, then disable the one that matches.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Group "PurveX Lab" -Direction Outbound | Where-Object DisplayName -like "*Helper*" | Disable-NetFirewallRule</code></li>
@@ -372,7 +372,7 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="cc-11" data-attempts="0">
+<div class="ad-mission" data-id="cc-11" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 5 · Detection Engineering · INC-1072 · Medium</span>
 <h4>Write the Detection</h4>
 <p><strong>Detection Engineering Lead · Post-incident · 11:00 AM</strong><br>The spray worked once, quietly, because nothing was watching for the pattern itself. The only thing being watched was a single account failing over and over. Using the TRACE method from this phase's detection-writing week, write the query that would have caught it.</p>
@@ -384,11 +384,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Walk through TRACE: Technique (password spraying touches many accounts from one source), Reference (4625), Aggregate (count distinct accounts per source per window), Condition (threshold) and Escalation. This step is the Aggregate line.</p>
-<ol>
+<ul>
 <li><code>summarize</code> starts the aggregation.</li>
 <li><code>dcount(TargetUserName)</code> counts distinct accounts touched, not total events.</li>
-<li><code>by IPAddress, bin(TimeGenerated, 5m)</code> groups by source and a 5-minute window, so a slow trickle across hours does not falsely match.</li>
-</ol>
+<li><code>by IpAddress, bin(TimeGenerated, 5m)</code> groups by source and a 5-minute window, so a slow trickle across hours does not falsely match.</li>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="count\(\)">Counting every event misses the point, because a single account failing 20 times shouldn't trigger this. Count distinct accounts, not total failures.</div>
@@ -396,17 +396,17 @@
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>summarize AccountCount = dcount(TargetUserName) by IPAddress, bin(TimeGenerated, 5m)</code></p>
+<p class="ad-flag__code"><code>summarize AccountCount = dcount(TargetUserName) by IpAddress, bin(TimeGenerated, 5m)</code></p>
 </div>
 <div>
 <span>Why it matters</span>
-<p>A spray and a brute force both fill a log with 4625 events, and only counting distinct accounts, rather than total failures, tells them apart. To finish the query, the Condition step adds a threshold, <code>| where AccountCount >= 5</code>, and the Escalation step names who gets paged. If a detection can't explain its own aggregate logic, nobody will be able to tune it later.</p>
+<p>A spray and a brute force both fill a log with 4625 events, and only counting distinct accounts, rather than total failures, tells them apart.</p>
 </div>
 </div>
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="cc-12" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="cc-12" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 6 · Write-Up · Medium</span>
 <h4>Name the Stage That Never Happened</h4>
 <p><strong>SOC Lead · Final write-up · 11:30 AM</strong><br>Exploitation twice, then Installation, then Command and Control. That's four confirmed findings, and all of them are closed.</p>
@@ -429,7 +429,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Actions on Objectives is where an attacker finally does what they came for, whether that's stealing data, destroying it or using the access for fraud. This campaign was stopped at Command and Control, one stage short, and that wasn't luck. Containing a session, closing a rule and unlocking an account within the same hour is what kept the last and most damaging stage of the chain from ever being reached.</p>
+<p>Actions on Objectives is where an attacker finally does what they came for, and this campaign was stopped one stage short of it because containment happened within the same hour.</p>
 </div>
 </div>
 </div>

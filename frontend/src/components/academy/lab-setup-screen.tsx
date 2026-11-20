@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { Check, Database, Loader2, Network, Server, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
+import { Database, Network, Server, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
 import { useHostedLab } from "./hosted-lab-button";
 import "./lab-setup-screen.css";
 
@@ -98,42 +98,49 @@ export function LabSetupScreen() {
           <b>Range</b>
         </p>
 
-        <h1 className="ls__title">Building your environment</h1>
-        <p className="ls__lede">A Windows domain controller and an Ubuntu desktop, built for you alone.</p>
+        <p className="ls__kicker">Building your environment</p>
+        <h1 className="ls__title">
+          <span className="ls__prompt" aria-hidden="true">&gt;</span>
+          <span key={current} className="ls__title-text">{steps[current].label}</span>
+          <span className="ls__cursor" aria-hidden="true" />
+        </h1>
 
-        <div className="ls__bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)} aria-label="Setup progress">
-          <span style={{ width: `${pct}%` }} />
+        <div
+          className="ls__meter"
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(pct)}
+          aria-label="Setup progress"
+        >
+          <div className="ls__meter-track">
+            <div className="ls__meter-fill" style={{ width: `${pct}%` }} />
+          </div>
+          <em className="ls__meter-pct">{Math.round(pct)}%</em>
         </div>
 
-        <ol className="ls__steps">
+        <ul className="ls__log" aria-hidden="true">
           {steps.map((s, i) => {
             const Icon = s.icon;
+            const rowState = i < current ? "done" : i === current ? "now" : "pending";
             return (
-              <li key={s.label} className={i < current ? "is-done" : i === current ? "is-now" : ""}>
-                <span className="ls__mark" aria-hidden="true">
-                  {i < current ? <Check /> : i === current ? <Loader2 className="ls__spin" /> : <Icon />}
-                </span>
-                {s.label}
+              <li key={s.label} className={`ls__log-row is-${rowState}`}>
+                <Icon aria-hidden="true" />
+                <span>{s.label}</span>
               </li>
             );
           })}
-        </ol>
+        </ul>
 
         <p className="ls__eta">
           {/* A first build is usually about five minutes, but Active Directory
               can be slow to come up and the whole thing can run to twenty.
               Saying "almost there" for a quarter of an hour reads as broken. */}
-          <span>
-            {elapsed <= total
-              ? `About ${left} min left`
-              : firstBoot
-                ? "Taking longer than usual. Building a lab for the first time can run to 20 minutes."
-                : "Almost there. Running the last checks."}
-          </span>
-          <em>
-            {String(Math.min(current + 1, steps.length)).padStart(2, "0")}
-            <i>/{String(steps.length).padStart(2, "0")}</i>
-          </em>
+          {elapsed <= total
+            ? `About ${left} min left`
+            : firstBoot
+              ? "Taking longer than usual. Can run to 20 minutes the first time."
+              : "Almost there. Running the last checks."}
         </p>
 
         <button type="button" className="ls__hide" onClick={() => setHidden(true)}>

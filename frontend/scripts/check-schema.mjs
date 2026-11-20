@@ -52,8 +52,41 @@ for (const file of walk(join(root, "src"))) {
 
 // Which file would define each one, so a miss comes with its fix.
 const sqlFiles = readdirSync(join(root, "supabase")).filter((f) => f.endsWith(".sql"));
-const definedIn = (name) =>
-  sqlFiles.find((f) => readFileSync(join(root, "supabase", f), "utf8").includes(name)) ?? null;
+const sqlText = (file) => readFileSync(join(root, "supabase", file), "utf8");
+const definedIn = (name) => sqlFiles.find((f) => sqlText(f).includes(name)) ?? null;
+
+// A value that cannot match a real row for each PL/pgSQL type PostgREST needs
+// named in the probe body. Every function here either has a uuid parameter
+// that a foreign key refuses, or guards a non-positive cap itself (see
+// academy_claim_coach_question), so nothing is ever stored.
+const PROBE_VALUE = {
+  uuid: "00000000-0000-0000-0000-000000000000",
+  date: "1970-01-01",
+  text: "__check_schema_probe__",
+  integer: 0,
+  boolean: false,
+};
+
+// The real body to probe with, read off the function's own declared
+// parameters rather than one guess shared by every function -- PostgREST
+// resolves an RPC call by matching argument names to a signature, so a probe
+// built for a different function's parameters returns PGRST202 even when the
+// one being checked exists and works.
+const signatureOf = (name) => {
+  for (const file of sqlFiles) {
+    const m = sqlText(file).match(
+      new RegExp(`create (?:or replace )?function public\\.${name}\\s*\\(([^)]*)\\)`, "i"),
+    );
+    if (!m) continue;
+    const params = {};
+    for (const part of m[1].split(",")) {
+      const [, pname, ptype] = part.trim().match(/^(\S+)\s+(\S+)/) ?? [];
+      if (pname) params[pname] = PROBE_VALUE[ptype] ?? PROBE_VALUE.text;
+    }
+    return params;
+  }
+  return { p_user: PROBE_VALUE.uuid, p_month: "1970-01", p_minutes: 0 };
+};
 
 const missing = [];
 
@@ -72,7 +105,7 @@ for (const f of [...functions].sort()) {
   const res = await fetch(`${url}/rest/v1/rpc/${f}`, {
     method: "POST",
     headers: { ...headers, "content-type": "application/json" },
-    body: JSON.stringify({ p_user: "00000000-0000-0000-0000-000000000000", p_month: "1970-01", p_minutes: 0 }),
+    body: JSON.stringify(signatureOf(f)),
   });
   const body = await res.json().catch(() => ({}));
   if (body?.code !== "PGRST202") continue;

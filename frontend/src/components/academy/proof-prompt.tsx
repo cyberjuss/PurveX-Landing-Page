@@ -24,9 +24,11 @@ export function ProofPrompt() {
       const { job, from } = (e as CustomEvent<{ job: string; from: string }>).detail ?? {};
       if (!job) return;
       const res = await academyFetch("/academy/api/proof").catch(() => null);
-      const data = res?.ok ? ((await res.json()) as { items: { job: string; title: string }[]; shots: { job: string }[] }) : null;
+      const data = res?.ok ? ((await res.json()) as { items: { job: string; title: string }[]; shots: { job: string }[]; locked?: boolean }) : null;
       const item = data?.items.find((i) => i.job === job);
-      if (!data || !item) return;
+      // The portfolio is part of Range Pro, so a free student is not asked
+      // for a screenshot that saving would refuse.
+      if (!data || !item || data.locked) return;
       const count = data.shots.filter((s) => s.job === job).length;
       if (count >= SHOTS_PER_ITEM) return;
       setSaved(null);

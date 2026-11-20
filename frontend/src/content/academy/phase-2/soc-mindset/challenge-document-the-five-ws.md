@@ -12,7 +12,7 @@
 
 ### Make a Real Event
 
-Theo Walsh on Tier 2 only ever acts on what a handoff records, never on a vague "a sign-in failed." So let's create a real event to document. Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
+Theo Walsh on Tier 2 only ever acts on what a handoff records, never on a vague "a sign-in failed." Create a real event to document it. Open PowerShell on the domain controller and run this, with your own account name in place of `your-account`.
 
 ```powershell
 Add-Type -AssemblyName System.DirectoryServices.AccountManagement
@@ -58,7 +58,7 @@ Now open Event Viewer and find the 4625 you just generated. You'll find that its
 <div class="ad-mission" data-id="sm2-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1129 · Medium</span>
 <p><strong>SOC Queue · Overnight Review · 1:10 AM</strong><br>PurveX Financial's SOC sees five 4625 events in one minute, all logging 0xC0000064, aimed at five different account names.</p>
-<p><strong>Task:</strong> You just learned a wrong password on a real account logs 0xC000006A, a different code. What does this combination most likely mean? Type its letter.<br><strong>A</strong> One person repeatedly mistyping their own password.<br><strong>B</strong> Someone guessing at account names that do not exist, consistent with reconnaissance before a real attack begins.<br><strong>C</strong> A printer or scanner misconfigured with the wrong credentials.</p>
+<p><strong>Task:</strong> You just learned a wrong password on a real account logs 0xC000006A, a different code. What does this combination most likely mean? Enter its letter.<br><strong>A</strong> One person repeatedly mistyping their own password.<br><strong>B</strong> Someone guessing at account names that do not exist, consistent with reconnaissance before a real attack begins.<br><strong>C</strong> A printer or scanner misconfigured with the wrong credentials.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what five failed sign-ins against five different account names most likely means" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -89,7 +89,7 @@ Now open Event Viewer and find the 4625 you just generated. You'll find that its
 <div class="ad-mission ad-mission--capstone" data-id="sm2-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1130 · Low</span>
 <p><strong>Tier 2 Handoff · Documentation Review · 9:00 AM</strong><br>Theo Walsh, reviewing your write-up on Tier 2, asks you to name exactly which part of the 5 W's framework the Sub Status field covers.</p>
-<p><strong>Task:</strong> The Sub Status field names the exact reason the sign-in failed. Which of the 5 W's does that field answer? Type its letter.<br><strong>A</strong> Who<br><strong>B</strong> When<br><strong>C</strong> Why</p>
+<p><strong>Task:</strong> The Sub Status field names the exact reason the sign-in failed. Which of the 5 W's does that field answer? Enter its letter.<br><strong>A</strong> Who<br><strong>B</strong> When<br><strong>C</strong> Why</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for which W the sub status field answers" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{c}">Submit</button>

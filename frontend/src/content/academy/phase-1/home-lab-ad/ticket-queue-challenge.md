@@ -14,7 +14,7 @@
 <span class="ad-mission__num">Ticket 01 · Warm-up · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
 <p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email. Everyone else on my team has. Can you check my access?</p>
-<p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if she is missing. Then report how many members the group has.</p>
+<p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if they are missing. Then report how many members the group has.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Missing Announcements" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{9}" data-lab-answer="members:All Employees">Submit</button>
@@ -22,13 +22,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Company-wide mail comes from a firm-wide group rather than a department group, so look in AccessLevels and read each group's Description.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open the group whose Description mentions company-wide announcements.</li>
-<li>On the Members tab, add <code>jamie.torres</code> if she is missing and click Apply.</li>
+<li>On the Members tab, add <code>jamie.torres</code> if they are missing and click Apply.</li>
 <li>Reopen the group after Apply and count the Members tab, including Jamie.</li>
 <li>Type that number here.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="jamie-torres|all-employees">Report how many members the group has as a number.</div>
@@ -41,11 +41,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Jamie was missing from <code>All Employees</code>, so every company-wide notice skipped her, including the policy and security updates staff are expected to follow.</p>
+<p>Jamie was missing from <code>All Employees</code>, so every company-wide notice skipped them, including the policy and security updates staff are expected to follow.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>The fix is to add her to <code>All Employees</code> and confirm she appears on its member list. Once she's there, the next company-wide email will reach her.</p>
+<p>The fix is to add them to <code>All Employees</code> and confirm they appear on its member list. Once they are there, the next company-wide email will reach them.</p>
 </div>
 </div>
 </div>
@@ -55,7 +55,7 @@
 <span class="ad-mission__num">Ticket 02 · Warm-up · INC-1042 · Low</span>
 <h4>Locked Out</h4>
 <p><strong>Riley Kwan · Operations · 8:47 AM</strong><br>It will not let me sign in. I have typed my password wrong a few times, so I think I locked myself out. Can you unlock me?</p>
-<p><strong>Task:</strong> Open Riley's account before you take the action she asked for. Restore sign-in if something is blocking her, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
+<p><strong>Task:</strong> Open Riley's account before you take the action they asked for. Restore sign-in if something is blocking them, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Locked Out" placeholder="locked or disabled" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}" data-accept="account-is-disabled|account-disabled">Submit</button>
@@ -63,13 +63,13 @@
 </div>
 <div class="ad-hint__text">
 <p>A caller describes a symptom, but it's the Account tab that shows you the cause. Keep in mind that locked out and disabled are separate settings, each with its own fix.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>riley.kwan</code>.</li>
 <li>Open the account and go to the Account tab. Check both Unlock account and Account is disabled.</li>
 <li>The Unlock account box is grayed out when nothing is locked. Read that as a finding and keep going.</li>
-<li>Fix the setting that is blocking her, then submit the cause rather than the word she used.</li>
-</ol>
+<li>Fix the setting that is blocking them, then submit the cause rather than the word they used.</li>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser riley.kwan -Properties LockedOut, Enabled | Select-Object Name, LockedOut, Enabled</code></li>
@@ -86,11 +86,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Riley believed she was locked out, but the account was actually disabled. An unlock wouldn't have restored her sign-in, so she'd have stayed blocked while the ticket showed as closed.</p>
+<p>Riley believed they were locked out, but the account was actually disabled. An unlock would not have restored their sign-in, so they would have stayed blocked while the ticket showed as closed.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>That's why you read the Account tab first and then enable the account. Close the ticket on what you verified, rather than on the word the caller happened to use.</p>
+<p>That is why you read the Account tab first and then enable the account. Close the ticket on what you verified, rather than on the word the caller happened to use.</p>
 </div>
 </div>
 </div>
@@ -108,14 +108,14 @@
 </div>
 <div class="ad-hint__text">
 <p>Create Casey in Departments → IT → Users and copy the groups of a current IT person. While you're in IT Users, remember that a leftover intern and a service account don't belong in a staff group.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>Departments</code> → <code>IT</code> → <code>Users</code> and create <code>casey.reed</code> there.</li>
 <li>The wizard refuses a simple password, so give Casey a long one with mixed case and a number.</li>
 <li>Open the Members tab of <code>IT Users</code> and open each name that is not a current IT person.</li>
 <li>Copy the ticket number out of the intern's Description before you delete the account, because deleting it takes the answer with it.</li>
 <li>Delete the intern, then remove the service account from the group without deleting it.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="inc-1043">That is the queue number on this ticket. Report the reference written in the intern account's Description.</div>
@@ -131,11 +131,17 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>IT Users was holding a leftover intern account and a backup service account. If you'd added Casey without cleaning that up, the unused access would have stayed in place, and unused access is what attackers look for.</p>
+<p>IT Users was holding a leftover intern account and a backup service account. If you had added Casey without cleaning that up, the unused access would have stayed in place, and unused access is what attackers look for.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So the complete fix has three parts: create Casey with IT Users only, remove the service account from the staff group, and delete the intern account. Then confirm the member list shows only current IT staff and Casey.</p>
+<p>The complete fix has three parts:</p>
+<ol>
+<li>Create Casey with IT Users only.</li>
+<li>Remove the service account from the staff group.</li>
+<li>Delete the intern account.</li>
+</ol>
+<p>Then confirm the member list shows only current IT staff and Casey.</p>
 </div>
 </div>
 </div>
@@ -153,13 +159,13 @@
 </div>
 <div class="ad-hint__text">
 <p>The account's own Description says the window isn't set, so look one level up. The approved hours are recorded on the OU directly above the account.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Use Find on the domain to locate <code>svc-backup-job</code> and note the folder that holds it.</li>
 <li>Open that OU's Properties and read its Description.</li>
 <li>Write the window into the account's Description on the General tab and click Apply.</li>
 <li>Copy it exactly as the folder writes it, including the colons and the dash. The lab check reads that line, so a reworded window fails.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="window-not-set">That is the account's current Description. The approved hours are on the folder that holds the account.</div>
@@ -172,11 +178,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Auditors can't rely on hours that only live on a folder. Once the window is on the account itself, a sign-in at noon stands out as a problem instead of passing unnoticed.</p>
+<p>Auditors cannot rely on hours that only live on a folder. Once the window is on the account itself, a sign-in at noon stands out as a problem instead of passing unnoticed.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So copy the approved window from the ServiceAccounts folder onto the account's Description, and confirm it saved.</p>
+<p>Copy the approved window from the ServiceAccounts folder onto the account's Description, and confirm it saved.</p>
 </div>
 </div>
 </div>
@@ -193,14 +199,14 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Moving the account brings the right Group Policy with it, because policy follows the folder. Groups don't move with the account, though, so you have to change those yourself. And the title is a separate field again, on the General tab.</p>
-<ol>
+<p>Moving the account brings the right Group Policy with it, because policy follows the folder, but you have to change the groups yourself since they do not move with the account. The title is a separate field again, so update that too on the General tab.</p>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click <code>taylor.osei</code> and choose Move, then select Departments → Compliance → Users.</li>
 <li>Use Move rather than dragging. A dragged account can land on the folder above the one you meant.</li>
 <li>On the Member Of tab, add <code>Compliance Users</code> and remove <code>Operations Users</code>.</li>
 <li>Open the General tab and type the Title you see, not the department HR named.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="compliance|compliance-analyst|compliance-officer|regulatory-analyst">That is where HR says Taylor works now. Type the Title field on taylor.osei exactly as it is written.</div>
@@ -214,7 +220,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Taylor was still sitting in Operations with Operations access, so Compliance policies didn't apply and the old access stayed open. An HR notice changes nothing in the directory until someone acts on it.</p>
+<p>Taylor was still sitting in Operations with Operations access, so Compliance policies did not apply and the old access stayed open. An HR notice changes nothing in the directory until someone acts on it.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -236,13 +242,13 @@
 </div>
 <div class="ad-hint__text">
 <p>When someone leaves, their account is disabled rather than deleted, so that its history stays available to auditors.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>kai.mendes</code>.</li>
 <li>Open the account and read the sponsor in Description on the General tab.</li>
 <li>Remove <code>Operations Users</code> on the Member Of tab. Then right-click the account and choose Disable Account.</li>
 <li>The account icon gains a small down arrow once it is disabled. That is the confirmation.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Remove-ADGroupMember "Operations Users" -Members kai.mendes</code></li>
@@ -265,7 +271,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So disable the account and remove its groups on the day the engagement ends. Keep the account itself, so its history is still there for the invoice review and any audit.</p>
+<p>Disable the account and remove its groups on the day the engagement ends. Keep the account itself, though, so its history is still there for the invoice review and any audit.</p>
 </div>
 </div>
 </div>
@@ -283,13 +289,13 @@
 </div>
 <div class="ad-hint__text">
 <p>A request names the access someone wants, but the group's Description tells you what that access really covers. Read it before you decide.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Server Admins</code>.</li>
 <li>Read Description on the General tab and compare it with what Sam needs.</li>
-<li>Do not add Sam. If you added him while reading the group, remove him again before you submit.</li>
+<li>Do not add Sam. If you added them while reading the group, remove them again before you submit.</li>
 <li>Type the access level from the Description here.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="no|deny|denied">Leaving Sam's groups alone is right. Report the access level number from the Description on Server Admins.</div>
@@ -303,11 +309,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Server Admins controls the firm's servers. An advisor with that access could be tricked into running malware with server rights, and installing one app doesn't need that much power.</p>
+<p>Server Admins controls the firm's servers. An advisor with that access could be tricked into running malware with server rights, and installing one app does not need that much power.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So deny the request, and route the install to IT through a normal software ticket. The principle to remember is to grant the access a job needs, not the access a shortcut needs.</p>
+<p>Deny the request, and route the install to IT through a normal software ticket. The principle to remember is to grant the access a job needs, not the access a shortcut needs.</p>
 </div>
 </div>
 </div>
@@ -316,7 +322,7 @@
 <div class="ad-mission" data-id="tq-13" data-attempts="0">
 <span class="ad-mission__num">Ticket 08 · Apply it · INC-1049 · Medium</span>
 <h4>Audit Finding</h4>
-<p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our quarterly review found a staff account whose password never expires. Policy allows that setting only on service accounts.</p>
+<p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our quarterly review found a staff account whose password never expires, even though policy allows that setting only on service accounts.</p>
 <p><strong>Task:</strong> Find the staff account with Password never expires set and clear the setting without disabling the account. Then report its username.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Audit Finding" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -325,12 +331,12 @@
 </div>
 <div class="ad-hint__text">
 <p>When you search for this setting, you'll also find <code>svc-backup-job</code>, which is allowed to keep it. The account you want belongs to a person.</p>
-<ol>
+<ul>
 <li>Run the search below in PowerShell on the domain controller.</li>
 <li>Skip the service account and note the person's username.</li>
 <li>Open that account in Active Directory Users and Computers and go to the Account tab.</li>
 <li>Account options is a list that scrolls. Clear Password never expires there and click Apply.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Search-ADAccount -PasswordNeverExpires -UsersOnly | Select-Object Name, SamAccountName</code></li>
@@ -352,7 +358,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>That's why you clear the setting on staff accounts and leave it only on documented service accounts. It's also worth rechecking that list during each access review.</p>
+<p>That is why you clear the setting on staff accounts and leave it only on documented service accounts. It is also worth rechecking that list during each access review.</p>
 </div>
 </div>
 </div>
@@ -370,13 +376,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Think about where a computer lands when it joins the domain without a chosen OU. It goes into a default container, and no Group Policy linked to an OU can reach it there.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> and look inside the default folders until you find <code>FIN-LT14</code>.</li>
 <li>A folder that looks empty is usually the view filter. View → Filter Options, show all types of objects.</li>
 <li>Right-click the laptop and choose Move, then select Departments → FinanceAccounting → Workstations.</li>
 <li>Press F5 if the move does not show. The console keeps the view it drew first.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADComputer FIN-LT14).DistinguishedName</code></li>
@@ -416,12 +422,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Computers live in OUs just as users do, and this one is in the Operations department's Workstations folder.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand Departments, Operations, Workstations.</li>
 <li>Open the computer Properties and read the Description on the General tab.</li>
 <li>Right-click it and choose Disable Account. Do not delete it.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADComputer OPS-WKS03 -Properties Description,LastLogonDate | Select-Object Name,Description,LastLogonDate,Enabled</code></li>
@@ -439,11 +445,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A computer object that nobody uses keeps its place in the domain, so a machine that left the building still has an account that can authenticate. Old objects are also a good place for an attacker to hide: a name on the list that nobody questions, because it's always been there.</p>
+<p>A computer object that nobody uses keeps its place in the domain, so a machine that left the building still has an account that can authenticate. Old objects are also a good place for an attacker to hide: a name on the list that nobody questions, because it has always been there.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So disable it rather than deleting it, which keeps the record in case someone later asks what happened to the asset. Only delete it after a waiting period, once you're sure nothing depended on it.</p>
+<p>Disable it rather than deleting it, which keeps the record in case someone later asks what happened to the asset. Only delete it after a waiting period, once you are sure nothing depended on it.</p>
 </div>
 </div>
 </div>
@@ -461,13 +467,13 @@
 </div>
 <div class="ad-hint__text">
 <p>When the IP address works but the name doesn't, the network itself is fine, which tells you the problem is name resolution.</p>
-<ol>
+<ul>
 <li>On the domain controller run <code>Resolve-DnsName files</code> and note the address it returns.</li>
 <li>Run <code>ipconfig</code> to see the domain controller's own IPv4 address.</li>
 <li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, then go to Forward Lookup Zones → <code>purvexfinancial.local</code>.</li>
 <li>Open the <code>files</code> host record and change its address to the domain controller's address.</li>
 <li>Press F5 in DNS Manager, then run <code>Clear-DnsClientCache</code>. The old address sits in the local cache and makes a correct fix look wrong.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Test-NetConnection files -Port 445</code></li>
@@ -484,7 +490,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every device that asked for <code>files</code> was sent to an address where no server exists. So one wrong record took the shared drive away from the whole firm, even though the server itself never went down.</p>
+<p>Every device that asked for <code>files</code> was sent to an address where no server exists, so one wrong record took the shared drive away from the whole firm, even though the server itself never went down.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -506,12 +512,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Temporary rules usually carry a name or description that mentions the vendor. Once you've found it, check who the rule allows in, as well as which port it opens.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Select Inbound Rules and sort by Name or Group to find the vendor rule.</li>
 <li>Read its Protocols and Ports and its Scope tabs, then right-click the rule and choose Disable Rule.</li>
 <li>Leave the built-in Remote Desktop rules enabled. Disabling those closes the port you are connected through.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Direction Inbound -Enabled True | Where-Object DisplayName -like "*Vendor*"</code></li>
@@ -533,7 +539,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So disable the rule, and keep it as a record of the change. The lasting lesson is that temporary access should always come with an end date that someone checks.</p>
+<p>Disable the rule, and keep it as a record of the change. The lasting lesson is that temporary access should always come with an end date that someone checks.</p>
 </div>
 </div>
 </div>
@@ -551,13 +557,13 @@
 </div>
 <div class="ad-hint__text">
 <p>A GPO only applies where it's linked, and its Scope tab lists every one of those places.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
 <li>Expand Group Policy Objects, select the screen lock GPO and read its Scope tab.</li>
 <li>Right-click the FinanceAccounting OU and choose Link an Existing GPO.</li>
 <li>Under the wrong OU, right-click the GPO's link and choose Delete to remove only the link.</li>
 <li>Delete the link under the OU, never the policy under Group Policy Objects. Deleting the policy removes it everywhere and there is nothing left to link.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-GPInheritance -Target "OU=FinanceAccounting,OU=Departments,DC=purvexfinancial,DC=local"</code></li>
@@ -579,7 +585,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>To fix it, link the GPO where the Finance accounts live and remove the stray link. Then test one Finance workstation yourself before you tell Audit it's fixed.</p>
+<p>To fix it, link the GPO where the Finance accounts live and remove the stray link. Then test one Finance workstation yourself before you tell Audit it is fixed.</p>
 </div>
 </div>
 </div>
@@ -596,13 +602,13 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Windows hides known file extensions by default, which lets a program pass for a document. So as well as the name, look at the Type column and the modified time.</p>
-<ol>
+<p>Windows hides known file extensions by default, which lets a program pass for a document, so check the Type column and the modified time along with the name.</p>
+<ul>
 <li>Open File Explorer and go to <code>C:\PurveX\Shares\Finance</code>.</li>
 <li>On the View menu, turn on File name extensions and compare the files.</li>
 <li>Cut the suspicious file and paste it into <code>C:\PurveX\Quarantine</code> without opening it.</li>
 <li>Use Cut rather than Copy. A copy leaves the file on the share and the ticket stays open.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ChildItem C:\PurveX\Shares\Finance | Select-Object Name, Length, LastWriteTime</code></li>
@@ -624,7 +630,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So quarantine the file without opening it, keep it as evidence, and escalate with the file name, its timestamp and who opened it. And thank Jordan for reporting it quickly, because people who fear blame stop reporting.</p>
+<p>Quarantine the file without opening it, and keep it as evidence. When you escalate, include three things: the file name, its timestamp, and who opened it. Thank Jordan for reporting it quickly too, because people who fear blame stop reporting.</p>
 </div>
 </div>
 </div>
@@ -642,12 +648,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Read the old size before you change it, because once it's raised, the original value is gone.</p>
-<ol>
+<ul>
 <li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>.</li>
 <li>Expand Windows Logs, right-click <strong>Security</strong> and choose Properties.</li>
 <li>Note the current maximum log size, then raise it to 524288 KB or more.</li>
 <li>Leave the policy as overwrite as needed, so the log never stops accepting events.</li>
-</ol>
+</ul>
 <p>In PowerShell, which reports bytes:</p>
 <ul>
 <li><code>Get-WinEvent -ListLog Security | Select-Object MaximumSizeInBytes</code></li>
@@ -665,11 +671,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A busy domain controller fills 128 MB in a day or two, so the log quietly destroys its own oldest evidence. That's a real problem, because most intrusions are found weeks after they start, by which point the record of the first day has already been overwritten.</p>
+<p>A busy domain controller fills 128 MB in a day or two, so the log quietly destroys its own oldest evidence. That is a real problem, because most intrusions are found weeks after they start, by which point the record of the first day has already been overwritten.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So raise the size, but treat it as a stopgap. The real answer is to send events off the machine as they happen, because a log that lives only on the host is also a log an attacker can clear.</p>
+<p>Raise the size, but treat it as a stopgap. The real answer is to send events off the machine as they happen, because a log that lives only on the host is also a log an attacker can clear.</p>
 </div>
 </div>
 </div>
@@ -687,13 +693,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Only one kind of group can grant permissions, so check the Group type on the General tab.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Finance Reports</code>.</li>
 <li>On the General tab, change Group type from Distribution to Security and click Apply.</li>
 <li>Reopen the group and confirm the General tab now reads Security.</li>
 <li>Count the entries on the Members tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Set-ADGroup "Finance Reports" -GroupCategory Security</code></li>
@@ -710,7 +716,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A distribution group is for email and can't grant access, so every permission set on it did nothing. That matters beyond the inconvenience, because people blocked from files they need start looking for workarounds that skip security.</p>
+<p>A distribution group is for email and cannot grant access, so every permission set on it did nothing. That matters beyond the inconvenience, because people blocked from files they need start looking for workarounds that skip security.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -723,7 +729,7 @@
 <div class="ad-mission" data-id="tq-20" data-attempts="0">
 <span class="ad-mission__num">Ticket 17 · Stretch · INC-1056 · High</span>
 <h4>Payroll Works for Some People</h4>
-<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>The payroll portal at payroll.purvexfinancial.local opens fine for me, but Morgan sitting next to me gets a timeout. When Morgan refreshes a few times it sometimes loads. IT moved payroll to a new server last month.</p>
+<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>The payroll portal at payroll.purvexfinancial.local opens fine for me, but Morgan sitting next to me gets a timeout, though it sometimes loads after a few refreshes. This started after IT moved payroll to a new server last month.</p>
 <p><strong>Task:</strong> Find why the name <code>payroll</code> resolves differently between attempts and remove the stale record, so the name points only at the domain controller. In this lab the domain controller stands in for the new payroll server. Report the stale record's address.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Payroll Works for Some People" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -731,14 +737,14 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>When a name has two A records, DNS hands them out in turn, which is called round robin. So if one of those addresses belongs to a server that no longer exists, every other lookup fails.</p>
-<ol>
+<p>When a name has two A records, DNS hands them out in turn, which is called round robin. If one of those addresses belongs to a server that no longer exists, every other lookup then fails.</p>
+<ul>
 <li>On the domain controller run <code>Resolve-DnsName payroll</code> and look at how many addresses come back.</li>
 <li>Run <code>ipconfig</code> to find the domain controller's own address, then test the other one with <code>Test-NetConnection</code>.</li>
 <li>Open DNS Manager with Win+R and <code>dnsmgmt.msc</code>, then go to Forward Lookup Zones → <code>purvexfinancial.local</code>.</li>
 <li>Two rows are named payroll. Read the Data column and delete only the one holding the address that no longer answers.</li>
 <li>Clients cache answers, so <code>ipconfig /flushdns</code> clears the old address from a machine that still has it.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-DnsServerResourceRecord -ZoneName purvexfinancial.local -Name payroll -RRType A</code></li>
@@ -755,11 +761,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The old server's record survived the migration, so roughly every other lookup sent people to a machine that no longer exists. Intermittent failures like this burn hours, because the fault doesn't show up when someone tests it just once.</p>
+<p>The old server's record survived the migration, so roughly every other lookup sent people to a machine that no longer exists. Intermittent failures like this burn hours, because the fault does not show up when someone tests it just once.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So delete the stale record, and flush the cache on any client that still fails. Going forward, removing old records should be part of every server migration, and DNS scavenging can catch the ones people forget.</p>
+<p>Delete the stale record, and flush the cache on any client that still fails. Going forward, removing old records should be part of every server migration, and DNS scavenging can catch the ones people forget.</p>
 </div>
 </div>
 </div>
@@ -777,13 +783,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Account lockout is set in the Default Domain Policy, rather than on individual accounts.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
 <li>Expand the domain, right-click <code>Default Domain Policy</code> and choose Edit.</li>
 <li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Account Policies, Account Lockout Policy.</li>
 <li>Set the threshold to 10 or fewer, and both the duration and the reset counter to 15 minutes or more.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>Get-ADDefaultDomainPasswordPolicy</code>.</li>
-</ol>
+</ul>
 <p>A duration of 0 means an administrator has to unlock the account by hand. That's actually stricter, but this ticket wants a number of minutes, so use 15 or more.</p>
 <p>In PowerShell:</p>
 <ul>
@@ -805,7 +811,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So set a threshold that stops guessing without locking out real people on a bad morning. Ten tries with a fifteen-minute lock is the usual balance. Then watch for event 4740, so a wave of lockouts is visible as soon as it starts.</p>
+<p>Set a threshold that stops guessing without locking out real people on a bad morning, with ten tries and a fifteen-minute lock as the usual balance. Then watch for event 4740, so a wave of lockouts is visible as soon as it starts.</p>
 </div>
 </div>
 </div>
@@ -823,13 +829,13 @@
 </div>
 <div class="ad-hint__text">
 <p>You'll find this under the advanced audit subcategories, rather than among the nine basic categories.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>, then edit <code>Default Domain Controllers Policy</code>.</li>
 <li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Advanced Audit Policy Configuration, Audit Policies, Detailed Tracking.</li>
 <li>Open <strong>Audit Process Creation</strong>, tick Configure, and tick Success.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>auditpol /get /subcategory:"Process Creation"</code>.</li>
 <li>Start any program and look for the new event in the Security log.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="4689">4689 is a process ending. This ticket is about one starting.</div>
@@ -842,11 +848,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Without process auditing, an investigation can see that someone signed in but not what they ran afterwards, and that second half is what tells you whether anything bad happened. Turning it on after an incident won't recover the week you needed.</p>
+<p>Without process auditing, an investigation can see that someone signed in but not what they ran afterwards, and that second half is what tells you whether anything bad happened. Turning it on after an incident will not recover the week you needed.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So turn on Process Creation for success, and keep it on. It's also worth asking about a second setting that adds the command line to the event, because a process name without its arguments often hides what ran.</p>
+<p>Turn on Process Creation for success, and keep it on. It is also worth asking about a second setting that adds the command line to the event, because a process name without its arguments often hides what ran.</p>
 </div>
 </div>
 </div>
@@ -864,13 +870,13 @@
 </div>
 <div class="ad-hint__text">
 <p>The domain password policy applies to everyone, so a second, stricter policy for one group needs a Password Settings Object.</p>
-<ol>
+<ul>
 <li>Open Active Directory Administrative Center with Win+R and <code>dsac.exe</code>.</li>
 <li>Go to System, then Password Settings Container, then New, then Password Settings.</li>
 <li>Give it a name and a precedence, set the minimum length to 16, and set the lockout threshold to 5 or fewer.</li>
 <li>Under Directly Applies To, add the group holding the IT administrators.</li>
 <li>Confirm with <code>Get-ADFineGrainedPasswordPolicy -Filter *</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-ADFineGrainedPasswordPolicy -Name "Admin Password Policy" -Precedence 10 -MinPasswordLength 16 -LockoutThreshold 5 -LockoutDuration 00:30:00 -LockoutObservationWindow 00:30:00</code></li>
@@ -892,7 +898,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So apply a stricter policy to the admin group, then check that it took effect by reading the resultant policy on one of those accounts. A policy that exists but applies to nobody is the common mistake here.</p>
+<p>Apply a stricter policy to the admin group, then check that it took effect by reading the resultant policy on one of those accounts. A policy that exists but applies to nobody is the common mistake here.</p>
 </div>
 </div>
 </div>

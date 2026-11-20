@@ -565,6 +565,60 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
   );
 }
 
+// One click to replant any ticket objects a hosted pod is missing, across
+// every running pod at once, instead of waiting for each student to open the
+// challenge that needs it. Same repair the mission gate already sends to one
+// pod reactively -- this is the bulk version, for right after a script change
+// ships. Dry run previews the pod count without sending anything.
+function PodsRepairPanel() {
+  const [busy, setBusy] = useState<"preview" | "repair" | null>(null);
+  const [result, setResult] = useState<{ pods: number; sent?: number; skipped?: number; dryRun?: boolean } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function run(dry: boolean) {
+    if (!dry && !window.confirm("Push the current build script and replant any missing ticket objects on every running hosted pod?")) return;
+    setBusy(dry ? "preview" : "repair");
+    setError(null);
+    setResult(null);
+    try {
+      const res = await academyFetch(`/academy/api/admin/pods-repair${dry ? "?dry=1" : ""}`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Could not reach the repair endpoint.");
+        return;
+      }
+      setResult(data);
+    } catch {
+      setError("Could not reach the server. Try again.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <section className="rd-sec ov-pods-repair">
+      <div className="rd-sec__head">
+        <h2>Hosted pods</h2>
+        <p>Replant any ticket objects missing from a live lab, on every running pod at once. No student action needed.</p>
+      </div>
+      <div className="ov-class__actions">
+        <button type="button" className="iv-copy" disabled={busy !== null} onClick={() => run(true)}>
+          {busy === "preview" ? "Checking…" : "Preview"}
+        </button>
+        <button type="button" className="rd-cta" disabled={busy !== null} onClick={() => run(false)}>
+          {busy === "repair" ? "Repairing…" : "Repair all pods now"}
+        </button>
+      </div>
+      {error && <p className="iv-error">{error}</p>}
+      {result && (
+        <p className="iv-note">
+          {result.dryRun ? `${result.pods} pod(s) on record.` : `Repair sent to ${result.sent} of ${result.pods} pod(s); ${result.skipped} stopped or not reachable.`}
+        </p>
+      )}
+    </section>
+  );
+}
+
 function NewClassForm({ onCreated }: { onCreated: () => void }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -706,6 +760,8 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
       </header>
 
       {data.individuals && <IndividualsPanel n={data.individuals} />}
+
+      <PodsRepairPanel />
 
       <NewClassForm onCreated={reload} />
 

@@ -22,11 +22,11 @@
 </div>
 <div class="ad-hint__text">
 <p>You're looking for the standard access group for Jordan's department, so you can skip Domain Users and any firm-wide group.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>jordan.ellis</code>.</li>
 <li>Open the account and read the Member Of tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADPrincipalGroupMembership jordan.ellis | Select-Object Name</code></li>
@@ -46,11 +46,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A ticket names a person, not a group, so it's tempting to guess the group from a title or a department name. Guessing like that can add the wrong access, though, and expose files the person should never see.</p>
+<p>A ticket names a person, not a group, so it is tempting to guess the group from a title or department name rather than reading it from the account. A guess can be wrong, and fixing a folder-access ticket on a wrong guess means touching access that was never the problem.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>That's why you find the account and read Member Of before you change anything. That list shows you the access Jordan already has.</p>
+<p>This is why you find the account and read Member Of before changing anything. That list shows the access Jordan already has.</p>
 </div>
 </div>
 </div>
@@ -59,7 +59,7 @@
 <div class="ad-mission" data-id="d1-07" data-attempts="0">
 <span class="ad-mission__num">Task 02 · Warm-up · Find by Title</span>
 <h4>Who Is the Settlements Coordinator?</h4>
-<p><strong>Situation:</strong> A manager calls about "the settlements coordinator" but doesn't know the person's username, so the request only names the job title.</p>
+<p><strong>Situation:</strong> A manager calls about "the settlements coordinator" but does not know the person's username, so the request only names the job title.</p>
 <p><strong>Task:</strong> Find the person whose title is <strong>Settlements Coordinator</strong>, and answer with their first and last name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Who Is the Settlements Coordinator?" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -68,11 +68,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Tickets often describe a job rather than a username, so search by the title instead.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Open Find from the domain's right-click menu and go to the Advanced tab.</li>
 <li>Set Field to User → Job Title and search for <code>Settlements Coordinator</code>. You can also browse Departments → Operations → Users and read each Title.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser -Filter "Title -eq 'Settlements Coordinator'"</code></li>
@@ -94,7 +94,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So search by the title, and then confirm the name with the caller before you make any change.</p>
+<p>Search by the title, then confirm the name with the caller before making any change.</p>
 </div>
 </div>
 </div>
@@ -112,11 +112,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Count only the first level of folders. Users and Workstations sit inside a department, so they aren't departments themselves.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code>, then <code>Departments</code>.</li>
 <li>Count the folders directly under Departments.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="#">Count only the folders one level under Departments. Users and Workstations sit inside a department, so they do not count.</div>
@@ -132,7 +132,14 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So count only the folders directly under Departments: IT, Compliance, WealthManagement, Operations, and FinanceAccounting.</p>
+<p>Count only the folders directly under Departments:</p>
+<ul>
+<li>IT</li>
+<li>Compliance</li>
+<li>WealthManagement</li>
+<li>Operations</li>
+<li>FinanceAccounting</li>
+</ul>
 </div>
 </div>
 </div>
@@ -150,11 +157,11 @@
 </div>
 <div class="ad-hint__text">
 <p>You find a computer the same way you find a person. One thing to watch: computer names never contain spaces.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> → <code>Departments</code> → <code>IT</code> → <code>Workstations</code>.</li>
 <li>Read the name of the computer object inside.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="wm-wks07|ops-wks03|fin-lt14">That computer belongs to another department. Open Departments → IT → Workstations.</div>
@@ -168,11 +175,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>If you can't find the computer an alert names, you can't tell who it belongs to, and the investigation stalls.</p>
+<p>If you cannot find the computer an alert names, you cannot tell who it belongs to, and the investigation stalls.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>That's why it helps to know where computers live. Look under Departments → IT → Workstations and read the object's name, just as you would look up a person.</p>
+<p>This is why it helps to know where computers live. Look under Departments → IT → Workstations and read the object's name, the same way you would look up a person.</p>
 </div>
 </div>
 </div>
@@ -190,11 +197,11 @@
 </div>
 <div class="ad-hint__text">
 <p>An admin group should have a short member list, short enough to read at a glance.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>IT Admins</code>.</li>
 <li>Open the group and read the Members tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADGroupMember "IT Admins" | Select-Object Name</code></li>
@@ -213,11 +220,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>If you don't know who holds elevated access, you can't spot an account that shouldn't be there. That matters, because a stolen admin login does far more damage than a standard one.</p>
+<p>If you do not know who holds elevated access, you cannot spot an account that should not be there. That matters, because a compromised admin login does far more damage than a standard one.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So read the group's Members tab, and help keep that list short and reviewed. Anyone on it you can't explain is worth a question to your lead.</p>
+<p>Read the group's Members tab, and help keep that list short and reviewed. Anyone on it you cannot explain is worth a question to your lead.</p>
 </div>
 </div>
 </div>
@@ -235,11 +242,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Count the people listed on the group's Members tab.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>IT Admins</code>.</li>
 <li>Open the group and count the entries on the Members tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-ADGroupMember "IT Admins").Count</code></li>
@@ -259,7 +266,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So record the count now. If it ever grows, find the ticket that explains the new member.</p>
+<p>Record the count now. If it ever grows, find the ticket that explains the new member.</p>
 </div>
 </div>
 </div>
@@ -277,11 +284,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Remember that an OU is a folder. Since the department folders hold people, the access groups sit in a folder of their own at the same level.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> and look at the folders beside <code>Departments</code>.</li>
 <li>Open each one until you find <code>Server Admins</code> and <code>Helpdesk</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="departments">Departments holds the people. The access groups sit in a separate top-level OU beside it.</div>
@@ -300,7 +307,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>That's why people stay in Departments, while domain-wide access groups such as Server Admins and Helpdesk live separately in AccessLevels.</p>
+<p>This is why people stay in Departments, while domain-wide access groups such as Server Admins and Helpdesk live separately in AccessLevels.</p>
 </div>
 </div>
 </div>
@@ -318,11 +325,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A good Description names who belongs in the group, rather than just repeating the group's name.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>IT Admins</code>.</li>
 <li>Open the group and read Description on the General tab.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="it-admins">That repeats the group's name. Read the Description field on the General tab.</div>
@@ -337,11 +344,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A group without a clear purpose tends to collect members over time, and each extra member is one more account that could be misused if its password were stolen.</p>
+<p>A group without a clear purpose tends to collect members over time, and each extra member is one more account that could be misused if its password were compromised.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So read the Description before you add anyone. If the request doesn't match it, check with your lead before you act.</p>
+<p>Read the Description before adding anyone. If the request does not match it, check with your lead before acting.</p>
 </div>
 </div>
 </div>
@@ -350,7 +357,7 @@
 <div class="ad-mission" data-id="d1-06" data-attempts="0">
 <span class="ad-mission__num">Task 09 · Apply it · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
-<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges she shouldn't have. Her title is Help Desk Technician, but a title is only a label on the account, because privileges come from groups.</p>
+<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges they should not have. Their title is Help Desk Technician, but a title is only a label on the account, because privileges come from groups.</p>
 <p><strong>Task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Is Priya on the Help Desk Group?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -358,15 +365,15 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Base your answer on the group's member list, not on the word Technician on her account.</p>
-<ol>
+<p>Base your answer on the group's member list, not on the word Technician on their account.</p>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>Helpdesk</code>.</li>
 <li>Open the group and read the Members tab.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="yes|y">Priya's title mentions the help desk, but a title grants nothing. Check for her name on the Helpdesk group's Members tab.</div>
+<div class="ad-miss" data-guess="yes|y">Priya's title mentions the help desk, but a title grants nothing. Check for their name on the Helpdesk group's Members tab.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
@@ -379,7 +386,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Instead, read the group's Members tab or the person's Member Of tab. Here, Priya has IT Users but not Helpdesk, so there's actually nothing to remove.</p>
+<p>Instead, read the group's Members tab or the person's Member Of tab. Here, Priya has IT Users but not Helpdesk, so there is nothing to remove.</p>
 </div>
 </div>
 </div>
@@ -388,7 +395,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="d1-04" data-attempts="0">
 <span class="ad-mission__num">Task 10 · Stretch · Spot the Default Folder</span>
 <h4>The Folder That Is Not an OU</h4>
-<p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container rather than an OU, and as you'll see, the difference matters for Group Policy.</p>
+<p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container rather than an OU, and as you will see, the difference matters for Group Policy.</p>
 <p><strong>Task:</strong> Give the name of that default folder exactly as Active Directory writes it in the object's distinguished name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Folder That Is Not an OU" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -397,11 +404,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Look closely at the icons. A container uses a plain folder icon, while an OU's folder carries a small extra badge.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand <code>purvexfinancial.local</code> and find the built-in folder that holds user accounts.</li>
 <li>Turn on View → Advanced Features. Open the folder's Properties from the tree and read the first part of distinguishedName on the Attribute Editor tab.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="users">That is the display name. The task asks for the name as distinguishedName writes it with its prefix.</div>
@@ -419,7 +426,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>So create each account in its department's Users OU, or move it there on the same day it's created. That's the end of day one, and you now know your way around the directory.</p>
+<p>Create each account in its department's Users OU, or move it there on the same day it is created. That marks the end of day one, and you now know your way around the directory.</p>
 </div>
 </div>
 </div>

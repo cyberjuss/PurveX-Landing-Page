@@ -13,8 +13,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="th-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · INC-1068 · Routine</span>
 <h4>Wealth Management Needs Its Own Threshold</h4>
-<p><strong>Devon Brooks · Compliance · 2:15 PM</strong><br>The firm's default password policy treats every department the same. Because Wealth Management handles client funds directly, the audit wants their accounts held to a stronger standard. At the same time, an ordinary typo shouldn't lock someone out of their workday.</p>
-<p><strong>Task:</strong> Apply a Fine-Grained Password Policy to Wealth Management Users requiring at least 12 characters and locking out after no more than 12 failed attempts. Then type the lockout threshold you set.</p>
+<p><strong>Devon Brooks · Compliance · 2:15 PM</strong><br>The firm's default password policy treats every department the same. Because Wealth Management handles client funds directly, the audit wants their accounts held to a stronger standard. At the same time, an ordinary typo should not lock someone out of their workday.</p>
+<p><strong>Task:</strong> Apply a Fine-Grained Password Policy to Wealth Management Users requiring at least 12 characters and locking out after no more than 12 failed attempts. Then enter the lockout threshold you set.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Wealth Management Needs Its Own Threshold" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{10}" data-accept="8|9|10|11|12">Submit</button>
@@ -22,13 +22,13 @@
 </div>
 <div class="ad-hint__text">
 <p>What you need is a Password Settings Object, a second, stricter policy layered on top of the domain's default. It applies only to the group you target and nowhere else.</p>
-<ol>
+<ul>
 <li>Open Active Directory Administrative Center with Win+R and <code>dsac.exe</code>.</li>
 <li>Go to System, then Password Settings Container, then New, then Password Settings.</li>
 <li>Give it a name and a precedence, set the minimum length to 12, and set the lockout threshold somewhere between 8 and 12.</li>
 <li>Under Directly Applies To, add Wealth Management Users.</li>
 <li>Confirm with <code>Get-ADFineGrainedPasswordPolicy -Filter *</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-ADFineGrainedPasswordPolicy -Name "WM-Stronger-Policy" -Precedence 10 -MinPasswordLength 12 -LockoutThreshold 10 -LockoutDuration "00:30:00" -LockoutObservationWindow "00:30:00" -ComplexityEnabled $true -ReversibleEncryptionEnabled $false</code></li>
@@ -46,7 +46,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The exact number matters less than landing in the band that balances the two costs. Set it too low and the help desk drowns in lockout tickets from real users. Set it too high and a password-guessing script gets dozens of tries before the account locks. It's the same trade-off you met in this week's threshold lesson, only measured in lockouts instead of alerts.</p>
+<p>The exact number matters less than landing in the band that balances the two costs. Where setting it too low drowns the help desk in lockout tickets from real users, setting it too high gives a password-guessing script dozens of tries before the account locks. It is the same trade-off you met in this module's threshold lesson, only measured in lockouts instead of alerts.</p>
 </div>
 <div>
 <span>What to do</span>

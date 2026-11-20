@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Tuesday After the Breach</h3>
 <p class="ad-brief__ask">Last night, a training vendor that PurveX staff use announced a breach. This morning the IT desk is full of tickets that come down to one question. Is this encoded, encrypted or hashed, and what does that mean we have to do?</p>
-<p>Everything the tickets mention is waiting in the IT share on your domain controller. Work them in order, because each one leans on the one before it.</p>
+<p>Everything the tickets mention is waiting in the IT share on your domain controller. They are separate calls from the same morning, not one chain, but the last one circles back to the script you check in Ticket 02.</p>
 </div>
 
 <div class="ad-progress">
@@ -10,11 +10,11 @@
 <span id="ad-progress-label" class="ad-progress__label">0 / 5 solved</span>
 </div>
 
-<div class="ad-mission" data-id="w2-03" data-attempts="0">
+<div class="ad-mission" data-id="w2-03" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 01 · Warm-up · Encryption · Medium · INC-1091</span>
 <h4>The Recovery Key Call</h4>
-<p><strong>Phone call · 8:30 AM</strong><br>"Hi, it's Sam Whitfield from Wealth Management. My laptop rebooted for an update and now there's a blue BitLocker screen asking for a 48-digit key. I'm calling from my personal phone and I have a client in ten minutes. Can you just read me the key?"<br><strong>A</strong> Read the key out straight away. The client meeting can't wait.<br><strong>B</strong> Confirm it's really Sam first, for example by calling back on the number in the directory or checking with Sam's manager, then give the key.<br><strong>C</strong> Tell Sam the data can't be recovered and the laptop has to be wiped.</p>
-<p><strong>Task:</strong> Choose what you do and type its letter.</p>
+<p><strong>Phone call · 8:30 AM</strong><br>"Hi, this is Sam Whitfield from Wealth Management. My laptop rebooted for an update, and now there is a blue BitLocker screen asking for a 48-digit key. I am calling from my personal phone, and I have a client in ten minutes. Can you read me the key?"<br><strong>A</strong> Read the key out immediately, since the client meeting cannot wait.<br><strong>B</strong> Confirm this is really Sam first, for example by calling back on the number in the directory or checking with Sam's manager, then give the key.<br><strong>C</strong> Tell Sam the data cannot be recovered and the laptop must be wiped.</p>
+<p><strong>Task:</strong> Select what you would do and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Recovery Key Call" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -34,11 +34,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encryption is only as strong as the way its key is handed out. A caller on an unknown number, a deadline and a request for the key is how attackers talk their way past disk encryption. The morning after a breach is when they try.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Verify the caller through a channel you already trust, then read the key. Log the request in the ticket, because a recovery key that was given out should be rotated once the laptop is back in IT's hands.</p>
+<p>Verify Sam through a channel you already trust before reading the key, since an unknown number and a deadline is exactly how attackers talk their way past disk encryption, and log the request so the key gets rotated once the laptop is back in IT's hands.</p>
 </div>
 </div>
 </div>
@@ -47,8 +43,8 @@
 <div class="ad-mission" data-id="w2-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · Apply it · Encoding · High · INC-1091</span>
 <h4>Decode the Settlement Script</h4>
-<p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I can just send it, right? It's in the IT share.</p>
-<p><strong>Task:</strong> Open <code>settlement-upload.ps1</code> in the IT share, find out what the "encrypted" password really is, and report it.</p>
+<p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>"The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I assume it is fine to send it straight from the IT share."</p>
+<p><strong>Task:</strong> Answer Taylor. Confirm whether the password is genuinely encrypted, and report what it is.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Decode the Settlement Script" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Settle-Now-2026!}">Submit</button>
@@ -56,11 +52,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Analysts decode values like this in CyberChef, the free tool from GCHQ that runs in the browser. A value made only of the digits 0 to 9 and the letters a to f is usually hex. Undo one layer at a time until you can read it.</p>
-<ol>
-<li>Open <code>C:\PurveX\Shares\IT\settlement-upload.ps1</code> and copy the value of <code>$Password</code>.</li>
+<ul>
+<li>On your lab's domain controller, open <code>C:\PurveX\Shares\IT\settlement-upload.ps1</code> and copy the value of <code>$Password</code>.</li>
 <li>Open CyberChef at <code>gchq.github.io/CyberChef</code> and paste the value into Input.</li>
 <li>Drag in From Hex. If the output still isn't readable and ends in <code>=</code>, add From Base64 below it.</li>
-</ol>
+</ul>
 <p>In PowerShell, the same two steps:</p>
 <ul>
 <li><code>$hex = "553256306447786c4c553576647930794d44493249513d3d"; $b64 = -join ($hex -split '(..)' | Where-Object { $_ } | ForEach-Object { [char][Convert]::ToInt32($_, 16) }); [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))</code></li>
@@ -81,7 +77,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Tell Taylor not to send it, and send the vendor a copy with the password line removed. Because the password has sat readable in a shared folder, treat it as exposed and have it changed. Ticket 05 comes back to the proper fix.</p>
+<p>Advise Taylor not to send it, and send the vendor a copy with the password line removed. Because the password has sat readable in a shared folder, treat it as exposed and have it changed. Ticket 05 returns to the proper fix.</p>
 </div>
 </div>
 </div>
@@ -90,8 +86,8 @@
 <div class="ad-mission" data-id="w2-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Hashing · High · INC-1058 · INC-1091</span>
 <h4>Catch the Altered Download</h4>
-<p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>The breach notice says to update the VPN client today. I found three download mirrors of version 2.4.1 in the IT share. IT published a checksum next to them. Which one is safe to install?</p>
-<p><strong>Task:</strong> Hash the three mirrors in the IT share and compare each with <code>checksums.txt</code>. Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>, and report its file name.</p>
+<p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>"The breach notice says to update the VPN client today, so I downloaded version 2.4.1 from the IT share. There are three different mirrors of it, each with a checksum IT posted next to it. Which one is safe to install?"</p>
+<p><strong>Task:</strong> Answer Riley. Determine which mirror is not safe to install, quarantine it, and report its file name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Download" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{vpn-client-2.4.1-mirror-b.txt}" data-accept="vpn-client-2.4.1-mirror-b|mirror-b.txt|mirror-b">Submit</button>
@@ -99,12 +95,12 @@
 </div>
 <div class="ad-hint__text">
 <p>A file's SHA-256 changes completely if even one character changes, so the genuine copies all produce exactly the published value, and an altered copy produces something else.</p>
-<ol>
-<li>Read the published value in <code>C:\PurveX\Shares\IT\checksums.txt</code>.</li>
-<li>Hash each <code>vpn-client-2.4.1-mirror-*.txt</code> file and compare.</li>
+<ul>
+<li>On your lab's domain controller, read the published value in <code>C:\PurveX\Shares\IT\checksums.txt</code>.</li>
+<li>In PowerShell, run <code>Get-FileHash C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-a.txt</code>, then the same command on mirror-b and mirror-c, and compare each Hash value to the one in checksums.txt.</li>
 <li>Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>. Moving keeps it as evidence.</li>
-</ol>
-<p>In PowerShell:</p>
+</ul>
+<p>In PowerShell, checking all three mirrors in one command:</p>
 <ul>
 <li><code>Get-FileHash C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-*.txt | Select-Object Path, Hash</code></li>
 <li><code>Move-Item C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-b.txt C:\PurveX\Quarantine\</code></li>
@@ -120,11 +116,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>All three files looked the same at a glance. Only the hash showed that mirror B differs, and opening it shows why: it says it's an unsigned build. On a day when attackers know staff are rushing to update, a tampered installer is what they'd plant.</p>
+<p>All three files looked the same at a glance. Only the hash showed that mirror B differs, and opening it shows why: it identifies itself as an unsigned build. On a day when attackers know staff are rushing to update, a tampered installer is exactly what they would plant.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>Keep the altered copy in quarantine as evidence, point Riley to a mirror that matches, and tell IT so the bad mirror can be traced and taken down.</p>
+<p>Keep the altered copy in quarantine as evidence, point Riley to a mirror that matches, and notify IT so the compromised mirror can be traced and taken down.</p>
 </div>
 </div>
 </div>
@@ -133,21 +129,24 @@
 <div class="ad-mission" data-id="w2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Stretch · Storing Passwords · Critical · INC-1058 · INC-1091</span>
 <h4>Crack the Shared Hash</h4>
-<p><strong>Alex Rivera · IT · 10:15 AM</strong><br>The breached vendor stored passwords as plain SHA-256, with no salt. The slice of its user table with PurveX accounts is in the IT share as <code>exported-hashes.txt</code>. Two of our staff have the same hash, which means the same password. Find out what it is, and make sure neither of them keeps using it.</p>
-<p><strong>Task:</strong> Find the two accounts that share a hash and crack it with <code>common-passwords.txt</code>. Then force both accounts to change their password at next logon, and report the password.</p>
+<p><strong>Alex Rivera · IT · 10:15 AM</strong><br>"The breached vendor stored passwords as plain SHA-256, with no salt. I extracted the slice of its user table containing PurveX accounts into <code>exported-hashes.txt</code> in the IT share, and two of our staff return the exact same hash.</p>
+<p>Same hash with no salt means the same password. Can you identify who, and what the password is, before anyone else reuses it?"</p>
+<p><strong>Task:</strong> Answer Alex. Identify the password those two accounts share, ensure neither account can continue using it, and report the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Crack the Shared Hash" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Winter2026}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>With no salt, the same password always produces the same hash. So you can hash every word in the list and look for a match, which is what an attacker holding this table would do.</p>
-<ol>
-<li>Open <code>exported-hashes.txt</code> and find the two accounts with the same hash.</li>
-<li>Hash each word in <code>common-passwords.txt</code> with SHA-256 and find the one that matches.</li>
+<p>With no salt, the same password always produces the same hash, so you can hash every word in the list and look for a match, which is what an attacker holding this table would do.</p>
+<ul>
+<li>On your lab's domain controller, open <code>C:\PurveX\Shares\IT\exported-hashes.txt</code> and find the two accounts with the same hash.</li>
+<li>Open CyberChef, and paste the whole contents of <code>common-passwords.txt</code> into Input, one word per line.</li>
+<li>Add Fork, then SHA2 set to 256 below it. Fork hashes every line on its own instead of the whole block as one value.</li>
+<li>Read down the Output for the line whose hash matches the one from the table. That word is the password.</li>
 <li>For both accounts, open the account in Active Directory Users and Computers, and on the Account tab tick User must change password at next logon.</li>
-</ol>
-<p>In PowerShell:</p>
+</ul>
+<p>In PowerShell, the same hashing and matching in one command:</p>
 <ul>
 <li><code>$t = Import-Csv C:\PurveX\Shares\IT\exported-hashes.txt; $sha = [Security.Cryptography.SHA256]::Create(); Get-Content C:\PurveX\Shares\IT\common-passwords.txt | ForEach-Object { $w = $_; $h = -join ($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($w)) | ForEach-Object { $_.ToString("x2") }); $t | Where-Object sha256 -eq $h | ForEach-Object { "$($_.account) uses $w" } }</code></li>
 <li><code>"taylor.osei", "jordan.ellis" | ForEach-Object { Set-ADUser $_ -ChangePasswordAtLogon $true }</code></li>
@@ -168,17 +167,17 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Force a change at next logon for everyone in the dump, starting with these two, and ask them not to reuse passwords between work and outside services. A salted, slow hash, like the ones the lesson describes, is what stops one breach from turning into this.</p>
+<p>Force a change at next logon for everyone in the exported list, starting with these two, and advise them not to reuse passwords between work and outside services. A salted, slow hash, as described in the lesson, is what stops one breach from becoming this.</p>
 </div>
 </div>
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 05 · Stretch · Wrap-up · Report to the IT Lead · INC-1091</span>
 <h4>Fix the Script for Good</h4>
-<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>Back to the settlement script from this morning. Operations still needs it to run every night. What's the right fix?<br><strong>A</strong> Encrypt the password properly with AES, and keep the key in the same script so it can decrypt it at run time.<br><strong>B</strong> Take the password out of the script, store it in a secrets vault or run the job under a managed service account, and change the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so nobody can read it.</p>
-<p><strong>Task:</strong> Choose the fix and type its letter.</p>
+<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>"Following up on the settlement script from this morning. Operations still needs it to run every night. What is the correct remediation?"<br><strong>A</strong> Encrypt the password with AES, and keep the key in the same script so it can decrypt at run time.<br><strong>B</strong> Remove the password from the script, store it in a secrets vault or run the job under a managed service account, and rotate the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so no one can read it.</p>
+<p><strong>Task:</strong> Select the correct remediation and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Fix the Script for Good" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -198,11 +197,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Encoding hides nothing, encryption with the key beside it hides nothing either, and hashing can't be reversed, so none of them works for a password a script has to use. The secret has to live somewhere that's protected by access control and encryption, not in a text file in a shared folder.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Move the credential into a vault or a managed service account, change the exposed password with the vendor, and remove the old script from the share. Then search the other shares for the same pattern, because a script like this is rarely the only one.</p>
+<p>A vault or a managed service account is the only one of these three that actually keeps the password out of the script, so move it there and rotate the exposed password with the vendor.</p>
 </div>
 </div>
 </div>

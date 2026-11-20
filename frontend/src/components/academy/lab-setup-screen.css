@@ -6,7 +6,13 @@
 .ls {
   position: fixed;
   inset: 0;
-  z-index: 60;
+  /* Above every other portal overlay (the lab menu popover at 90, the
+     briefing/pod map/tour at 95, review-card at 96) except Help (120),
+     which stays reachable no matter what. This was 60, below all of them,
+     which is why opening the lab menu popover while a build was running
+     showed its compact status floating on top of this takeover instead of
+     behind it -- the same progress shown twice, out of sync, at once. */
+  z-index: 97;
   display: grid;
   place-items: center;
   padding: 24px;
@@ -19,6 +25,7 @@
   --ls-dot: rgba(255, 255, 255, 0.09);
   --ls-tile: rgba(255, 255, 255, 0.05);
   --ls-accent: #9a8cff;
+  --ls-accent-2: #d9ceff;
   --ls-good: #34d399;
 }
 .ls[data-academy-theme="light"] {
@@ -30,9 +37,12 @@
   --ls-dot: rgba(16, 25, 46, 0.11);
   --ls-tile: rgba(15, 23, 42, 0.04);
   --ls-accent: #5546e0;
+  --ls-accent-2: #8a7aff;
   --ls-good: #0f9f6e;
 }
-/* The portal's own dot grid, and nothing else behind the content. */
+/* The portal's own dot grid. Reaches most of the frame now, fading only at
+   the far edges, so a wide screen reads as one considered surface rather
+   than a small card floating in an empty rectangle. */
 .ls::before {
   content: "";
   position: absolute;
@@ -40,68 +50,101 @@
   pointer-events: none;
   background-image: radial-gradient(var(--ls-dot) 2px, transparent 2px);
   background-size: 26px 26px;
-  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black, transparent 75%);
+  mask-image: radial-gradient(ellipse 100% 90% at 50% 30%, black, transparent 90%);
 }
 /* Left aligned throughout. A centred heading over a left aligned list of steps
    is what made this look assembled rather than composed. */
-.ls__inner { position: relative; z-index: 1; width: min(34rem, 100%); }
+.ls__inner { position: relative; z-index: 1; width: min(38rem, 100%); }
+/* This is the one hero this screen has, same category as the explainer, so
+   it gets the same wash the rest of the portal's floating surfaces share --
+   off the top edge of the content block, not the viewport, since the block
+   is centred rather than pinned to the top. var(--ls-accent) rather than
+   the shared --rd-accent: that token lives under .academy-bg, which this
+   portal (to <body>) is not inside. */
+.ls__inner::before {
+  content: "";
+  position: absolute;
+  top: -22%;
+  left: 50%;
+  width: 180%;
+  height: 75%;
+  transform: translateX(-50%);
+  z-index: -1;
+  background: radial-gradient(ellipse at 50% 0%,
+    color-mix(in srgb, var(--ls-accent) calc(var(--sf-wash-strength) * 1.4), transparent),
+    transparent var(--sf-wash-stop));
+  pointer-events: none;
+}
 
-.ls__brand { display: flex; align-items: center; gap: 10px; margin: 0 0 56px; }
+.ls__brand { display: flex; align-items: center; gap: 10px; margin: 0 0 44px; }
 .ls__brand img { display: block; }
 .ls__brand span { font-family: var(--font-display); font-size: var(--ty-h3); font-weight: 700; letter-spacing: -0.02em; color: var(--ls-ink); }
 .ls__brand i { width: 1px; height: 18px; background: var(--ls-line); }
 .ls__brand b { font-size: var(--ty-note); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ls-ink-3); }
 
-.ls__title { margin: 0; font-family: var(--font-display); font-size: clamp(1.9rem, 3.6vw, 2.6rem); font-weight: 700; letter-spacing: -0.025em; color: var(--ls-ink); }
-.ls__lede { margin: 16px 0 40px; max-width: 40ch; font-size: var(--ty-lead); line-height: 1.6; color: var(--ls-ink-2); }
+.ls__kicker { margin: 0 0 10px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ls-ink-3); }
 
-/* Thin, because it is a status line and not the subject of the screen. */
-.ls__bar { position: relative; height: 2px; background: var(--ls-tile); overflow: hidden; }
-.ls__bar > span { position: relative; display: block; height: 100%; background: var(--ls-accent); transition: width 0.9s linear; }
-.ls__bar > span::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ls-accent) 70%, #fff), transparent);
-  animation: ls-sheen 1.9s ease-in-out infinite;
+/* The one hero: a single line reading like a command that just ran, not a
+   dial filling up. A ring says "wait, watch the shape"; a line says "here is
+   what is happening right now" -- closer to what this screen actually is,
+   and closer to the terminal this audience already lives in. */
+.ls__title {
+  display: flex; align-items: baseline; gap: 10px; margin: 0 0 32px; min-height: 1.2em;
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-h1); font-weight: 600;
+  letter-spacing: -0.01em; color: var(--ls-ink);
+}
+.ls__prompt { color: var(--ls-accent); font-weight: 700; }
+.ls__title-text { animation: ls-line-in var(--ax-dur-slow) var(--ax-ease) both; }
+.ls__cursor { width: 10px; height: 0.9em; background: var(--ls-accent); animation: ls-blink 1s step-end infinite; }
+
+/* A thin meter, not a dial: the percentage sits beside it in the same
+   monospace the title uses, so the whole top of the screen reads as one
+   readout instead of a UI chrome element. */
+.ls__meter { display: flex; align-items: center; gap: 14px; margin: 0 0 28px; }
+.ls__meter-track { flex: 1; height: 3px; border-radius: 999px; background: var(--ls-tile); overflow: hidden; }
+.ls__meter-fill {
+  height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--ls-accent-2), var(--ls-accent));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ls-accent) 55%, transparent);
+  transition: width 0.9s var(--ax-ease);
+}
+.ls__meter-pct {
+  font-style: normal; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-note);
+  font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ls-ink-2); min-width: 3ch; text-align: right;
 }
 
-.ls__steps { list-style: none; display: grid; gap: 16px; margin: 34px 0 0; padding: 0; }
-.ls__steps li { display: grid; grid-template-columns: 30px 1fr; align-items: center; gap: 14px; font-size: var(--ty-lead); color: var(--ls-ink-3); transition: color var(--ax-dur), opacity var(--ax-dur); opacity: 0.55; }
-.ls__steps li.is-done, .ls__steps li.is-now { opacity: 1; }
-.ls__steps svg { width: 17px; height: 17px; }
-.ls__mark { display: grid; place-items: center; width: 30px; height: 30px; background: var(--ls-tile); box-shadow: inset 0 0 0 1px var(--ls-line); transition: background var(--ax-dur), box-shadow var(--ax-dur); }
-.ls__steps li.is-done .ls__mark { background: color-mix(in srgb, var(--ls-good) var(--sf-mark-fill), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ls-good) var(--sf-mark-line), transparent); }
-.ls__steps li.is-now .ls__mark { background: color-mix(in srgb, var(--ls-accent) var(--sf-mark-fill), transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ls-accent) var(--sf-mark-line), transparent); }
-.ls__steps li.is-done { color: var(--ls-ink-2); }
-.ls__steps li.is-done svg { color: var(--ls-good); }
-.ls__steps li.is-now { color: var(--ls-ink); font-weight: 650; letter-spacing: -0.005em; }
-.ls__steps li.is-now svg { color: var(--ls-accent); }
-.ls__spin { animation: ls-rot 0.9s linear infinite; }
+/* The step list as a log, not a stepper: no numbered badges, no borders,
+   just what has run, what is running, and what has not -- told the way a
+   real boot sequence tells it. */
+.ls__log { display: flex; flex-direction: column; gap: 11px; margin: 0 0 36px; padding: 0; list-style: none; }
+.ls__log-row {
+  display: flex; align-items: center; gap: 10px; font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ty-note); color: var(--ls-ink-3); transition: color var(--ax-dur), opacity var(--ax-dur);
+}
+.ls__log-row svg { width: 14px; height: 14px; flex-shrink: 0; color: var(--ls-ink-3); opacity: 0.55; }
+.ls__log-row.is-pending { opacity: 0.45; }
+.ls__log-row.is-done { color: var(--ls-ink-2); }
+.ls__log-row.is-done svg { color: var(--ls-good); opacity: 1; }
+.ls__log-row.is-now { color: var(--ls-ink); font-weight: 600; }
+.ls__log-row.is-now svg { color: var(--ls-accent); opacity: 1; animation: ls-pulse 1.6s ease-in-out infinite; }
 
-/* The remaining time and the step count on one baseline, held apart by the
-   width of the bar above them, so the block reads as one object. */
-.ls__eta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 36px 0 0; padding-top: 20px; border-top: 1px solid var(--ls-line); font-size: var(--ty-lead); color: var(--ls-ink-3); }
-.ls__eta em { font-family: var(--font-mono, ui-monospace, monospace); font-style: normal; font-variant-numeric: tabular-nums; color: var(--ls-ink-2); }
-.ls__eta i { font-style: normal; color: var(--ls-ink-3); }
+.ls__eta { margin: 0; font-size: var(--ty-note); color: var(--ls-ink-3); }
 
 .ls__hide {
-  display: inline-flex; align-items: center; gap: 7px; margin-top: 38px; padding: 10px 18px;
-  border: 1px solid var(--ls-line); background: none; font: inherit; font-size: var(--ty-lead); font-weight: 600;
-  color: var(--ls-ink-2); cursor: pointer; transition: border-color var(--ax-dur-fast), color var(--ax-dur-fast);
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 36px; border: 0; background: none;
+  font: inherit; font-size: var(--ty-small); font-weight: 600; color: var(--ls-ink-3); cursor: pointer;
+  transition: color var(--ax-dur-fast);
 }
-.ls__hide:hover { border-color: var(--ls-accent); color: var(--ls-ink); }
-.ls__hide svg { width: 13px; height: 13px; }
+.ls__hide:hover { color: var(--ls-ink); }
+.ls__hide svg { width: 12px; height: 12px; }
 
 @keyframes ls-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes ls-rot { to { transform: rotate(360deg); } }
-@keyframes ls-sheen {
-  0% { transform: translateX(-110%); }
-  60%, 100% { transform: translateX(110%); }
-}
+@keyframes ls-line-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ls-blink { 50% { opacity: 0; } }
+@keyframes ls-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 @media (prefers-reduced-motion: reduce) {
   .ls { animation: none; }
-  .ls__spin { animation: none; }
-  .ls__bar > span { transition: none; }
-  .ls__bar > span::after { animation: none; opacity: 0; }
+  .ls__title-text { animation: none; }
+  .ls__cursor { animation: none; }
+  .ls__meter-fill { transition: none; }
+  .ls__log-row.is-now svg { animation: none; }
 }

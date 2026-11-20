@@ -14,7 +14,7 @@
 <span class="ad-mission__num">Task 01 · Warm-up · Join a Computer</span>
 <h4>Pre-Stage the Workstation</h4>
 <p><strong>Priya Nair · IT · 1:05 PM</strong><br>A new workstation for the IT team, IT-WKS09, arrives tomorrow. I'd like its computer object waiting in the right folder before anyone joins it to the domain, so it picks up IT's settings from the first boot.</p>
-<p><strong>Task:</strong> Create a computer object named <code>IT-WKS09</code> in Departments, IT, Workstations. Then report the default folder a joined computer would have landed in if nobody had pre-staged it.</p>
+<p><strong>Task:</strong> Create a computer object named <code>IT-WKS09</code> in Departments → IT → Workstations. Then report the default folder a joined computer would have landed in if nobody had pre-staged it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Pre-Stage the Workstation" placeholder="a folder name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{computers}" data-accept="cn=computers|computers-container">Submit</button>
@@ -22,12 +22,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Pre-staging means creating the computer object before the machine joins, so the join finds it waiting in the folder you chose. The Join a Computer tab named the folder Windows uses when nothing was staged.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand Departments, IT, and then Workstations.</li>
 <li>Right-click Workstations, choose New, then Computer, and enter <code>IT-WKS09</code>.</li>
 <li>Look at the folders directly under the domain for the default one a new computer lands in.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-ADComputer -Name "IT-WKS09" -Path "OU=Workstations,OU=IT,OU=Departments,$((Get-ADDomain).DistinguishedName)"</code></li>
@@ -66,11 +66,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A workstation finds <code>purvexfinancial.local</code> by asking DNS, and the only DNS server that knows your domain is the domain controller itself. So the answer is your domain controller's own address, which is different in every lab.</p>
-<ol>
+<ul>
 <li>Sign in to the domain controller.</li>
 <li>Open PowerShell or a command prompt and run <code>ipconfig</code>.</li>
 <li>Read the IPv4 Address of the adapter the lab uses and type it here.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="8.8.8.8|8.8.4.4|1.1.1.1|1.0.0.1|9.9.9.9">That's a public DNS server, and it has never heard of purvexfinancial.local. Use the server that hosts your domain.</div>
@@ -94,11 +94,11 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-06" data-attempts="0">
+<div class="ad-mission" data-id="dr-06" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 03 · Warm-up · Accounts</span>
 <h4>Person, Machine or Job?</h4>
 <p><strong>Alex Rivera · IT · 1:48 PM</strong><br>Before Quinn starts, I'd like to be sure Quinn can tell the three kinds of account apart. Which of these is a user object that doesn't represent a person?<br><strong>A</strong> IT-WKS01<br><strong>B</strong> svc-backup-job<br><strong>C</strong> jordan.ellis</p>
-<p><strong>Task:</strong> Choose the user object that stands for a job rather than a person and type its letter.</p>
+<p><strong>Task:</strong> Select the user object that stands for a job rather than a person and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Person, Machine or Job?" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}" data-accept="svc-backup-job">Submit</button>
@@ -118,17 +118,13 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A service account is built like a person's account, but nobody sits behind it. If you treat it like a person, you'll put it in staff groups it shouldn't be in, or disable it during an offboarding sweep and break the job it runs.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Check the object type, the name and the Description before you change anything. An <code>svc-</code> prefix and a Description naming a job tell you it's a service account.</p>
+<p>Check the object type, the name and Description before you change anything: a service account is built like a person's but nobody sits behind it, so treating it like one risks putting it in the wrong group or disabling it and breaking the job it runs.</p>
 </div>
 </div>
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-08" data-attempts="0">
+<div class="ad-mission" data-id="dr-08" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 04 · Warm-up · Groups</span>
 <h4>OU or Container?</h4>
 <p><strong>Priya Nair · IT · 2:02 PM</strong><br>Someone created a test account in the default Users folder last month. IT links its screen-lock GPO to <code>OU=IT</code>. Does that GPO reach the test account?</p>
@@ -151,11 +147,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An account left in a default Container misses every policy linked to a department OU, so it quietly runs without the screen lock and other settings its department relies on.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Move the account into the right department's Users OU, or remove it if it's a forgotten test account. Make a habit of checking the default folders for anything that shouldn't be there.</p>
+<p>An account left in a default Container misses every policy linked to a department OU, so move it into the right department's Users OU, or remove it if it's a forgotten test account.</p>
 </div>
 </div>
 </div>
@@ -165,7 +157,7 @@
 <span class="ad-mission__num">Task 05 · Apply it · Accounts</span>
 <h4>Create the New Hire</h4>
 <p><strong>Alex Rivera · IT · 1:40 PM</strong><br>Quinn Harper starts Monday as our second Help Desk Technician. Please create the account in IT, with the title filled in so the next person can tell what Quinn does.</p>
-<p><strong>Task:</strong> Create the user <code>quinn.harper</code> in Departments, IT, Users, with the title <code>Help Desk Technician</code>. Then report the account's full user logon name, the one with the @ in it.</p>
+<p><strong>Task:</strong> Create the user <code>quinn.harper</code> in Departments → IT → Users, with the title <code>Help Desk Technician</code>. Then report the account's full user logon name, the one with the @ in it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Create the New Hire" placeholder="name@domain" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{quinn.harper@purvexfinancial.local}">Submit</button>
@@ -173,13 +165,13 @@
 </div>
 <div class="ad-hint__text">
 <p>The full logon name is the username followed by @ and the domain's name. You'll see it on the account's Account tab as User logon name, with the domain picked from a list beside it.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, expand Departments, IT, and then Users.</li>
 <li>Right-click Users, choose New, then User. Enter Quinn Harper as the name and <code>quinn.harper</code> as the logon name.</li>
 <li>Set a password, finish the wizard, then open the account's Properties.</li>
 <li>On the Organization tab, set Title to <code>Help Desk Technician</code> and click Apply.</li>
 <li>On the Account tab, read the User logon name together with the domain beside it.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>$d = Get-ADDomain</code></li>
@@ -211,7 +203,7 @@
 <span class="ad-mission__num">Task 06 · Apply it · Organizational Units</span>
 <h4>Give Compliance a Workstations Folder</h4>
 <p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>Our first two laptops are being ordered this week. IT, Operations and Wealth Management each have a Workstations folder, and we'd like ours set up the same way.</p>
-<p><strong>Task:</strong> Create an OU named <code>Workstations</code> under Departments, Compliance, and give it a Description. Then report its path, starting from the new OU and ending at Departments.</p>
+<p><strong>Task:</strong> Create an OU named <code>Workstations</code> under Departments → Compliance, and give it a Description. Then report its path, starting from the new OU and ending at Departments.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Give Compliance a Workstations Folder" placeholder="OU=...,OU=...,OU=..." autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{OU=Workstations,OU=Compliance,OU=Departments}" data-accept="OU=Workstations,OU=Compliance,OU=Departments,DC=purvexfinancial,DC=local">Submit</button>
@@ -219,12 +211,12 @@
 </div>
 <div class="ad-hint__text">
 <p>A directory path reads from the object outward, the way an address reads from the house to the country. So the new OU comes first and Departments comes last, with <code>OU=</code> in front of each name.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, expand Departments.</li>
 <li>Right-click Compliance, choose New, then Organizational Unit, and name it <code>Workstations</code>.</li>
 <li>Open the new OU's Properties and fill in the Description, for example "Compliance department workstation computer objects."</li>
 <li>Write the path from Workstations up to Departments, separated by commas.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-ADOrganizationalUnit -Name "Workstations" -Path "OU=Compliance,OU=Departments,$((Get-ADDomain).DistinguishedName)" -Description "Compliance department workstation computer objects."</code></li>
@@ -245,7 +237,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Create the folder before the laptops arrive, describe what belongs in it, and pre-stage each laptop there, just as you did with IT-WKS09.</p>
+<p>Create the folder before the laptops arrive, describe what belongs in it, and pre-stage each laptop there. That's the same thing you did with IT-WKS09.</p>
 </div>
 </div>
 </div>
@@ -254,7 +246,7 @@
 <div class="ad-mission" data-id="dr-07" data-attempts="0">
 <span class="ad-mission__num">Task 07 · Apply it · Groups</span>
 <h4>Mirror the Right Peer</h4>
-<p><strong>Alex Rivera · IT · 1:55 PM</strong><br>Quinn does the same job as Priya, so give Quinn the same access Priya has. Please don't copy mine. I hold more than a help desk role needs.</p>
+<p><strong>Alex Rivera · IT · 1:55 PM</strong><br>Quinn does the same job as Priya, so give Quinn the same access Priya has. Please don't copy mine, since I hold more than a help desk role needs.</p>
 <p><strong>Task:</strong> Add quinn.harper to the same department group as priya.nair. Then report the group alex.rivera has that Quinn must not get.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Mirror the Right Peer" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -263,11 +255,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Open Priya's and Alex's Member Of tabs side by side, as the Service Accounts tab suggested. The group Alex has and Priya doesn't is your answer.</p>
-<ol>
+<ul>
 <li>Open priya.nair's Properties and read the Member Of tab.</li>
 <li>Open quinn.harper's Member Of tab, click Add, and add the same department group.</li>
 <li>Open alex.rivera's Member Of tab and compare it with Priya's.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Add-ADGroupMember -Identity "IT Users" -Members quinn.harper</code></li>
@@ -306,13 +298,13 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>The Service Accounts tab listed five practices. Four of them are about the name, the folder, the password and the Description. The fifth is about time.</p>
-<ol>
+<p>The Service Accounts tab listed five practices, and four of them cover the name, the folder, the password and the Description. The fifth is about time.</p>
+<ul>
 <li>In Active Directory Users and Computers, right-click ServiceAccounts, choose New, then User, and use <code>svc-print-queue</code> as both the name and the logon name.</li>
 <li>Set a long password and tick Password never expires.</li>
 <li>Open the account's Properties and write a Description such as "Runs the nightly print queue cleanup on IT-WKS01, 02:00-02:30."</li>
 <li>On the Account tab, find the button that sets when the account may sign in.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-ADUser -Name "svc-print-queue" -SamAccountName svc-print-queue -Path "OU=ServiceAccounts,$((Get-ADDomain).DistinguishedName)" -Description "Runs the nightly print queue cleanup on IT-WKS01, 02:00-02:30." -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -Enabled $true</code></li>
@@ -339,11 +331,11 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-10" data-attempts="0">
+<div class="ad-mission" data-id="dr-10" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 09 · Stretch · Service Accounts</span>
 <h4>A Job Running Outside Its Window</h4>
-<p><strong>SOC Queue · Alert Review · 2:22 PM</strong><br>The Security log shows an interactive sign-in by <code>svc-print-queue</code> at 2:15 PM. Its Description says it runs from 02:00 to 02:30. What should you make of that?<br><strong>A</strong> It's normal, because service accounts sign in whenever they need to.<br><strong>B</strong> It's a red flag. Find out who or what signed in, and from where, before anything else.<br><strong>C</strong> Widen the account's Logon Hours so the alert stops.</p>
-<p><strong>Task:</strong> Choose the right reading and type its letter.</p>
+<p><strong>SOC Queue · Alert Review · 2:22 PM</strong><br>The Security log shows an interactive sign-in by <code>svc-print-queue</code> at 2:15 PM. Its Description says it runs from 02:00 to 02:30. How should you interpret that?<br><strong>A</strong> This is normal. Service accounts sign in whenever their job requires it.<br><strong>B</strong> This is a red flag. Determine who or what signed in, and from where, before taking any other action.<br><strong>C</strong> Widen the account's Logon Hours so the alert stops.</p>
+<p><strong>Task:</strong> Select the correct reading and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for A Job Running Outside Its Window" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -363,21 +355,17 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The whole point of giving a service account a narrow window is that activity outside it means something. An interactive sign-in hours away from the job's window often means someone found the password and is using it as their own.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Find the machine and the logon type behind the sign-in, and ask whoever owns the job whether anyone ran it by hand. If nobody can explain it, reset the password and escalate.</p>
+<p>An interactive sign-in hours away from the job's window often means the password has been compromised, so determine who signed in and why, and reset the password if no one can account for it.</p>
 </div>
 </div>
 </div>
 </div>
 
-<div class="ad-mission" data-id="dr-04" data-attempts="0">
+<div class="ad-mission" data-id="dr-04" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 10 · Stretch · Organizational Units</span>
 <h4>Delegate Only What Helpdesk Needs</h4>
 <p><strong>Devon Brooks · Compliance · 1:28 PM</strong><br>We'd like the Helpdesk group to be able to reset passwords for Compliance staff, and for nobody else's accounts. Where should that permission be granted?<br><strong>A</strong> On the Compliance Users group.<br><strong>B</strong> On the OU <code>OU=Users,OU=Compliance,OU=Departments</code>.<br><strong>C</strong> On the domain itself, so it covers every account.</p>
-<p><strong>Task:</strong> Choose where to delegate the permission and type its letter.</p>
+<p><strong>Task:</strong> Select where to delegate the permission and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Delegate Only What Helpdesk Needs" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -387,7 +375,7 @@
 <p>The Organizational Units tab explained that you can delegate control over a single OU. Ask yourself which option covers Compliance's staff accounts and nothing more.</p>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="a">A group decides what its members can reach. It isn't where you grant someone control over other accounts. Delegation attaches to the folder those accounts live in.</div>
+<div class="ad-miss" data-guess="a">A group decides what its members can reach. It isn't where you grant someone control over other accounts, since delegation attaches to the folder those accounts live in.</div>
 <div class="ad-miss" data-guess="c">That would let Helpdesk reset every password in the firm, administrators included. Delegate at the smallest folder that covers the job.</div>
 <div class="ad-flag">
 <div class="ad-break">
@@ -397,11 +385,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Delegating on the Compliance Users OU gives Helpdesk exactly the reach the request describes. Granting it at the domain would also let Helpdesk reset an administrator's password. That's one of an attacker's quickest routes to taking over a domain.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Run the Delegation of Control Wizard on that one OU and choose only the reset-password task. Then test it by signing in as a Helpdesk member and trying a reset outside Compliance, which should fail.</p>
+<p>Delegate on the Compliance Users OU with the Delegation of Control Wizard, since granting it at the domain would let Helpdesk reset an administrator's password too, one of an attacker's quickest routes to taking over a domain.</p>
 </div>
 </div>
 </div>
@@ -411,7 +395,7 @@
 <span class="ad-mission__num">Task 11 · Stretch · Group Policy</span>
 <h4>Link the Policy</h4>
 <p><strong>Devon Brooks · Compliance · 2:35 PM</strong><br>Our laptops will need settings of their own, separate from everyone else's. Please create a GPO for them and attach it to the folder you made earlier, so it's ready when the laptops arrive.</p>
-<p><strong>Task:</strong> Create a GPO named <code>PurveX - Compliance Workstations</code> and link it to Departments, Compliance, Workstations. A GPO can link to an OU, to the domain and to one other kind of object. Report that third kind.</p>
+<p><strong>Task:</strong> Create a GPO named <code>PurveX - Compliance Workstations</code> and link it to Departments → Compliance → Workstations. A GPO can link to an OU, to the domain and to one other kind of object. Report that third kind.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Link the Policy" placeholder="a kind of object" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{site}" data-accept="sites|ad-site|active-directory-site">Submit</button>
@@ -419,12 +403,12 @@
 </div>
 <div class="ad-hint__text">
 <p>The Group Policy tab listed the three places a GPO can link to. You've used the OU, and you know the domain is another, so name the one that's left.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
 <li>Expand the domain, Departments, and then Compliance.</li>
 <li>Right-click Workstations and choose Create a GPO in this domain, and Link it here.</li>
 <li>Name it <code>PurveX - Compliance Workstations</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>New-GPO -Name "PurveX - Compliance Workstations" | New-GPLink -Target "OU=Workstations,OU=Compliance,OU=Departments,$((Get-ADDomain).DistinguishedName)"</code></li>
@@ -451,11 +435,11 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="dr-12" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="dr-12" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Task 12 · Stretch · Group Policy</span>
 <h4>The Password Rule That Will Not Apply</h4>
 <p><strong>Devon Brooks · Compliance · 2:50 PM</strong><br>The auditors want Compliance staff on 16-character passwords, while everyone else stays on the firm's standard. Someone suggested putting a password setting in a GPO linked to <code>OU=Compliance</code>. Will that work?<br><strong>A</strong> Yes. A GPO linked to the OU applies to every account in it.<br><strong>B</strong> No. Domain password policy only applies from the domain level, so use a fine-grained password policy that targets Compliance instead.<br><strong>C</strong> Only if security filtering limits the GPO to Compliance Users.</p>
-<p><strong>Task:</strong> Choose the approach that will work and type its letter.</p>
+<p><strong>Task:</strong> Select the approach that will work and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Password Rule That Will Not Apply" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -475,11 +459,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A password setting in an OU-linked GPO shows up in the console as if it were working, yet it never changes a domain account's password rules. An auditor would find Compliance still on the old standard, while your notes said otherwise.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Create a fine-grained password policy with the stricter rules and apply it to the Compliance Users group. Then confirm it with <code>Get-ADUserResultantPasswordPolicy</code> on one Compliance account.</p>
+<p>A password setting in an OU-linked GPO never actually changes a domain account's password rules, so create a fine-grained password policy for Compliance Users instead and confirm it with <code>Get-ADUserResultantPasswordPolicy</code>.</p>
 </div>
 </div>
 </div>

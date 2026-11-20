@@ -330,6 +330,23 @@ export const quizzes: Quiz[] = [
     weekSlug: "week-3",
     questions: [
       {
+        question: "A workstation is at 192.168.1.25/24. Which address can it reach directly, without going through its default gateway?",
+        options: ["192.168.2.25", "192.168.1.200", "10.0.0.25", "192.169.1.25"],
+        correctIndex: 1,
+        explanation: "A /24 makes the first three octets the network. 192.168.1.200 shares 192.168.1, so it's on the same subnet. Every other option has a different network part, so that traffic goes through the default gateway.",
+      },
+      {
+        question: "A user can print to the printer down the hall but can't reach any server in another building. ipconfig shows a normal address and the right subnet mask. What do you check next?",
+        options: [
+          "The default gateway, because a wrong one strands the machine on its own subnet",
+          "The printer driver, since printing is the one thing that works and the driver controls the network card",
+          "Whether the address starts with 169.254, meaning DHCP failed",
+          "The user's password, since servers need a fresh sign-in",
+        ],
+        correctIndex: 0,
+        explanation: "Reaching devices on its own subnet but nothing beyond it is the classic sign of a missing or wrong default gateway. A 169.254 address would have stopped the printer working too.",
+      },
+      {
         question: "Put the TCP three-way handshake in the correct order.",
         options: ["ACK → SYN → SYN-ACK", "SYN → SYN-ACK → ACK", "SYN-ACK → SYN → ACK", "SYN → ACK → SYN-ACK"],
         correctIndex: 1,
@@ -458,15 +475,15 @@ export const quizzes: Quiz[] = [
         explanation: "DNS, Kerberos, RPC, LDAP, SMB and Remote Desktop are normal on a domain controller. Telnet sends everything, passwords included, in plain text and has no place on one, so it is the port to trace back to whoever opened it.",
       },
       {
-        question: "After a migration, the intranet portal stopped loading. Its name still resolves to the old server's address. What is the fix?",
+        question: "A job on web01 signs in to the domain controller over port 389 with a simple bind every few minutes. Why is that a problem, and what fixes it?",
         options: [
-          "Update the portal's DNS record to the new server's address",
-          "Restart the browser and clear the cache on every Finance workstation",
-          "Open the portal's port in the domain controller's firewall",
-          "Rebuild the portal on the old server so the name works again",
+          "Port 389 is closed on most domain controllers, so open it in the firewall",
+          "The bind goes in clear text on 389, so anyone capturing it reads the password. Move it to LDAPS on 636",
+          "Simple binds lock the account after a few tries, so switch the job to an anonymous bind",
+          "LDAP is only for Windows clients, so web01 should use SMB on 445 to sign in",
         ],
-        correctIndex: 0,
-        explanation: "The portal is fine. Its name points at a server that was switched off, so every connection goes nowhere. Changing the A record in DNS Manager fixes it for everyone, and Resolve-DnsName confirms the change.",
+        correctIndex: 1,
+        explanation: "A simple bind on plain LDAP sends the account name and password unencrypted, so a capture on the network reads them straight off the wire. LDAPS wraps the same conversation in TLS on port 636. Opening ports or switching protocols does nothing about a password crossing the network in the clear.",
       },
     ],
   },
@@ -868,7 +885,7 @@ export const quizzes: Quiz[] = [
         explanation: "Find lets you search by what kind of object you are looking for. A person is Users, Contacts, and Groups. A machine, like IT-WKS01, is Computers. Finding the object is only the start, since you still read its folder and then its Member Of tab once it is open.",
       },
       {
-        question: "Riley calls in locked out. She says she still remembers her password, but mistyped it several times in a row. What is the right fix?",
+        question: "Riley calls in locked out. They say they still remember their password, but mistyped it several times in a row. What is the right fix?",
         options: [
           "Reset her password and force a change at next logon, so the lockout counter starts over",
           "Check Unlock account on the Account tab. The password stays the same",

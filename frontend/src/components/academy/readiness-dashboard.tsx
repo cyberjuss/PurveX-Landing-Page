@@ -33,7 +33,7 @@ import {
 const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb: string }[] = [
   { key: "weekend-incident-report", label: "The Weekend Incident Report", blurb: "Find and fix a confidentiality, integrity and availability failure." },
   { key: "tuesday-after-breach", label: "Tuesday After the Breach", blurb: "Decode, hash, crack and contain on a real IT desk morning." },
-  { key: "network-change", label: "The Network Change That Went Wrong", blurb: "Clean up after a contractor's weekend network change." },
+  { key: "network-change", label: "The Three-Minute Job", blurb: "Trace a cron job leaking a password, and shut it down the right way." },
   { key: "access-review", label: "The Quarterly Access Review", blurb: "Find and remove access that should not exist." },
   { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory." },
   { key: "ticket-queue", label: "Ticket Queue", blurb: "Help desk tickets you change in the directory." },
@@ -254,7 +254,19 @@ export function ReadinessDashboard() {
         </div>
         <div className="rd-ledger">
           {s.skills.map((k) => {
-            const tone = toneOfScore(k.score);
+            // A score averages only finished missions, so one lucky solve out
+            // of a 25-mission skill reads as a mathematically perfect 100 --
+            // rated (at least half the bucket done) is what says that number
+            // means anything yet. The number stays "--" until then, so
+            // nothing here claims a grade it hasn't earned, but the bar
+            // still shows real movement: how much of the bucket is done, in
+            // the portal's own "in progress" accent rather than a graded
+            // red/yellow/green, so a started skill doesn't read as an
+            // untouched one.
+            const shown = k.rated ? k.score : null;
+            const inProgress = !k.rated && k.done > 0;
+            const tone = k.rated ? toneOfScore(shown) : inProgress ? "live" : "none";
+            const barPct = k.rated ? (shown ?? 0) : inProgress ? Math.round((k.done / k.total) * 100) : 0;
             return (
               <div key={k.key} className={`rd-row ${focusKey === k.key ? "rd-row--focus" : ""}`}>
                 <div className="rd-row__name">
@@ -268,13 +280,13 @@ export function ReadinessDashboard() {
                   </span>
                 </div>
                 <div className="rd-scale">
-                  <div className={`rd-scale__fill rd-bg-${tone}`} style={{ width: `${k.score ?? 0}%` }} />
+                  <div className={`rd-scale__fill rd-bg-${tone}`} style={{ width: `${barPct}%` }} />
                   <i style={{ left: "65%" }} data-mark="Almost · 65" />
                   <i style={{ left: "85%" }} data-mark="Ready · 85" />
                 </div>
                 <p className={`rd-row__score rd-text-${tone}`}>
-                  {k.score === null ? "—" : k.score}
-                  {k.score !== null && <small>%</small>}
+                  {shown === null ? "—" : shown}
+                  {shown !== null && <small>%</small>}
                 </p>
                 <button
                   type="button"

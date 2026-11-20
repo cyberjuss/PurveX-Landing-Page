@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>If Alex Rivera lives in the IT folder, does that folder decide what he can access?</p>
+<p>If Alex Rivera lives in the IT folder, does that folder decide what they can access?</p>
 </div>
 
 ### Organizational Units (OUs)

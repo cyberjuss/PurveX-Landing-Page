@@ -1,6 +1,8 @@
 import { after, NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import {
+  advanceReset,
+  beginReset,
   canUseHostedLab,
   extendHostedLab,
   hostedLabLink,
@@ -13,7 +15,6 @@ import {
   linuxCredentials,
   LabHoursSpentError,
   PodSlotsFullError,
-  resetHostedLab,
   startHostedLab,
   stopDueHostedLabs,
   stopOrphanedHostedLabs,
@@ -24,7 +25,7 @@ import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 // The lab button: status, start, open in the browser, extend, stop, reset.
 
@@ -68,9 +69,24 @@ async function statusPayload(userId: string) {
   // the panel, and a start that succeeded must not report a failure because the
   // month's minutes could not be read.
   const [status, hours] = await Promise.all([hostedLabStatus(userId), labHours(userId).catch(() => null)]);
+  // advanceReset both moves an in-progress reset forward by one step and
+  // says whether one is still running -- `status` has nothing to show for
+  // it, since an in-place reset leaves the instance "running" throughout.
+  // A thrown LabHoursSpentError/LabUsageUnreadableError becomes a message
+  // here rather than a failed request: a reset's own failure is something
+  // the next poll reports, not something this read should itself fail on.
+  const reset = await advanceReset(userId).catch((err) => ({
+    resetting: false,
+    error:
+      err instanceof LabHoursSpentError || err instanceof LabUsageUnreadableError
+        ? err.message
+        : "Could not reset the lab. Try again.",
+  }));
   return {
     available: true,
     ...status,
+    ...(reset.resetting ? { resetting: true } : {}),
+    ...(reset.error ? { error: reset.error } : {}),
     hoursUsed: hours ? Math.round(hours.used) : 0,
     // Minutes as well: a twenty-minute session rounds to nothing in hours, and
     // the panel shows a clock.
@@ -134,9 +150,22 @@ export async function POST(request: Request) {
   }
   try {
     if (action === "start") await startHostedLab(student.id);
-    else if (action === "stop") await stopHostedLab(student.id);
+    // Not awaited. stopPod makes up to a handful of sequential AWS calls --
+    // one describe plus up to two stop attempts (hibernate, then a plain
+    // fallback) per machine in the pod -- and that chain, on top of the
+    // status read this request already builds below, is what has timed the
+    // whole request out in production (confirmed in Vercel's own runtime
+    // errors: 30s and 300s task timeouts on this route). The student doesn't
+    // need to wait on it: the instance's own state is what the next status
+    // poll reads anyway, same as idle-stop already defers this same call.
+    else if (action === "stop")
+      after(() =>
+        stopHostedLab(student.id).catch((err) =>
+          console.error("hosted lab stop failed", student.id, err instanceof Error ? err.message : err)
+        )
+      );
     else if (action === "extend") await extendHostedLab(student.id);
-    else if (action === "reset") await resetHostedLab(student.id);
+    else if (action === "reset") await beginReset(student.id);
     else if (action === "open") {
       const url = await hostedLabLink(student.id);
       if (!url) return NextResponse.json({ error: "The lab is not running yet. Start it first." }, { status: 409 });

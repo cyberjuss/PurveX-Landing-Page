@@ -104,7 +104,7 @@ param(
 # fix made since -- and a check that only asks "did PurveX sign this?" would
 # say yes. A pod takes a higher number than the one it is running, and nothing
 # else.
-$PurvexScriptVersion = 27
+$PurvexScriptVersion = 28
 Import-Module ActiveDirectory -ErrorAction Stop
 
 $script:PurvexFailures = 0
@@ -368,7 +368,11 @@ function Ensure-InfraTickets {
             $taskName = "WindowsDiagnosticsSync"
             $action = New-ScheduledTaskAction -Execute "powershell.exe" `
                 -Argument '-NoProfile -WindowStyle Hidden -Command "Test-NetConnection -ComputerName 203.0.113.77 -Port 4444 -WarningAction SilentlyContinue | Out-Null"'
-            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+            # No -RepetitionDuration: Task Scheduler's XML schema cannot hold
+            # [TimeSpan]::MaxValue (it serializes past the format's own limit
+            # and Register-ScheduledTask refuses the task), and leaving the
+            # parameter out is what actually means "repeat forever," not Zero.
+            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15)
             $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
             Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings `
                 -Description "PurveX training file. This is not malware and the connection attempt is harmless: it only reaches a documentation-only address (RFC 5737) that routes nowhere. Treat it as a suspicious persistence mechanism for training." `
@@ -407,7 +411,11 @@ function Ensure-InfraTickets {
             $taskName = "SystemIndexMaintenance"
             $action = New-ScheduledTaskAction -Execute "powershell.exe" `
                 -Argument '-NoProfile -WindowStyle Hidden -Command "Test-NetConnection -ComputerName 203.0.113.88 -Port 8080 -WarningAction SilentlyContinue | Out-Null"'
-            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+            # No -RepetitionDuration: Task Scheduler's XML schema cannot hold
+            # [TimeSpan]::MaxValue (it serializes past the format's own limit
+            # and Register-ScheduledTask refuses the task), and leaving the
+            # parameter out is what actually means "repeat forever," not Zero.
+            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15)
             $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
             Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings `
                 -Description "PurveX training file. This is not malware and the connection attempt is harmless: it only reaches a documentation-only address (RFC 5737) that routes nowhere. Treat it as a suspicious persistence mechanism for training." `
@@ -592,7 +600,11 @@ function Ensure-PhishingChainTickets {
             $taskName = "OfficeTelemetryAgent"
             $action = New-ScheduledTaskAction -Execute "powershell.exe" `
                 -Argument '-NoProfile -WindowStyle Hidden -Command "Test-NetConnection -ComputerName 203.0.113.91 -Port 9443 -WarningAction SilentlyContinue | Out-Null"'
-            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+            # No -RepetitionDuration: Task Scheduler's XML schema cannot hold
+            # [TimeSpan]::MaxValue (it serializes past the format's own limit
+            # and Register-ScheduledTask refuses the task), and leaving the
+            # parameter out is what actually means "repeat forever," not Zero.
+            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15)
             $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
             Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings `
                 -Description "PurveX training file. This is not malware and the connection attempt is harmless: it only reaches a documentation-only address (RFC 5737) that routes nowhere. Treat it as a suspicious persistence mechanism for training." `
@@ -644,7 +656,11 @@ function Ensure-OpenDoorTickets {
             $taskName = "DirectoryReplicationHelper"
             $action = New-ScheduledTaskAction -Execute "powershell.exe" `
                 -Argument '-NoProfile -WindowStyle Hidden -Command "Test-NetConnection -ComputerName 203.0.113.104 -Port 7777 -WarningAction SilentlyContinue | Out-Null"'
-            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15) -RepetitionDuration ([TimeSpan]::MaxValue)
+            # No -RepetitionDuration: Task Scheduler's XML schema cannot hold
+            # [TimeSpan]::MaxValue (it serializes past the format's own limit
+            # and Register-ScheduledTask refuses the task), and leaving the
+            # parameter out is what actually means "repeat forever," not Zero.
+            $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15)
             $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
             Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings `
                 -Description "PurveX training file. This is not malware and the connection attempt is harmless: it only reaches a documentation-only address (RFC 5737) that routes nowhere. Treat it as a suspicious persistence mechanism for training." `

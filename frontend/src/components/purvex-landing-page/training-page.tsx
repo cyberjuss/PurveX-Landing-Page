@@ -7,6 +7,7 @@ import {
   Server, ShieldCheck, ShieldHalf, Siren, type LucideIcon,
 } from "lucide-react";
 import { BOOKING_URL, SiteChrome } from "./chrome";
+import { DiscordLogo } from "./discord-logo";
 import { HoldCard } from "./hold-card";
 import { PG_CSS } from "./page-skin";
 import { TrainingHero } from "./training-hero";
@@ -30,9 +31,31 @@ export type CourseOutline = {
 
 type Item = { title: string; body: string; Icon: BrandIcon };
 
+// The Range's Discord. The invite is inlined at build time. Until it is set,
+// the button sends people to sign up instead, which is where the portal's own
+// Discord link lives.
+const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
+
+// What the Discord is for, in four lines.
+const COMMUNITY_POINTS = [
+  "Hints when you're stuck, never answers",
+  "Help getting your lab built and connected",
+  "A new ticket every Friday to work together",
+  "Resume, interview and cert study help",
+];
+
+// A small picture of the server, using the channels scripts/discord/setup.ts
+// really builds, so what people see here is what they find when they join.
+const DISCORD_PREVIEW: { category: string; locked?: boolean; channels: { name: string; active?: boolean }[] }[] = [
+  { category: "📌 Start Here", channels: [{ name: "👋・welcome" }, { name: "📜・rules" }] },
+  { category: "🎫 The Desk", channels: [{ name: "🎫・ticket-help" }, { name: "🧪・lab-setup" }, { name: "📅・ticket-of-the-week" }] },
+  { category: "🏆 Progress", channels: [{ name: "🏆・wins", active: true }, { name: "🙋・introductions" }] },
+  { category: "💎 Range Pro", locked: true, channels: [{ name: "💎・pro-lounge" }, { name: "☁️・cloud-lab-help" }] },
+];
+
 
 const FEATURES: Item[] = [
-  { Icon: IconBook, title: "Guided course", body: "Weekly lessons, starting with security basics, with detection and response on the way." },
+  { Icon: IconBook, title: "Guided course", body: "Weekly lessons on IT and security fundamentals, with security phases on the way." },
   { Icon: IconShield, title: "Personal lab", body: "Their own company network, built on their own machine." },
   { Icon: IconTicket, title: "Real tickets", body: "Help desk tasks that are checked automatically." },
   { Icon: IconAlert, title: "Security alerts", body: "Investigate a suspicious login one step at a time." },
@@ -124,12 +147,13 @@ const TIERS: {
   {
     name: "Explore",
     price: "Free",
-    forWho: "The whole curriculum, free for as long as you want it",
+    forWho: "The whole curriculum free for as long as you want it",
     perks: [
       "Every lesson, including each new phase",
       "The whole Ticket Queue and every challenge",
-      "A daily drill, plus a timed round of five",
+      "Every lab, on your own Windows PC",
       "Your readiness score from day one",
+      "The Range Discord community",
       "No card. No trial clock.",
     ],
     cta: "Start free",
@@ -146,7 +170,8 @@ const TIERS: {
       "Your own cloud lab in a browser tab",
       "A real Windows domain built just for you",
       "An AI coach that reads your lab and never hands you the answer",
-      "A Proof Profile with your screenshots and recorded solves",
+      "A Proof Profile any employer can verify",
+      "Private Pro channels in the Range Discord",
       "Cancel in one click",
     ],
     cta: "Get Pro",
@@ -161,7 +186,7 @@ const TIERS: {
   {
     name: "Custom",
     price: "Talk to us",
-    forWho: "Schools, agencies, and workforce programs running a cohort",
+    forWho: "Schools and workforce programs running a cohort",
     perks: [
       "Everything in Pro on every seat",
       "Watch every student work in real time",
@@ -183,7 +208,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section" id="benefits">
         <div className="pg-head">
           <h2>What students walk away with</h2>
-          <p>Real practice, help when they need it, and proof they can show an employer.</p>
+          <p>Real practice. Help when they need it. Proof they can show an employer.</p>
         </div>
         <TrainingBenefits />
       </section>
@@ -191,7 +216,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section tp-proof" id="proof">
         <div className="pg-head">
           <h2>Proof employers can check</h2>
-          <p>Every Pro and class student gets a shareable portfolio of work confirmed in their own lab, and a credential ID any employer can verify. They add screenshots of their work and record themselves solving challenges, so an employer can watch the skill, not just read about it.</p>
+          <p>Pro and class students get a shareable portfolio of work confirmed in their own lab. It carries a credential ID any employer can verify.</p>
         </div>
         <div className="tp-proof__grid" data-r>
           <figure className="tp-proof__shot">
@@ -209,7 +234,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section tp-features" id="features">
         <div className="tp-features__head">
           <h2>Everything in Range</h2>
-          <p>One portal for learning, practice, and proof. Students sign in and everything is there.</p>
+          <p>One portal for the whole course. Students sign in and everything is there.</p>
           <Link href="/range" className="tp-link">
             Open the portal <ArrowRight size={14} />
           </Link>
@@ -227,10 +252,81 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
         </ul>
       </section>
 
+      <section className="pg-section tp-dc" id="community">
+        <div className="tp-dc__copy">
+          <span className="tp-discord-badge" aria-hidden="true">
+            <DiscordLogo size={26} />
+          </span>
+          <h2>Learn alongside the Range</h2>
+          <p>The Range has its own Discord full of people working the same tickets as you. Ask for a hint and get your lab running. Then share the wins.</p>
+          <ul className="tp-dc__points">
+            {COMMUNITY_POINTS.map((point) => (
+              <li key={point}>
+                <Check size={16} aria-hidden="true" />
+                {point}
+              </li>
+            ))}
+          </ul>
+          {DISCORD_URL ? (
+            <a href={DISCORD_URL} target="_blank" rel="noreferrer" className="tp-dc__cta">
+              <DiscordLogo size={20} /> Join the Range Discord
+            </a>
+          ) : (
+            <Link href="/range" className="tp-dc__cta">
+              <DiscordLogo size={20} /> Start free to join
+            </Link>
+          )}
+        </div>
+
+        {/* A picture of the server, not a live embed: no third-party script,
+            and it shows the layout people will find when they join. */}
+        <div className="tp-dc__window" aria-hidden="true">
+          <div className="tp-dc__rail">
+            <span className="tp-dc__server">
+              <DiscordLogo size={22} />
+            </span>
+          </div>
+          <div className="tp-dc__channels">
+            <p className="tp-dc__name">PurveX Range</p>
+            {DISCORD_PREVIEW.map((group) => (
+              <div key={group.category} className="tp-dc__group">
+                <p className="tp-dc__cat">
+                  {group.category}
+                  {group.locked && <span className="tp-dc__lock">Pro</span>}
+                </p>
+                {group.channels.map((c) => (
+                  <p key={c.name} className={`tp-dc__chan${c.active ? " is-active" : ""}${group.locked ? " is-locked" : ""}`}>
+                    <b>#</b>
+                    {c.name}
+                  </p>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div className="tp-dc__chat">
+            <p className="tp-dc__topic">
+              <b>#</b> 🏆・wins
+            </p>
+            <div className="tp-dc__msg">
+              <span className="tp-dc__avatar">
+                <DiscordLogo size={16} />
+              </span>
+              <div>
+                <p className="tp-dc__who">
+                  PurveX Range <em>APP</em> <time>Today at 4:12 PM</time>
+                </p>
+                <p>🎉 <strong>Jordan</strong> just finished <strong>Operation Day One</strong> in Range.</p>
+              </div>
+            </div>
+            <div className="tp-dc__box">Message #🏆・wins</div>
+          </div>
+        </div>
+      </section>
+
       <section className="pg-section" id="course">
         <div className="pg-head">
-          <h2>The course, starting with the basics</h2>
-          <p>Three phases. Each one pairs short lessons with hands-on work in the lab.</p>
+          <h2>The course starts with the fundamentals</h2>
+          <p>Phase 1 is open now and the security phases follow. Each one pairs short lessons with hands-on work in the lab.</p>
         </div>
         <Course outline={outline} />
       </section>
@@ -242,7 +338,7 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
       <section className="pg-section tp-pricing" id="pricing">
         <div className="pg-head">
           <h2>Start free. Go Pro when you want the job.</h2>
-          <p>Every lesson is free, including each new phase as it opens. Pro adds the cloud lab, the coach, and the proof an employer can check.</p>
+          <p>Every lesson is free forever. Pro adds the cloud lab and the AI coach. It also adds proof an employer can check.</p>
         </div>
         <ul className="tp-tiers" data-r>
           {TIERS.map((t) => (
@@ -325,6 +421,54 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           transition: gap .25s var(--ease);
         }
         .tp-link:hover { gap: 11px }
+        /* Discord's mark on its own blurple tile, the way Discord shows it. */
+        .tp-discord-badge {
+          display: inline-grid; place-items: center; width: 44px; height: 44px; margin-bottom: 16px;
+          border-radius: 12px; background: #5865F2; color: #fff;
+          box-shadow: 0 6px 18px -8px rgba(88, 101, 242, .7);
+        }
+        /* The Range Discord: the pitch beside a picture of the server, in
+           Discord's own dark colours so it reads as the real thing. */
+        .tp-dc { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 40px 64px; align-items: center }
+        .tp-dc__copy h2 { margin: 0; font-family: var(--font-display); font-size: clamp(1.9rem, 3.4vw, 2.5rem); font-weight: 700; letter-spacing: -.03em; line-height: 1.1; color: var(--ink) }
+        .tp-dc__copy > p { margin: 14px 0 0; max-width: 46ch; color: var(--muted); font-size: 1rem; line-height: 1.6 }
+        .tp-dc__points { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 10px }
+        .tp-dc__points li { display: flex; align-items: center; gap: 10px; color: var(--ink-soft); font-size: .95rem }
+        .tp-dc__points svg { flex: none; color: #5865F2 }
+        .tp-dc__cta {
+          display: inline-flex; align-items: center; gap: 10px; margin-top: 26px; padding: 13px 22px; border-radius: 10px;
+          background: #5865F2; color: #fff; font-size: .98rem; font-weight: 650; text-decoration: none;
+          box-shadow: 0 14px 28px -16px rgba(88, 101, 242, .9); transition: background .2s var(--ease), transform .2s var(--ease);
+        }
+        .tp-dc__cta:hover { background: #4752c4; transform: translateY(-1px) }
+
+        .tp-dc__window {
+          display: grid; grid-template-columns: 56px 190px minmax(0, 1fr); min-height: 340px; overflow: hidden; border-radius: 14px;
+          background: #313338; color: #dbdee1; font-size: 13.5px; box-shadow: 0 40px 80px -40px rgba(16, 25, 46, .55), 0 0 0 1px rgba(16, 25, 46, .08);
+        }
+        .tp-dc__window p { margin: 0 }
+        .tp-dc__rail { background: #1e1f22; padding: 12px 0; display: flex; justify-content: center }
+        .tp-dc__server { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 14px; background: #5865F2; color: #fff }
+        .tp-dc__channels { background: #2b2d31; padding: 0 8px 12px; overflow: hidden }
+        .tp-dc__name { padding: 13px 8px 12px; margin: 0 -8px 8px !important; border-bottom: 1px solid #1e1f22; font-weight: 700; color: #f2f3f5; font-size: 14px }
+        .tp-dc__group { margin-top: 10px }
+        .tp-dc__cat { display: flex; align-items: center; gap: 6px; padding: 0 6px 4px; font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: #949ba4 }
+        .tp-dc__lock { padding: 0 5px; border-radius: 4px; background: #f0b232; color: #1e1f22; font-size: 9.5px; letter-spacing: .04em }
+        .tp-dc__chan { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 4px; color: #949ba4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+        .tp-dc__chan b { color: #80848e; font-weight: 500; font-size: 16px; line-height: 1 }
+        .tp-dc__chan.is-active { background: #404249; color: #f2f3f5 }
+        .tp-dc__chan.is-locked { opacity: .55 }
+        .tp-dc__chat { display: flex; flex-direction: column; min-width: 0 }
+        .tp-dc__topic { display: flex; align-items: center; gap: 6px; padding: 12px 16px; border-bottom: 1px solid #26272b; font-weight: 600; color: #f2f3f5 }
+        .tp-dc__topic b { color: #80848e; font-weight: 500; font-size: 18px; line-height: 1 }
+        .tp-dc__msg { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; padding: 14px 16px 2px }
+        .tp-dc__avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: #5865F2; color: #fff }
+        .tp-dc__who { display: flex; align-items: center; gap: 6px; font-weight: 600; color: #f2f3f5; font-size: 14px }
+        .tp-dc__who em { padding: 0 4px; border-radius: 3px; background: #5865F2; color: #fff; font-style: normal; font-size: 9.5px; font-weight: 700 }
+        .tp-dc__who time { font-weight: 400; font-size: 11.5px; color: #949ba4 }
+        .tp-dc__msg div > p:last-child { margin-top: 2px; line-height: 1.45 }
+        .tp-dc__msg strong { color: #f2f3f5 }
+        .tp-dc__box { margin: auto 16px 16px; padding: 11px 14px; border-radius: 8px; background: #383a40; color: #6d6f78 }
         .tp-feature-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px }
         .tp-feature-list li { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; padding: 22px 0; border-top: 1px solid var(--border) }
         .tp-feature-list i {
@@ -433,9 +577,12 @@ export default function TrainingPage({ outline }: { outline: CourseOutline }) {
           .tp-course::before { left: 27px; right: auto; top: 28px; bottom: 28px; width: 2px; height: auto; background: rgba(106,92,255,.25) }
           .tp-course > li, .tp-course > li + li { padding: 0 0 0 80px }
           .tp-course > li > i { position: absolute; left: 0; top: 0; margin: 0 }
+          .tp-dc { grid-template-columns: minmax(0, 1fr) }
         }
         @media (max-width: 640px) {
           .tp-feature-list { grid-template-columns: 1fr }
+          .tp-dc__window { grid-template-columns: 48px minmax(0, 1fr) }
+          .tp-dc__channels { display: none }
         }
       `}</style>
     </SiteChrome>

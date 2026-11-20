@@ -116,8 +116,6 @@ html[data-academy-theme="dark"] .hl-note,
 }
 @keyframes hl-secret-in { from { opacity: 0; transform: translateY(-3px); } }
 @media (prefers-reduced-motion: reduce) { .hl .hl__creds__secret { animation: none; } }
-.hl .hl__creds__why { margin: 6px 0 0; font-size: var(--ty-micro); line-height: 1.4; color: var(--hl-ink-3); }
-.hl .hl__creds__why code { font-size: var(--ty-micro); color: var(--hl-ink-2); }
 .hl .hl__creds__btn {
   display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 2px 12px;
   border: 1px solid var(--hl-line); background: none; color: var(--hl-ink-2);
@@ -169,6 +167,12 @@ html[data-academy-theme="dark"] .hl-note,
 .hl .hl__eta { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0; font-size: var(--ty-note); color: var(--hl-ink-3); font-variant-numeric: tabular-nums; }
 .hl .hl__eta span { font-weight: 650; color: var(--hl-ink); }
 .hl .hl__eta em { flex: none; font-style: normal; }
+/* Stopping and resetting have no step list to carry a spinner the way
+   starting's does, so their own eta line carries one instead -- the same
+   mark, not a different one, for the same "something is working" meaning. */
+.hl .hl__eta-label { display: inline-flex; align-items: center; gap: 9px; }
+.hl .hl__eta-spin { flex: none; width: 13px; height: 13px; border: 1.5px solid var(--hl-wait); border-radius: 50%; border-top-color: transparent; animation: hl-spin 0.9s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .hl .hl__eta-spin { animation: none; border-style: dashed; } }
 
 /* Footer */
 .hl__foot { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding-top: 4px; }
@@ -259,12 +263,3 @@ html[data-academy-theme="dark"] .hl-chip__bad { background: #f87171; }
   .hl-pop, .hl-lab--wait svg, .hl .hl__steps li.is-now i { animation: none; }
 }
 
-/* The note under the stopping bar: what the wait is, and that it costs nothing. */
-
-/* Saving your lab... : three dots that fill in turn. */
-.hl .hl__dots { display: inline-flex; margin-left: 1px; font-style: normal; }
-.hl .hl__dots b { font-weight: inherit; animation: hl-dot 1.2s ease-in-out infinite both; }
-.hl .hl__dots b:nth-child(2) { animation-delay: 0.2s; }
-.hl .hl__dots b:nth-child(3) { animation-delay: 0.4s; }
-@keyframes hl-dot { 0%, 80%, 100% { opacity: 0.2; } 40% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .hl .hl__dots b { animation: none; opacity: 1; } }

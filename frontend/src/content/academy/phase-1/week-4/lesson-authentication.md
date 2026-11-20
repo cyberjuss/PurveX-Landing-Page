@@ -42,7 +42,7 @@ One rule to take from that table: don't re-enable a disabled account just becaus
 ```sort
 prompt: Calls from this morning. Which account state is each person in?
 level: 2
-Locked out: Riley mistyped her password five times in a row | Someone tried 40 passwords against jamie.torres in an hour
+Locked out: Riley mistyped their password five times in a row | Someone tried 40 passwords against jamie.torres in an hour
 Disabled: Kai's contract ended on Friday and IT turned the account off | The account is frozen while Compliance investigates
 Password expired: Taylor's password reached the end of its allowed age
 ```

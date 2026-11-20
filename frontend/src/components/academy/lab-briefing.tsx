@@ -56,14 +56,14 @@ function points(sessionHours: number, weeklyHours: number | null, idleStopMinute
     {
       Icon: Clock,
       title: `It stops itself after ${sessionHours} ${sessionHours === 1 ? "hour" : "hours"}`,
-      body: `It also stops itself after ${idleStopMinutes} minutes with nobody at the keyboard, once the lab has been running for ${idleReadyMinutes} minutes or more. That gap gives a freshly started domain controller time to finish booting before the idle clock can end your session. Everything you changed is saved, and Resume picks the lab up where you left it.`,
+      body: `It also stops after ${idleStopMinutes} minutes idle, once it's been up ${idleReadyMinutes} minutes or more. Nothing is lost -- Resume picks up right where you left off.`,
     },
   ];
   if (weeklyHours) {
     list.push({
       Icon: Gauge,
       title: `${weeklyHours} lab hours a week`,
-      body: `They go back to ${weeklyHours} every Monday, and only the time the lab actually runs counts. A session needs its full ${sessionHours} hours free, so once less than that is left the rest of the week waits for Monday.`,
+      body: `They reset every Monday, and only the time the lab is actually running counts against them.`,
     });
   }
   list.push({

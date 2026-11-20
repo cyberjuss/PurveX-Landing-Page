@@ -18,6 +18,7 @@ import { UnlockForm } from "./unlock-form";
 import { AskCoachBridge, CoachProvider } from "@/components/academy/coach-context";
 import { GoalsPanel } from "@/components/academy/goals-panel";
 import { ProofPrompt } from "@/components/academy/proof-prompt";
+import { askToShareWin, ShareWinPrompt } from "@/components/academy/share-win-prompt";
 import { PurvexCoach } from "@/components/academy/purvex-coach";
 import { AcademyTour } from "@/components/academy/tour";
 import { ROLE_BRIEFS } from "@/lib/academy-briefs";
@@ -42,11 +43,21 @@ import { confettiFrom } from "@/lib/confetti";
 import { signOut } from "@/lib/portal-auth";
 import { supabase } from "@/lib/supabase";
 
+const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL;
+
 type Student = AcademyStudent;
 
 const PREVIEW_STUDENT: Student = { id: "dev-preview", email: "preview@localhost", name: "Preview" };
 /** What the server says about a submitted answer. blocked: the lab does not show the change yet. */
-type AnswerReply = { correct?: boolean; blocked?: boolean; result?: MissionResult; reveal?: string | null; feedback?: string | null };
+type AnswerReply = {
+  correct?: boolean;
+  blocked?: boolean;
+  result?: MissionResult;
+  reveal?: string | null;
+  feedback?: string | null;
+  /** Set on a student's first finished challenge, when they have not opted in to #wins. */
+  shareWin?: { challenge: string; title: string };
+};
 
 export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[]; children: React.ReactNode; unlocked: boolean }) {
   const pathname = usePathname();
@@ -740,6 +751,11 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         // A ticket the lab confirmed can go on the Proof Profile with a screenshot.
         const ticket = PROOF_TICKETS[missionId];
         if (ticket && (reply.result?.labOk || wrap.classList.contains("ad-mission--labok"))) askForProofShot(ticket.job, ticket.label);
+        // Their first whole challenge: offer to share it in the Discord's #wins.
+        // A moment late, so the screenshot prompt (which loads before it opens)
+        // goes first, and this one waits for it to close.
+        const shareWin = reply.shareWin;
+        if (shareWin) setTimeout(() => askToShareWin(shareWin), 1500);
         return;
       }
 
@@ -758,7 +774,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     const showTip = (wrap: Element, feedback: HTMLElement, text: string) => {
       feedback.textContent = "";
       const lead = document.createElement("strong");
-      lead.textContent = "Not quite. ";
+      lead.textContent = "Not quite";
       feedback.append(lead, text);
       feedback.className = "ad-guess__feedback ad-guess__feedback--tip";
       feedback.setAttribute("role", "status");
@@ -807,6 +823,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         // close this, find the coach and describe where they were from memory.
         '<div class="ad-hint-card__foot">' +
         '<button type="button" class="ad-hint-card__coach">Still stuck? Ask Coach</button>' +
+        // The community, when there is one: other students in #ticket-help.
+        (DISCORD_URL ? `<a class="ad-hint-card__discord" href="${DISCORD_URL.replace(/"/g, "&quot;")}" target="_blank" rel="noreferrer">Or ask in the Discord's #ticket-help</a>` : "") +
         "</div>" +
         "</aside>";
       document.body.appendChild(root);
@@ -1571,6 +1589,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         {!asking && profile !== undefined && <PurvexCoach />}
         {!asking && profile !== undefined && <AcademyTour />}
         {!asking && profile !== undefined && <ProofPrompt />}
+        {!asking && profile !== undefined && <ShareWinPrompt />}
         <HelpDialog email={student?.email ?? null} />
         {editingGoals && profile && (
           <GoalsPanel

@@ -34,6 +34,11 @@ export type LabGate = {
 // light). Hands-on tickets also stay open until the lab shows the change.
 export async function labGate(student: { id: string; email: string | null }, id: string): Promise<LabGate> {
   const gated = Boolean(missionGate(id));
+  // A judgment-call question has no lab-state check behind it at all -- its
+  // answer is a plain text comparison -- so it needs no lab connection to
+  // grade, let alone a live one. Only a hands-on ticket, which the lab
+  // itself has to confirm, has any reason to wait on that.
+  if (!gated) return { gated: false, passed: true };
   const lab = await loadLabState(student.id);
   if (!lab) return { gated, passed: false, noLab: true, results: [] };
   // On a hosted lab whose sync loop has gone quiet, push a snapshot now. A
@@ -65,7 +70,6 @@ export async function labGate(student: { id: string; email: string | null }, id:
   if (named.length && missingTickets(lab.snapshot, named).length) {
     return { gated, passed: false, noTicketObjects: true, results: [] };
   }
-  if (!gated) return { gated: false, passed: true, syncedAgo };
 
   // A lab built before this ticket shipped is missing its objects. Ask the pod
   // to replant what it is missing, so the student is not stuck on a reset, then

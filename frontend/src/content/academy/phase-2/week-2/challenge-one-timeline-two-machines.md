@@ -78,7 +78,7 @@ sudo journalctl -u ssh -n 20
 </div>
 <div>
 <span>Why it matters</span>
-<p>A baseline covers more than what one event normally looks like. It also covers what a normal sequence of events looks like for one account. When an account suddenly goes somewhere it has never gone before, one machine's log can't show you that. The other half of the pattern happened somewhere else.</p>
+<p>A baseline covers more than what one event normally looks like. It also covers what a normal sequence of events looks like for one account. When an account suddenly goes somewhere it has never gone before, one machine's log cannot show you that. The other half of the pattern happened somewhere else.</p>
 </div>
 </div>
 </div>
@@ -109,7 +109,7 @@ sudo journalctl -u ssh -n 20
 </div>
 <div>
 <span>Why it matters</span>
-<p>Nothing links the two events for you. An analyst has to read both logs and notice the timing, and that's the work a SIEM is built to speed up. It doesn't replace it.</p>
+<p>Nothing links the two events for you. An analyst has to read both logs and notice the timing, and that is the work a SIEM is built to speed up. It does not replace it.</p>
 </div>
 </div>
 </div>

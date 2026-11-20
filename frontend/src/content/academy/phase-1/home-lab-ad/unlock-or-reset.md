@@ -1,6 +1,6 @@
 <div class="academy-question">
 <span class="academy-question__tag">Essential Question</span>
-<p>Riley says she is locked out. Do you unlock the account or reset the password?</p>
+<p>Riley says they are locked out. Do you unlock the account or reset the password?</p>
 </div>
 
 ### Resetting and Unlocking a Password
@@ -13,7 +13,7 @@
 Sometimes you'll get both at once, when a forgotten password also locked the account, and then you check **Unlock the user's account** in the same Reset Password dialog.
 
 <div class="ad-decision">
-<div class="ad-decision__q">User calls in locked out.<br>Does she remember her password?</div>
+<div class="ad-decision__q">User calls in locked out.<br>Do they remember their password?</div>
 <div class="ad-decision__branches">
 <div class="ad-decision__branch ad-decision__branch--yes">
 <span class="ad-decision__label">Yes</span>
@@ -32,7 +32,7 @@ Sometimes you'll get both at once, when a forgotten password also locked the acc
 </div>
 </div>
 
-To see how that plays out, say Riley Kwan in Operations calls in, locked out after too many failed attempts. The one question that decides the fix is whether she still remembers her password. If she does, unlock the account. If she doesn't, reset it and force a change at next logon, because a temporary password should never become a long-term one.
+To see how that plays out, say Riley Kwan in Operations calls in, locked out after too many failed attempts. The one question that decides the fix is whether they still remember their password. If they do, unlock the account. If they don't, reset it and force a change at next logon, because a temporary password should never become a long-term one.
 
 Whichever it turns out to be, check the Account tab before you change anything. If **Account is disabled** is ticked, neither an unlock nor a reset will restore sign-in, because a disabled account needs a different fix. And once you've made your change, reopen the tab and confirm it took.
 
@@ -70,7 +70,7 @@ Whichever it turns out to be, check the Account tab before you change anything. 
 ```sort
 prompt: Riley Kwan calls in. Which fix fits?
 level: 2
-Unlock the account: She remembers her password but mistyped it three times
-Reset and force a change: She has forgotten her password
+Unlock the account: They remember their password but mistyped it three times
+Reset and force a change: They have forgotten their password
 Neither, it is disabled: The Account tab shows Account is disabled ticked
 ```

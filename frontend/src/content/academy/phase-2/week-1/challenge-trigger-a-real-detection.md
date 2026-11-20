@@ -28,10 +28,10 @@ Check whether the file is still there. If it has already disappeared, Defender c
 Start-MpScan -ScanType CustomScan -ScanPath "C:\Users\Public\eicar-test.com"
 ```
 
-Whichever way it went, Defender keeps a record of what it found, and that record is what you'll read next.
+Whichever way it went, Defender keeps a record of what it found, but that record only carries a numeric threat ID. Look the ID up in Defender's own threat catalog to get the name back.
 
 ```powershell
-Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
+Get-MpThreatCatalog -ThreatID (Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatID) | Select-Object -ExpandProperty ThreatName
 ```
 
 <div class="ad-mission" data-id="mw2-03" data-attempts="0">
@@ -43,7 +43,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Run <code>Get-MpThreatDetection</code> exactly as shown and read the ThreatName property it prints.</p>
+<p>Run the command exactly as shown. <code>Get-MpThreatDetection</code> only ever records a numeric ThreatID, so the command looks that ID up in <code>Get-MpThreatCatalog</code>, which is where the actual ThreatName lives.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="eicar">Give the full threat name Defender printed, not just the file's own common nickname.</div>
@@ -86,7 +86,7 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 </div>
 <div>
 <span>Why it matters</span>
-<p>One engine missing a file is normal, because every signature library has gaps. When sixty-eight independent engines flag the same file, though, the lone clean verdict is the one to doubt. That's why a hash and reputation lookup is worth running even after your own antivirus has come back clean.</p>
+<p>One engine missing a file is normal, because every signature library has gaps. When sixty-eight independent engines flag the same file, though, the lone clean verdict is the one to doubt. This is why a hash and reputation lookup is worth running even after your own antivirus has come back clean.</p>
 </div>
 </div>
 </div>
@@ -125,4 +125,4 @@ Get-MpThreatDetection | Select-Object -First 1 -ExpandProperty ThreatName
 
 ### Why It Matters
 
-You've just watched signature-based detection do exactly what it was built to do, which is catch something it already knows. In the next lab, you'll come at it from the other side and watch a process behave suspiciously, because behavior is what catches the file nobody has seen before.
+You have just watched signature-based detection do exactly what it was built to do, which is catch something it already knows. In the next lab, you will come at it from the other side and watch a process behave suspiciously, because behavior is what catches the file nobody has seen before.

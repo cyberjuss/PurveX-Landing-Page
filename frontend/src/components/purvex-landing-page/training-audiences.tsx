@@ -51,7 +51,7 @@ const AUDIENCES: Audience[] = [
     who: "Schools and workforce programs",
     short: "Schools",
     headline: "One course for the whole class",
-    sub: "Every student gets the same hands-on course, and you see how each one is doing.",
+    sub: "Every student gets the same hands-on course. You see how each one is doing.",
     steps: [
       "Book a short call",
       "Get a class passcode",

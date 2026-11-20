@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import Link from "next/link";
 import { ArrowUpRight, Check, Copy, Eye, EyeOff, Info, LifeBuoy, Loader2, RotateCcw, Server, Waypoints } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
-import { challengeTabHref } from "@/lib/academy-missions";
 import { openHelp } from "@/components/academy/get-help";
 import { LabBriefing, labBriefed, markLabBriefed } from "@/components/academy/lab-briefing";
+import { PodMap } from "@/components/academy/pod-map";
 import "./hosted-lab.css";
 
 // The student's own hosted domain controller: a button in the header and a
@@ -17,7 +16,11 @@ import "./hosted-lab.css";
 type State = "none" | "starting" | "ready" | "stopping" | "stopped";
 /** locked: hosted labs exist here, but this account is on Explore and has not bought one. */
 /** notEnabled: this account is Pro, but cloud labs are not switched on for it yet. */
-type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; hoursUsed?: number; minutesUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number; idleStopMinutes?: number; idleReadyMinutes?: number };
+// resetting: a reset is replanting the lab in place. The instance itself
+// stays "running" throughout (see advanceReset in academy-hosted.ts), so
+// this is the only signal that one is underway -- state alone would say
+// nothing changed. Persisted server-side, so it is accurate on every poll.
+type Status = { available: boolean; locked?: boolean; notEnabled?: boolean; state?: State; stopAt?: string | null; startedAt?: string | null; firstBoot?: boolean; instanceType?: string; linux?: boolean; error?: string; resetting?: boolean; hoursUsed?: number; minutesUsed?: number; hoursLimit?: number | null; hoursLeft?: number | null; sessionHours?: number; idleStopMinutes?: number; idleReadyMinutes?: number };
 type Snapshot = { status: Status | null; busy: boolean; error: string | null };
 
 const clock = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
@@ -48,10 +51,28 @@ function schedulePoll() {
   }, fast ? POLL_FAST_MS : POLL_SLOW_MS);
 }
 
+// A tab left in the background long enough gets frozen by the browser (Page
+// Lifecycle), which halts setInterval outright rather than merely slowing
+// it -- so a reset or a start left running in a tab nobody is looking at can
+// sit exactly where it was for as long as the tab stays hidden, no matter how
+// quickly advanceReset could otherwise have moved it forward. One poll the
+// moment the tab is visible again catches it straight back up, and set()
+// already restarts the interval on its own once that poll reports anything
+// still moving. Guarded so Fast Refresh in dev does not wire this twice.
+if (typeof document !== "undefined") {
+  const w = window as typeof window & { __purvexLabVisibilityWired?: boolean };
+  if (!w.__purvexLabVisibilityWired) {
+    w.__purvexLabVisibilityWired = true;
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") void load();
+    });
+  }
+}
+
 function set(patch: Partial<Snapshot>) {
   snap = { ...snap, ...patch };
   listeners.forEach((l) => l());
-  const moving = snap.status?.state === "starting" || snap.status?.state === "stopping";
+  const moving = snap.status?.state === "starting" || snap.status?.state === "stopping" || Boolean(snap.status?.resetting);
   if (moving && !poll) {
     movingSince = Date.now();
     schedulePoll();
@@ -90,8 +111,13 @@ async function act(action: "start" | "stop" | "extend" | "reset") {
       // A start that answers with a lab still sitting at "none" leaves nothing
       // moving, so nothing polls and the panel goes on showing Offline. One
       // re-read a few seconds later picks up a machine AWS was not ready to
-      // describe at the moment the start returned.
+      // describe at the moment the start returned. A stop has the same race
+      // the other way: if AWS's own state read still says "running" the
+      // instant StopInstances returns, the panel settles back on Online with
+      // nothing polling, and sits there until something else happens to
+      // trigger a re-check.
       if (action === "start" && snap.status?.state !== "starting" && snap.status?.state !== "ready") window.setTimeout(() => void load(), 5_000);
+      if (action === "stop" && snap.status?.state !== "stopping" && snap.status?.state !== "stopped") window.setTimeout(() => void load(), 5_000);
     }
   } catch {
     set({ error: "Could not reach Range. Try again." });
@@ -139,11 +165,15 @@ export function useHostedLab() {
     if (!snap.status) void load();
   }, []);
   const state: State = s.status?.state ?? "none";
-  const moving = state === "starting" || state === "stopping";
+  // The client-side reset lock (see resetLockedUntil) is already folded into
+  // status.resetting by set(), the one place outside a component that reads
+  // the clock, so this just reads the flag like any other synced field.
+  const resetting = Boolean(s.status?.resetting);
+  const moving = state === "starting" || state === "stopping" || resetting;
   // Always a promise, so a caller can wait for the start it asked for instead
   // of guessing when it landed.
   const primary = (): Promise<void> => (state === "ready" ? open() : state === "none" || state === "stopped" ? act("start") : Promise.resolve());
-  return { ...s, state, waiting: s.busy || moving, primary, available: Boolean(s.status?.available), locked: Boolean(s.status?.locked), notEnabled: Boolean(s.status?.notEnabled) };
+  return { ...s, state, resetting, waiting: s.busy || moving, primary, available: Boolean(s.status?.available), locked: Boolean(s.status?.locked), notEnabled: Boolean(s.status?.notEnabled) };
 }
 
 /** For code outside React (the answer check): does this student have a hosted lab, and start it. */
@@ -442,22 +472,50 @@ function StartTracker({ status }: { status: Status }) {
 }
 
 // Stopping hibernates the domain controller: its memory is written to disk so
-// the next Resume takes about half a minute instead of five. That write takes
-// a few minutes and runs in AWS whether or not anyone watches, so the tracker
-// says the student can go, not how long they have been waiting.
+// the next Resume takes about half a minute instead of five. That write runs
+// in AWS whether or not anyone watches, and on a real pod it can run past
+// what "a few minutes" suggests -- confirmed against a live instance still
+// hibernating 7 minutes in, nothing hung, nothing erroring. A bare spinner
+// over that long reads as broken, so this counts the wait up instead of
+// hiding it, and says plainly that the length is normal.
 function StopTracker() {
+  const [seenAt] = useState(() => Date.now());
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(t);
+  }, []);
+  const elapsed = Math.max(0, Math.floor((now - seenAt) / 1000));
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
+  const ss = String(elapsed % 60).padStart(2, "0");
   return (
     <div className="hl__track" aria-live="polite">
       <p className="hl__eta">
-        <span>
+        <span className="hl__eta-label">
+          <i className="hl__eta-spin" aria-hidden />
           Saving your lab
-          <i className="hl__dots" aria-hidden>
-            <b>.</b>
-            <b>.</b>
-            <b>.</b>
-          </i>
         </span>
-        <em>Safe to leave</em>
+        <em>
+          {mm}:{ss}
+        </em>
+      </p>
+    </div>
+  );
+}
+
+// An in-place reset never stops the instance -- state stays "ready" the
+// whole time it is replanting the directory -- so without this, the panel
+// looked completely idle for however long the reset took. Takes precedence
+// over the state-based trackers below: resetting can be true alongside any
+// of "ready", "stopped" (resumed first) or "starting" (replaced instead).
+function ResetTracker() {
+  return (
+    <div className="hl__track" aria-live="polite">
+      <p className="hl__eta">
+        <span className="hl__eta-label">
+          <i className="hl__eta-spin" aria-hidden />
+          Resetting your lab
+        </span>
       </p>
     </div>
   );
@@ -554,22 +612,17 @@ function LinuxSignIn() {
         )}
       </p>
       {creds && <code className="hl__creds__secret">{creds.password}</code>}
-      {creds && (
-        <p className="hl__creds__why">
-          User <code>student</code>. The desktop is already signed in. This hides itself in a
-          minute and a half.
-        </p>
-      )}
       {err && <p className="hl__creds__err" role="alert">{err}</p>}
     </div>
   );
 }
 
 export function HostedLabMenu() {
-  const { status, state, waiting, busy, error, primary } = useHostedLab();
+  const { status, state, waiting, busy, error, primary, resetting } = useHostedLab();
   // "start" stands in front of the first start; "read" is the same briefing
   // reopened from the footer link once they have been through it.
   const [brief, setBrief] = useState<null | "start" | "read">(null);
+  const [showMap, setShowMap] = useState(false);
   const now = useMinuteTick(state === "ready");
   if (!status?.available) return null;
   // Nobody should meet a live Windows domain cold. The first start goes
@@ -637,8 +690,13 @@ export function HostedLabMenu() {
         </p>
       )}
 
-      {state === "starting" && <StartTracker status={status} />}
-      {state === "stopping" && <StopTracker />}
+      {resetting ? (
+        <ResetTracker />
+      ) : state === "starting" ? (
+        <StartTracker status={status} />
+      ) : state === "stopping" ? (
+        <StopTracker />
+      ) : null}
 
       <div className="hl__foot">
         {note && <p className="hl__note">{note}</p>}
@@ -686,23 +744,31 @@ export function HostedLabMenu() {
           <button
             type="button"
             className="hl__link hl__link--warn"
-            // Not disabled while starting: a boot that hangs is exactly when
-            // someone needs this, and it terminates the instances by id.
-            disabled={busy}
+            // Not disabled while starting: the button stays reachable for
+            // someone who thinks a boot has hung. The server itself now
+            // no-ops a reset asked for mid first-boot -- it is already
+            // getting a clean rebuild from that very boot, and queuing an
+            // in-place reset on top would run its wipe step concurrently
+            // with the script still building the objects it deletes.
+            disabled={busy || resetting}
             onClick={() => {
-              if (window.confirm("Reset your lab? You get a fresh PurveX Financial. Everything you changed in the lab is gone. Your Range progress stays.")) void act("reset");
+              const ask =
+                state === "starting"
+                  ? "Your lab is still building for the first time, so resetting now won't do anything until it finishes. If it seems stuck, use Help instead. Try anyway?"
+                  : "Reset your lab? You get a fresh PurveX Financial. Everything you changed in the lab is gone. Your Range progress stays.";
+              if (window.confirm(ask)) void act("reset");
             }}
           >
             <RotateCcw className="h-3 w-3" aria-hidden /> Reset
           </button>
         )}
         <button type="button" className="hl__link" onClick={() => setBrief("read")}>
-          <Info className="h-3 w-3" aria-hidden /> How it works
+          <Info className="h-3 w-3" aria-hidden /> Functionality
         </button>
         {state === "ready" && (
-          <Link href={challengeTabHref("confirm-the-map")} className="hl__link">
-            <Waypoints className="h-3 w-3" aria-hidden /> Map your pod
-          </Link>
+          <button type="button" className="hl__link" onClick={() => setShowMap(true)}>
+            <Waypoints className="h-3 w-3" aria-hidden /> Integration
+          </button>
         )}
         <button type="button" className="hl__link hl__link--end" onClick={() => openHelp("lab")}>
           <LifeBuoy className="h-3 w-3" aria-hidden /> Help
@@ -724,6 +790,7 @@ export function HostedLabMenu() {
           }}
         />
       )}
+      {showMap && <PodMap onClose={() => setShowMap(false)} />}
     </section>
   );
 }

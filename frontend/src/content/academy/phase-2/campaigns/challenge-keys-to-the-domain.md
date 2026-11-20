@@ -22,11 +22,11 @@
 </div>
 <div class="ad-hint__text">
 <p>A healthy, modern service ticket uses AES, and this one doesn't.</p>
-<ol>
+<ul>
 <li>Open Event Viewer, Windows Logs → Security, and filter for Event ID 4769.</li>
 <li>Find the request where the Service Name is <code>svc-reports</code>.</li>
 <li>Read Ticket Encryption Type in the General tab. It is written as a hex code.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-WinEvent -LogName Security -FilterHashtable @{Id=4769} -MaxEvents 50 | Format-List TimeCreated, Message</code></li>
@@ -42,7 +42,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>0x17 is RC4, a fast encryption type that can be broken. Attacker tools request RC4 on purpose, because an RC4 ticket can be cracked offline against the account's password hash, while an AES ticket resists that far better. CISA names this exact pattern, T1558.003, as one of the two most common ways a single foothold turns into full domain control.</p>
+<p>0x17 is RC4, a fast encryption type that can be broken. Attacker tools request RC4 on purpose, because an RC4 ticket can be cracked offline against the account's password hash, while an AES ticket resists that far better. CISA and its Five Eyes partners list Kerberoasting among the most common techniques they see turn a single foothold into full domain control.</p>
 </div>
 </div>
 </div>
@@ -60,10 +60,10 @@
 </div>
 <div class="ad-hint__text">
 <p>An SPN lets any domain user ask for a ticket to that service by name, without ever touching the account's password.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers, find <code>svc-reports</code>, and open its Attribute Editor tab.</li>
 <li>Read the <code>servicePrincipalName</code> attribute.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser svc-reports -Properties ServicePrincipalNames | Select-Object -ExpandProperty ServicePrincipalNames</code></li>
@@ -96,10 +96,10 @@
 </div>
 <div class="ad-hint__text">
 <p>This attribute is a bitmask. A value of 4 means only RC4-HMAC is allowed, while 24 would mean both AES128 and AES256 are.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers, find <code>svc-reports</code>, and open its Attribute Editor tab.</li>
 <li>Read <code>msDS-SupportedEncryptionTypes</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser svc-reports -Properties msDS-SupportedEncryptionTypes | Select-Object msDS-SupportedEncryptionTypes</code></li>
@@ -114,7 +114,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Without AES enabled here, every ticket for this account has to come back as RC4, no matter who asks or what tool they use. So the weak encryption wasn't the attacker's choice. It was the account's own configuration, left over from before the domain required AES.</p>
+<p>Without AES enabled here, every ticket for this account has to come back as RC4, no matter who asks or what tool they use. As a result, the weak encryption wasn't the attacker's choice. It was the account's own configuration, left over from before the domain required AES.</p>
 </div>
 </div>
 </div>
@@ -132,11 +132,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Without an SPN, nobody can ask for a service ticket to this account at all. That closes the Kerberoasting path completely, rather than just making it harder.</p>
-<ol>
+<ul>
 <li>Open PowerShell as administrator.</li>
 <li>Run <code>setspn -D "REPORTS/svc-reports.purvexfinancial.local" svc-reports</code>.</li>
 <li>Confirm with <code>Get-ADUser svc-reports -Properties ServicePrincipalNames</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-flag">
@@ -165,12 +165,12 @@
 </div>
 <div class="ad-hint__text">
 <p>It's an advanced audit subcategory that's off by default, much like the process-creation auditing you fixed earlier this phase.</p>
-<ol>
+<ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>, then edit <code>Default Domain Controllers Policy</code>.</li>
 <li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Advanced Audit Policy Configuration, Audit Policies, DS Access.</li>
 <li>Open <strong>Audit Directory Service Access</strong>, tick Configure, and tick Success.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>auditpol /get /subcategory:"Directory Service Access"</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="4769">That's the Kerberos ticket event from the earlier step. DCSync uses AD replication rather than a service ticket.</div>
@@ -188,11 +188,11 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="rk-06" data-attempts="0">
+<div class="ad-mission" data-id="rk-06" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 2 · Actions on Objectives · T1003.006 DCSync · INC-1080 · High</span>
 <h4>Know What You Are Looking For</h4>
-<p><strong>IT Lead · Hardening review · 2:05 PM</strong><br>Auditing is on, so now you need the one detail that separates a real DCSync request from a domain controller's own replication traffic.<br><strong>A</strong> The account name, since only administrators ever appear in event 4662.<br><strong>B</strong> The access mask, Control Access (0x100), combined with the account not being a known domain controller.<br><strong>C</strong> The time of day, since replication only happens overnight.</p>
-<p><strong>Task:</strong> Choose the detail that distinguishes the two, and type its letter.</p>
+<p><strong>IT Lead · Hardening review · 2:05 PM</strong><br>Auditing is on, so now you need the one detail that separates a real DCSync request from a domain controller's own replication traffic.<br><strong>A</strong> The account name, since only administrators ever appear in event 4662.<br><strong>B</strong> The access mask: Control Access (0x100), naming the replication-change rights in Properties, requested by an account that isn't a known domain controller.<br><strong>C</strong> The time of day, since replication only happens overnight.</p>
+<p><strong>Task:</strong> Select the detail that distinguishes the two, and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Know What You Are Looking For" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -212,7 +212,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Every real domain controller replicates under its own computer account, so that's the first thing a defender rules out. The signal is a Control Access request carrying this exact right from anything else, whether a user account, a server or a workstation. Before you escalate, check for the common legitimate exceptions, such as Azure AD Connect.</p>
+<p>The real signal is Control Access (0x100) together with the Properties field naming DS-Replication-Get-Changes and DS-Replication-Get-Changes-All, requested by anything other than a domain controller's own computer account, since 0x100 alone also covers ordinary, unrelated operations.</p>
 </div>
 </div>
 </div>
@@ -230,10 +230,10 @@
 </div>
 <div class="ad-hint__text">
 <p>By default, this right belongs to the domain controller's own computer account, not to a person's account.</p>
-<ol>
+<ul>
 <li>Every domain controller has a computer account in Active Directory, named after the machine with a trailing <code>$</code>.</li>
 <li>In this lab, that machine is <code>dc01</code>.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="administrator">An administrator's user account doesn't carry replication rights by default. That right belongs to the domain controller's computer account.</div>
@@ -263,11 +263,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Where the plain Security log tells you a process ran, Sysmon also tells you what started it.</p>
-<ol>
+<ul>
 <li>Open Event Viewer and expand Applications and Services Logs → Microsoft → Windows → Sysmon → Operational.</li>
 <li>Filter for Event ID 1 and find the one where Image ends in <code>klist.exe</code>.</li>
 <li>Read ParentImage in the event's details.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -FilterXPath "*[System[(EventID=1)]]" -MaxEvents 50 | Where-Object Message -match "klist.exe"</code></li>
@@ -288,7 +288,7 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="rk-09" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="rk-09" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 4 · Write-Up · Medium</span>
 <h4>Two Techniques and No Malware</h4>
 <p><strong>SOC Lead · Final write-up · 2:30 PM</strong><br>You've worked four campaigns this phase. Three of them needed something delivered or guessed to get started, but this one needed neither.</p>
@@ -310,7 +310,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Any domain user can ask for a service ticket, and any domain controller can ask another for replication data. Both are trusted, intended behavior. That's why CISA's guide spends less time on exploits and more on the handful of signs that separate a feature's normal use from its abuse: an encryption type, an access mask, a requester that isn't a domain controller.</p>
+<p>Both Kerberoasting and DCSync abuse intended behavior rather than a bug, so spotting them comes down to small signs like an encryption type or an access mask, not an exploit to patch.</p>
 </div>
 </div>
 </div>

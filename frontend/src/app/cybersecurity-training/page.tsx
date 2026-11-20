@@ -27,8 +27,8 @@ function outline(): CourseOutline {
     entries: entriesOf(p).map((w) => ({
       title: w.title.replace(" — ", ": "),
       summary: w.summary,
-      // A locked phase reads "coming soon" here, as it does in the portal.
-      live: !isPhaseLocked(p.slug) && w.sections.length > 0,
+      // A locked phase reads as coming soon here too, even with its lessons written.
+      live: w.sections.length > 0 && !isPhaseLocked(p.slug),
       lessons: w.sections.map((s) => s.label.replace(/ — .*$/, "")).filter((l) => !SKIP.has(l)),
     })),
   }));

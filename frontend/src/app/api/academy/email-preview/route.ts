@@ -10,6 +10,7 @@ import {
   studentMilestoneEmail,
   studentNudgeEmail,
   studentWelcomeEmail,
+  rangeWelcomeEmail,
   trialEndingEmail,
 } from "@/lib/academy-emails";
 
@@ -35,6 +36,7 @@ export async function GET(request: Request) {
   // One entry per template. Add a template here and ?t=<key> renders it.
   const templates: Record<string, () => { subject: string; html: string }> = {
     welcome: () => studentWelcomeEmail(student, cls, o),
+    "range-welcome": () => rangeWelcomeEmail(student, o),
     setup: () => instructorSetupEmail(cls, o),
     nudge: () => studentNudgeEmail(student, o),
     dormant: () => dormantNudgeEmail(student, true, o),

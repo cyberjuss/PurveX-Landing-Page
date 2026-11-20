@@ -1,5 +1,6 @@
 import "server-only";
 import type Stripe from "stripe";
+import { syncDiscordRole } from "@/lib/academy-discord-roles";
 import { stopHostedLabIfLapsed } from "@/lib/academy-hosted";
 import { PAYING } from "@/lib/range-plan";
 import { supabaseAdmin } from "@/lib/supabase-admin";
@@ -180,7 +181,7 @@ export async function handleRangeCheckout(stripe: Stripe, session: Stripe.Checko
     }
   }
 
-  return writeSubscription({
+  const wrote = await writeSubscription({
     userId,
     email: session.customer_details?.email || session.customer_email || null,
     status,
@@ -190,6 +191,10 @@ export async function handleRangeCheckout(stripe: Stripe, session: Stripe.Checko
     canceledAt: null,
     startedAt: new Date().toISOString(),
   });
+  // The Discord Pro role, for a student who already linked their account.
+  // Never throws, so Discord being down cannot fail the payment.
+  if (wrote) await syncDiscordRole(userId);
+  return wrote;
 }
 
 /** Renewals, cancellations, failed payments and reactivations all land here. */
@@ -233,6 +238,10 @@ export async function handleRangeSubscriptionChange(subscription: Stripe.Subscri
       console.error("[range-billing] lapsed-pro lab stop failed:", err instanceof Error ? err.message : err)
     );
   }
+
+  // The Discord Pro role follows the same entitlement, so a renewal keeps it,
+  // and a subscription that has ended takes it away. Never throws.
+  if (wrote) await syncDiscordRole(userId);
 
   return wrote;
 }

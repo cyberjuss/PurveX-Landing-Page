@@ -79,7 +79,7 @@ prompt: The access review found these. Name the failure in each.
 level: 3
 Privilege creep = Taylor moved to Compliance and still has Operations Users
 Stale account = An intern's account is still enabled six months after they left
-Admin account for daily work = Alex reads email while signed in to his admin account
+Admin account for daily work = Alex reads email while signed in to their admin account
 Over-privileged service account = svc-backup-job signs in to the desktop and holds Domain Admin
 ```
 

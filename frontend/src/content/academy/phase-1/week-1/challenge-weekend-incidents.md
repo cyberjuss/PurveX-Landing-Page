@@ -2,7 +2,13 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Weekend Incident Report</h3>
 <p class="ad-brief__ask">Three things went wrong at PurveX Financial over the weekend. Can you find each one in the firm's environment, name which part of the CIA triad it broke, and put it right?</p>
-<p>It's Monday, 8:15 AM. Three tickets landed before you'd finished your coffee: Wealth Management client data turned up somewhere it shouldn't be, Finance thinks a file of wire approvals was changed, and nobody in the firm can open a file share. All three are waiting in your lab, so work them on your domain controller.</p>
+<p>It is 8:15 AM Monday. Three tickets landed before you had finished your coffee:</p>
+<ul>
+<li>Wealth Management client data turned up somewhere it should not be.</li>
+<li>Finance thinks a file of wire approvals was changed.</li>
+<li>Nobody in the firm can open a file share.</li>
+</ul>
+<p>All three are waiting in your lab, so work them on your domain controller.</p>
 </div>
 
 <div class="ad-progress">
@@ -22,11 +28,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The lab's department shares live under <code>C:\PurveX\Shares</code>. Look in Operations for a file that plainly belongs to another department, and count the client rows, not the header.</p>
-<ol>
+<ul>
 <li>Open File Explorer and go to <code>C:\PurveX\Shares\Operations</code>.</li>
 <li>Open the client export and count the rows that hold a client.</li>
 <li>Move the file, don't copy it, into <code>C:\PurveX\Shares\WealthManagement</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Import-Csv C:\PurveX\Shares\Operations\WM_Client_Export.csv).Count</code></li>
@@ -54,11 +60,11 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="w1-04" data-attempts="0">
+<div class="ad-mission" data-id="w1-04" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 02 · Warm-up · Vulnerabilities and Threats · INC-1090</span>
 <h4>Weakness or Threat?</h4>
 <p><strong>Alex Rivera · IT · 8:24 AM</strong><br>I'm writing up the client export for Compliance. Which of these describes it correctly?<br><strong>A</strong> The vulnerability is the Operations staff, and the threat is the client file.<br><strong>B</strong> The vulnerability is client data stored where Operations can read it, and the threat is anyone using an Operations account, a curious colleague or an attacker who has stolen one.<br><strong>C</strong> The vulnerability is the CSV file format, and the threat is Wealth Management.</p>
-<p><strong>Task:</strong> Choose the correct description and type its letter.</p>
+<p><strong>Task:</strong> Select the correct description and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Weakness or Threat?" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -78,11 +84,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Getting the two apart tells you what you can fix. You can't remove every curious colleague or every stolen password, but you can remove the weakness by keeping client data where only its own department can reach it.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Write the finding in the order the lessons gave you: the vulnerability, the threat that could use it, the CIA property that failed, and the impact. Then whoever reads it can act without redoing your work.</p>
+<p>Getting the two apart tells you what you can actually fix, since you can't remove every curious colleague or stolen password, but you can remove the weakness by keeping client data where only its own department can reach it.</p>
 </div>
 </div>
 </div>
@@ -91,7 +93,7 @@
 <div class="ad-mission" data-id="w1-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Availability · High · INC-1090</span>
 <h4>Bring the File Shares Back</h4>
-<p><strong>Priya Nair · IT · 8:31 AM</strong><br>The phones haven't stopped. Nobody on the fourth floor, the office network at 10.250.40.0/24, can open a file share this morning, whatever department they're in. The files are all still there on the server. The only thing that happened this weekend was a maintenance window.</p>
+<p><strong>Priya Nair · IT · 8:31 AM</strong><br>The phones haven't stopped. Nobody on the fourth floor, the office network at 10.250.40.0/24, can open a file share this morning, whatever department they're in. The files are all still there on the server, and the only thing that happened this weekend was a maintenance window.</p>
 <p><strong>Task:</strong> Find the firewall rule the weekend's maintenance left behind on the domain controller and switch it off. Then report the port it was blocking.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Bring the File Shares Back" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -100,11 +102,11 @@
 </div>
 <div class="ad-hint__text">
 <p>File shares on Windows use SMB. Look for an inbound rule that blocks rather than allows, with a name that sounds like maintenance. Its Scope tab shows which network it blocks.</p>
-<ol>
+<ul>
 <li>Open Windows Defender Firewall with Advanced Security with Win+R and <code>wf.msc</code>.</li>
 <li>Open Inbound Rules, sort by Action, and look at the rules that Block.</li>
 <li>Open the maintenance rule, read its port on the Protocols and Ports tab, then right-click it and choose Disable Rule.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-NetFirewallRule -Direction Inbound -Action Block | Select-Object DisplayName, Enabled</code></li>
@@ -137,7 +139,7 @@
 <div class="ad-mission" data-id="w1-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Apply it · Integrity · Critical · INC-1090</span>
 <h4>Catch the Altered Wire</h4>
-<p><strong>Jordan Ellis · Finance · 8:40 AM</strong><br>I approved November's wires on Friday and saved the file's SHA-256 hash next to it, like always. This morning the file looks fine to me, but something about it feels off. The wires go out at noon. Can you check it against what I signed off?</p>
+<p><strong>Jordan Ellis · Finance · 8:40 AM</strong><br>I approved November's wires on Friday and saved the file's SHA-256 hash next to it, like always. This morning the file looks fine to me, but I'd like it verified before the wires go out at noon. Can you check it against what I signed off?</p>
 <p><strong>Task:</strong> Prove whether <code>Wire_Approvals_Nov.csv</code> in the Finance share still matches the hash Jordan saved. If it doesn't, compare it with the approved copy in <code>C:\PurveX\Archive</code>, restore the approved version, and report the Wire ID that was altered.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Wire" placeholder="a Wire ID" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -146,12 +148,12 @@
 </div>
 <div class="ad-hint__text">
 <p>A hash changes completely if even one character in the file changes, so a mismatch proves the file was altered. Comparing it line by line with the approved copy shows you where.</p>
-<ol>
-<li>Hash the Finance file and compare it with the value in <code>Wire_Approvals_Nov.sha256</code>.</li>
-<li>Compare the Finance file with <code>C:\PurveX\Archive\Wire_Approvals_Nov.csv</code> and find the line that differs.</li>
-<li>Copy the approved version back over the Finance file, then hash it again to confirm it matches.</li>
-</ol>
-<p>In PowerShell:</p>
+<ul>
+<li>In PowerShell, run <code>Get-FileHash C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv</code> and compare the Hash value it prints with the one saved in <code>Wire_Approvals_Nov.sha256</code> (open that file in Notepad to read it). A mismatch proves the file changed.</li>
+<li>Run <code>Compare-Object (Get-Content C:\PurveX\Archive\Wire_Approvals_Nov.csv) (Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv)</code>. It prints the one line that differs between the two files. The Wire ID is the first value on that line.</li>
+<li>Run <code>Copy-Item C:\PurveX\Archive\Wire_Approvals_Nov.csv C:\PurveX\Shares\Finance\ -Force</code> to restore the approved version, then hash the Finance file again to confirm it now matches.</li>
+</ul>
+<p>In PowerShell, the same three steps in a row:</p>
 <ul>
 <li><code>(Get-FileHash C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv).Hash; Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.sha256</code></li>
 <li><code>Compare-Object (Get-Content C:\PurveX\Archive\Wire_Approvals_Nov.csv) (Get-Content C:\PurveX\Shares\Finance\Wire_Approvals_Nov.csv)</code></li>
@@ -179,11 +181,11 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="w1-05" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="w1-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 05 · Stretch · Risk · Report to the CISO · INC-1090</span>
 <h4>Rank the Weekend</h4>
 <p><strong>CISO · 9:30 AM</strong><br>Looking back at 8:15, when all three tickets were open at once, which one should have been escalated first?<br><strong>A</strong> The client export, because client data was exposed.<br><strong>B</strong> The altered wire, because $9,800 was due to leave the firm at noon to an account nobody approved, and a sent wire is hard to get back.<br><strong>C</strong> The blocked file shares, because they affected the most people.</p>
-<p><strong>Task:</strong> Choose the ticket with the highest risk at 8:15 and type its letter.</p>
+<p><strong>Task:</strong> Select the ticket with the highest risk at 8:15 and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Rank the Weekend" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -203,11 +205,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The altered wire was almost certain to cause harm, the harm was due in under four hours, and money sent to the wrong account is very hard to recover. The loudest ticket, the outage, carried the least lasting damage. Risk is about likelihood and impact, not about how many phones are ringing.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Escalate the wire to Finance leadership first, then handle the client export with Compliance, while IT clears the outage alongside. Write down why you ranked them that way, so the order can be defended later.</p>
+<p>The altered wire carried the most certain, soonest, and hardest-to-reverse harm of the three, so escalate it to Finance leadership first and work the rest alongside it.</p>
 </div>
 </div>
 </div>

@@ -23,11 +23,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The investigation mindset starts with the account itself, before the log and before the clock. One field on this account answers both the time question and the location question, so read all of it.</p>
-<ol>
+<ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Right-click the domain and use Find to search for <code>morgan.reyes</code>.</li>
 <li>Open the account's Properties and read the General tab's Description field in full.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser morgan.reyes -Properties Description, Title | Select-Object Description, Title</code></li>
@@ -46,11 +46,11 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The account's Description names IT-WKS01 as the only workstation this overnight work is authorized from, yet the alert's sign-in came from REMOTE-SUPPORT4. On the time alone, this sounded exactly like INC-1046, but once you read every field, the record tells a fuller story.</p>
+<p>The account's Description names IT-WKS01 as the only workstation this overnight work is authorized from, yet the alert's sign-in came from REMOTE-SUPPORT4. On the time alone, this looked like routine after-hours maintenance, but once you read every field, the record tells a fuller story.</p>
 </div>
 <div>
 <span>What to do</span>
-<p>So carry both facts into the next step: the time that matched, and the workstation that didn't.</p>
+<p>Carry both facts into the next step: the time that matched, and the workstation that didn't.</p>
 </div>
 </div>
 </div>
@@ -60,7 +60,7 @@
 <span class="ad-mission__num">Ticket 02 · INC-1065 · High</span>
 <h4>Classify What You Actually Found</h4>
 <p><strong>SOC Queue · Follow-up · 3:45 AM</strong><br>You now know morgan.reyes's 3:40 AM sign-in falls inside the account's approved overnight window, but it came from REMOTE-SUPPORT4, not IT-WKS01, the one workstation that record authorizes.<br><strong>A</strong> P1, Critical: an off-hours sign-in is always worked first.<br><strong>B</strong> P2, High: the time checks out, but the workstation does not, and that gap needs a fast look before the ticket closes.<br><strong>C</strong> P3, Routine: the sign-in matches the account's own approved window, so it is worked when the queue allows.<br><strong>D</strong> Not an incident at all, and the alert should be deleted.</p>
-<p><strong>Task:</strong> Choose the classification that fits what the record showed, and type its letter.</p>
+<p><strong>Task:</strong> Select the classification that fits what the record showed, and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Classify What You Actually Found" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -82,7 +82,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>An approved overnight window authorizes work from one named workstation, not a sign-in from anywhere at that hour. Attackers use stolen credentials at convenient times on purpose, often inside a window when staff already expect activity. So if you'd checked the time and stopped there, you'd have closed this as clean.</p>
+<p>An approved overnight window authorizes work from one named workstation, not a sign-in from anywhere at that hour. That gap matters because attackers use stolen credentials at convenient times on purpose, often inside a window when staff already expect activity. Had you checked only the time and stopped there, you would have closed this as clean.</p>
 </div>
 <div>
 <span>What to do</span>

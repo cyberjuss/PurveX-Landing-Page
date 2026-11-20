@@ -18,7 +18,7 @@ This page lists every user account and workstation the build script creates, wit
 
 Each of the nine users sits in one standard group, with one exception: Alex Rivera also holds IT Admins. That's worth remembering, because unusual activity on Alex's account carries more risk than the same activity on Jordan's.
 
-Notice, too, that a title isn't a group. Priya Nair is a Help Desk Technician, yet she sits in IT Users rather than Helpdesk. So when a ticket names a person, read the account's Member Of list rather than guessing their access from their title.
+Notice, too, that a title isn't a group. Priya Nair is a Help Desk Technician, yet they sit in IT Users rather than Helpdesk. So when a ticket names a person, read the account's Member Of list rather than guessing their access from their title.
 
 ### The Client Workstation
 

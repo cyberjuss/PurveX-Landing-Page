@@ -10,17 +10,21 @@ import { TrailDock, type TrailLink } from "./trail-dock";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
-// The order options are shown in. The file lists the right answer second far
-// more often than chance, so showing them as written let "always B" pass.
-// Seeded by the question text, so the order is the same on every visit and
-// device, and saved picks stay indices into the options as written.
-export function optionOrder(question: string, count: number): number[] {
+/**
+ * The order a question's options are shown in. The source lists the right
+ * answer second more often than not, so showing it as written let a student
+ * pass by always picking B. Seeded by the question text, so the order is the
+ * same on every visit and device, and the saved pick (an index into the
+ * source list) still points at the option the student chose.
+ */
+function shownOrder(question: string, count: number): number[] {
   let seed = 2166136261;
-  for (let i = 0; i < question.length; i++) seed = Math.imul(seed ^ question.charCodeAt(i), 16777619);
+  for (let i = 0; i < question.length; i++) seed = Math.imul(seed ^ question.charCodeAt(i), 16777619) >>> 0;
   const order = Array.from({ length: count }, (_, i) => i);
   for (let i = count - 1; i > 0; i--) {
     seed = Math.imul(seed ^ (seed >>> 15), 2246822507) >>> 0;
-    const j = seed % (i + 1);
+    seed = Math.imul(seed ^ (seed >>> 13), 3266489909) >>> 0;
+    const j = (seed ^ (seed >>> 16)) % (i + 1);
     [order[i], order[j]] = [order[j], order[i]];
   }
   return order;
@@ -70,6 +74,7 @@ export function QuizBlock({
   const passed = quizPassed(score, total);
   const passMark = Math.ceil((QUIZ_PASS_PERCENT / 100) * total);
   const isCorrect = selected === q.correctIndex;
+  const answered = selected !== null;
 
   // What the week still wants after the quiz. The week marks itself complete
   // once every one of these is done, so passing the quiz is the middle of the
@@ -118,7 +123,7 @@ export function QuizBlock({
   }
 
   function selectOption(optionIndex: number) {
-    if (submitted) return;
+    if (submitted || answered) return;
     touched.current = true;
     setAnswers((prev) => prev.map((a, i) => (i === at ? optionIndex : a)));
   }
@@ -173,17 +178,17 @@ export function QuizBlock({
           <p>{q.question}</p>
         </div>
         <div className="ax-quiz__opts">
-          {optionOrder(q.question, q.options.length).map((oi, shown) => {
+          {shownOrder(q.question, q.options.length).map((oi, shown) => {
             const option = q.options[oi];
             const isSelected = selected === oi;
-            const showCorrect = submitted && oi === q.correctIndex;
-            const showWrong = submitted && isSelected && oi !== q.correctIndex;
+            const showCorrect = answered && oi === q.correctIndex;
+            const showWrong = answered && isSelected && oi !== q.correctIndex;
             return (
               <button
                 key={oi}
                 type="button"
                 onClick={() => selectOption(oi)}
-                disabled={submitted}
+                disabled={submitted || answered}
                 aria-pressed={isSelected}
                 className={`ax-quiz__opt ${
                   showCorrect ? "ax-quiz__opt--ok" : showWrong ? "ax-quiz__opt--bad" : isSelected ? "ax-quiz__opt--on" : ""
@@ -201,7 +206,7 @@ export function QuizBlock({
             );
           })}
         </div>
-        {submitted && (
+        {answered && (
           <div className="ax-quiz__note">
             <strong className={isCorrect ? "rd-text-good" : ""}>{isCorrect ? "Correct" : "Explanation"}</strong>
             {q.explanation}

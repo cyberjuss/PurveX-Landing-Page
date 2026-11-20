@@ -39,6 +39,20 @@ const linkRow = (label: string, value: string) =>
   `<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:4px 0 0;background:#f7f8fa;border:1px solid ${LINE};border-radius:10px;"><tr>` +
   `<td style="padding:12px 14px;font-size:12.5px;">${label ? `<span style="display:block;color:${MUTED};margin-bottom:3px;">${esc(label)}</span>` : ""}${mono(value)}</td></tr></table>`;
 
+/** One line and a button for the Range Discord, in Discord's own colour.
+ *  Empty when the invite is not set, so an email never links nowhere. */
+function discordInvite(): string {
+  const invite = (process.env.NEXT_PUBLIC_DISCORD_INVITE_URL ?? "").trim();
+  if (!/^https:\/\/(discord\.gg|discord\.com\/invite)\//.test(invite)) return "";
+  return (
+    `<p style="margin:26px 0 12px;padding-top:20px;border-top:1px solid ${LINE};font-size:15px;line-height:1.65;color:${INK2};">` +
+    "Students help each other in the Range Discord. Ask for a hint when you're stuck and share your wins.</p>" +
+    `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 4px;"><tr><td style="border-radius:11px;background:#5865F2;">` +
+    `<a href="${esc(invite)}" style="display:inline-block;padding:12px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;">Join the Range Discord</a>` +
+    `</td></tr></table>`
+  );
+}
+
 /** Sent to the instructor when their class is created. */
 export function instructorSetupEmail(cls: AcademyClass, o: string): Built {
   const url = base(o);
@@ -63,8 +77,23 @@ export function studentWelcomeEmail(student: Named, cls: AcademyClass, o: string
     h(`Welcome to ${cls.name}`) +
     p(`Hi ${esc(first(student.name))}, welcome to ${esc(cls.name)}. The training is ready, with hands-on labs graded against a live environment, so you build the skills the job actually asks for rather than test-taking ones.`) +
     button(`${url}/range`, "Start training") +
+    discordInvite() +
     note("You can sign in with this email any time and pick up where you left off.");
   return { subject: `Welcome to ${cls.name} on PurveX Range`, html };
+}
+
+/** Sent once to a student who signed up on their own, when they finish onboarding.
+ *  A class student gets studentWelcomeEmail instead. */
+export function rangeWelcomeEmail(student: Named, o: string): Built {
+  const url = base(o);
+  const html =
+    pre("Your first lessons and tickets are ready.") +
+    h("Welcome to PurveX Range") +
+    p(`Hi ${esc(first(student.name))}, your answers are in and Coach knows where to start you. Your first lessons and tickets are ready.`) +
+    button(`${url}/range`, "Start training") +
+    discordInvite() +
+    note("You can sign in with this email any time and pick up where you left off.");
+  return { subject: "Welcome to PurveX Range", html };
 }
 
 /** Retention: a student who has gone quiet. */

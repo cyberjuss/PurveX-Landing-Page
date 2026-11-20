@@ -348,6 +348,13 @@ alter table public.academy_hosted_labs add column if not exists pod_slot integer
 create unique index if not exists academy_hosted_labs_pod_slot_key
   on public.academy_hosted_labs (pod_slot) where pod_slot is not null;
 
+-- An in-place reset's own progress (see HostedLabResetState / advanceReset),
+-- stepped forward a little at a time by whichever request polls the lab
+-- next rather than by one long-running call. Null means no reset is running.
+-- Persisted because a plain in-memory flag does not reliably survive from
+-- one serverless invocation to the next.
+alter table public.academy_hosted_labs add column if not exists reset_state jsonb;
+
 alter table public.academy_lab_keys enable row level security;
 alter table public.academy_hosted_labs enable row level security;
 

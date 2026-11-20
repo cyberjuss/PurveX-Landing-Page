@@ -11,6 +11,7 @@ import {
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
 import { DescribeInstanceInformationCommand, GetCommandInvocationCommand, SendCommandCommand, SSMClient } from "@aws-sdk/client-ssm";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
 import { LAB_SCRIPT_HASHES } from "@/lib/lab-script-hashes";
 import {
   addLabMinutes,
@@ -25,13 +26,17 @@ import {
   hostedLabsRunning,
   loadHostedLab,
   loadLabState,
+  loadResetState,
   POD_RESERVED,
   readLabMinutes,
   saveHostedLab,
+  saveResetState,
+  type HostedLabResetState,
   type HostedLabRow,
 } from "@/lib/academy-store";
 import { isRangePro } from "@/lib/range-plan";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { throttle } from "@/lib/auth-guard";
 
 // Hosted labs: each student's own two-machine pod in AWS. A Windows domain
 // controller cloned from the image lab-environment/hosted builds, and an Ubuntu
@@ -243,10 +248,23 @@ export function canUseHostedLab(email: string | null): boolean {
   return emails.includes("*") || Boolean(email && emails.includes(email.toLowerCase()));
 }
 
+// Neither client below set a request timeout, so a single AWS call that hung
+// (a network blip on their side, a slow retry) sat on the socket until this
+// whole route's 30-second budget ran out, and a Lambda killed mid-call never
+// gets a clean error back to the browser -- the student just sees "Could not
+// reach Range." A short, bounded timeout turns that silent hang into a fast,
+// catchable failure instead, which every caller here already handles.
+const awsRequestHandler = () => new NodeHttpHandler({ connectionTimeout: 3_000, requestTimeout: 5_000 });
+
 let client: EC2Client | null = null;
 function ec2() {
   const c = cfg();
-  client ??= new EC2Client({ region: c.region, credentials: { accessKeyId: c.accessKeyId, secretAccessKey: c.secretAccessKey } });
+  client ??= new EC2Client({
+    region: c.region,
+    credentials: { accessKeyId: c.accessKeyId, secretAccessKey: c.secretAccessKey },
+    maxAttempts: 2,
+    requestHandler: awsRequestHandler(),
+  });
   return client;
 }
 
@@ -609,13 +627,28 @@ export function linuxCloudInit(dcIp: string, password: string): string {
 
 // ---- AWS ------------------------------------------------------------------
 
+// AWS writes this as e.g. "User initiated (2026-11-11 18:00:00 GMT)". The
+// parenthesised part is the only clock that says when the CURRENT state
+// began, which is what lets hostedLabStatus notice a stop that has been
+// "stopping" for far longer than hibernate ever legitimately takes.
+function parseStateTransition(reason: string | undefined): number | null {
+  const m = reason?.match(/\(([^)]+)\)/);
+  const ms = m ? Date.parse(m[1]) : NaN;
+  return Number.isFinite(ms) ? ms : null;
+}
+
 async function describe(instanceId: string) {
   const out = await ec2().send(new DescribeInstancesCommand({ InstanceIds: [instanceId] }));
   const inst = out.Reservations?.[0]?.Instances?.[0];
   // LaunchTime is when this machine last started, which is the only clock an
   // orphan sweep can trust: the row it is judging is the row that is wrong.
   return inst
-    ? { state: inst.State?.Name ?? "unknown", privateIp: inst.PrivateIpAddress ?? null, startedAt: inst.LaunchTime ? inst.LaunchTime.getTime() : null }
+    ? {
+        state: inst.State?.Name ?? "unknown",
+        privateIp: inst.PrivateIpAddress ?? null,
+        startedAt: inst.LaunchTime ? inst.LaunchTime.getTime() : null,
+        stateSince: parseStateTransition(inst.StateTransitionReason),
+      }
     : null;
 }
 
@@ -744,6 +777,14 @@ function podInstanceIds(row: HostedLabRow): string[] {
   return [row.instanceId, row.linuxInstanceId].filter((id): id is string => Boolean(id) && id !== POD_RESERVED);
 }
 
+// A hibernate write can legitimately run several minutes, but one has now
+// been observed wedged past 18 minutes with its console output frozen at
+// the 6-minute mark -- AWS-side, not anything this app's own request timing
+// could cause. Past this ceiling, force a plain stop (no hibernate) instead
+// of leaving the student staring at "Saving your lab" with nothing ever
+// catching it, the same gap RESET_MAX_MS already closed for a stuck reset.
+const STOP_MAX_MS = 12 * 60_000;
+
 export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> {
   const c = cfg();
   const none: HostedLabStatus = { state: "none", stopAt: null, startedAt: null, firstBoot: false, instanceType: c.instanceType, linux: false };
@@ -770,6 +811,18 @@ export async function hostedLabStatus(userId: string): Promise<HostedLabStatus> 
   // freshness" below). after() so this never slows the status read down.
   // The frontend polls this constantly. The push is throttled anyway.
   if (linked && inst.state === "running") after(() => pushLabScriptUpdate(userId).then(() => undefined).catch(() => undefined));
+  if (inst.state === "stopping" && inst.stateSince && Date.now() - inst.stateSince > STOP_MAX_MS) {
+    // Throttled per instance so a student leaving the panel open polling
+    // every few seconds doesn't resend this on every single read.
+    if (throttle(`force-stop:${row.instanceId}`, 1, 60_000)) {
+      const id = row.instanceId;
+      after(() =>
+        ec2()
+          .send(new StopInstancesCommand({ InstanceIds: [id], Force: true }))
+          .catch((err) => console.error("forced stop (stuck hibernate) failed", id, err instanceof Error ? err.message : err))
+      );
+    }
+  }
   const map: Record<string, HostedLabState> = { pending: "starting", running: linked ? "ready" : "starting", stopping: "stopping", stopped: "stopped" };
   return { state: map[inst.state] ?? "starting", stopAt: row.stopAt, startedAt, firstBoot: !linked, instanceType: c.instanceType, linux: Boolean(row.linuxInstanceId) };
 }
@@ -1063,120 +1116,201 @@ async function resetLanded(userId: string, after: number): Promise<boolean> {
   );
 }
 
-/** Waits for one SSM command to finish, and says whether it succeeded. */
-async function ssmFinished(commandId: string, instanceId: string, budgetMs: number): Promise<boolean> {
-  const until = Date.now() + budgetMs;
-  while (Date.now() < until) {
-    await new Promise((r) => setTimeout(r, 4_000));
-    const inv = await ssm()
-      .send(new GetCommandInvocationCommand({ CommandId: commandId, InstanceId: instanceId }))
-      .catch(() => null);
-    if (!inv || inv.Status === "InProgress" || inv.Status === "Pending" || inv.Status === "Delayed") continue;
-    if (inv.Status !== "Success") console.error("lab reset command ended", inv.Status, (inv.StandardErrorContent ?? "").slice(0, 300));
-    return inv.Status === "Success";
-  }
-  return false;
-}
+// A reset used to run as one long background call: resetInPlace alone waited
+// up to 6 minutes for the agent, up to 8 for the replant command, then polled
+// up to 90s more to confirm it landed. None of that fits inside a serverless
+// function's own time limit (Hobby's is well under a minute), so it was
+// fired through after() and left to run -- except after() still counts
+// against the same limit, and the whole thing was dying before it ever sent
+// a single command to AWS. advanceReset instead does one bounded unit of
+// work -- a handful of AWS calls, no waiting -- each time the panel's own
+// status poll calls it, and the step it is on is persisted (see
+// HostedLabResetState) so any serverless instance can pick the next one up.
+// The panel already polls fast while a reset is in flight, so a multi-minute
+// reset just takes on the order of a hundred quick polls instead of one call
+// nothing could keep open long enough to finish.
+const RESET_MAX_MS = 17 * 60_000;
 
-/** A clean pod from the image. The old machines and everything the student
- *  changed in them are gone. The pod slot goes back to the pool and is claimed
- *  again by the new pod, so resetting does not use slots up. */
-export async function resetHostedLab(userId: string): Promise<void> {
-  const row = await loadHostedLab(userId);
-  // The machine was never what needed replacing. If the pod is still there,
-  // put its contents back on it: the objects are recreated in about a minute
-  // against a machine that is already up, instead of five spent terminating
-  // one and booting another, three of which are Windows starting.
-  if (row && row.instanceId !== POD_RESERVED && (await resetInPlace(userId, row))) return;
-
-  // Whatever is left cannot be reset where it stands, so it is replaced, and
-  // that is a new lab and a new session like any other.
-  const length = await sessionLengthMs(userId);
-  if (row) {
-    await terminatePod(row);
-    await endSession(userId, row);
-    await deleteHostedLab(userId);
-  }
-  await launch(userId, length);
+/** Starts a lab reset. Returns once the first step is recorded; advanceReset
+ *  (called from the status route on every poll) does the actual work. */
+export async function beginReset(userId: string): Promise<void> {
+  // A pod still mid first boot (state "starting": EC2 running but not yet
+  // linked, or not yet running at all) is already getting a clean rebuild
+  // from that boot script. Queuing an in-place reset on top of it would run
+  // Remove-Environment.ps1 concurrently with the very script building the
+  // objects it deletes -- a race that can leave the directory half built.
+  // Confirmed live: a reset fired on a pod the previous reset had just
+  // replaced, seconds after it relaunched.
+  const status = await hostedLabStatus(userId).catch(() => null);
+  if (status?.state === "starting") return;
+  await saveResetState(userId, { step: "starting", startedAt: new Date().toISOString() }, null);
 }
 
 /**
- * Resets the lab on the machine it is already on. False if that cannot be
- * done, and the caller replaces the pod instead.
+ * Moves an in-progress reset forward by exactly one step, and says whether
+ * one is still running. Called from the lab's own status read, so it is
+ * driven by the same poll that already watches Start and Stop -- nothing
+ * else needs to ask for it.
  *
- * Nothing here is charged. A reset in place does not start a session: a
- * running lab is already inside the one it is paying for, and a stopped one
- * is resumed only long enough to put itself back, which the stop clock it
- * already has still governs.
+ * Each step claims the next one with a conditional write (saveResetState's
+ * expectedStep) before doing anything to AWS, so two overlapping polls for
+ * the same student cannot both start the instance or both send the replant
+ * command: whichever loses the claim does nothing this round and lets the
+ * next poll read the fresher state.
  *
- * The lab is read back before this reports success. A reset that half worked
- * is worse than a slow one, so a lab that does not look like a lab again
- * falls through to being replaced.
+ * Giving up on an in-place reset, at any step, replaces the pod instead --
+ * the same fallback the old blocking version used, just reached without a
+ * minutes-long loop to get there.
  */
-async function resetInPlace(userId: string, row: HostedLabRow): Promise<boolean> {
-  const c = cfg();
-  try {
-    const inst = await describe(row.instanceId).catch(() => null);
-    if (!inst || inst.state === "terminated" || inst.state === "shutting-down") return false;
-    if (inst.state === "stopped") {
-      // Starting it is starting it, whatever button was pressed. Charged and
-      // given a stop time exactly as a Start would, or Reset would have been
-      // a way to run a lab for nothing -- and a pod with no stop time is one
-      // no session sweep can see.
-      await endSession(userId, row);
-      const length = await sessionLengthMs(userId);
-      await ec2().send(new StartInstancesCommand({ InstanceIds: podInstanceIds(row) }));
-      await saveHostedLab(userId, { ...row, stopAt: new Date(Date.now() + length).toISOString() });
-      row = { ...row, stopAt: new Date(Date.now() + length).toISOString(), updatedAt: new Date().toISOString() };
-    } else if (inst.state !== "running") {
-      // Mid-flight in some other direction. Replacing is the safe answer.
-      return false;
-    }
-    // Wait for the agent rather than guessing: a resumed pod answers in about
-    // half a minute, a cold one in a few minutes, and neither is worth a
-    // fixed sleep.
-    const ready = Date.now() + 6 * 60_000;
-    while (Date.now() < ready) {
-      if (await ssmOnline(row.instanceId)) break;
-      await new Promise((r) => setTimeout(r, 5_000));
-    }
-    if (!(await ssmOnline(row.instanceId))) return false;
+export async function advanceReset(userId: string): Promise<{ resetting: boolean; error?: string }> {
+  const rs = await loadResetState(userId);
+  if (!rs) return { resetting: false };
 
-    // No key is passed in. The script already on the pod carries this pod's
-    // own key, so running it syncs as itself -- and a key written from out
-    // here is a key that can be the wrong one.
-    const before = await loadLabState(userId).catch(() => null);
-    const since = before ? Date.parse(before.uploadedAt) : 0;
-    const sent = await ssm().send(
-      new SendCommandCommand({
-        InstanceIds: [row.instanceId],
-        DocumentName: "AWS-RunPowerShellScript",
-        Comment: "Range lab reset",
-        TimeoutSeconds: 600,
-        Parameters: { commands: [inPlaceResetCommand(c.syncUrl)] },
-      })
-    );
-    const commandId = sent.Command?.CommandId;
-    // Wait for the command, not for the lab to start looking right. The
-    // directory watch sends a snapshot the moment objects appear, so judging
-    // by the snapshot alone declared victory halfway through the build.
-    if (!commandId || !(await ssmFinished(commandId, row.instanceId, 8 * 60_000))) return false;
-    // And then check it really is whole, because a command can succeed with
-    // half a lab behind it.
-    const done = Date.now() + 90_000;
-    while (Date.now() < done) {
-      if (await resetLanded(userId, since)) return true;
-      await new Promise((r) => setTimeout(r, 3_000));
+  const row = await loadHostedLab(userId);
+  if (!row || row.instanceId === POD_RESERVED) {
+    await saveResetState(userId, null, rs.step);
+    return { resetting: false };
+  }
+
+  if (Date.now() - Date.parse(rs.startedAt) > RESET_MAX_MS) {
+    if (await saveResetState(userId, null, rs.step)) {
+      return replaceAfterReset(userId, row);
     }
-    console.error("lab reset ran but the lab is not whole, replacing the pod", userId);
-    return false;
+    return { resetting: true };
+  }
+
+  // Tracks whichever step is currently claimed, so the catch block below
+  // clears the step actually on the row -- not rs.step -- if a claim moved
+  // it forward before the AWS call after that claim went on to throw.
+  let activeStep: HostedLabResetState["step"] = rs.step;
+  try {
+    switch (rs.step) {
+      case "starting": {
+        if (!(await saveResetState(userId, { ...rs, step: "waiting_ssm" }, rs.step))) return { resetting: true };
+        activeStep = "waiting_ssm";
+        const inst = await describe(row.instanceId).catch(() => null);
+        if (!inst || inst.state === "terminated" || inst.state === "shutting-down") {
+          if (await saveResetState(userId, null, activeStep)) return replaceAfterReset(userId, row);
+          return { resetting: true };
+        }
+        if (inst.state === "stopped") {
+          // Starting it is starting it, whatever button was pressed. Charged
+          // and given a stop time exactly as a Start would, or Reset would
+          // have been a way to run a lab for nothing.
+          await endSession(userId, row);
+          const length = await sessionLengthMs(userId);
+          await ec2().send(new StartInstancesCommand({ InstanceIds: podInstanceIds(row) }));
+          await saveHostedLab(userId, { ...row, stopAt: new Date(Date.now() + length).toISOString() });
+        }
+        // Anything else (already running, or pending) just waits for the
+        // agent from here -- waiting_ssm's own check covers all three.
+        return { resetting: true };
+      }
+
+      case "waiting_ssm": {
+        // Resumed pod answers in about half a minute, a cold one in a few
+        // minutes. Checked once per poll rather than waited for, so this
+        // step just returns "still resetting" until it does.
+        if (!(await ssmOnline(row.instanceId))) return { resetting: true };
+        if (!(await saveResetState(userId, { ...rs, step: "running_command" }, rs.step))) return { resetting: true };
+        activeStep = "running_command";
+        // No key is passed in. The script already on the pod carries this
+        // pod's own key, so running it syncs as itself -- and a key written
+        // from out here is a key that can be the wrong one.
+        const before = await loadLabState(userId).catch(() => null);
+        const snapshotSince = before?.uploadedAt ?? new Date(0).toISOString();
+        const sent = await ssm().send(
+          new SendCommandCommand({
+            InstanceIds: [row.instanceId],
+            DocumentName: "AWS-RunPowerShellScript",
+            Comment: "Range lab reset",
+            TimeoutSeconds: 600,
+            Parameters: { commands: [inPlaceResetCommand(cfg().syncUrl)] },
+          })
+        );
+        const commandId = sent.Command?.CommandId;
+        if (!commandId) {
+          if (await saveResetState(userId, null, activeStep)) return replaceAfterReset(userId, row);
+          return { resetting: true };
+        }
+        // Checked like every other write above: "running_command" is a dead
+        // end on its own (see that case below), so losing this write stranded
+        // a reset there until RESET_MAX_MS gave up on it -- a command Range
+        // had already sent to the pod, with no record left of it to confirm.
+        if (!(await saveResetState(userId, { ...rs, step: "waiting_command", snapshotSince, commandId }, activeStep))) {
+          if (await saveResetState(userId, null, activeStep)) return replaceAfterReset(userId, row);
+        }
+        return { resetting: true };
+      }
+
+      case "running_command":
+        // Claimed by a waiting_ssm that is still mid-SendCommand. Nothing to
+        // do but wait for that request's own write to land.
+        return { resetting: true };
+
+      case "waiting_command": {
+        if (!rs.commandId) {
+          if (await saveResetState(userId, null, rs.step)) return replaceAfterReset(userId, row);
+          return { resetting: true };
+        }
+        const inv = await ssm()
+          .send(new GetCommandInvocationCommand({ CommandId: rs.commandId, InstanceId: row.instanceId }))
+          .catch(() => null);
+        if (!inv || inv.Status === "InProgress" || inv.Status === "Pending" || inv.Status === "Delayed") return { resetting: true };
+        if (inv.Status !== "Success") {
+          console.error("lab reset command ended", inv.Status, (inv.StandardErrorContent ?? "").slice(0, 300));
+          if (await saveResetState(userId, null, rs.step)) return replaceAfterReset(userId, row);
+          return { resetting: true };
+        }
+        await saveResetState(userId, { ...rs, step: "confirming", commandDoneAt: new Date().toISOString() }, rs.step);
+        return { resetting: true };
+      }
+
+      case "confirming": {
+        // A command can succeed with half a lab behind it, so this checks the
+        // lab is really whole again rather than trusting the command alone.
+        const since = rs.snapshotSince ? Date.parse(rs.snapshotSince) : 0;
+        if (await resetLanded(userId, since)) {
+          await saveResetState(userId, null, rs.step);
+          return { resetting: false };
+        }
+        if (rs.commandDoneAt && Date.now() - Date.parse(rs.commandDoneAt) > 90_000) {
+          console.error("lab reset ran but the lab is not whole, replacing the pod", userId);
+          if (await saveResetState(userId, null, rs.step)) return replaceAfterReset(userId, row);
+        }
+        return { resetting: true };
+      }
+    }
+    return { resetting: true };
   } catch (err) {
-    // Out of hours is the student's answer, not a reason to go and build them
-    // a pod instead -- the slow path would only charge them again and fail
-    // the same way.
-    if (err instanceof LabHoursSpentError || err instanceof LabUsageUnreadableError) throw err;
+    // Out of hours is the student's answer, not a reason to go and build
+    // them a pod instead -- the slow path would only charge them again and
+    // fail the same way.
+    if (err instanceof LabHoursSpentError || err instanceof LabUsageUnreadableError) {
+      await saveResetState(userId, null, activeStep).catch(() => {});
+      throw err;
+    }
     console.error("lab reset in place failed, replacing the pod", userId, err instanceof Error ? err.message : err);
-    return false;
+    if (await saveResetState(userId, null, activeStep).catch(() => false)) return replaceAfterReset(userId, row);
+    return { resetting: true };
+  }
+}
+
+/** A clean pod from the image. The old machines and everything the student
+ *  changed in them are gone. The pod slot goes back to the pool and is
+ *  claimed again by the new pod, so resetting does not use slots up. */
+async function replaceAfterReset(userId: string, row: HostedLabRow): Promise<{ resetting: boolean; error?: string }> {
+  try {
+    const length = await sessionLengthMs(userId);
+    await terminatePod(row);
+    await endSession(userId, row);
+    await deleteHostedLab(userId);
+    await launch(userId, length);
+    return { resetting: false };
+  } catch (err) {
+    if (err instanceof LabHoursSpentError || err instanceof LabUsageUnreadableError) throw err;
+    console.error("hosted lab replace-after-reset failed", userId, err instanceof Error ? err.message : err);
+    return { resetting: false, error: "Could not reset the lab. Try again." };
   }
 }
 
@@ -1237,6 +1371,8 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
               "ignore-cert": "true",
               "resize-method": "display-update",
               "enable-wallpaper": "true",
+              "disable-copy": "true",
+              "disable-paste": "true",
             },
           },
         }
@@ -1262,6 +1398,8 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
           "enable-font-smoothing": "true",
           "disable-audio": "true",
           "enable-drive": "false",
+          "disable-copy": "true",
+          "disable-paste": "true",
           "server-layout": "en-us-qwerty",
         },
       },
@@ -1284,7 +1422,12 @@ export async function hostedLabLink(userId: string): Promise<string | null> {
 let ssmClient: SSMClient | null = null;
 function ssm() {
   const c = cfg();
-  ssmClient ??= new SSMClient({ region: c.region, credentials: { accessKeyId: c.accessKeyId, secretAccessKey: c.secretAccessKey } });
+  ssmClient ??= new SSMClient({
+    region: c.region,
+    credentials: { accessKeyId: c.accessKeyId, secretAccessKey: c.secretAccessKey },
+    maxAttempts: 2,
+    requestHandler: awsRequestHandler(),
+  });
   return ssmClient;
 }
 

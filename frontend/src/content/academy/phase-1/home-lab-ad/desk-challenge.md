@@ -22,11 +22,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Find works from any folder you start in, so there's no need to know which department OU holds the account. The title lives on the Organization tab.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, right-click the domain and choose Find.</li>
 <li>Keep Users, Contacts, and Groups selected, type <code>jordan.ellis</code>, and click Find Now.</li>
 <li>Open the result and read Title on the Organization tab.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser jordan.ellis -Properties Title | Select-Object Name, Title</code></li>
@@ -55,7 +55,7 @@
 <div class="ad-mission" data-id="dk-02" data-attempts="0">
 <span class="ad-mission__num">Call 02 · Warm-up · Unlock or Reset · Monday · INC-1094</span>
 <h4>Reset and Force a Change</h4>
-<p><strong>Maya Okafor · Wealth Management · Monday · 9:05 AM</strong><br>Hi, it's my first day. HR read me a temporary password over the phone, but I wrote it down wrong and I really don't know what it is.</p>
+<p><strong>Maya Okafor · Wealth Management · Monday · 9:05 AM</strong><br>Hi, it's my first day. HR read me a temporary password over the phone, but I wrote it down incorrectly, and I don't know what it is.</p>
 <p><strong>Task:</strong> Give Maya a new temporary password and make sure it has to be changed at the next sign-in. Then type <code>unlock</code> or <code>reset</code> for the fix this call needed.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Reset and Force a Change" placeholder="unlock or reset" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -64,12 +64,12 @@
 </div>
 <div class="ad-hint__text">
 <p>The deciding question from the Unlock or Reset tab is whether the caller still knows the password. Maya doesn't.</p>
-<ol>
+<ul>
 <li>Use Find to open <code>maya.okafor</code>.</li>
 <li>Right-click the account and choose Reset Password.</li>
 <li>Enter a new temporary password and tick User must change password at next logon.</li>
 <li>Click OK.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Set-ADAccountPassword maya.okafor -Reset -NewPassword (Read-Host -AsSecureString "New temporary password")</code></li>
@@ -96,11 +96,11 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dk-03" data-attempts="0">
+<div class="ad-mission" data-id="dk-03" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Call 03 · Warm-up · Unlock or Reset · Tuesday · INC-1094</span>
 <h4>Locked, Not Forgotten</h4>
-<p><strong>Maya Okafor · Wealth Management · Tuesday · 8:52 AM</strong><br>I know my new password, I promise. Caps Lock was on and I typed it wrong a few times, and now it says my account is locked.<br><strong>A</strong> Reset the password and force another change.<br><strong>B</strong> Unlock the account and leave the password alone.<br><strong>C</strong> Enable the account.</p>
-<p><strong>Task:</strong> Choose the fix that matches this call and type its letter.</p>
+<p><strong>Maya Okafor · Wealth Management · Tuesday · 8:52 AM</strong><br>I know my new password. Caps Lock was on, and I mistyped it a few times. Now it says my account is locked.<br><strong>A</strong> Reset the password and force another change.<br><strong>B</strong> Unlock the account and leave the password alone.<br><strong>C</strong> Enable the account.</p>
+<p><strong>Task:</strong> Select the fix that matches this call and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Locked, Not Forgotten" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -120,11 +120,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Resetting when an unlock would do creates a new temporary password for no reason, and every one of those is a credential that someone other than the owner has seen.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Open the Account tab, tick Unlock account and click Apply. Then check that Account is disabled isn't ticked, because a disabled account stays shut whatever else you fix.</p>
+<p>Resetting when an unlock would do creates an unnecessary new temporary password. Tick Unlock account on the Account tab, and confirm Account is disabled isn't also checked.</p>
 </div>
 </div>
 </div>
@@ -142,11 +138,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Read the folders above the account before you move it, because once it's moved, the old location is gone from view.</p>
-<ol>
+<ul>
 <li>Use Find to locate <code>maya.okafor</code> and note the folder shown in the In Folder column.</li>
 <li>Right-click the account, choose Move, and select Departments, WealthManagement, Users.</li>
 <li>Open that folder and confirm Maya is listed there.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser maya.okafor | Select-Object DistinguishedName</code></li>
@@ -176,7 +172,7 @@
 <div class="ad-mission" data-id="dk-05" data-attempts="0">
 <span class="ad-mission__num">Call 05 · Apply it · Move an Account · Wednesday · INC-1094</span>
 <h4>Finish the Access Half</h4>
-<p><strong>Sam Whitfield · Wealth Management · Wednesday · 10:40 AM</strong><br>Thanks for moving Maya. The screen lock is right now, but Maya still can't open our team's shared files, and somehow can still open Operations' files.</p>
+<p><strong>Sam Whitfield · Wealth Management · Wednesday · 10:40 AM</strong><br>Thanks for moving Maya. The screen lock is correct now, but Maya still can't open our team's shared files, and can still open Operations' files.</p>
 <p><strong>Task:</strong> Add maya.okafor to the Wealth Management department group and take Maya out of the Operations one. Then report the group you added.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Finish the Access Half" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -185,12 +181,12 @@
 </div>
 <div class="ad-hint__text">
 <p>Moving an account changes where it lives, not what it can reach. Each department has a standard access group, listed on the Groups tab.</p>
-<ol>
+<ul>
 <li>Open maya.okafor's Properties and go to Member Of.</li>
 <li>Click Add and add <code>Wealth Management Users</code>.</li>
 <li>Select <code>Operations Users</code> and click Remove.</li>
 <li>Click OK, then reopen Member Of to confirm both changes stuck.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Add-ADGroupMember -Identity "Wealth Management Users" -Members maya.okafor</code></li>
@@ -221,7 +217,7 @@
 <div class="ad-mission" data-id="dk-06" data-attempts="0">
 <span class="ad-mission__num">Call 06 · Apply it · Move an Account · Wednesday · INC-1094</span>
 <h4>Record the Ticket</h4>
-<p><strong>Alex Rivera · IT · Wednesday · 11:00 AM</strong><br>Please note on Maya's account what was fixed and under which ticket, DESK-2001, so nobody has to rediscover all this later. While you're in there, check that the title is right.</p>
+<p><strong>Alex Rivera · IT · Wednesday · 11:00 AM</strong><br>Please document on Maya's account what was fixed and under which ticket, DESK-2001, so nobody has to rediscover this later. While reviewing the account, confirm the title is correct.</p>
 <p><strong>Task:</strong> Write a Description on maya.okafor that includes <code>DESK-2001</code>. Then report the name of the Properties tab that holds the Title field.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Record the Ticket" placeholder="a tab name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -230,11 +226,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The Description is on the General tab. Title, Department and Company sit together on a different tab.</p>
-<ol>
+<ul>
 <li>Open maya.okafor's Properties.</li>
 <li>On the General tab, set Description to something like "Client Advisor, Wealth Management. OU and groups corrected under DESK-2001."</li>
 <li>Click through the tabs until you find Title, and note the tab's name.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Set-ADUser maya.okafor -Description "Client Advisor, Wealth Management. OU and groups corrected under DESK-2001."</code></li>
@@ -273,11 +269,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Ticking User must change password at next logon sets <code>pwdLastSet</code> to a special value meaning the password has to be replaced before it can be used. The Attribute Editor shows that value in words.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, open View and turn on Advanced Features.</li>
 <li>Browse to Departments, WealthManagement, Users and open maya.okafor from there, not from Find.</li>
 <li>Open the Attribute Editor tab and find <code>pwdLastSet</code>.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser maya.okafor -Properties pwdLastSet, PasswordExpired | Select-Object pwdLastSet, PasswordExpired</code></li>
@@ -315,11 +311,11 @@
 </div>
 <div class="ad-hint__text">
 <p>The Read the Account tab warned about this quirk. Make sure Advanced Features is still on, then compare the two windows tab by tab.</p>
-<ol>
+<ul>
 <li>Open Find, switch to Computers, find <code>IT-WKS01</code> and open it. Note the tabs.</li>
 <li>Close it, browse to Departments, IT, Workstations, and open IT-WKS01 from there.</li>
 <li>Name the tab that appears only the second time.</li>
-</ol>
+</ul>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="member-of|general|operating-system">That tab appears both ways. Look for the one that shows raw attributes such as lastLogon.</div>
@@ -331,7 +327,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Plenty of new technicians conclude that a value isn't recorded when the tab that holds it simply didn't load. Knowing the quirk saves you from reporting "no data" on an object that has it.</p>
+<p>Many new technicians conclude that a value isn't recorded when the tab that holds it simply didn't load. Knowing the quirk saves you from reporting "no data" on an object that has it.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -341,11 +337,11 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="dk-09" data-attempts="0">
+<div class="ad-mission" data-id="dk-09" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Call 09 · Stretch · Read the Account · Friday · INC-1094</span>
 <h4>Which Last Logon to Trust</h4>
-<p><strong>Alex Rivera · IT · Friday · 9:00 AM</strong><br>Next year we're adding a second domain controller. After that, which attribute should Quinn read to see when an account last signed in anywhere in the domain, accepting that it can lag a little?<br><strong>A</strong> <code>lastLogon</code><br><strong>B</strong> <code>lastLogonTimestamp</code><br><strong>C</strong> <code>whenCreated</code></p>
-<p><strong>Task:</strong> Choose the attribute that's shared between domain controllers and type its letter.</p>
+<p><strong>Alex Rivera · IT · Friday · 9:00 AM</strong><br>Next year we're adding a second domain controller. After that, which attribute should Quinn read to see when an account last signed in anywhere in the domain? A short lag in the result is acceptable.<br><strong>A</strong> <code>lastLogon</code><br><strong>B</strong> <code>lastLogonTimestamp</code><br><strong>C</strong> <code>whenCreated</code></p>
+<p><strong>Task:</strong> Select the attribute shared between domain controllers and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Which Last Logon to Trust" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}" data-accept="lastlogontimestamp">Submit</button>
@@ -365,11 +361,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Reading <code>lastLogon</code> from just one domain controller can make an active account look dormant, or a dormant one look active. Either mistake leads to a wrong decision about disabling it.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Use <code>lastLogonTimestamp</code> for "has this been used in the last few weeks?" When you need the exact time, read <code>lastLogon</code> from every domain controller and take the latest.</p>
+<p>Use <code>lastLogonTimestamp</code> for a quick check on recent activity, since reading <code>lastLogon</code> from just one domain controller can make an active account look dormant or a dormant one look active, and only pull <code>lastLogon</code> from every domain controller when you need the exact time.</p>
 </div>
 </div>
 </div>
@@ -379,7 +371,7 @@
 <span class="ad-mission__num">Call 10 · Stretch · Close the Week · Friday · INC-1094</span>
 <h4>Close the Transfer</h4>
 <p><strong>Sam Whitfield · Wealth Management · Friday · 4:30 PM</strong><br>Maya says everything works now. Before you close the ticket, can you say what had to be true for the account to count as fixed?<br><strong>A</strong> The Title and the Description match the new role.<br><strong>B</strong> The folder above the account and its Member Of both match the new department.<br><strong>C</strong> The password was reset and the account is unlocked.</p>
-<p><strong>Task:</strong> Confirm Maya's account is in Wealth Management's Users folder, in Wealth Management Users, out of Operations Users and enabled. Then choose what a finished transfer needs and type its letter.</p>
+<p><strong>Task:</strong> Confirm Maya's account sits in Wealth Management's Users folder and group, is out of Operations Users, and is enabled. Then select what a finished transfer needs and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Close the Transfer" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

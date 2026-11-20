@@ -10,11 +10,11 @@
 <span id="ad-progress-label" class="ad-progress__label">0 / 6 solved</span>
 </div>
 
-<div class="ad-mission" data-id="w4-02" data-attempts="0">
+<div class="ad-mission" data-id="w4-02" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Finding 01 · Warm-up · Authentication · Executive Request · INC-1093</span>
 <h4>The MFA Exemption Request</h4>
 <p><strong>CFO · 8:45 AM</strong><br>The MFA prompts slow me down when I'm approving payments between meetings. Can IT turn MFA off for the executive team? We're careful with our passwords.<br><strong>A</strong> Agree. Executives are busy, and their passwords are long.<br><strong>B</strong> Keep MFA on, and offer a faster method, such as number matching on the phone app or a hardware key. Executives who approve payments are exactly who attackers phish.<br><strong>C</strong> Turn MFA off, but make executives change their password every month instead.</p>
-<p><strong>Task:</strong> Choose how IT should answer and type its letter.</p>
+<p><strong>Task:</strong> Select how IT should answer and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The MFA Exemption Request" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -34,11 +34,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The people who can approve payments are the first target of business email compromise. Exempting them from MFA would leave the firm's most valuable accounts protected by a password alone.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Say no to the exemption, and fix the real complaint instead by moving the executives to a quicker method. Phishing-resistant options such as passkeys or hardware keys are both faster and safer.</p>
+<p>The people who can approve payments are the first target of business email compromise, so say no to the exemption and fix the real complaint with a faster, phishing-resistant method like passkeys or a hardware key.</p>
 </div>
 </div>
 </div>
@@ -47,7 +43,7 @@
 <div class="ad-mission" data-id="w4-04" data-attempts="0">
 <span class="ad-mission__num">Finding 02 · Warm-up · Authorization · Critical · INC-1093</span>
 <h4>The Temporary Domain Admin</h4>
-<p><strong>Alex Rivera · IT · 9:00 AM</strong><br>During the server migration, someone added a member of staff to Domain Admins "just for the weekend". The migration finished weeks ago. The auditors want to know who it is, and that it's been fixed.</p>
+<p><strong>Alex Rivera · IT · 9:00 AM</strong><br>During the server migration, someone added a member of staff to Domain Admins "just for the weekend," but the migration finished weeks ago and nobody has removed the access since. The auditors want to know who it is, and that it's been fixed.</p>
 <p><strong>Task:</strong> Find the staff account in Domain Admins that shouldn't be there, remove it, and report its username.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Temporary Domain Admin" placeholder="a username" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -56,10 +52,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Domain Admins should hold only the built-in Administrator and the few accounts whose job is running the domain. A help desk technician isn't one of them.</p>
-<ol>
+<ul>
 <li>In Active Directory Users and Computers, open the Users container and then Domain Admins.</li>
 <li>On the Members tab, find the staff account and click Remove.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADGroupMember "Domain Admins" | Select-Object SamAccountName</code></li>
@@ -99,10 +95,10 @@
 </div>
 <div class="ad-hint__text">
 <p>Authorization comes from groups. Read Noor's Member Of tab and the account's Description, which says how the access started.</p>
-<ol>
+<ul>
 <li>Use Find to open <code>noor.ahmadi</code> and read the Description.</li>
 <li>On the Member Of tab, select the Compliance group and click Remove.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADPrincipalGroupMembership noor.ahmadi | Select-Object Name</code></li>
@@ -141,11 +137,11 @@
 </div>
 <div class="ad-hint__text">
 <p>Windows records a failed sign-in as Event ID 4625 and a successful one as 4624. Filter the log down to failures, then find the ones for this account.</p>
-<ol>
+<ul>
 <li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>, then Windows Logs, Security.</li>
 <li>Choose Filter Current Log, type <code>4625</code> in the event IDs box, and click OK.</li>
 <li>Use Find to look for <code>frontdesk.shared</code>, or open each event and read Account Name under "Account For Which Logon Failed".</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625 } | Where-Object { $_.Properties[5].Value -like "frontdesk.shared*" }).Count</code></li>
@@ -162,7 +158,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Five failed sign-ins, each with a different wrong password, isn't a receptionist mistyping. It's someone guessing at an account whose password everyone can see anyway. The log turns "we think it's risky" into evidence the auditors can put in their report.</p>
+<p>Five failed sign-ins against one account isn't a receptionist mistyping once or twice. It's consistent with someone guessing at an account whose password everyone can see anyway. The log turns "we think it's risky" into evidence the auditors can put in their report.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -183,12 +179,12 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>A shared account usually gives itself away in its name or its Description. Check the accounts in Departments, Operations, Users.</p>
-<ol>
-<li>In Active Directory Users and Computers, open Departments, Operations, Users.</li>
+<p>A shared account usually gives itself away in its name or its Description. Check the accounts in Departments → Operations → Users.</p>
+<ul>
+<li>In Active Directory Users and Computers, open Departments → Operations → Users.</li>
 <li>Read the Description of each account until you find the shared one.</li>
 <li>Right-click it and choose Disable Account.</li>
-</ol>
+</ul>
 <p>In PowerShell:</p>
 <ul>
 <li><code>Get-ADUser -SearchBase "OU=Users,OU=Operations,OU=Departments,$((Get-ADDomain).DistinguishedName)" -Filter * -Properties Description | Select-Object SamAccountName, Description</code></li>
@@ -215,11 +211,11 @@
 </div>
 </div>
 
-<div class="ad-mission ad-mission--capstone" data-id="w4-05" data-attempts="0">
+<div class="ad-mission ad-mission--capstone" data-id="w4-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Finding 06 · Stretch · Broken Access Control · Client Portal · INC-1093</span>
 <h4>Change One Number in the URL</h4>
-<p><strong>Client complaint · 2:00 PM</strong><br>A client signed in to the PurveX client portal and viewed their statement at <code>/statements?client=1042</code>. Out of curiosity they changed it to <code>1043</code> and saw another client's statement. What failed, and what's the fix?<br><strong>A</strong> Authentication failed, so the fix is to add MFA to the portal.<br><strong>B</strong> Broken access control. The server must check, on every request, that the signed-in client owns the statement being asked for.<br><strong>C</strong> Encryption failed, so the fix is to turn on HTTPS.</p>
-<p><strong>Task:</strong> Choose the failure and the fix and type its letter.</p>
+<p><strong>Client complaint · 2:00 PM</strong><br>A client signed in to the PurveX client portal and viewed their statement at <code>/statements?client=1042</code>. Out of curiosity, they changed it to <code>1043</code> and saw another client's statement. What failed, and what is the fix?<br><strong>A</strong> Authentication failed, so the fix is to add MFA to the portal.<br><strong>B</strong> Broken access control. The server must check, on every request, that the signed-in client owns the statement being asked for.<br><strong>C</strong> Encryption failed, so the fix is to turn on HTTPS.</p>
+<p><strong>Task:</strong> Select the failure and the fix and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Change One Number in the URL" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -239,11 +235,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Authentication worked, but the server never checked authorization. Anyone signed in could read any client's statement just by counting. This is the top risk in OWASP's list, and at a financial firm it's a reportable breach of client data.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Report it to the portal's developers as a critical issue, with the two URLs as proof, and to Compliance as a possible breach. The fix belongs on the server: check ownership on every request, whatever the address asks for.</p>
+<p>Authentication worked but the server never checked authorization, letting anyone signed in read any client's statement just by counting, so report it to the developers as critical and to Compliance as a possible breach.</p>
 </div>
 </div>
 </div>

@@ -64,7 +64,7 @@ const MISSION_LAB = {
   ),
   "tq-14": G(
     [{ c: { t: "computerAt", name: "FIN-LT14", ou: "OU=Workstations,OU=FinanceAccounting,OU=Departments" }, label: "FIN-LT14 is in Departments, FinanceAccounting, Workstations" }],
-    { ous: ["OU=Workstations,OU=FinanceAccounting,OU=Departments"] }
+    { ous: ["OU=Workstations,OU=FinanceAccounting,OU=Departments"], computers: ["FIN-LT14"] }
   ),
   "tq-15": G([{ c: { t: "group", name: "Finance Reports", category: "Security" }, label: "Finance Reports is a Security group" }], { groups: ["Finance Reports"] }),
   // Hardening tickets. Nothing is planted for these: the domain ships this
@@ -235,20 +235,11 @@ const MISSION_LAB = {
     { c: { t: "file", path: "Shares\\Finance\\Wire_Approvals_Nov.sha256", want: true }, label: "The weekend's incidents are in this lab" },
     { c: { t: "fwRuleOff", name: "PurveX Maint - Block File Sharing" }, label: "The maintenance block rule is disabled or removed" },
   ], { tickets: ["INC-1090"] }),
-  // Week 3: The Network Change That Went Wrong. The build plants the stale DNS
-  // record, both leftover rules, the report sync and the change log (INC-1092).
-  // The log proves the plant landed, since a rule never made would read as off.
-  "w3-01": G([{ c: { t: "dnsToDc", name: "portal" }, label: "portal resolves to the domain controller" }], { tickets: ["INC-1092"] }),
-  "w3-03": G([
-    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is in this lab" },
-    { c: { t: "fwRuleOff", name: "PurveX Legacy - Vendor Telnet" }, label: "The vendor Telnet rule is disabled or removed" },
-  ], { tickets: ["INC-1092"] }),
-  "w3-04": G([
-    { c: { t: "file", path: "Shares\\IT\\Network_Change_Log_Nov.txt", want: true }, label: "The weekend change is in this lab" },
-    { c: { t: "fwRuleOff", name: "PurveX Relay - Outbound Mail" }, label: "The outbound mail rule is disabled or removed" },
-  ], { tickets: ["INC-1092"] }),
-  // The report sync's password was read off the wire, so the account is burned.
-  "w3-05": G([{ c: { t: "enabled", sam: "svc-reportsync", want: false }, label: "svc-reportsync is disabled" }], { tickets: ["INC-1092"] }),
+  // Week 3: The Three-Minute Job. The build plants svc-settlements and its
+  // nightly cron job on web01 for every hosted pod (INC-1057). Disabling the
+  // account is the one real, lab-verified change; everything else the
+  // challenge asks for happens on web01, which the snapshot cannot see.
+  "w3-04": G([{ c: { t: "enabled", sam: "svc-settlements", want: false }, label: "svc-settlements is disabled" }], { tickets: ["INC-1057"] }),
   // Week 4: The Quarterly Access Review. frontdesk.shared and priya.nair's
   // Domain Admins membership come from the build (INC-1093). noor.ahmadi is the
   // INC-1071 account every lab already plants.
