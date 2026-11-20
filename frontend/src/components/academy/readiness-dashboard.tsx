@@ -7,6 +7,7 @@ import { useCoach } from "@/components/academy/coach-context";
 import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-client";
 import { challengeHref, challengeTabHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import { isLockedHref } from "@/lib/academy-locks";
+import { RankEmblem } from "@/components/academy/rank-emblem";
 import { badgeInitials, currentRank, rankIndex, RANKS, skillBadges, TIER_LABEL } from "@/lib/academy-badges";
 import {
   clearResults,
@@ -177,7 +178,10 @@ function RankAndBadges({ results }: { results: Results }) {
       <div className="rb-rank">
         <div className="rb-rank__now">
           <span className="rd-kicker">Current rank</span>
-          <strong>{rank ? rank.title : "Not ranked yet"}</strong>
+          <strong>
+            {rank && <RankEmblem rank={rank} ready={summarize(results).level === "ready"} size={30} />}
+            {rank ? rank.title : "Not ranked yet"}
+          </strong>
           <span>{RANKS[held]?.soon ? "The next rank opens with the next phase." : RANKS[held] ? `Next: ${RANKS[held].title}. ${RANKS[held].earn}` : "You hold the top rank open today."}</span>
         </div>
         <ol className="rb-ladder" aria-label="Rank ladder">

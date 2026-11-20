@@ -10,6 +10,8 @@ import type { StudentProfile } from "@/lib/academy-certs";
 import { academyFetch, READINESS_PATH, useResults } from "@/lib/academy-client";
 import { passedExamDates } from "@/lib/academy-goals";
 import { LEVELS, summarize } from "@/lib/academy-score";
+import { currentRank } from "@/lib/academy-badges";
+import { RankEmblem } from "@/components/academy/rank-emblem";
 import { useMounted } from "@/lib/use-mounted";
 import { useAcademyTheme } from "@/lib/use-academy-theme";
 
@@ -93,7 +95,11 @@ export function accountInitials(student: AcademyStudent | null): string {
 
 export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const student = useAcademyAccount();
-  const readiness = summarize(useResults());
+  const results = useResults();
+  const readiness = summarize(results);
+  // The badge by the name starts at Help Desk Analyst. Trainee is one solve away from nothing.
+  const rank = currentRank(results);
+  const emblem = rank && rank.id !== "trainee" ? rank : null;
   const { setModalOpen, remaining, limit, enabled } = useCoach();
   const { profile, editGoals } = useAcademyGoals();
   const needsUpdate = passedExamDates(profile).length > 0;
@@ -214,7 +220,7 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
                   transparent var(--sf-wash-stop, 48%));
               }
               [data-ax-account] > * { position: relative; }
-              [data-ax-account] > strong { display: block; margin-top: 4px; font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
+              [data-ax-account] > strong { display: flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
               [data-ax-account] > span { display: block; margin: 2px 0 12px; font-size: 12px; opacity: 0.65; word-break: break-all; }
               [data-ax-account] .ax-account__score { display: block; padding: 14px 0 12px; border-top: 1px solid rgba(255,255,255,0.12); border-bottom: 1px solid rgba(255,255,255,0.12); }
               [data-ax-account] .ax-account__score em { display: block; margin: 6px 0 4px; font-size: 36px; font-style: normal; font-weight: 700; letter-spacing: -0.04em; line-height: 1; color: #9a8cff; }
@@ -254,7 +260,12 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               }}
             >
               <p className="rd-kicker">Account</p>
-              {firstName && <strong>{firstName}</strong>}
+              {firstName && (
+                <strong>
+                  {firstName}
+                  {emblem && <RankEmblem rank={emblem} ready={readiness.level === "ready"} size={24} />}
+                </strong>
+              )}
               {student?.email && <span>{student.email}</span>}
               <Link href={READINESS_PATH} className="ax-account__score" onClick={() => setOpen(false)}>
                 <span className="rd-kicker">Readiness</span>
