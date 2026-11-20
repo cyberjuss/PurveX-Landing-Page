@@ -30,19 +30,7 @@
 <span class="ad-mission__num">Ticket 01 · Warm-up · DNS and Routing · High · ping · nslookup · tracert · CHG-3301 · INC-1095</span>
 <h4>The Portal Spins and Gives Up</h4>
 <p><strong>Jordan Ellis · Finance · 8:20 AM</strong><br>The intranet portal stopped loading for everyone in Finance this morning. It worked fine on Friday. The browser just spins for ages and then says the site can't be reached.</p>
-<p><strong>Look for:</strong> which address <code>portal</code> resolves to, and how far a connection to it gets.</p>
-<p><strong>Narrow it down, from DC01:</strong></p>
-<ol>
-<li><code>ping portal</code>. Note the address in the first line, and whether any replies come back.</li>
-<li><code>nslookup portal</code>. The <strong>Address</strong> under <strong>Name</strong> is what DNS says. The first Server and Address lines are only the DNS server that answered. Write the portal's address down. It is your answer.</li>
-<li><code>tracert -d -h 5</code> followed by that address. Watch where the replies stop.</li>
-<li>Compare with web01, where CHG-3301 says the portal lives now: <code>ping web01</code> and <code>curl.exe http://web01/</code>. The server is up and the portal answers there.</li>
-</ol>
-<p><strong>Fix it:</strong> DNS still sends <code>portal</code> to PORTAL01's old address. Point it at web01. An alias, a CNAME to <code>web01</code>, is the usual way: when web01's address ever changes, the portal follows it.</p>
-<p><strong>Prove it:</strong> clear DC01's DNS cache and look the name up again. It now shows web01, and the portal answers by name with the intranet page.</p>
-<p class="ad-cmd"><code>Clear-DnsClientCache; nslookup portal; curl.exe http://portal/</code></p>
-<p><strong>Fixed when:</strong> <code>portal</code> resolves to web01, as a client sees it.</p>
-<p><strong>Report:</strong> the address <code>portal</code> resolved to before your fix.</p>
+<p><strong>Task:</strong> From DC01, use ping, nslookup and tracert to find which address <code>portal</code> resolves to and why nothing answers there, then point it at web01, ideally as a CNAME. Report the address it resolved to before your fix.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Portal Spins and Gives Up" placeholder="an IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{10.255.255.10}">Submit</button>
@@ -50,6 +38,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Spinning for ages, then failing, is a timeout. DNS gave the browser an address, and nothing at that address answers. Work outward one layer at a time: does the name resolve, does the address answer, and does the server the change log names answer instead?</p>
+<p>Step by step:</p>
+<ol>
+<li><code>ping portal</code>. Note the address in the first line, and whether any replies come back.</li>
+<li><code>nslookup portal</code>. The <strong>Address</strong> under <strong>Name</strong> is what DNS says. The first Server and Address lines are only the DNS server that answered. Write the portal's address down. It is your answer.</li>
+<li><code>tracert -d -h 5</code> followed by that address. Watch where the replies stop.</li>
+<li>Compare with web01, where CHG-3301 says the portal lives now: <code>ping web01</code> and <code>curl.exe http://web01/</code>. The server is up and the portal answers there.</li>
+</ol>
 <ul>
 <li>ping may say <strong>Request timed out</strong> or <strong>Destination host unreachable</strong>. Either way, nothing answered at that address.</li>
 <li>tracert lists each router on the way. Lines of <code>*</code> mean no reply from that hop. When every line after the first hop or two is stars, the traffic leaves but the destination never answers.</li>
@@ -85,17 +80,7 @@
 <span class="ad-mission__num">Ticket 02 · Apply it · DNS · High · Wireshark · nslookup · CHG-3302 · INC-1095</span>
 <h4>"Server Not Found" on the Dashboard</h4>
 <p><strong>Sam Whitfield · Wealth Management · 8:45 AM</strong><br>The Reports Dashboard on my screen just says "Server not found" this morning. It doesn't even try to load. Nothing else seems wrong.</p>
-<p><strong>Look for:</strong> the exact name the dashboard asks DNS for, and what DNS says back.</p>
-<p><strong>Narrow it down, from DC01:</strong></p>
-<ol>
-<li>Users rarely know an app's real host name, so read it off the wire. Start a Wireshark capture on the loopback adapter with the display filter <code>dns</code>, and wait for the dashboard's next refresh.</li>
-<li>Find the query that comes back with an error. Read the name in its Queries section and the Reply code in its Flags.</li>
-<li>Check it from the command line: <code>nslookup</code> followed by that name. Note what it says instead of an address.</li>
-</ol>
-<p><strong>Fix it:</strong> CHG-3302 removed the records PORTAL01 "no longer needs". The dashboard is served by the same nginx as the portal, on web01. Recreate the name as a CNAME to <code>web01</code>.</p>
-<p><strong>Prove it:</strong> nslookup for the name now lists it under <strong>Aliases</strong> with web01's address, and curl to it returns the intranet page. In Wireshark, the dashboard's next query gets an answer and its HTTP request follows on the Ethernet adapter.</p>
-<p><strong>Fixed when:</strong> the name the dashboard asks for resolves to web01.</p>
-<p><strong>Report:</strong> the name the dashboard looks up, without the domain.</p>
+<p><strong>Task:</strong> Capture the dashboard's DNS lookup in Wireshark to find the exact name it asks for, confirm it with nslookup, then recreate it as a CNAME to web01. Report the name, without the domain.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Server Not Found on the Dashboard" placeholder="a host name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{rptdash}" data-accept="rptdash.purvexfinancial.local">Submit</button>
@@ -103,6 +88,12 @@
 </div>
 <div class="ad-hint__text">
 <p>"Server not found" straight away, with no spinning, is the opposite of Ticket 01. DNS did not give a wrong address. It said the name does not exist, so there was nothing to connect to. nslookup shows that as <strong>Non-existent domain</strong>, and Wireshark as <strong>No such name</strong>.</p>
+<p>Step by step:</p>
+<ol>
+<li>Users rarely know an app's real host name, so read it off the wire. Start a Wireshark capture on the loopback adapter with the display filter <code>dns</code>, and wait for the dashboard's next refresh.</li>
+<li>Find the query that comes back with an error. Read the name in its Queries section and the Reply code in its Flags.</li>
+<li>Check it from the command line: <code>nslookup</code> followed by that name. Note what it says instead of an address.</li>
+</ol>
 <ul>
 <li><code>dns.flags.rcode == 3</code> shows only the "No such name" answers.</li>
 <li>In DNS Manager, right-click your zone, choose New Alias (CNAME), type the name, and set the target to <code>web01</code>.</li>
@@ -138,19 +129,7 @@
 <span class="ad-mission__num">Ticket 03 · Apply it · TCP/IP · High · curl · ss · systemctl · journalctl · CHG-3303 · INC-1095</span>
 <h4>Timesheets: "Connection Refused"</h4>
 <p><strong>Riley Kwan · Operations · 9:30 AM</strong><br>The timesheet app won't let anyone in Operations submit this week's hours. It fails instantly with "Connection refused". Payroll closes on Wednesday.</p>
-<p><strong>Look for:</strong> why web01 refuses a connection to the timesheet service, which CHG-3303 says runs there on port 8085.</p>
-<p><strong>Narrow it down:</strong></p>
-<ol>
-<li>From DC01, reproduce the error: <code>curl.exe http://web01:8085/submit</code>. Note the error.</li>
-<li>Confirm it on the wire: in Wireshark on DC01's Ethernet adapter, filter <code>tcp.port == 8085</code> and run curl again. web01 answers the SYN with a RST.</li>
-<li>On web01, see what is listening: <code>sudo ss -ltnp | grep 8085</code>. Read the Local Address column.</li>
-<li>Check the service and its log: <code>systemctl status purvex-timesheet</code>, then <code>journalctl -u purvex-timesheet -n 20</code>.</li>
-</ol>
-<p><strong>Fix it:</strong> the service's settings are in <code>/etc/purvex/timesheet.conf</code>. Set it to listen on every address, <code>0.0.0.0</code>, then restart the service on web01:</p>
-<p class="ad-cmd"><code>sudo systemctl restart purvex-timesheet</code></p>
-<p><strong>Prove it:</strong> <code>ss</code> now shows <code>0.0.0.0:8085</code>, and the same curl command from DC01 returns <strong>Timesheet saved.</strong></p>
-<p><strong>Fixed when:</strong> DC01 can connect to the timesheet service on web01.</p>
-<p><strong>Report:</strong> the address the service was listening on before your fix.</p>
+<p><strong>Task:</strong> Reproduce the refusal from DC01 with curl, then on web01 use ss and journalctl to see which address the timesheet service listens on. Fix <code>/etc/purvex/timesheet.conf</code> and restart the service. Report the address it was listening on before your fix.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Timesheets: Connection Refused" placeholder="an IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{127.0.0.1}" data-accept="localhost|127.0.0.1:8085">Submit</button>
@@ -158,6 +137,13 @@
 </div>
 <div class="ad-hint__text">
 <p>"Connection refused" is fast because something did answer: web01 itself, with a RST. That rules out a dead server, a wrong address and a firewall drop, and points at the service. A service only accepts connections on the addresses it listens on, so compare its Local Address with the address DC01 connects to.</p>
+<p>Step by step:</p>
+<ol>
+<li>From DC01, reproduce the error: <code>curl.exe http://web01:8085/submit</code>. Note the error.</li>
+<li>Confirm it on the wire: in Wireshark on DC01's Ethernet adapter, filter <code>tcp.port == 8085</code> and run curl again. web01 answers the SYN with a RST.</li>
+<li>On web01, see what is listening: <code>sudo ss -ltnp | grep 8085</code>. Read the Local Address column.</li>
+<li>Check the service and its log: <code>systemctl status purvex-timesheet</code>, then <code>journalctl -u purvex-timesheet -n 20</code>.</li>
+</ol>
 <ul>
 <li>In <code>ss</code>, <code>0.0.0.0</code> or <code>*</code> means every address. A loopback address means web01 talking to itself, and nobody else can reach it.</li>
 <li>The service prints the address it bound to when it starts, so the journal says it too.</li>
@@ -193,19 +179,7 @@
 <span class="ad-mission__num">Ticket 04 · Apply it · Firewalls · High · Nmap · ufw · Firewall log · CHG-3304 · INC-1095</span>
 <h4>Expense Claims Time Out</h4>
 <p><strong>Taylor Osei · Finance · 10:15 AM</strong><br>None of this morning's expense claims have reached the approval queue. The expense sync just says "The operation has timed out". Everything else on web01 seems to work.</p>
-<p><strong>Look for:</strong> whether DC01's connections to the Expenses API reach web01 at all, and what stops them.</p>
-<p><strong>Narrow it down:</strong></p>
-<ol>
-<li>On DC01, read where the sync sends its claims: <code>Get-Content C:\PurveX\Apps\Expenses\expenses.ini</code>. Note the port.</li>
-<li>Scan that port and the timesheet port together: <code>nmap -p 8085,&lt;the port&gt; web01</code>. Compare their states.</li>
-<li>On web01, check the service is listening: <code>sudo ss -ltn | grep &lt;the port&gt;</code>. Then look at the firewall: <code>sudo ufw status numbered</code>.</li>
-<li>Find the evidence in the firewall log: <code>sudo grep "DPT=&lt;the port&gt;" /var/log/ufw.log | tail -5</code>. Each line is a packet ufw dropped. Read its SRC and DST.</li>
-</ol>
-<p><strong>Fix it:</strong> CHG-3304 moved the API to a new port and says "Firewall updated". Allow the new port, and remove the rule the upgrade left behind.</p>
-<p><strong>Prove it:</strong> nmap shows the port <strong>open</strong>, a POST to the sync's ApiUrl returns <strong>200 OK</strong>, and no new drops appear in the log. From DC01, with the ApiUrl from expenses.ini:</p>
-<p class="ad-cmd"><code>curl.exe -i -X POST &lt;ApiUrl&gt;</code></p>
-<p><strong>Fixed when:</strong> DC01 can connect to the Expenses API on web01.</p>
-<p><strong>Report:</strong> the port the old firewall rule still allowed.</p>
+<p><strong>Task:</strong> Use Nmap from DC01 to see how the Expenses API's port answers, then on web01 check the service with ss and the firewall with ufw and its log, and fix the firewall. Report the port the old rule still allowed.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Expense Claims Time Out" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{8080}" data-accept="8080/tcp">Submit</button>
@@ -213,6 +187,13 @@
 </div>
 <div class="ad-hint__text">
 <p>A timeout with a server that answers ping and serves other ports points at a firewall. Nmap tells the two failures apart: <strong>closed</strong> means the server sent a RST, and <strong>filtered</strong> means nothing came back at all, because something dropped the probe. The service listening in <code>ss</code> proves the app is fine, and the ufw log proves who dropped the traffic.</p>
+<p>Step by step:</p>
+<ol>
+<li>On DC01, read where the sync sends its claims: <code>Get-Content C:\PurveX\Apps\Expenses\expenses.ini</code>. Note the port.</li>
+<li>Scan that port and the timesheet port together: <code>nmap -p 8085,&lt;the port&gt; web01</code>. Compare their states.</li>
+<li>On web01, check the service is listening: <code>sudo ss -ltn | grep &lt;the port&gt;</code>. Then look at the firewall: <code>sudo ufw status numbered</code>.</li>
+<li>Find the evidence in the firewall log: <code>sudo grep "DPT=&lt;the port&gt;" /var/log/ufw.log | tail -5</code>. Each line is a packet ufw dropped. Read its SRC and DST.</li>
+</ol>
 <ul>
 <li>ufw lists its rules by port, with the comment the person who added them left.</li>
 <li><code>sudo journalctl -k | grep "UFW BLOCK"</code> shows the same drops from the kernel's log.</li>
@@ -248,19 +229,7 @@
 <span class="ad-mission__num">Ticket 05 · Apply it · Common Ports · High · Nmap · systemctl · auth.log · INC-1095</span>
 <h4>The Backup Agent Nobody Turned Back On</h4>
 <p><strong>Alex Rivera · IT · 10:45 AM</strong><br>This morning's backup report says web01 is unreachable. Find out why, get the agent back, and tell me who stopped it. It isn't in the change log.</p>
-<p><strong>Look for:</strong> whether web01's backup agent port is open, whether the agent is running, and who touched it.</p>
-<p><strong>Narrow it down:</strong></p>
-<ol>
-<li>On DC01, read <code>C:\PurveX\Shares\IT\Backup_Report_Mon.txt</code>. Note the port the backup server connects to.</li>
-<li>Scan it the way the backup server sees it: <code>nmap -sV -p</code> followed by the port and <code>web01</code>. Note the state.</li>
-<li>On web01: <code>systemctl status purvex-backup-agent</code>. Read the <strong>Loaded</strong> and <strong>Active</strong> lines.</li>
-<li>Find who did it. Every sudo command is logged: <code>sudo grep purvex-backup-agent /var/log/auth.log</code>.</li>
-</ol>
-<p><strong>Fix it:</strong> enable the agent, so it starts at boot, and start it now, on web01:</p>
-<p class="ad-cmd"><code>sudo systemctl enable --now purvex-backup-agent</code></p>
-<p><strong>Prove it:</strong> systemctl status shows it enabled and active, and the same nmap scan from DC01 shows the port <strong>open</strong>. Nmap does not recognise the agent, so its SERVICE column only guesses from the port number, but the fingerprint it prints under the results contains the agent's own greeting.</p>
-<p><strong>Fixed when:</strong> DC01 can connect to the backup agent on web01.</p>
-<p><strong>Report:</strong> the account that stopped the agent.</p>
+<p><strong>Task:</strong> Check the backup agent with Nmap from DC01 and systemctl on web01, find who stopped it in the sudo log, then enable and start it. Report the account that stopped it.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Backup Agent Nobody Turned Back On" placeholder="an account name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{nb.ellison}">Submit</button>
@@ -268,6 +237,15 @@
 </div>
 <div class="ad-hint__text">
 <p>A port Nmap reports as <strong>closed</strong> means web01 answered with a RST: it is up and reachable, and the firewall let the probe through, but nothing is listening. So the problem is the program that should be listening. systemd says what state it is in, and sudo logs who ran the command that put it there.</p>
+<p>Step by step:</p>
+<ol>
+<li>On DC01, read <code>C:\PurveX\Shares\IT\Backup_Report_Mon.txt</code>. Note the port the backup server connects to.</li>
+<li>Scan it the way the backup server sees it: <code>nmap -sV -p</code> followed by the port and <code>web01</code>. Note the state.</li>
+<li>On web01: <code>systemctl status purvex-backup-agent</code>. Read the <strong>Loaded</strong> and <strong>Active</strong> lines.</li>
+<li>Find who did it. Every sudo command is logged: <code>sudo grep purvex-backup-agent /var/log/auth.log</code>.</li>
+</ol>
+<p>The fix:</p>
+<p class="ad-cmd"><code>sudo systemctl enable --now purvex-backup-agent</code></p>
 <ul>
 <li><strong>disabled</strong> on the Loaded line means it will not start at boot. <strong>inactive (dead)</strong> means it is not running now.</li>
 <li>In auth.log, a sudo line reads: the account, then where they were, then <code>USER=root ; COMMAND=</code> and what they ran.</li>
@@ -301,17 +279,7 @@
 <span class="ad-mission__num">Ticket 06 · Stretch · Protocols and TLS · Critical · Wireshark · INC-1057</span>
 <h4>A Password Crossing the Wire</h4>
 <p><strong>Alex Rivera · IT · 11:30 AM</strong><br>While you're capturing: web01's settlement job signs in to the directory every few minutes with svc-settlements, then pulls the settlement batch from the Finance share. Is that sign-in protected on the wire?</p>
-<p><strong>Look for:</strong> the settlement job's sign-in to DC01, and whether anyone capturing the network could read it.</p>
-<p><strong>Find it:</strong></p>
-<ol>
-<li>On DC01, capture on the Ethernet adapter. This traffic comes from web01, so it really crosses the network.</li>
-<li>The job runs every three minutes. Filter <code>ldap</code> and wait for a <strong>bindRequest</strong>.</li>
-<li>Open it, expand Lightweight Directory Access Protocol, and read the authentication it sent.</li>
-</ol>
-<p><strong>Fix it:</strong> the password is now burned. Disable <code>svc-settlements</code>.</p>
-<p><strong>Prove it:</strong> the job's next bindRequest gets an error back, and its share download fails.</p>
-<p><strong>Fixed when:</strong> <code>svc-settlements</code> is disabled.</p>
-<p><strong>Report:</strong> the password.</p>
+<p><strong>Task:</strong> Capture the settlement job's LDAP sign-in on DC01's Ethernet adapter, read its password, then disable <code>svc-settlements</code>. Report the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for A Password Crossing the Wire" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Autumn2026}">Submit</button>
@@ -319,6 +287,12 @@
 </div>
 <div class="ad-hint__text">
 <p>An LDAP <strong>simple</strong> bind sends the account name and password exactly as typed. On port 389, without TLS, that means in clear text, and Wireshark shows it in the <code>simple</code> field of the bind request.</p>
+<p>Step by step:</p>
+<ol>
+<li>On DC01, capture on the Ethernet adapter. This traffic comes from web01, so it really crosses the network.</li>
+<li>The job runs every three minutes. Filter <code>ldap</code> and wait for a <strong>bindRequest</strong>.</li>
+<li>Open it, expand Lightweight Directory Access Protocol, and read the authentication it sent.</li>
+</ol>
 <ul>
 <li><code>ldap.simple</code> as a display filter shows only binds that carry a password.</li>
 <li>Disable the account in Active Directory Users and Computers, or with <code>Disable-ADAccount svc-settlements</code>.</li>

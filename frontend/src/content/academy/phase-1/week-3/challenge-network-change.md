@@ -29,19 +29,7 @@
 <span class="ad-mission__num">Ticket 01 · Warm-up · DNS and Routing · High · ping · nslookup · tracert · CHG-3301 · INC-1092</span>
 <h4>The Portal Spins and Gives Up</h4>
 <p><strong>Jordan Ellis · Finance · 8:20 AM</strong><br>The intranet portal stopped loading for everyone in Finance this morning. It worked fine on Friday. The browser just spins for ages and then says the site can't be reached.</p>
-<p><strong>Look for:</strong> which address <code>portal</code> resolves to, and how far a connection to it gets.</p>
-<p><strong>Narrow it down:</strong></p>
-<ol>
-<li><code>ping portal</code>. Note the address in the first line, and whether any replies come back.</li>
-<li><code>nslookup portal</code>. The <strong>Address</strong> under <strong>Name</strong> is what DNS says. The first Server and Address lines are only the DNS server that answered. Write the portal's address down. It is your answer.</li>
-<li><code>tracert -d -h 5</code> followed by that address. Watch where the replies stop.</li>
-<li>Confirm it: <code>Test-NetConnection portal -Port 80</code> reports <strong>TcpTestSucceeded : False</strong>. In Wireshark on Ethernet, the SYNs to that address go out again and again with nothing coming back.</li>
-</ol>
-<p><strong>Fix it:</strong> CHG-3301 says where the portal lives now. Point the <code>portal</code> record there.</p>
-<p><strong>Prove it:</strong> clear the DNS cache and test the name again. nslookup now returns DC01's address, ping gets replies, and the portal answers with the intranet page.</p>
-<p class="ad-cmd"><code>Clear-DnsClientCache; nslookup portal; ping portal; curl.exe http://portal/</code></p>
-<p><strong>Fixed when:</strong> <code>portal</code> resolves to DC01.</p>
-<p><strong>Report:</strong> the address <code>portal</code> resolved to before your fix.</p>
+<p><strong>Task:</strong> Use ping, nslookup and tracert to find which address <code>portal</code> resolves to and why nothing answers there, then point the record at DC01, where CHG-3301 says the portal now lives. Report the address it resolved to before your fix.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Portal Spins and Gives Up" placeholder="an IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{10.255.255.10}">Submit</button>
@@ -49,6 +37,13 @@
 </div>
 <div class="ad-hint__text">
 <p>Spinning for ages, then failing, is a timeout. DNS gave the browser an address, and nothing at that address answers. Work outward one layer at a time: does the name resolve, does the address answer, and how far does the traffic get?</p>
+<p>Step by step:</p>
+<ol>
+<li><code>ping portal</code>. Note the address in the first line, and whether any replies come back.</li>
+<li><code>nslookup portal</code>. The <strong>Address</strong> under <strong>Name</strong> is what DNS says. The first Server and Address lines are only the DNS server that answered. Write the portal's address down. It is your answer.</li>
+<li><code>tracert -d -h 5</code> followed by that address. Watch where the replies stop.</li>
+<li>Confirm it: <code>Test-NetConnection portal -Port 80</code> reports <strong>TcpTestSucceeded : False</strong>. In Wireshark on Ethernet, the SYNs to that address go out again and again with nothing coming back.</li>
+</ol>
 <ul>
 <li>ping may say <strong>Request timed out</strong> or <strong>Destination host unreachable</strong>. Either way, nothing answered at that address.</li>
 <li>tracert lists each router on the way. Lines of <code>*</code> mean no reply from that hop. When every line after the first hop or two is stars, the traffic is leaving but the destination never answers.</li>
@@ -85,17 +80,7 @@
 <span class="ad-mission__num">Ticket 02 · Apply it · DNS · High · nslookup · Wireshark · CHG-3302 · INC-1092</span>
 <h4>"Server Not Found" on the Dashboard</h4>
 <p><strong>Sam Whitfield · Wealth Management · 8:45 AM</strong><br>The Reports Dashboard on my screen just says "Server not found" this morning. It doesn't even try to load. Nothing else seems wrong.</p>
-<p><strong>Look for:</strong> the exact name the dashboard asks DNS for, and what DNS says back.</p>
-<p><strong>Narrow it down:</strong></p>
-<ol>
-<li>Users rarely know an app's real host name, so read it off the wire. Start a Wireshark capture on the loopback adapter with the display filter <code>dns</code>, and wait for the dashboard's next refresh.</li>
-<li>Find the query that comes back with an error. Read the name in its Queries section and the Reply code in its Flags.</li>
-<li>Check it from the command line: <code>nslookup</code> followed by that name. Note what it says instead of an address.</li>
-</ol>
-<p><strong>Fix it:</strong> CHG-3302 removed the records PORTAL01 "no longer needs". The dashboard is served by the portal on DC01, so create an A record for that name, pointing at DC01.</p>
-<p><strong>Prove it:</strong> <code>nslookup</code> for the name returns DC01's address. In Wireshark, the dashboard's next query gets an answer and its HTTP request ends in <strong>200 OK</strong>.</p>
-<p><strong>Fixed when:</strong> the name the dashboard asks for resolves to DC01.</p>
-<p><strong>Report:</strong> the name the dashboard looks up, without the domain.</p>
+<p><strong>Task:</strong> Capture the dashboard's DNS lookup in Wireshark to find the exact name it asks for, confirm it with nslookup, then create the missing record pointing at DC01. Report the name, without the domain.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Server Not Found on the Dashboard" placeholder="a host name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{rptdash}" data-accept="rptdash.purvexfinancial.local">Submit</button>
@@ -103,6 +88,12 @@
 </div>
 <div class="ad-hint__text">
 <p>"Server not found" straight away, with no spinning, is the opposite of Ticket 01. DNS did not give a wrong address. It said the name does not exist, so there was nothing to connect to. nslookup shows that as <strong>Non-existent domain</strong>, and Wireshark as <strong>No such name</strong>.</p>
+<p>Step by step:</p>
+<ol>
+<li>Users rarely know an app's real host name, so read it off the wire. Start a Wireshark capture on the loopback adapter with the display filter <code>dns</code>, and wait for the dashboard's next refresh.</li>
+<li>Find the query that comes back with an error. Read the name in its Queries section and the Reply code in its Flags.</li>
+<li>Check it from the command line: <code>nslookup</code> followed by that name. Note what it says instead of an address.</li>
+</ol>
 <ul>
 <li><code>dns.flags.rcode == 3</code> shows only the "No such name" answers.</li>
 <li>Create the record in DNS Manager: right-click your zone, choose New Host (A or AAAA), and type the name and DC01's address.</li>
@@ -138,17 +129,7 @@
 <span class="ad-mission__num">Ticket 03 · Apply it · TCP/IP · High · curl · netstat · CHG-3303 · INC-1092</span>
 <h4>Timesheets: "Connection Refused"</h4>
 <p><strong>Riley Kwan · Operations · 9:30 AM</strong><br>The timesheet app won't let anyone in Operations submit this week's hours. It fails instantly with "Connection refused". The app connects to DC01 on port 8085. Payroll closes on Wednesday.</p>
-<p><strong>Look for:</strong> why DC01 refuses a connection to its own address on port 8085.</p>
-<p><strong>Narrow it down:</strong></p>
-<ol>
-<li>Find DC01's address with <code>ipconfig</code>, then reproduce the error: <code>curl.exe http://&lt;DC01's address&gt;:8085/submit</code>. Note the error.</li>
-<li>See what is listening on that port: <code>netstat -ano | findstr :8085</code>. Read the Local Address column and the State.</li>
-<li>Confirm it: in Wireshark on the loopback adapter, filter <code>tcp.port == 8085</code> and run the curl command again. The SYN is answered by a RST.</li>
-</ol>
-<p><strong>Fix it:</strong> the service's settings are in <code>C:\PurveX\Apps\Timesheet\timesheet.ini</code>, from CHG-3303. Set it to listen on every address, <code>0.0.0.0</code>, then restart the <strong>PurveX Timesheet Service</strong> task in Task Scheduler.</p>
-<p><strong>Prove it:</strong> <code>netstat</code> now shows <code>0.0.0.0:8085</code> LISTENING, and the same curl command returns <strong>Timesheet saved.</strong></p>
-<p><strong>Fixed when:</strong> the timesheet service is listening on DC01's network address.</p>
-<p><strong>Report:</strong> the address the service was listening on before your fix.</p>
+<p><strong>Task:</strong> Reproduce the refusal with curl, use netstat to see which address the timesheet service listens on, then fix <code>C:\PurveX\Apps\Timesheet\timesheet.ini</code> and restart the PurveX Timesheet Service task. Report the address it was listening on before your fix.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Timesheets: Connection Refused" placeholder="an IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{127.0.0.1}" data-accept="localhost|127.0.0.1:8085">Submit</button>
@@ -156,6 +137,12 @@
 </div>
 <div class="ad-hint__text">
 <p>"Connection refused" is fast because something did answer: DC01's own network stack, with a RST. That rules out a dead server or a wrong address, and points at the service. A service only accepts connections on the addresses it listens on, so compare netstat's Local Address with the address the app connects to.</p>
+<p>Step by step:</p>
+<ol>
+<li>Find DC01's address with <code>ipconfig</code>, then reproduce the error: <code>curl.exe http://&lt;DC01's address&gt;:8085/submit</code>. Note the error.</li>
+<li>See what is listening on that port: <code>netstat -ano | findstr :8085</code>. Read the Local Address column and the State.</li>
+<li>Confirm it: in Wireshark on the loopback adapter, filter <code>tcp.port == 8085</code> and run the curl command again. The SYN is answered by a RST.</li>
+</ol>
 <ul>
 <li>A Local Address of <code>0.0.0.0</code> means every IPv4 address. A loopback address means this machine talking to itself, and nobody else can reach it.</li>
 <li>The last column of netstat is the process ID. <code>Get-Process -Id</code> followed by it shows which program owns the port.</li>
@@ -193,17 +180,7 @@
 <span class="ad-mission__num">Ticket 04 · Apply it · Protocols: HTTP · High · curl · Wireshark · CHG-3304 · INC-1092</span>
 <h4>Expense Claims Won't Go Through</h4>
 <p><strong>Taylor Osei · Finance · 10:15 AM</strong><br>None of this morning's expense claims have reached the approval queue. The expense sync just logs "The remote server returned an error". The network seems fine, since everything else works.</p>
-<p><strong>Look for:</strong> what the expense sync asks the Expenses API for, and what the API says back.</p>
-<p><strong>Narrow it down:</strong></p>
-<ol>
-<li>Read where the sync sends its claims: <code>Get-Content C:\PurveX\Apps\Expenses\expenses.ini</code>.</li>
-<li>Send the same request yourself and show the whole response: <code>curl.exe -i -X POST</code> followed by that ApiUrl. The first line is the status code, and the last line is the API's own message.</li>
-<li>Confirm it: in Wireshark on the loopback adapter, filter <code>http</code> and wait for the sync's next run. Its POST gets the same response. Right-click it and choose Follow, then HTTP Stream, to read the whole exchange.</li>
-</ol>
-<p><strong>Fix it:</strong> point <code>ApiUrl</code> in <code>expenses.ini</code> where the API's message tells you to. CHG-3304 said clients need no changes. It was wrong.</p>
-<p><strong>Prove it:</strong> curl to the new URL returns <strong>200 OK</strong>, and in Wireshark the sync's next POST does too.</p>
-<p><strong>Fixed when:</strong> the expense sync calls the v2 API.</p>
-<p><strong>Report:</strong> the HTTP status code the API returned before your fix.</p>
+<p><strong>Task:</strong> Send the sync's request yourself with curl to see what the Expenses API answers, then point <code>ApiUrl</code> in <code>C:\PurveX\Apps\Expenses\expenses.ini</code> where the API tells you. Report the HTTP status code it returned before your fix.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Expense Claims Won't Go Through" placeholder="a status code" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{410}" data-accept="410 Gone">Submit</button>
@@ -211,6 +188,12 @@
 </div>
 <div class="ad-hint__text">
 <p>This time the connection is made and the request arrives, so DNS, routing and the port are all fine. The problem is one layer up: the API understood the request and refused it. HTTP status codes say why. Codes in the 400s mean the client asked for something wrong, and codes in the 500s mean the server failed.</p>
+<p>Step by step:</p>
+<ol>
+<li>Read where the sync sends its claims: <code>Get-Content C:\PurveX\Apps\Expenses\expenses.ini</code>.</li>
+<li>Send the same request yourself and show the whole response: <code>curl.exe -i -X POST</code> followed by that ApiUrl. The first line is the status code, and the last line is the API's own message.</li>
+<li>Confirm it: in Wireshark on the loopback adapter, filter <code>http</code> and wait for the sync's next run. Its POST gets the same response. Right-click it and choose Follow, then HTTP Stream, to read the whole exchange.</li>
+</ol>
 <ul>
 <li><code>-i</code> tells curl to print the response headers, including the status line, and not only the body.</li>
 <li><code>http.response.code &gt;= 400</code> in Wireshark shows only the error responses.</li>
@@ -248,18 +231,7 @@
 <span class="ad-mission__num">Ticket 05 · Apply it · Common Ports · High · Nmap · netstat · Event Viewer · INC-1092</span>
 <h4>Two Nights Without a Backup</h4>
 <p><strong>Alex Rivera · IT · 10:45 AM</strong><br>This morning's backup report says DC01 has been unreachable for two nights. Find out why, get the agent back, and tell me who stopped it. It isn't in the change log.</p>
-<p><strong>Look for:</strong> whether DC01's backup agent port is open, whether anything is listening on it, and what the logs say happened to it.</p>
-<p><strong>Narrow it down:</strong></p>
-<ol>
-<li>Read the report: <code>C:\PurveX\Shares\IT\Backup_Report_Mon.txt</code>. Note the port the backup server connects to.</li>
-<li>Scan that port the way the backup server sees it: <code>nmap -sV -p</code> followed by the port and DC01's address. Note the state.</li>
-<li>Check whether anything is listening: <code>netstat -ano | findstr :</code> followed by the port.</li>
-<li>Find out what happened to it. Open Event Viewer with <code>eventvwr.msc</code>, go to Windows Logs, then Application, and look for events from the backup agent.</li>
-</ol>
-<p><strong>Fix it:</strong> the agent runs as the <strong>PurveX Backup Agent</strong> task. Enable it and start it.</p>
-<p><strong>Prove it:</strong> netstat shows the port LISTENING, and the same nmap scan shows it <strong>open</strong>. Nmap does not recognise the agent, so its SERVICE column only guesses from the port number, but the fingerprint it prints under the results contains the agent's own greeting, <strong>PurveX Backup Agent</strong>.</p>
-<p><strong>Fixed when:</strong> the backup agent is listening on its port on DC01's network address.</p>
-<p><strong>Report:</strong> the account that stopped the agent, without the domain.</p>
+<p><strong>Task:</strong> Check the backup agent's port with Nmap and netstat, find who stopped it in the Application log, then enable and start the PurveX Backup Agent task. Report the account that stopped it, without the domain.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Two Nights Without a Backup" placeholder="an account name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{nb.ellison}" data-accept="PURVEX\nb.ellison">Submit</button>
@@ -267,6 +239,13 @@
 </div>
 <div class="ad-hint__text">
 <p>A port Nmap reports as <strong>closed</strong> means the machine answered with a RST: it is up and reachable, but nothing is listening. netstat confirms it from the inside. So the problem is not the network or the firewall, it is the program that should be listening, and the logs record who touched it.</p>
+<p>Step by step:</p>
+<ol>
+<li>Read the report: <code>C:\PurveX\Shares\IT\Backup_Report_Mon.txt</code>. Note the port the backup server connects to.</li>
+<li>Scan that port the way the backup server sees it: <code>nmap -sV -p</code> followed by the port and DC01's address. Note the state.</li>
+<li>Check whether anything is listening: <code>netstat -ano | findstr :</code> followed by the port.</li>
+<li>Find out what happened to it. Open Event Viewer with <code>eventvwr.msc</code>, go to Windows Logs, then Application, and look for events from the backup agent.</li>
+</ol>
 <ul>
 <li>In Event Viewer, click Filter Current Log on the right and choose the backup agent from the Event sources list.</li>
 <li><code>Get-EventLog -LogName Application -Source "PurveX Backup Agent" -Newest 5 | Format-List TimeGenerated, Message</code> shows the same events in PowerShell.</li>
@@ -303,17 +282,7 @@
 <span class="ad-mission__num">Ticket 06 · Stretch · Protocols and TLS · Critical · Wireshark · INC-1092</span>
 <h4>Read the Password Off the Wire</h4>
 <p><strong>Jordan Ellis · Finance · 11:30 AM</strong><br>While you're in there: our old report sync sends the daily ledger report every minute, signing in with its service account. The vendor promised the password is "stored encrypted", so we've never worried about it. Is that the whole story?</p>
-<p><strong>Look for:</strong> the report sync's upload, and whether its sign-in can be read by anyone who captures it.</p>
-<p><strong>Find it in Wireshark:</strong></p>
-<ol>
-<li>The job and the reporting service both run on DC01, so the traffic never leaves the machine. Capture on the loopback adapter.</li>
-<li>Wait a minute or two for the job to run, then type <code>http</code> in the display filter.</li>
-<li>Open the <strong>POST /reports/upload</strong> request and read the password it signs in with.</li>
-</ol>
-<p><strong>Fix it:</strong> the password is now burned. Disable <code>svc-reportsync</code>, and disable the job so it stops sending it.</p>
-<p><strong>Prove it:</strong> capture for another two minutes. No more uploads should appear.</p>
-<p><strong>Fixed when:</strong> <code>svc-reportsync</code> is disabled and the <strong>PurveX Legacy Report Sync</strong> task is disabled.</p>
-<p><strong>Report:</strong> the password.</p>
+<p><strong>Task:</strong> Capture the report sync's upload in Wireshark on the loopback adapter, read the password it signs in with, then disable <code>svc-reportsync</code> and its job. Report the password.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Read the Password Off the Wire" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Ledger-Sync-77}">Submit</button>
@@ -321,6 +290,12 @@
 </div>
 <div class="ad-hint__text">
 <p>The job uses plain HTTP with Basic authentication, which only Base64-encodes the name and password. Wireshark decodes it for you.</p>
+<p>Step by step:</p>
+<ol>
+<li>The job and the reporting service both run on DC01, so the traffic never leaves the machine. Capture on the loopback adapter.</li>
+<li>Wait a minute or two for the job to run, then type <code>http</code> in the display filter.</li>
+<li>Open the <strong>POST /reports/upload</strong> request and read the password it signs in with.</li>
+</ol>
 <ul>
 <li>In the request, expand Hypertext Transfer Protocol, then the <strong>Authorization</strong> line, and read the <strong>Credentials</strong> field.</li>
 <li>Follow, then HTTP Stream, shows the same request as plain text.</li>
