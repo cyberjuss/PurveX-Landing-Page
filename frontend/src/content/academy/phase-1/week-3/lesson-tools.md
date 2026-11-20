@@ -1,6 +1,32 @@
 ### Tools You Will Use
 
-This week's challenge is a Monday morning on the help desk: four users, four different errors, and one tool that shows you the cause of every one. That tool is **Wireshark**, so install it on your domain controller from its official site, wireshark.org. When the installer offers Npcap, keep its loopback option ticked.
+This week's challenge is a Monday morning on the help desk: six tickets, each with a different error. You will work them the way network technicians do, starting with the command-line tools that are already on every Windows machine, then confirming what they suggest in **Wireshark** or the logs. Install Wireshark and **Nmap** on your domain controller from their official sites, wireshark.org and nmap.org. When the installer offers Npcap, keep its loopback option ticked. One rule comes first: only scan machines you own or have written permission to test.
+
+### The Command-Line Kit
+
+Each of these answers one question, and together they take you outward one layer at a time: does the name resolve, does the address answer, how far does traffic get, is anything listening, and what does the app say?
+
+| Command | What it answers | What to read |
+| :---- | :---- | :---- |
+| `ping <name>` | Does anything answer at that address? | The address in the first line, then Reply or Request timed out |
+| `nslookup <name>` | What address does DNS give for this name? | The Address under Name. The first Server lines are only the DNS server that answered. **Non-existent domain** means the name is missing |
+| `tracert -d <address>` | How far does traffic get on the way there? | Each line is one router. Lines of `*` mean no reply from that hop |
+| `netstat -ano` | What is listening on this machine, and on which address? | Local Address and State. `0.0.0.0` means every address, `127.0.0.1` means this machine only. The last column is the process ID |
+| `curl.exe -i <URL>` | What does a web service actually reply? | The status line at the top, then the body. Type `curl.exe`, since `curl` in Windows PowerShell is a different command |
+| `nmap -sV -p <port> <address>` | Is this port open, closed or filtered, and what answers it? | STATE and VERSION |
+| `Test-NetConnection <name> -Port <port>` | Can I open a TCP connection to that port? | RemoteAddress and TcpTestSucceeded |
+
+On Linux and macOS you will meet the same jobs under other names: `dig` for nslookup, `traceroute` for tracert, `ss` for netstat, and `ip addr` for ipconfig.
+
+Nmap reports every port in one of three states:
+
+| State | What it means |
+| :---- | :---- |
+| open | A service answered |
+| closed | The machine answered with a reset, but nothing is listening on that port |
+| filtered | Nothing answered at all, usually because a firewall dropped the request |
+
+### Wireshark
 
 **Wireshark** records the traffic on a network adapter. You pick an adapter to start a capture, then type a **display filter** to narrow down what you see:
 
@@ -43,20 +69,22 @@ The last row needs one more piece: HTTP **status codes**. Every web response sta
 
 Codes in the 400s mean the client asked for something wrong. Codes in the 500s mean the server failed.
 
-### PowerShell, Alongside the Capture
+### Performance and Logs
 
-A capture tells you what happened. These commands help you find out why:
+Not every problem is a wrong setting. When a user says "it's slow" or "it stopped at some point", look at the interface, the traffic and the logs:
 
-| Command | What it answers |
+| Where to look | What it tells you |
 | :---- | :---- |
-| `Resolve-DnsName <name>` | Which address does this name point to? |
-| `Test-NetConnection <name> -Port <port>` | Can I reach that port, and at which address? Read **RemoteAddress** and **TcpTestSucceeded**. |
-| `Get-NetTCPConnection -LocalPort <port> -State Listen` | Is anything listening on this port, and on which address? Read **LocalAddress**: `0.0.0.0` means every address, and `127.0.0.1` means this machine only. |
-| `Clear-DnsClientCache` | Forget cached lookups, so the next one really asks DNS. |
+| `netstat -e` or `Get-NetAdapterStatistics` | Bytes sent and received, plus errors and discards. Errors that keep climbing point at a bad cable, port or driver rather than a setting |
+| Resource Monitor (`resmon`), Network tab | Which process is using the bandwidth right now, and to which address |
+| Event Viewer (`eventvwr.msc`), Windows Logs, Application and System | Services starting, stopping and failing, with the time and often the account |
+| Windows Firewall log, `%SystemRoot%\System32\LogFiles\Firewall\pfirewall.log` | Connections the firewall dropped or allowed, once logging is turned on in the firewall profile's properties |
 
-Every ticket works the same way: find the problem in a capture, make the change, then capture again to prove it is gone.
+One more command is worth knowing: `Clear-DnsClientCache` makes Windows forget cached lookups, so the next one really asks DNS.
 
-**Try it** with `Resolve-DnsName $env:COMPUTERNAME` and check that the address matches your domain controller.
+Every ticket works the same way: narrow it down with the command line, confirm it on the wire or in the logs, make the change, then test again to prove it is gone.
+
+**Try it** with `nslookup $env:COMPUTERNAME` and check that the address matches your domain controller.
 
 <details class="lk-answer">
 <summary>What you should see</summary>
@@ -67,10 +95,19 @@ Your domain controller's name and its IPv4 address, the same one `ipconfig` show
 
 
 ```match
-prompt: Match what the capture shows to what the user sees.
+prompt: Match each tool to the question it answers.
+nslookup = What address does DNS give for this name?
+tracert = How far does traffic get on the way there?
+netstat -ano = What is listening here, and on which address?
+curl.exe -i = What does the web service actually reply?
+Nmap = Is this port open, closed or filtered?
+Wireshark = What crossed the wire, and what did it say?
+```
+
+```connect
+prompt: Connect what you see to what the user sees.
 SYNs with no reply = It spins for ages, then times out
-No such name = "Server not found", straight away
+Non-existent domain = "Server not found", straight away
 A RST = "Connection refused", straight away
 HTTP 410 = It was there and has been removed on purpose
-Follow HTTP Stream = Read a whole web exchange as text
 ```

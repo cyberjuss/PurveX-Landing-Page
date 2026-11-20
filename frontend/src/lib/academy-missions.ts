@@ -824,6 +824,13 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     prompt: "Capture the legacy report sync with Wireshark, read its password from the HTTP Basic sign-in, and disable the account and the job.",
     skill: "security",
   },
+  "w3-06": {
+    id: "w3-06",
+    challenge: "network-change",
+    title: "Two Nights Without a Backup",
+    prompt: "Scan the backup agent's port with Nmap, confirm with netstat that nothing listens, find who stopped it in the Application log, and bring it back.",
+    skill: "troubleshooting",
+  },
   "w4-06": {
     id: "w4-06",
     challenge: "access-review",
@@ -1038,7 +1045,7 @@ export const LAB_GATED_MISSIONS = [
   "dk-02", "dk-04", "dk-05", "dk-06", "dk-07", "dk-10",
   "w1-01", "w1-02", "w1-03",
   "w2-02", "w2-04",
-  "w3-01", "w3-02", "w3-03", "w3-04", "w3-05",
+  "w3-01", "w3-02", "w3-03", "w3-04", "w3-05", "w3-06",
   "w4-01", "w4-03", "w4-04",
 ];
 

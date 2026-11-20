@@ -46,6 +46,7 @@ export const MISSION_SKILLS: Record<string, Skill> = {
   "w3-03": "troubleshooting",
   "w3-04": "troubleshooting",
   "w3-05": "security",
+  "w3-06": "troubleshooting",
   "w4-06": "logs",
   "w4-01": "access",
   "w4-02": "access",

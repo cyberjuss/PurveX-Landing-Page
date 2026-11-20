@@ -1402,6 +1402,8 @@ function Ensure-PhaseOneChallengeTickets {
     #  - rptdash      DNS says no such name, so no connection is ever tried
     #  - Timesheet    the service listens on 127.0.0.1 only, so DC01's address answers RST
     #  - Expenses     TCP and HTTP work, but the client calls a retired API: 410 Gone
+    #  - Backup agent stopped and disabled by a change nobody logged: port 9500
+    #                 closed, nothing in netstat, and the Application log says who
     # The clients run every minute as scheduled tasks, standing in for the apps
     # on staff PCs, so there is always fresh traffic to capture. Everything
     # stays on DC01. Nothing is undone that a student already fixed: the plant
@@ -1508,6 +1510,37 @@ function Ensure-PhaseOneChallengeTickets {
                     if ($t.Start) { Start-ScheduledTask -TaskName $t.Name }
                 }
             }
+            # The backup agent: installed and allowed through the firewall, but its
+            # task is disabled and not running, so 9500 is closed. The backup
+            # server's morning report says so, and the Application log records the
+            # stop the change log leaves out. The agent greets every connection, so
+            # nmap -sV names it once it is back.
+            Set-Content -LiteralPath (Join-Path $jobs "backup-agent.ps1") -Encoding ASCII -Value @(
+                '$s = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Any, 9500); $s.Start()',
+                'while ($true) { $c = $s.AcceptTcpClient(); try { $w = New-Object IO.StreamWriter($c.GetStream()); $w.AutoFlush = $true; $w.WriteLine("PurveX Backup Agent 4.2 ready"); Start-Sleep 3 } catch {} finally { $c.Close() } }'
+            )
+            if (-not (Get-NetFirewallRule -DisplayName "PurveX Backup Agent - TCP" -ErrorAction SilentlyContinue)) {
+                New-NetFirewallRule -DisplayName "PurveX Backup Agent - TCP" -Group "PurveX Lab" -Direction Inbound -Protocol TCP -LocalPort 9500 -Action Allow | Out-Null
+            }
+            if (-not (Get-ScheduledTask -TaskName "PurveX Backup Agent" -ErrorAction SilentlyContinue)) {
+                $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "$ps $(Join-Path $jobs "backup-agent.ps1")"
+                Register-ScheduledTask -TaskName "PurveX Backup Agent" -Action $action -Trigger (New-ScheduledTaskTrigger -AtStartup) -User "SYSTEM" -RunLevel Highest -Force | Out-Null
+                Disable-ScheduledTask -TaskName "PurveX Backup Agent" | Out-Null
+            }
+            Set-Content -LiteralPath (Join-Path $PurvexLabRoot "Shares\IT\Backup_Report_Mon.txt") -Encoding ASCII -Value @(
+                "PurveX Backup Server - nightly report, Monday 06:00",
+                "",
+                "Client   Agent port   Status        Last good backup",
+                "FS01     9500         OK            Monday 02:00",
+                "DC01     9500         UNREACHABLE   Saturday 02:00",
+                "",
+                "DC01: could not connect to the backup agent. Two nights missed."
+            )
+            try {
+                if (-not [Diagnostics.EventLog]::SourceExists("PurveX Backup Agent")) { New-EventLog -LogName Application -Source "PurveX Backup Agent" }
+                Write-EventLog -LogName Application -Source "PurveX Backup Agent" -EventId 7040 -EntryType Warning -Message ("The PurveX Backup Agent was stopped and its start-up was set to Disabled by $($domain.NetBIOSName)\nb.ellison." + "`r`n`r`nReason given: paused for the network cutover, will re-enable after.")
+            }
+            catch {}
             Add-PurvexTicketMark "INC-1092-2"
             Write-Host "  Planted INC-1092-2: the Week 3 help desk outages" -ForegroundColor Green
         }

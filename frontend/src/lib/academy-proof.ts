@@ -455,6 +455,7 @@ const MISSION_SKILL_TAGS: { id: string; bucket: "monitoring" | "network" | "resp
   { id: "w3-03", bucket: "network", label: "TCP/IP Troubleshooting" },
   { id: "w3-04", bucket: "network", label: "HTTP Troubleshooting" },
   { id: "w3-05", bucket: "network", label: "Wireshark" },
+  { id: "w3-06", bucket: "network", label: "Nmap" },
   { id: "w2-01", bucket: "response", label: "CyberChef" },
   { id: "w4-06", bucket: "monitoring", label: "Windows Security Event Logs" },
   { id: "sm2-04", bucket: "network", label: "Windows Firewall" },

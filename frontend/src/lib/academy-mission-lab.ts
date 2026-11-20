@@ -250,6 +250,9 @@ const MISSION_LAB = {
     [{ c: { t: "config", path: "Apps\\Expenses\\expenses.ini", key: "ApiUrl", has: "/api/v2/expenses" }, label: "Expense Sync calls /api/v2/expenses" }],
     { tickets: ["INC-1092", "INC-1092-2"] }
   ),
+  "w3-06": G([{ c: { t: "listening", port: 9500, want: true }, label: "The backup agent listens on DC01's network address, port 9500" }], {
+    tickets: ["INC-1092", "INC-1092-2"],
+  }),
   // The report sync's password was read off the wire, so the account is burned
   // and the job that keeps sending it is stopped.
   "w3-05": G([
