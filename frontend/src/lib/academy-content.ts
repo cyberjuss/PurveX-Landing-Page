@@ -205,7 +205,7 @@ const phase1HomeLabs: HomeLabDef[] = [
   },
   {
     slug: "home-lab-challenges",
-    title: "Home Lab — Day One, Tickets and Client Data",
+    title: "Day One, Tickets and Client Data",
     summary: "A first day on the desk, a full ticket queue and a client data review, graded against your own lab.",
     objectives: [
       "Check a ticket before you act",
