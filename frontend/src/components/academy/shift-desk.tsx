@@ -121,7 +121,12 @@ function DeskCard({ ev, now, busy, post, inline, onDone }: { ev: DeskEvent; now:
                 aria-label={ev.prompt ?? "Your reply"}
               />
               <button type="submit" className="sdk__send" disabled={busy || !text.trim()}>
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
+                {busy ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    <span className="sr-only">Send, in progress</span>
+                  </>
+                ) : "Send"}
               </button>
             </form>
           ) : (

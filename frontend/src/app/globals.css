@@ -6160,12 +6160,13 @@ a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transpare
 .dr-jobs__bullet:hover { text-decoration: underline; text-underline-offset: 3px; }
 .dr-jobsheet {
   --js-top: 0px;
-  --rd-ink: #0f172a; --rd-ink-2: #475569; --rd-ink-3: #8a94a8;
-  --rd-line: #d9e2ec; --rd-accent: #5546e0; --rd-good: #0f9f6e; --rd-warn: #c4820e; --rd-none: rgba(15, 23, 42, 0.1);
+  /* Same text colors as the main theme, so small labels clear 4.5:1 on white. */
+  --rd-ink: #0f172a; --rd-ink-2: #475569; --rd-ink-3: #6b7689;
+  --rd-line: #d9e2ec; --rd-accent: #5546e0; --rd-good: #0a7d55; --rd-warn: #9a6508; --rd-none: rgba(15, 23, 42, 0.1);
   position: fixed !important; inset: 0 !important; z-index: 35 !important; pointer-events: none;
 }
 .dr-jobsheet[data-academy-theme="dark"] {
-  --rd-ink: #e8eef8; --rd-ink-2: #9aa8bc; --rd-ink-3: #6b768a;
+  --rd-ink: #e8eef8; --rd-ink-2: #9aa8bc; --rd-ink-3: #7a8597;
   --rd-line: #0d0b12; --rd-accent: #9a8cff; --rd-good: #34d399; --rd-warn: #fbbf24; --rd-none: rgba(255, 255, 255, 0.1);
 }
 .dr-jobsheet__scrim {

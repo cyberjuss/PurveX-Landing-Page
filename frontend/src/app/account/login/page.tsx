@@ -261,7 +261,12 @@ function PortalLoginContent() {
             </p>
           )}
           <button type="submit" className="am-primary mt-4" disabled={isLoading}>
-            {phase === "submitting" ? <Loader2 className="h-5 w-5 animate-spin" /> : "Sign in"}
+            {phase === "submitting" ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                    <span className="sr-only">Sign in, in progress</span>
+                  </>
+                ) : "Sign in"}
           </button>
         </form>
 

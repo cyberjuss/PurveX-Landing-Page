@@ -74,7 +74,12 @@ export default function ForgotPasswordPage() {
         />
         <AuthError>{error}</AuthError>
         <button type="submit" className="am-primary mt-4" disabled={phase === "sending"}>
-          {phase === "sending" ? <Loader2 className="h-5 w-5 animate-spin" /> : "Send reset link"}
+          {phase === "sending" ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                    <span className="sr-only">Send reset link, in progress</span>
+                  </>
+                ) : "Send reset link"}
         </button>
       </form>
       <p className="mt-6 text-sm">

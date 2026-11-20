@@ -85,7 +85,12 @@ export function UnlockForm() {
         />
         <AuthError>{state?.error}</AuthError>
         <button type="submit" className="am-primary mt-4" disabled={isPending}>
-          {isPending ? <Loader2 className="h-5 w-5 animate-spin" /> : "Unlock course"}
+          {isPending ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                    <span className="sr-only">Unlock course, in progress</span>
+                  </>
+                ) : "Unlock course"}
         </button>
       </form>
 

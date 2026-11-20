@@ -318,7 +318,12 @@ function PortalSignupContent() {
 
           <AuthError>{error}</AuthError>
           <button type="submit" className="am-primary mt-4" disabled={isLoading}>
-            {phase === "submitting" ? <Loader2 className="h-5 w-5 animate-spin" /> : "Create account"}
+            {phase === "submitting" ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                    <span className="sr-only">Create account, in progress</span>
+                  </>
+                ) : "Create account"}
           </button>
         </form>
       </div>

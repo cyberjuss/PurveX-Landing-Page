@@ -273,7 +273,12 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
           />
           <AuthError>{error}</AuthError>
           <button type="submit" className="am-primary mt-4" disabled={busy}>
-            {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : mode === "signin" ? "Sign in" : "Create account"}
+            {busy ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                <span className="sr-only">{mode === "signin" ? "Signing in" : "Creating your account"}</span>
+              </>
+            ) : mode === "signin" ? "Sign in" : "Create account"}
           </button>
         </form>
 

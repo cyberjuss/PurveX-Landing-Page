@@ -150,7 +150,12 @@ function ResetPasswordContent() {
 
         <AuthError>{error}</AuthError>
         <button type="submit" className="am-primary mt-4" disabled={busy}>
-          {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : "Reset password"}
+          {busy ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+                    <span className="sr-only">Reset password, in progress</span>
+                  </>
+                ) : "Reset password"}
         </button>
       </form>
     </AuthMinimal>

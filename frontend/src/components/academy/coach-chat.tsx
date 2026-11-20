@@ -266,6 +266,7 @@ function RateReply({
           </div>
           <input
             className="pc-rate__note"
+            aria-label="Anything else about this answer (optional)"
             value={note}
             maxLength={400}
             placeholder="Anything else? (optional)"
@@ -522,6 +523,7 @@ export function CoachChat() {
           )}
           <textarea
             className="pc-dock__field"
+            aria-label="Message the coach"
             rows={2}
             value={input}
             onChange={(e) => setInput(e.target.value)}
