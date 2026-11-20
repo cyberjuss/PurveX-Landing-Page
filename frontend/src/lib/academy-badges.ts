@@ -1,8 +1,9 @@
-import { LAB_GATED_MISSIONS, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
-import { MISSION_SKILLS, SCORE_SOLID, SKILLS, summarize, type Results, type Skill } from "@/lib/academy-score";
+import { MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
+import { summarize, type Results } from "@/lib/academy-score";
 
-// Rank and skill badges, read from the same results readiness uses. Nothing
-// here is stored: a rank or a badge is what the student's record shows today.
+// The rank, read from the same results readiness uses. Nothing here is
+// stored: a rank is what the student's record shows today. The skill badges
+// are the job competencies in academy-competencies.ts.
 
 type ChallengeKey = MissionCatalogEntry["challenge"];
 
@@ -47,59 +48,4 @@ export function rankIndex(results: Results): number {
 export function currentRank(results: Results): Rank | null {
   const i = rankIndex(results);
   return i === 0 ? null : RANKS[i - 1];
-}
-
-export type BadgeTier = "practiced" | "proficient" | "verified";
-export const TIER_LABEL: Record<BadgeTier, string> = { practiced: "Practiced", proficient: "Proficient", verified: "Verified" };
-
-export type SkillBadge = {
-  skill: Skill;
-  title: string;
-  tier: BadgeTier | null;
-  /** What the next tier needs, or null at the top. */
-  next: string | null;
-  /** Solves the lab confirmed, against what Verified asks for. */
-  labDone: number;
-  labNeeded: number;
-};
-
-/** Lab-confirmed solves a skill needs for Verified: three, or every lab-checked mission it has if fewer. */
-const VERIFIED_LAB_SOLVES = 3;
-
-export function skillBadges(results: Results): SkillBadge[] {
-  const s = summarize(results);
-  const gated = new Set<string>(LAB_GATED_MISSIONS);
-  return s.skills.map((k) => {
-    const ids = Object.keys(MISSION_SKILLS).filter((id) => MISSION_SKILLS[id] === k.key);
-    const labIds = ids.filter((id) => gated.has(id));
-    const labNeeded = Math.min(VERIFIED_LAB_SOLVES, labIds.length);
-    const labDone = labIds.filter((id) => results[id]?.solved && results[id]?.labOk).length;
-    const proficient = k.rated && k.score !== null && k.score >= SCORE_SOLID;
-    const verified = proficient && labNeeded > 0 && labDone >= labNeeded;
-    const tier: BadgeTier | null = verified ? "verified" : proficient ? "proficient" : k.rated ? "practiced" : null;
-    const half = Math.ceil(k.total / 2);
-    const next =
-      tier === null
-        ? k.total === 1
-          ? "Finish its one mission."
-          : `Finish ${half - k.done} more of its ${k.total} missions.`
-        : tier === "practiced"
-          ? `Score ${SCORE_SOLID} or more on its missions.`
-          : tier === "proficient"
-            ? labNeeded > 0
-              ? `Have your lab confirm ${labNeeded - labDone} more of its fixes.`
-              : null
-            : null;
-    return { skill: k.key, title: SKILLS[k.key].label, tier, next, labDone, labNeeded };
-  });
-}
-
-/** Two letters for a badge's seal: "Accounts and Groups" is AG, "Risk Triage" is RT. */
-export function badgeInitials(title: string): string {
-  return title
-    .split(/\s+/)
-    .filter((w) => w.toLowerCase() !== "and")
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("");
 }

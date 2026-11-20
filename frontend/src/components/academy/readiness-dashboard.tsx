@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, ChevronDown } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
@@ -8,7 +8,8 @@ import { academyFetch, RESULTS_CHANGED_EVENT, useResults } from "@/lib/academy-c
 import { challengeHref, challengeTabHref, missionHref, MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
 import { isLockedHref } from "@/lib/academy-locks";
 import { RankEmblem } from "@/components/academy/rank-emblem";
-import { badgeInitials, currentRank, rankIndex, RANKS, skillBadges, TIER_LABEL } from "@/lib/academy-badges";
+import { currentRank, rankIndex, RANKS } from "@/lib/academy-badges";
+import { badgeInitials, competencyBadges, TIER_LABEL, type CompetencyBadge } from "@/lib/academy-competencies";
 import {
   clearResults,
   LAB_CATALOG,
@@ -166,14 +167,28 @@ function MissionStrip({ results }: { results: Results }) {
 function RankAndBadges({ results }: { results: Results }) {
   const held = rankIndex(results);
   const rank = currentRank(results);
-  const badges = skillBadges(results);
+  // Rated on the server from the portfolio's own task status, so a badge here
+  // is the same badge an employer sees. Every skill starts unearned until it loads.
+  const [badges, setBadges] = useState<CompetencyBadge[]>(() => competencyBadges([]));
+  useEffect(() => {
+    let live = true;
+    academyFetch("/academy/api/proof")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d: { competencies?: CompetencyBadge[] } | null) => {
+        if (live && d?.competencies?.length) setBadges(d.competencies);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
   const earned = badges.filter((b) => b.tier).length;
   return (
     <section className="rd-sec" id="rank">
       <div className="rd-sec__head">
         <span className="rd-sec__n">01</span>
         <h2>Rank and badges</h2>
-        <p>Your title on the job ladder, and the skills your work has proved.</p>
+        <p>Your title on the job ladder, and the core skills a help desk or SOC job asks for. Proficient and Verified skills show on your portfolio.</p>
       </div>
       <div className="rb-rank">
         <div className="rb-rank__now">
@@ -194,17 +209,17 @@ function RankAndBadges({ results }: { results: Results }) {
         </ol>
       </div>
       <p className="rb-count">
-        {earned} of {badges.length} skill badges earned
+        {earned} of {badges.length} core job skills earned
       </p>
       <ul className="rb-grid">
         {badges.map((b) => (
-          <li key={b.skill} className={`rb-badge${b.tier ? ` is-${b.tier}` : ""}`}>
+          <li key={b.id} className={`rb-badge${b.tier ? ` is-${b.tier}` : ""}`} title={b.why}>
             <span className="rb-badge__seal" aria-hidden>
               {badgeInitials(b.title)}
             </span>
             <span className="rb-badge__body">
               <strong>{b.title}</strong>
-              <em>{b.tier ? TIER_LABEL[b.tier] : "Not earned yet"}</em>
+              <em>{b.tier ? TIER_LABEL[b.tier] : "Not earned yet"} · {b.proven} of {b.total} tasks proven</em>
               {b.next && <small>{b.next}</small>}
             </span>
           </li>

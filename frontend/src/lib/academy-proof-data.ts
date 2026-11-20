@@ -2,6 +2,8 @@ import "server-only";
 import { CERT_IDS, CERTS, roleLabel, type RoleId, type StudentProfile } from "@/lib/academy-certs";
 import { buildSkills, buildWorkItems, TRACK_FOR_ROLE, type Track, type WorkItem } from "@/lib/academy-proof";
 import { listClips } from "@/lib/academy-clips";
+import { competencyBadges, type CompetencyBadge } from "@/lib/academy-competencies";
+import { jobProgress } from "@/lib/academy-drills";
 import { CHALLENGE_LABELS } from "@/lib/academy-missions";
 import { listShots, loadProofSettings, type ProofSettings, type ProofShot } from "@/lib/academy-proof-store";
 import { loadDrills, loadLabState, loadProfile, loadProgress } from "@/lib/academy-store";
@@ -21,6 +23,8 @@ export type ProofData = {
   shots: ProofShot[];
   /** Verified challenge recordings, live on the profile. No storage paths: the page links through /p/<slug>/clip/<id>. */
   clips: ProofClip[];
+  /** The core job skills, rated from the same task status the work items come from. */
+  competencies: CompetencyBadge[];
 };
 
 export type ProofClip = { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null; hasPoster: boolean };
@@ -37,6 +41,7 @@ export async function loadProofData(userId: string): Promise<ProofData> {
     listClips(userId, true),
   ]);
   const items = buildWorkItems(results, drills);
+  const competencies = competencyBadges(jobProgress(drills, results, lab?.snapshot).map((j) => ({ id: j.id, status: j.status })));
   const role = profile?.roles[0] ?? null;
   return {
     items,
@@ -49,6 +54,7 @@ export async function loadProofData(userId: string): Promise<ProofData> {
     lastLabCheck: lab?.uploadedAt ?? null,
     settings,
     shots,
+    competencies,
     clips: clips.map((c) => ({ id: c.id, title: CHALLENGE_LABELS[c.challenge], durationSec: c.durationSec, solvedAt: c.solvedAt, recordedAt: c.recordedAt, hasPoster: Boolean(c.posterPath) })),
   };
 }

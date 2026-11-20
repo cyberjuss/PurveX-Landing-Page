@@ -1,5 +1,6 @@
 "use client";
 
+import type { CompetencyBadge } from "@/lib/academy-competencies";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { BadgeCheck, Loader2, Lock, X } from "lucide-react";
@@ -45,6 +46,8 @@ type Data = {
   shots: Shot[];
   /** Verified challenge clips already on the profile. */
   clips?: { id: string; title: string; durationSec: number; solvedAt: string | null; recordedAt: string | null; hasPoster: boolean }[];
+  /** The core job skills, rated on the server from the same task status. */
+  competencies?: CompetencyBadge[];
   blockers: string[];
   /** On Explore: the portfolio is part of Range Pro, so the editor is not shown. */
   locked?: boolean;
@@ -404,7 +407,7 @@ export function ProofEditor() {
               clearance: contact.clearance || null,
               updatedAt: "",
             }}
-            data={{ items, skills: data.skills, roleName: data.roleName, roleNames: data.roleNames, certs: data.certs, lastLabCheck: data.lastLabCheck, shots: data.shots, clips: data.clips ?? [] }}
+            data={{ items, skills: data.skills, roleName: data.roleName, roleNames: data.roleNames, certs: data.certs, lastLabCheck: data.lastLabCheck, shots: data.shots, clips: data.clips ?? [], competencies: data.competencies ?? [] }}
             shotSrc={(id) => urls[id] ?? ""}
             clipSrc={(id) => clipUrls[id] ?? null}
             posterSrc={(id) => clipUrls[`${id}:poster`] ?? null}

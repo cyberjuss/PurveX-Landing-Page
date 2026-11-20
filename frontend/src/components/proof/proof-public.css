@@ -179,3 +179,16 @@
   .pp-clip__frame { display: none; }
   .pp-clip__stamp { padding: 4px 0; border-top: 0; }
 }
+
+/* Core job skills: the competency badges an employer sees. */
+.pp-skills { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin: 14px 0 0; padding: 0; list-style: none; }
+.pp-skill { display: flex; align-items: flex-start; gap: 14px; padding: 16px; border: 1px solid var(--pp-line); background: var(--pp-bg); }
+.pp-skill__seal { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; font-family: var(--font-mono, ui-monospace, monospace); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: #fff; background: var(--pp-accent); }
+.pp-skill h3 { margin: 0; font-size: 15px; font-weight: 600; color: var(--pp-ink); }
+.pp-skill h3 em { display: table; margin: 6px 0 0; padding: 2px 7px; font-style: normal; font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pp-accent); border: 1px solid currentColor; vertical-align: 2px; }
+.pp-skill p { margin: 4px 0 6px; font-size: 13.5px; line-height: 1.5; color: var(--pp-ink-2); }
+.pp-skill small { font-size: 12px; color: var(--pp-ink-3); }
+.pp-skill.is-verified { border-color: var(--pp-good-line); background: var(--pp-good-bg); }
+.pp-skill.is-verified .pp-skill__seal { background: var(--pp-good); }
+.pp-skill.is-verified h3 em { color: var(--pp-good); }
+@media print { .pp-skill { break-inside: avoid; } }

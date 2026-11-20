@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { ProofGallery } from "@/components/proof/proof-gallery";
 import { ProofPrintButton } from "@/components/proof/proof-print-button";
 import { certStatusText, SHOTS_PER_ITEM } from "@/lib/academy-proof";
+import { badgeInitials, TIER_LABEL } from "@/lib/academy-competencies";
 import type { ProofData } from "@/lib/academy-proof-data";
 import type { ProofSettings } from "@/lib/academy-proof-store";
 import "./proof-public.css";
@@ -72,7 +73,7 @@ export function ProofPublicView({
   printable = true,
 }: {
   settings: ProofSettings;
-  data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & Partial<Pick<ProofData, "roleNames" | "certs" | "clips">> & { shots: Shot[] };
+  data: Pick<ProofData, "items" | "skills" | "roleName" | "lastLabCheck"> & Partial<Pick<ProofData, "roleNames" | "certs" | "clips" | "competencies">> & { shots: Shot[] };
   /** Where each screenshot loads from. The student's own preview uses blob URLs. */
   shotSrc?: (id: string) => string;
   /** Where each challenge clip streams from. Null shows the card without a player. */
@@ -229,6 +230,37 @@ export function ProofPublicView({
                   <span className={c.status.startsWith("Certified") ? "is-done" : ""}>{c.status}</span>
                 </li>
               ))}
+            </ul>
+          </section>
+        )}
+
+        {/* Only the skills worth an employer's attention: Proficient or Verified. */}
+        {(data.competencies ?? []).some((c) => c.tier === "proficient" || c.tier === "verified") && (
+          <section className="pp-sec">
+            <h2>Core job skills</h2>
+            <p className="pp-note">
+              Rated from the hands-on tasks below. Proficient means at least half of a skill&apos;s tasks were proven, Verified means all of them.
+            </p>
+            <ul className="pp-skills">
+              {(data.competencies ?? [])
+                .filter((c) => c.tier === "proficient" || c.tier === "verified")
+                .sort((a, b) => Number(b.tier === "verified") - Number(a.tier === "verified"))
+                .map((c) => (
+                  <li key={c.id} className={`pp-skill is-${c.tier}`}>
+                    <span className="pp-skill__seal" aria-hidden="true">
+                      {badgeInitials(c.title)}
+                    </span>
+                    <div>
+                      <h3>
+                        {c.title} <em>{TIER_LABEL[c.tier!]}</em>
+                      </h3>
+                      <p>{c.why}</p>
+                      <small>
+                        {c.proven} of {c.total} tasks proven
+                      </small>
+                    </div>
+                  </li>
+                ))}
             </ul>
           </section>
         )}
