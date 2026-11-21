@@ -184,18 +184,12 @@ export function ReviewSession({ onClose }: { onClose: () => void }) {
                 <span className="rv-means" dangerouslySetInnerHTML={{ __html: inline(entry?.gist ?? card.sentence) }} />
               </span>
             </button>
-            {/* One sentence is the answer. The full definition, an example and
+            {/* One sentence is the answer. The full definition and
                 what it is confused with stay one tap away for anyone who wants them. */}
             {shown && entry && (
               <details className="rv-more">
                 <summary>More</summary>
                 <span dangerouslySetInnerHTML={{ __html: inline(entry.means) }} />
-                {entry.example && (
-                  <span className="rv-part">
-                    <em>On the job</em>
-                    <span dangerouslySetInnerHTML={{ __html: inline(entry.example) }} />
-                  </span>
-                )}
                 {entry.notTo && (
                   <span className="rv-part rv-part--not">
                     <em>Not to be confused with</em>
