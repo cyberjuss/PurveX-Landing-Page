@@ -6372,7 +6372,10 @@ a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transpare
 .rb-skillshead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 22px 0 12px; }
 .rb-skillshead h3 { margin: 0; font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--rd-ink); }
 .rb-skillshead span { font-size: var(--ty-small, 13px); color: var(--rd-ink-3); }
-.rb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+/* minmax(300px, 1fr) alone forces a 300px column even on a narrower phone --
+   a hard overflow on anything under ~330px wide. Capping the minimum at
+   100% lets a single column shrink to fit instead. */
+.rb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
 .rb-badge { display: flex; flex-direction: column; gap: 12px; padding: 18px; background: color-mix(in srgb, var(--rd-ink) 2%, transparent); box-shadow: inset 0 0 0 1px var(--rd-line); }
 .rb-badge__top { display: flex; align-items: center; gap: 12px; }
 .rb-badge__top > div { display: grid; gap: 4px; min-width: 0; }
