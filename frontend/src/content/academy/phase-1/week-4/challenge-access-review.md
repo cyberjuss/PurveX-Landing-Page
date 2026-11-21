@@ -125,53 +125,10 @@
 </div>
 </div>
 
-<div class="ad-mission" data-id="w4-06" data-attempts="0">
-<span class="ad-mission__num">Finding 04 · Apply it · Authentication · Evidence · Event Viewer · INC-1093</span>
-<h4>Has Someone Been Guessing?</h4>
-<p><strong>Devon Brooks · Compliance · 10:00 AM</strong><br>Before we shut the shared reception login down, the auditors want to know one thing: has anyone been trying to guess its password? The Security log on the domain controller will say.</p>
-<p><strong>Task:</strong> Find the failed sign-ins for <code>frontdesk.shared</code> in the Security log and report how many there are.</p>
-<div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Has Someone Been Guessing?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
-<button type="button" class="ad-hint__btn">Hint</button>
-</div>
-<div class="ad-hint__text">
-<p>Windows records a failed sign-in as Event ID 4625 and a successful one as 4624. Filter the log down to failures, then find the ones for this account.</p>
-<ul>
-<li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>, then Windows Logs, Security.</li>
-<li>Choose Filter Current Log, type <code>4625</code> in the event IDs box, and click OK.</li>
-<li>Use Find to look for <code>frontdesk.shared</code>, or open each event and read Account Name under "Account For Which Logon Failed".</li>
-</ul>
-<p>In PowerShell:</p>
-<ul>
-<li><code>(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625 } | Where-Object { $_.Properties[5].Value -like "frontdesk.shared*" }).Count</code></li>
-</ul>
-</div>
-<p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="4625|4624">That's the event ID. Count how many of those events name frontdesk.shared.</div>
-<div class="ad-miss" data-guess="#">Filter the Security log to Event ID 4625 and count only the events whose account is frontdesk.shared.</div>
-<div class="ad-flag">
-<div class="ad-break">
-<div>
-<span>Answer</span>
-<p class="ad-flag__code"><code>GTF{5}</code></p>
-</div>
-<div>
-<span>Why it matters</span>
-<p>Five failed sign-ins against one account isn't a receptionist mistyping once or twice. It's consistent with someone guessing at an account whose password everyone can see anyway. The log turns "we think it's risky" into evidence the auditors can put in their report.</p>
-</div>
-<div>
-<span>What to do</span>
-<p>Export the five events and attach them to the finding, then disable the account in the next step. In a SOC you'd run the same 4625 search in the SIEM across every server at once.</p>
-</div>
-</div>
-</div>
-</div>
-
 <div class="ad-mission" data-id="w4-01" data-attempts="0">
-<span class="ad-mission__num">Finding 05 · Apply it · Authentication · High · INC-1093</span>
+<span class="ad-mission__num">Finding 04 · Apply it · Authentication · High · INC-1093</span>
 <h4>Retire the Shared Login</h4>
-<p><strong>Devon Brooks · Compliance · 10:30 AM</strong><br>The auditors found a login at reception that three people use, and the password is on a sticky note on the monitor. When something goes wrong at the front desk, we can't say which of them did it. Find the account and shut it down.</p>
+<p><strong>Devon Brooks · Compliance · 10:00 AM</strong><br>The auditors found a login at reception that three people use, and the password is on a sticky note on the monitor. When something goes wrong at the front desk, we can't say which of them did it. Find the account and shut it down.</p>
 <p><strong>Task:</strong> Find the account in the Operations users folder that more than one person signs in with, disable it, and report its username.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Retire the Shared Login" placeholder="a username" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -206,6 +163,49 @@
 <div>
 <span>What to do</span>
 <p>Disable the shared account, give each receptionist their own login, and add them to the same group so they keep the access they need. Then every action at the front desk can be traced to one person.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="ad-mission" data-id="w4-06" data-attempts="0">
+<span class="ad-mission__num">Finding 05 · Apply it · Authentication · Evidence · Event Viewer · INC-1093</span>
+<h4>Has Someone Been Guessing?</h4>
+<p><strong>Devon Brooks · Compliance · 10:30 AM</strong><br>With the shared login switched off, the auditors want one more answer before they close the finding: did anyone try to guess its password while it was live? The Security log on the domain controller will say.</p>
+<p><strong>Task:</strong> Find the failed sign-ins for <code>frontdesk.shared</code> in the Security log and report how many there are.</p>
+<div class="ad-guess">
+<input type="text" class="ad-guess__input" aria-label="Answer for Has Someone Been Guessing?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
+<button type="button" class="ad-hint__btn">Hint</button>
+</div>
+<div class="ad-hint__text">
+<p>Windows records a failed sign-in as Event ID 4625 and a successful one as 4624. Filter the log down to failures, then find the ones for this account.</p>
+<ul>
+<li>Open Event Viewer with Win+R and <code>eventvwr.msc</code>, then Windows Logs, Security.</li>
+<li>Choose Filter Current Log, type <code>4625</code> in the event IDs box, and click OK.</li>
+<li>Use Find to look for <code>frontdesk.shared</code>, or open each event and read Account Name under "Account For Which Logon Failed".</li>
+</ul>
+<p>In PowerShell:</p>
+<ul>
+<li><code>(Get-WinEvent -FilterHashtable @{ LogName = "Security"; Id = 4625 } | Where-Object { $_.Properties[5].Value -like "frontdesk.shared*" }).Count</code></li>
+</ul>
+</div>
+<p class="ad-guess__feedback"></p>
+<div class="ad-miss" data-guess="4625|4624">That's the event ID. Count how many of those events name frontdesk.shared.</div>
+<div class="ad-miss" data-guess="#">Filter the Security log to Event ID 4625 and count only the events whose account is frontdesk.shared.</div>
+<div class="ad-flag">
+<div class="ad-break">
+<div>
+<span>Answer</span>
+<p class="ad-flag__code"><code>GTF{5}</code></p>
+</div>
+<div>
+<span>Why it matters</span>
+<p>Five failed sign-ins against one account isn't a receptionist mistyping once or twice. It's consistent with someone guessing at an account whose password everyone can see anyway. The log turns "we think it's risky" into evidence the auditors can put in their report.</p>
+</div>
+<div>
+<span>What to do</span>
+<p>Export the five events and attach them to the finding. In a SOC you'd run the same 4625 search in the SIEM across every server at once.</p>
 </div>
 </div>
 </div>

@@ -55,7 +55,7 @@
 <span class="ad-mission__num">Ticket 02 · Warm-up · INC-1042 · Low</span>
 <h4>Locked Out</h4>
 <p><strong>Riley Kwan · Operations · 8:47 AM</strong><br>It will not let me sign in. I have typed my password wrong a few times, so I think I locked myself out. Can you unlock me?</p>
-<p><strong>Task:</strong> Open Riley's account before you take the action they asked for. Restore sign-in if something is blocking them, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
+<p><strong>Task:</strong> Open Riley's account before you act on the request. Riley's manager has confirmed that Riley should have access today, so restore sign-in. Then report what was blocking Riley by typing <code>locked</code> or <code>disabled</code>.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Locked Out" placeholder="locked or disabled" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}" data-accept="account-is-disabled|account-disabled">Submit</button>
@@ -90,7 +90,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>That is why you read the Account tab first and then enable the account. Close the ticket on what you verified, rather than on the word the caller happened to use.</p>
+<p>Read the Account tab before you act. A disabled account was switched off on purpose, so enable it only once someone with authority confirms it should be on, as Riley's manager did here. Close the ticket on what you verified, not on the word the caller used.</p>
 </div>
 </div>
 </div>
@@ -358,7 +358,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>That is why you clear the setting on staff accounts and leave it only on documented service accounts. It is also worth rechecking that list during each access review.</p>
+<p>Clear the setting on staff accounts and leave it only on documented service accounts. It is also worth rechecking that list during each access review.</p>
 </div>
 </div>
 </div>
@@ -549,7 +549,7 @@
 <span class="ad-mission__num">Ticket 13 · Apply it · INC-1054 · Medium</span>
 <h4>Screens That Never Lock</h4>
 <p><strong>Internal Audit · Control test · 3:40 PM</strong><br>Finance workstations are supposed to lock after ten minutes, but every Finance screen we tested stayed open over lunch. Operations staff mentioned their screens lock sooner than they would like.</p>
-<p><strong>Task:</strong> Find the screen lock GPO and link it to the Finance and Accounting OU, then remove its link from the wrong department. Report the name of the OU it was linked to.</p>
+<p><strong>Task:</strong> Find the screen lock GPO and link it to the Finance and Accounting OU, then remove its link from the wrong department. Report the OU it was linked to before your fix.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Screens That Never Lock" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{operations}">Submit</button>
@@ -685,10 +685,10 @@
 <span class="ad-mission__num">Ticket 16 · Stretch · INC-1051 · High</span>
 <h4>Group Cannot Open the Share</h4>
 <p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>IT created a Finance Reports group last week so our team could read the reports share. Jordan and Devon are both in it, but neither of them can open the share.</p>
-<p><strong>Task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members. Then report how many members it has.</p>
+<p><strong>Task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members. Then report the group type it had before your fix.</p>
 <div class="ad-guess">
-<input type="text" class="ad-guess__input" aria-label="Answer for Group Cannot Open the Share" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
-<button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
+<input type="text" class="ad-guess__input" aria-label="Answer for Group Cannot Open the Share" placeholder="a group type" autocomplete="off" autocapitalize="off" spellcheck="false">
+<button type="button" class="ad-guess__submit" data-answer="gtf{distribution}">Submit</button>
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
@@ -696,9 +696,9 @@
 <ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
 <li>Expand AccessLevels and open <code>Finance Reports</code>.</li>
-<li>On the General tab, change Group type from Distribution to Security and click Apply.</li>
+<li>On the General tab, note the Group type, then change it to Security and click Apply.</li>
 <li>Reopen the group and confirm the General tab now reads Security.</li>
-<li>Count the entries on the Members tab.</li>
+<li>Type the group type it had before your change.</li>
 </ul>
 <p>In PowerShell:</p>
 <ul>
@@ -706,13 +706,13 @@
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
-<div class="ad-miss" data-guess="security|distribution">That explains the fault. Report how many members the group has as a number.</div>
-<div class="ad-miss" data-guess="#">Count the entries on the Members tab of Finance Reports. Changing the group type does not change who is in it.</div>
+<div class="ad-miss" data-guess="security">That is the type after your fix. Report the type the group had before you changed it.</div>
+<div class="ad-miss" data-guess="#">The members were never the problem. Report the Group type on the General tab before your fix.</div>
 <div class="ad-flag">
 <div class="ad-break">
 <div>
 <span>Answer</span>
-<p class="ad-flag__code"><code>GTF{2}</code></p>
+<p class="ad-flag__code"><code>GTF{distribution}</code></p>
 </div>
 <div>
 <span>Why it matters</span>
@@ -862,7 +862,7 @@
 <span class="ad-mission__num">Ticket 20 · Stretch · INC-1062 · High</span>
 <h4>Admins Under the Same Rules as Everyone</h4>
 <p><strong>Alex Rivera · IT · 10:20 AM</strong><br>The audit flagged that our administrator accounts follow the same password rules as every other user. They want the accounts that can change the domain held to something stronger.</p>
-<p><strong>Task:</strong> Apply a fine-grained password policy of at least 16 characters, locking after 5 wrong passwords or fewer, to the IT administrators group. Then report the name of the group you applied it to.</p>
+<p><strong>Task:</strong> Apply a fine-grained password policy of at least 16 characters, locking after 5 wrong passwords or fewer, to the group that gives IT staff elevated admin rights. Then report the name of that group.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Admins Under the Same Rules as Everyone" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{IT Admins}">Submit</button>

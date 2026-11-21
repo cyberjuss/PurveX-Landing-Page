@@ -17,7 +17,7 @@
 <div class="ad-mission" data-id="w3-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · Warm-up · Tools · High · Cron · INC-1057</span>
 <h4>What's Calling Out Every Three Minutes</h4>
-<p><strong>Priya Shah · Operations · 7:40 AM</strong><br>Our monitoring flagged web01 making a short outbound connection to the domain controller every few minutes, all night. Nobody on the current team remembers setting that up. Before I escalate this as an incident, find out what it actually is.</p>
+<p><strong>Morgan Lee · Operations · 7:40 AM</strong><br>Our monitoring flagged web01 making a short outbound connection to the domain controller every few minutes, all night. Nobody on the current team remembers setting that up. Before I escalate this as an incident, find out what it actually is.</p>
 <p><strong>Task:</strong> Open a terminal on web01, confirm it can still reach the domain controller, then find the scheduled job behind the recurring connection. Report the name of the script it runs.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for What's Calling Out Every Three Minutes" placeholder="a script file name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -136,7 +136,7 @@
 <div class="ad-mission" data-id="w3-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Apply it · Protocols · Critical · Active Directory · INC-1057</span>
 <h4>Take the Account Out of Service</h4>
-<p><strong>Priya Shah · Operations · 9:30 AM</strong><br>If that password has been crossing the network in the clear this whole time, I do not want it trusted again. Disable the account, and find out what else that job has been sending while we are at it.</p>
+<p><strong>Morgan Lee · Operations · 9:30 AM</strong><br>If that password has been crossing the network in the clear this whole time, I do not want it trusted again. Disable the account, and find out what else that job has been sending while we are at it.</p>
 <p><strong>Task:</strong> Disable <code>svc-settlements</code> in Active Directory. On web01, remove the cron job and the sudo access that let it run unprompted. Then report the file the job pulled off the share, unencrypted, in the same run.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Take the Account Out of Service" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">

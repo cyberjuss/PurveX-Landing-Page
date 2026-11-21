@@ -109,14 +109,14 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     id: "tq-01",
     challenge: "ticket-queue",
     title: "Missing Announcements (INC-1041)",
-    prompt: "Jamie Torres is not getting company-wide email. Find the firm-wide announcement group, add her if she is missing, then report how many members it has.",
+    prompt: "Jamie Torres is not getting company-wide email. Find the firm-wide announcement group, add them if they are missing, then report how many members it has.",
     skill: "accounts",
   },
   "tq-02": {
     id: "tq-02",
     challenge: "ticket-queue",
     title: "Locked Out (INC-1042)",
-    prompt: "Riley Kwan cannot sign in and thinks she is locked out. Open the account before you act. Restore sign-in if needed, then report what was actually wrong, locked or disabled.",
+    prompt: "Riley Kwan cannot sign in and thinks they are locked out. Open the account before you act. Riley's manager confirms Riley should have access, so restore sign-in, then report what was actually wrong, locked or disabled.",
     skill: "troubleshooting",
   },
   "tq-03": {
@@ -172,7 +172,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     id: "tq-15",
     challenge: "ticket-queue",
     title: "Group Cannot Open the Share (INC-1051)",
-    prompt: "Members of Finance Reports cannot open the reports share. Find why the group grants nothing, fix it, and report how many members it has.",
+    prompt: "Members of Finance Reports cannot open the reports share. Find why the group grants nothing, fix it, and report the group type it had before your fix.",
     skill: "accounts",
   },
   "tq-16": {
@@ -210,7 +210,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     id: "tq-24",
     challenge: "ticket-queue",
     title: "Admins Under the Same Rules as Everyone (INC-1062)",
-    prompt: "Accounts that can change the domain are held to the same password rules as everyone else. Apply a fine-grained password policy of at least 16 characters, locking after 5 tries or fewer, to the IT administrators group. Then report the group you applied it to.",
+    prompt: "Accounts that can change the domain are held to the same password rules as everyone else. Apply a fine-grained password policy of at least 16 characters, locking after 5 tries or fewer, to the group that gives IT staff elevated admin rights. Then report that group's name.",
     skill: "security",
   },
   "tq-25": {
@@ -238,7 +238,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     id: "tq-18",
     challenge: "ticket-queue",
     title: "Screens That Never Lock (INC-1054)",
-    prompt: "Finance screens never lock while Operations screens lock early. Find the screen lock GPO, link it to Finance, remove the wrong link, and report the OU it was linked to.",
+    prompt: "Finance screens never lock while Operations screens lock early. Find the screen lock GPO, link it to Finance, remove the wrong link, and report the OU it was linked to before your fix.",
     skill: "directory",
   },
   "tq-19": {
@@ -743,7 +743,7 @@ export const MISSION_CATALOG: Record<string, MissionCatalogEntry> = {
     id: "w4-06",
     challenge: "access-review",
     title: "Has Someone Been Guessing?",
-    prompt: "Count the failed sign-ins for the shared reception login in the Security log with Event Viewer.",
+    prompt: "The shared reception login is now off. Count its failed sign-ins in the Security log with Event Viewer.",
     skill: "logs",
   },
   "w4-01": {

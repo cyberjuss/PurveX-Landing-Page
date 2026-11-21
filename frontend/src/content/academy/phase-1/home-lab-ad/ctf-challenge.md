@@ -50,7 +50,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>This is why you find the account and read Member Of before changing anything. That list shows the access Jordan already has.</p>
+<p>Find the account and read Member Of before changing anything. That list shows the access Jordan already has.</p>
 </div>
 </div>
 </div>
@@ -179,7 +179,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>This is why it helps to know where computers live. Look under Departments → IT → Workstations and read the object's name, the same way you would look up a person.</p>
+<p>Know where computers live. Look under Departments → IT → Workstations and read the object's name, the same way you would look up a person.</p>
 </div>
 </div>
 </div>
@@ -307,7 +307,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>This is why people stay in Departments, while domain-wide access groups such as Server Admins and Helpdesk live separately in AccessLevels.</p>
+<p>Keep people in Departments, and keep domain-wide access groups such as Server Admins and Helpdesk separately in AccessLevels.</p>
 </div>
 </div>
 </div>

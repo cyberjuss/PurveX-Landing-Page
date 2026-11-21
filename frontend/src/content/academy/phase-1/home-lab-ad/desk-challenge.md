@@ -218,7 +218,7 @@
 <span class="ad-mission__num">Call 06 · Apply it · Move an Account · Wednesday · INC-1094</span>
 <h4>Record the Ticket</h4>
 <p><strong>Alex Rivera · IT · Wednesday · 11:00 AM</strong><br>Please document on Maya's account what was fixed and under which ticket, DESK-2001, so nobody has to rediscover this later. While reviewing the account, confirm the title is correct.</p>
-<p><strong>Task:</strong> Write a Description on maya.okafor that includes <code>DESK-2001</code>. Then report the name of the Properties tab that holds the Title field.</p>
+<p><strong>Task:</strong> Write a Description on maya.okafor that includes <code>DESK-2001</code>. Then report the name of the Properties tab where you checked Maya's title.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Record the Ticket" placeholder="a tab name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{organization}" data-accept="organisation|organization-tab">Submit</button>
