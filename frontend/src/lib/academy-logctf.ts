@@ -54,7 +54,7 @@ function questions(s: LabSnapshot): Question[] {
       format: "Sign-in name, like first.last",
       where: [
         "Event Viewer, Windows Logs, Security, then Filter Current Log.",
-        "Failures are event 4625 (NTLM) and 4771 (Kerberos). Set the time range to the last 30 days.",
+        "Failures are event 4625 (failed sign-in) and 4771 (Kerberos pre-authentication failed). Set the time range to the last 30 days.",
         powershell("4625,4771", days, "Group-Object { ([xml]$_.ToXml()).Event.EventData.Data | Where-Object Name -eq 'TargetUserName' | ForEach-Object '#text' } | Sort-Object Count -Descending"),
       ],
       hint: "Filter for the failure events, then count them per account name. Ignore computer accounts that end in a dollar sign.",
