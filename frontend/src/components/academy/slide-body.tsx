@@ -285,7 +285,15 @@ function toBlocks(markdown: string): Block[] {
   let depth = 0;
   const pushMd = (raw: string) => {
     const last = blocks[blocks.length - 1];
-    if (last?.kind === "md") last.raw += `\n${raw}`;
+    // Two newlines, not one: a single join reads as a lazy continuation line
+    // of whatever came before, which is harmless for two ordinary HTML tags
+    // but merges a <details> and the <pre> inside it into one HTML block once
+    // this gets re-lexed as its own markdown string. That merged block then
+    // ends at the first blank line *inside* the script, not at </pre>, and
+    // everything after is re-parsed as plain markdown -- so a "# comment"
+    // deep in a PowerShell dump turns into a heading. A blank line keeps each
+    // tag's own block boundary intact instead.
+    if (last?.kind === "md") last.raw += `\n\n${raw}`;
     else blocks.push({ kind: "md", raw });
   };
   for (const token of marked.lexer(markdown) as Token[]) {
