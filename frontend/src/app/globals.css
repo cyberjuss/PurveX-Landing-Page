@@ -4109,15 +4109,16 @@ html:active-view-transition .ax-page { animation: none }
    past that the last card is waiting on an animation nobody is watching. */
 .lg__grid > li,
 .rd-ledger > .rd-row,
+.rd-log__row,
 .pf-sec,
 .sh-li,
 .siem-table > li {
   animation: ax-enter var(--ax-dur) var(--ax-ease) both;
 }
-.lg__grid > li:nth-child(1), .rd-ledger > .rd-row:nth-child(1), .pf-sec:nth-child(1), .sh-li:nth-child(1), .siem-table > li:nth-child(1) { animation-delay: 0ms }
-.lg__grid > li:nth-child(2), .rd-ledger > .rd-row:nth-child(2), .pf-sec:nth-child(2), .sh-li:nth-child(2), .siem-table > li:nth-child(2) { animation-delay: 55ms }
-.lg__grid > li:nth-child(3), .rd-ledger > .rd-row:nth-child(3), .pf-sec:nth-child(3), .sh-li:nth-child(3), .siem-table > li:nth-child(3) { animation-delay: 110ms }
-.lg__grid > li:nth-child(n+4), .rd-ledger > .rd-row:nth-child(n+4), .pf-sec:nth-child(n+4), .sh-li:nth-child(n+4), .siem-table > li:nth-child(n+4) { animation-delay: 165ms }
+.lg__grid > li:nth-child(1), .rd-ledger > .rd-row:nth-child(1), .rd-log__row:nth-child(1), .pf-sec:nth-child(1), .sh-li:nth-child(1), .siem-table > li:nth-child(1) { animation-delay: 0ms }
+.lg__grid > li:nth-child(2), .rd-ledger > .rd-row:nth-child(2), .rd-log__row:nth-child(2), .pf-sec:nth-child(2), .sh-li:nth-child(2), .siem-table > li:nth-child(2) { animation-delay: 55ms }
+.lg__grid > li:nth-child(3), .rd-ledger > .rd-row:nth-child(3), .rd-log__row:nth-child(3), .pf-sec:nth-child(3), .sh-li:nth-child(3), .siem-table > li:nth-child(3) { animation-delay: 110ms }
+.lg__grid > li:nth-child(n+4), .rd-ledger > .rd-row:nth-child(n+4), .rd-log__row:nth-child(n+4), .pf-sec:nth-child(n+4), .sh-li:nth-child(n+4), .siem-table > li:nth-child(n+4) { animation-delay: 165ms }
 .ax-drawer__scrim { animation: ax-scrim-in var(--ax-dur) var(--ax-ease) both }
 .ax-drawer__panel { animation: ax-drawer-in var(--ax-dur) var(--ax-ease) both; background: #fff; color: #0f172a; }
 .academy-bg[data-academy-theme="dark"] .ax-drawer__panel { background: #000; color: #e8eef8; }
@@ -4125,7 +4126,7 @@ html:active-view-transition .ax-page { animation: none }
   .ax-enter, .ax-enter-fwd, .ax-enter-back, .ax-page, .ax-rise,
   .academy-slide-in-right, .academy-slide-in-left,
   .ax-drawer__scrim, .ax-drawer__panel,
-  .lg__grid > li, .rd-ledger > .rd-row, .pf-sec, .sh-li, .siem-table > li,
+  .lg__grid > li, .rd-ledger > .rd-row, .rd-log__row, .pf-sec, .sh-li, .siem-table > li,
   .academy-prose .ad-flag--shown { animation: none }
 }
 
@@ -4570,10 +4571,14 @@ html:active-view-transition .ax-page { animation: none }
 .rd-legend { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3); }
 .rd-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .rd-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; }
-.rd-strip { display: flex; gap: 14px; }
-.rd-strip__group { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; flex: 1; }
-.rd-strip__cell { height: 28px; border-radius: 3px; transition: transform var(--ax-dur-fast); }
-.rd-strip__cell:hover { transform: scaleY(1.15); }
+/* On a phone, 12 equal-width groups left no room for the longer challenges --
+   a 22-mission group was squeezed into a few px and its cells vanished. Each
+   cell now holds a 6px floor, so a group that no longer fits its floor pushes
+   the strip into a horizontal scroll instead of collapsing to nothing. */
+.rd-strip { display: flex; gap: 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+.rd-strip__group { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(6px, 1fr); gap: 4px; flex: 1 1 0%; min-width: max-content; }
+.rd-strip__cell { height: 28px; min-width: 6px; border-radius: 3px; transition: transform var(--ax-dur-fast); }
+.rd-strip__cell:hover, .rd-strip__cell:active { transform: scaleY(1.15); }
 
 .rd-sec { margin-top: 64px; }
 .rd-sec__head { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 14px; margin-bottom: 18px; }
@@ -4607,6 +4612,7 @@ html:active-view-transition .ax-page { animation: none }
 .rd-row__score small { font-size: var(--ty-body); margin-left: 1px; color: var(--rd-ink-3); }
 .rd-link { display: inline-flex; align-items: center; gap: 4px; font-size: var(--ty-note); font-weight: 600; color: var(--rd-accent); text-underline-offset: 3px; }
 .rd-link:hover { text-decoration: underline; }
+.rd-link:active { opacity: 0.7; }
 
 .rd-log + .rd-log { margin-top: 36px; }
 .rd-log__head { display: flex; align-items: flex-end; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--rd-ink); }
@@ -4621,6 +4627,7 @@ html:active-view-transition .ax-page { animation: none }
 .rd-log__chevron { flex-shrink: 0; margin-bottom: 5px; color: var(--rd-ink-3); transition: transform var(--ax-dur-fast, 150ms) ease, color var(--ax-dur-fast, 150ms) ease; }
 .rd-log__toggle:hover .rd-log__chevron, .rd-log__toggle:focus-visible .rd-log__chevron { color: var(--rd-accent); }
 .rd-log__toggle:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
+.rd-log__toggle:active { opacity: 0.7; }
 .rd-log ol { list-style: none; margin: 0; padding: 0; }
 .rd-log__row { display: grid; grid-template-columns: 26px 10px minmax(0, 1fr) auto; align-items: center; gap: 4px 14px; padding: 12px 0; border-bottom: 1px solid var(--rd-line-2); font-size: var(--ty-body); }
 .rd-log__row:hover { background: linear-gradient(90deg, transparent, var(--rd-line-2) 20%, var(--rd-line-2) 80%, transparent); }
