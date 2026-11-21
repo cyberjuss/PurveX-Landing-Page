@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { rangeEntitlement } from "@/lib/range-plan";
-import { isClassMember } from "@/lib/academy-classes";
+import { isClassAffiliated } from "@/lib/academy-classes";
 import { discordLinkConfigured, LINK_COOKIE, loadLink, startLink, syncDiscordRole, unlink } from "@/lib/academy-discord-roles";
 
 export const runtime = "nodejs";
@@ -16,8 +16,8 @@ export async function GET(request: Request) {
   if (!discordLinkConfigured()) return NextResponse.json({ configured: false });
   const student = await getAcademyStudent(request);
   if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
-  // Class students have no Discord, so to them it is simply not there.
-  if (await isClassMember(student.id)) {
+  // A class student or instructor has no Discord, so to them it is simply not there.
+  if (await isClassAffiliated(student.id, student.email)) {
     if (await loadLink(student.id)) await unlink(student.id);
     return NextResponse.json({ configured: false });
   }
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
   if (!discordLinkConfigured()) return NextResponse.json({ error: "Discord linking is not set up." }, { status: 404 });
   const student = await getAcademyStudent(request);
   if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
-  if (await isClassMember(student.id)) return NextResponse.json({ error: "Discord isn't part of class accounts." }, { status: 403 });
+  if (await isClassAffiliated(student.id, student.email)) return NextResponse.json({ error: "Discord isn't part of class accounts." }, { status: 403 });
   const { url, nonce } = startLink(student.id, new URL(request.url).origin);
   (await cookies()).set(LINK_COOKIE, nonce, { httpOnly: true, secure: true, sameSite: "lax", path: "/range/discord", maxAge: 600 });
   return NextResponse.json({ url });

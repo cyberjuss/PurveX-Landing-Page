@@ -2,7 +2,7 @@ import { after, NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { sanitizeProfile } from "@/lib/academy-certs";
 import { ensureRoleBrief } from "@/lib/academy-role-research";
-import { isClassMember } from "@/lib/academy-classes";
+import { isClassAffiliated } from "@/lib/academy-classes";
 import { rangeWelcomeEmail } from "@/lib/academy-emails";
 import { markEmailOnce } from "@/lib/academy-email-log";
 import { readProfile, saveProfile } from "@/lib/academy-store";
@@ -26,8 +26,8 @@ export async function GET(request: Request) {
   const { profile, failed } = await readProfile(a.student.id);
   // A failed read is "try again", never "no answers yet": the page would ask the questions all over.
   if (failed) return NextResponse.json({ error: "Couldn't load your goals. Try again." }, { status: 503 });
-  // Class students have no Discord, so the page hides every way in.
-  return NextResponse.json({ profile, discord: !(await isClassMember(a.student.id)) });
+  // A class student or instructor has no Discord, so the page hides every way in.
+  return NextResponse.json({ profile, discord: !(await isClassAffiliated(a.student.id, a.student.email)) });
 }
 
 export async function PUT(request: Request) {
@@ -58,7 +58,7 @@ export async function PUT(request: Request) {
   const origin = new URL(request.url).origin;
   if (saved && student.email) {
     after(async () => {
-      if (await isClassMember(student.id).catch(() => true)) return;
+      if (await isClassAffiliated(student.id, student.email).catch(() => true)) return;
       if (!(await markEmailOnce(student.id, "range-welcome"))) return;
       const mail = rangeWelcomeEmail({ name: profile.callMe || student.name, email: student.email }, origin);
       await sendEmail(student.email!, mail.subject, mail.html).catch(() => false);
