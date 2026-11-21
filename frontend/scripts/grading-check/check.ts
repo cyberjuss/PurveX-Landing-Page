@@ -33,6 +33,7 @@ import {
   type Skill,
 } from "@/lib/academy-score";
 import { rollUp, type RosterStudent } from "@/lib/academy-roster";
+import { currentRank, pinRank, rankIndex } from "@/lib/academy-badges";
 
 let failures = 0;
 function t(name: string, ok: boolean, detail = "") {
@@ -210,11 +211,10 @@ const unstarted = student({ readiness: { overall: null, accuracy: null, level: "
   const r = rollUp([], NOW);
   t("an empty class does not divide by zero", r.avgReadiness === null && r.students === 0 && r.weakest.length === 0);
 }
-console.log("\n--- the floor: a score and level only ever rise ---");
+console.log("\n--- the floor: the level and rank only ever rise; the score is what is earned ---");
 // New content, or a phase unlocked and relocked for testing, changes what
-// is counted without the student doing anything wrong. pinReadiness records
-// the peak; summarize must never report below it afterward, however the
-// live numbers would otherwise compute.
+// is counted without the student doing anything wrong. The level and rank
+// are pinned and never drop. The score is not: it always shows the work.
 {
   const peak = pinReadiness(all((id) => clean(id)));
   eq("a perfect pass pins the readiness best", peak[READINESS_BEST_ID]?.pts, 100);
@@ -226,7 +226,7 @@ console.log("\n--- the floor: a score and level only ever rise ---");
   const degraded: Results = { ...peak };
   ids.slice(0, Math.ceil(ids.length / 2)).forEach((id) => delete degraded[id]);
   const after = summarize(degraded);
-  eq("the overall score does not drop below the pinned best", after.overall, 100);
+  eq("the overall score is what the remaining work earns", after.overall, Math.round((100 * (ids.length - Math.ceil(ids.length / 2))) / ids.length));
   eq("the level does not drop below the pinned best", after.level, "ready");
 }
 {
@@ -237,7 +237,8 @@ console.log("\n--- the floor: a score and level only ever rise ---");
   const cleared: Results = { [READINESS_BEST_ID]: peak[READINESS_BEST_ID], [LEVEL_BEST_ID]: peak[LEVEL_BEST_ID] };
   const after = summarize(cleared);
   eq("an otherwise-empty transcript still reads at the pinned level", after.level, "almost");
-  t("and at least the pinned score", after.overall >= readinessBest(peak), `${after.overall} vs ${readinessBest(peak)}`);
+  eq("while the score is what is earned", after.overall, 0);
+  t("and the best score stays on record", readinessBest(peak) > 0, String(readinessBest(peak)));
 }
 {
   // pinReadiness itself must not lower a marker it is handed alongside a
@@ -247,6 +248,17 @@ console.log("\n--- the floor: a score and level only ever rise ---");
   const stillPinned = pinReadiness({ ...worseLive, [READINESS_BEST_ID]: best[READINESS_BEST_ID], [LEVEL_BEST_ID]: best[LEVEL_BEST_ID] });
   eq("pinning again with a worse pass does not lower the readiness best", stillPinned[READINESS_BEST_ID]?.pts, 100);
   eq("or the level best", levelBest(stillPinned), 4);
+}
+
+console.log("\n--- the rank ---");
+{
+  eq("no work, no rank", currentRank({}), null);
+  const done = pinRank(all((id) => clean(id)));
+  eq("a clean pass of Phase 1 is Junior SOC Analyst", currentRank(done)?.title, "Junior SOC Analyst");
+  const cleared: Results = { "rank-best": done["rank-best"] };
+  eq("a pinned rank survives the work behind it being recounted", currentRank(cleared)?.title, "Junior SOC Analyst");
+  const again = pinRank({ "rank-best": done["rank-best"] });
+  eq("pinning with less work does not lower the rank", rankIndex(again), rankIndex(done));
 }
 
 console.log("\n--- coming-soon phases ---");

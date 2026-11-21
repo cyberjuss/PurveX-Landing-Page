@@ -47,7 +47,10 @@ export async function loadProofData(userId: string): Promise<ProofData> {
     listClips(userId, true),
   ]);
   const items = buildWorkItems(results, drills);
-  const competencies = competencyBadges(jobProgress(drills, results, lab?.snapshot).map((j) => ({ id: j.id, status: j.status })));
+  const jobRows = jobProgress(drills, results, lab?.snapshot).map((j) => ({ id: j.id, status: j.status }));
+  // A confirmed portfolio item proves its task even when the task is not one the daily drill tracks.
+  for (const it of items) if (!jobRows.some((j) => j.id === it.job)) jobRows.push({ id: it.job, status: "proven" as const });
+  const competencies = competencyBadges(jobRows);
   const role = profile?.roles[0] ?? null;
   return {
     items,

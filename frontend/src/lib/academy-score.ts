@@ -263,10 +263,14 @@ export const READY_BADGE_ID = "readiness-badge-ready";
  * The highest Readiness score this student has ever had, in pts. Readiness is
  * points earned out of every challenge in the course, so each new challenge
  * that ships lowers everyone's percentage though nobody did anything wrong.
- * The score a student sees never goes below this. Written by the server alone
- * (pinReadiness, on every progress save), never taken from a browser.
+ * Kept as a record. The score a student sees is what their work earns now;
+ * it is the level (LEVEL_BEST_ID) and the rank (RANK_BEST_ID) that never drop.
+ * Written by the server alone (pinReadiness, on every progress save).
  */
 export const READINESS_BEST_ID = "readiness-best";
+
+/** The highest rank this student has held, as its place on the ladder. Written by the server alone (pinRank). */
+export const RANK_BEST_ID = "rank-best";
 
 /** Levels, worst to best. Lets a floor say "at least this good" as a number. */
 const LEVEL_ORDER: Summary["level"][] = ["none", "progress", "practice", "almost", "ready"];
@@ -283,7 +287,7 @@ const levelRank = (level: Summary["level"]) => LEVEL_ORDER.indexOf(level);
 export const LEVEL_BEST_ID = "readiness-level-best";
 
 /** Rows only the server writes. A browser's copy of these is ignored. */
-export const SERVER_MARKER_IDS: readonly string[] = [READY_BADGE_ID, READINESS_BEST_ID, LEVEL_BEST_ID];
+export const SERVER_MARKER_IDS: readonly string[] = [READY_BADGE_ID, READINESS_BEST_ID, LEVEL_BEST_ID, RANK_BEST_ID];
 
 /** Browser labs passed with 70% or more, kept with mission results so the portfolio can read them. */
 export const LAB_PASS_IDS = [READY_BADGE_ID] as const;
@@ -456,8 +460,8 @@ export function summarize(results: Results): Summary {
   }
   // Readiness counts every mission, so it only reaches 100 when all are done cleanly.
   // Accuracy and skill scores average only what is finished.
-  // Floored at the best this student has had, so new challenges never take points away.
-  const overall = Math.max(Math.round(sum / total), readinessBest(results));
+  // What the work earns now. New challenges can lower it; the level and rank are what never drop.
+  const overall = Math.round(sum / total);
   const accuracy = finished ? Math.round(sum / finished) : null;
   // A skill with nothing open to practice yet is left out, so it can neither
   // block Ready nor be suggested as something to work on.
@@ -534,7 +538,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
   if (!raw || typeof raw !== "object") return {};
   const out: Results = {};
   for (const [id, value] of Object.entries(raw as Record<string, unknown>)) {
-    if (!(id in MISSION_SKILLS || isLabPass(id) || id === READINESS_BEST_ID || id === LEVEL_BEST_ID) || !value || typeof value !== "object") continue;
+    if (!(id in MISSION_SKILLS || isLabPass(id) || id === READINESS_BEST_ID || id === LEVEL_BEST_ID || id === RANK_BEST_ID) || !value || typeof value !== "object") continue;
     const v = value as Record<string, unknown>;
     const at = typeof v.at === "string" && !Number.isNaN(new Date(v.at).getTime()) ? new Date(v.at).toISOString() : undefined;
     const flagged = v.flagged === true && v.solved !== true;
@@ -545,7 +549,7 @@ export function sanitizeResults(raw: unknown, trustLabOk = false): Results {
       ...(flagged ? { flagged: true } : {}),
       ...(trustLabOk && v.labOk === true ? { labOk: true } : {}),
       ...(trustLabOk && v.labOk === true && v.labVerified === true ? { labVerified: true } : {}),
-      ...((isLabPass(id) || id === READINESS_BEST_ID || id === LEVEL_BEST_ID) && typeof v.pts === "number" && Number.isFinite(v.pts) ? { pts: Math.min(100, Math.max(0, Math.round(v.pts))) } : {}),
+      ...((isLabPass(id) || id === READINESS_BEST_ID || id === LEVEL_BEST_ID || id === RANK_BEST_ID) && typeof v.pts === "number" && Number.isFinite(v.pts) ? { pts: Math.min(100, Math.max(0, Math.round(v.pts))) } : {}),
       ...(at ? { at } : {}),
     };
   }

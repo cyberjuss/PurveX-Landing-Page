@@ -6,6 +6,7 @@ import { sanitizeProfile, type RoleBrief, type RoleId, type StudentProfile } fro
 import type { DrillEntry, EntryMode } from "@/lib/academy-drills";
 import { sanitizeLabSnapshot, type LabSnapshot } from "@/lib/academy-lab";
 import { pinReadiness, sanitizeResults, type Results } from "@/lib/academy-score";
+import { pinRank } from "@/lib/academy-badges";
 import { applyPatch, sanitizeSaved, type Saved, type SavedPatch } from "@/lib/academy-saved";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
@@ -43,7 +44,7 @@ export async function loadProgress(userId: string): Promise<Results> {
 export async function saveProgress(userId: string, email: string | null, scored: Results): Promise<Results> {
   // Every save records the best Readiness and the Ready level, so later
   // course growth can only ever leave a student where they were or higher.
-  const results = pinReadiness(scored);
+  const results = pinRank(pinReadiness(scored));
   memoryProgress.set(userId, results);
   if (!supabaseAdmin) return results;
   const { error } = await supabaseAdmin.from("academy_progress").upsert({

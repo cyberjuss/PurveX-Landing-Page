@@ -8,7 +8,7 @@ export type Competency = {
   title: string;
   /** What an employer gets from someone who has it, in one line. */
   why: string;
-  /** Job task ids from JOBS. Every job belongs to exactly one competency. */
+  /** Job task ids: every task in JOBS, once, plus portfolio-only tasks such as access-audit. */
   jobs: string[];
 };
 
@@ -29,7 +29,7 @@ export const COMPETENCIES: Competency[] = [
     id: "iam",
     title: "Identity and Access Management",
     why: "Grants access through roles and groups, and takes away what should not be there.",
-    jobs: ["group-access", "role-based-access", "least-privilege", "offboard", "service-account"],
+    jobs: ["group-access", "role-based-access", "least-privilege", "access-audit", "offboard", "service-account"],
   },
   {
     id: "hardening",

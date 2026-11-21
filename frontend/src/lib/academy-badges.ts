@@ -1,9 +1,9 @@
 import { MISSION_CATALOG, type MissionCatalogEntry } from "@/lib/academy-missions";
-import { summarize, type Results } from "@/lib/academy-score";
+import { RANK_BEST_ID, summarize, type Results } from "@/lib/academy-score";
 
-// The rank, read from the same results readiness uses. Nothing here is
-// stored: a rank is what the student's record shows today. The skill badges
-// are the job competencies in academy-competencies.ts.
+// The rank, read from the same results readiness uses. Once held, a rank is
+// pinned on the server (pinRank), so a course that grows never takes it away.
+// The skill badges are the job competencies in academy-competencies.ts.
 
 type ChallengeKey = MissionCatalogEntry["challenge"];
 
@@ -35,8 +35,13 @@ export const RANKS: Rank[] = [
   { id: "incident-responder", title: "Incident Responder", earn: "Opens with Phase 3.", soon: true },
 ];
 
-/** How many ranks this record has earned, 0 for none yet. */
+/** How many ranks this record has earned, 0 for none yet: what it shows now, or the best it has held. */
 export function rankIndex(results: Results): number {
+  const pinned = Math.min(RANKS.length, Math.max(0, Math.round(results[RANK_BEST_ID]?.pts ?? 0)));
+  return Math.max(liveRankIndex(results), pinned);
+}
+
+function liveRankIndex(results: Results): number {
   const s = summarize(results);
   if (s.finished === 0) return 0;
   if (!HELP_DESK.every((k) => challengeFinished(results, k))) return 1;
@@ -48,4 +53,11 @@ export function rankIndex(results: Results): number {
 export function currentRank(results: Results): Rank | null {
   const i = rankIndex(results);
   return i === 0 ? null : RANKS[i - 1];
+}
+
+/** Before a save on the server: record the rank held now, so it can never drop. Only ever raises it. */
+export function pinRank(results: Results): Results {
+  const live = liveRankIndex(results);
+  if (live <= (results[RANK_BEST_ID]?.pts ?? 0)) return results;
+  return { ...results, [RANK_BEST_ID]: { solved: true, wrong: 0, hint: false, pts: live, at: new Date().toISOString() } };
 }
