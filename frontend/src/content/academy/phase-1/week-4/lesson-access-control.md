@@ -70,7 +70,7 @@ When a user reports seeing someone else's data:
 
 In web and application logs, these are the signs that someone is probing access control:
 
-- one session requesting item numbers in sequence, such as `10450`, `10451`, `10452`
+- one session requesting item numbers in sequence, such as `10450` → `10451` → `10452`
 - a regular user requesting admin pages, especially with success (200) instead of refusal (403)
 - a rise in refused requests (403) from one source
 - a request field such as `role` or `roleid` that the normal page never sends

@@ -87,7 +87,7 @@
 <span class="ad-mission__num">Stage 1 · Exploitation · T1110.003 Password Spraying · INC-1072 · Medium</span>
 <h4>Unlock the Real Lockout</h4>
 <p><strong>IT Lead · Log review · 10:10 AM</strong><br>One account's run of failures ends differently from the others. Instead of just a string of failed attempts, it ends in an actual lockout.</p>
-<p><strong>Task:</strong> Find the account event 4740 (account lockout) names, confirm it is still locked, unlock it, then report its name.</p>
+<p><strong>Task:</strong> Find the account event 4740 (account lockout) names and confirm it is still locked. Unlock it, then report its name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Unlock the Real Lockout" placeholder="an account name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{petra.lindqvist}">Submit</button>
@@ -191,7 +191,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Four failures land exactly two seconds apart, and a success follows about two and a half minutes later. That steady spacing points to a script guessing passwords rather than a person retyping one. And because these are four attempts against one named account, rather than the spray's one attempt against many, this is Password Guessing, T1110.001. It belongs to the same Brute Force family, just aimed at one target instead of spread wide.</p>
+<p>Four failures land exactly two seconds apart, and a success follows about two and a half minutes later. That steady spacing points to a script guessing passwords rather than a person retyping one. These are four attempts against one named account, rather than the spray's one attempt against many. That makes this Password Guessing, T1110.001. It belongs to the same Brute Force family, just aimed at one target instead of spread wide.</p>
 </div>
 </div>
 </div>
@@ -238,7 +238,7 @@
 <div class="ad-mission" data-id="tq-09" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Stage 2 · Exploitation · T1110.001 Password Guessing · INC-1046 · Critical</span>
 <h4>Mistake or Attack?</h4>
-<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Here is what you have so far: four failed logons two seconds apart, then a success, at 2 AM, with an admin account, on a workstation outside IT. Which explanation fits?<br><strong>A</strong> Alex mistyped the password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
+<p><strong>SIEM Alert · Part 4 of 5 · Automated detection · 2:10 AM</strong><br>Here is what you have so far: four failed logons two seconds apart, then a success at 2 AM, with an admin account, on a workstation outside IT. Which explanation fits?<br><strong>A</strong> Alex mistyped the password four times.<br><strong>B</strong> Automated password guessing against a real account, which finally worked.<br><strong>C</strong> A scheduled maintenance task using an old credential.<br><strong>D</strong> A clock problem on the domain controller.</p>
 <p><strong>Task:</strong> Select the explanation that fits all of the evidence and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Mistake or Attack?" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -400,7 +400,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>A spray and a brute force both fill a log with 4625 events, and only counting distinct accounts, rather than total failures, tells them apart.</p>
+<p>A spray and a brute force both fill a log with 4625 events. Only counting distinct accounts, rather than total failures, tells them apart.</p>
 </div>
 </div>
 </div>
@@ -417,7 +417,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>Here are the seven stages in order: Reconnaissance, Weaponization, Delivery, Exploitation, Installation, Command and Control, and Actions on Objectives.</p>
+<p>Here are the seven stages in order: Reconnaissance → Weaponization → Delivery → Exploitation → Installation → Command and Control → Actions on Objectives.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="reconnaissance|weaponization|delivery">That stage comes before Exploitation, not after Command and Control. Name the one at the end of the chain.</div>

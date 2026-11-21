@@ -10,7 +10,7 @@ HTTP and HTTPS are the protocols that load web pages, on ports 80 and 443. The d
 
 #### DNS
 
-Before any of that web traffic can happen, a device has to find the server, and that is the job of DNS, which translates names into IP addresses. The network only routes on addresses, so a device that wants to reach a name such as google.com has to look it up first.
+Before any of that web traffic can happen, a device has to find the server. That is the job of DNS, which translates names into IP addresses. The network only routes on addresses, so a device that wants to reach a name such as google.com has to look it up first.
 
 That ordering is what makes DNS so valuable to you as an analyst. Because almost every connection starts with a lookup, DNS logs are one of the best records you will get of what a machine tried to reach, including attempts that never succeeded. They are not complete, though, since some lookups never reach them:
 

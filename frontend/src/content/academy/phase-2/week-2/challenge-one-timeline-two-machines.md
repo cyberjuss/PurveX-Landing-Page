@@ -12,7 +12,7 @@
 
 ### Make Two Real Events
 
-If you only ever read one machine's log, you'll miss whatever happened on another machine just before or just after. To see why, start by making some evidence of your own. Sign in to your domain controller the normal way, and then, separately, open a terminal session to the Ubuntu server.
+If you only ever read one machine's log, you'll miss whatever happened on another machine just before or just after. To see why, start by making some evidence of your own. Sign in to your domain controller the normal way, then separately open a terminal session to the Ubuntu server.
 
 You've now produced two real authentication events on two different machines, a few minutes apart. That's what an investigation looks like once it spreads beyond a single box.
 

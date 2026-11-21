@@ -32,8 +32,8 @@ Impact: clients' account numbers and balances exposed, and a report owed to Comp
 
 The three properties also pull against each other:
 
-- Stronger **confidentiality**, such as extra MFA prompts, makes data harder for the wrong person to reach, but also harder for the right one.
-- Easier **availability**, such as a file share open to everyone, means people can always reach their work, but it removes the barrier that keeps the wrong people out.
+- Stronger **confidentiality** (extra MFA prompts) makes data harder for the wrong person to reach, but also harder for the right one.
+- Easier **availability** (a file share open to everyone) means people can always reach their work, but it removes the barrier that keeps the wrong people out.
 
 Since no setup gets the most out of all three at once, security work is a series of decisions rather than a checklist:
 

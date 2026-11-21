@@ -1,7 +1,7 @@
 ### Tools You'll Use
 <!-- art: terminal -->
 
-Verify, Contain, Preserve and Escalate describe what you do, but not what you click. In practice, a handful of tools carry almost every step of that response, and knowing what each one does, and doesn't do, is what turns the framework into real work.
+Verify, Contain, Preserve and Escalate describe what you do, but not what you click. In practice, a handful of tools carry almost every step of that response. Knowing what each one does, and doesn't do, is what turns the framework into real work.
 
 #### Antivirus
 
@@ -11,7 +11,7 @@ It does have a clear limit, though. A signature only exists for malware someone 
 
 #### EDR
 
-EDR stands for Endpoint Detection and Response, and it's the main tool you'll work inside for a malware alert. Rather than matching known signatures, it watches behavior on the endpoint: what a process does, what it connects to, and what it touches on disk. In your own lab environment, the EDR is Microsoft Defender for Endpoint.
+EDR stands for Endpoint Detection and Response, and it's the main tool you'll work inside for a malware alert. Rather than matching known signatures, it watches behavior on the endpoint: what a process does, what it connects to and what it touches on disk. In your own lab environment, the EDR is Microsoft Defender for Endpoint.
 
 Two parts of it map directly onto the response you've just learned. The first is the device timeline, a view of everything observed on that host in time order. That's where Verify happens, because you read what the process did rather than just what it was named.
 

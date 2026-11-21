@@ -12,7 +12,7 @@ Each question pulls out one piece of the alert. Skip one, and someone else has t
 - **Where** in the environment did it happen: which host, which network segment, which application?
 - **Why** might this have happened, considering both the innocent explanation and the malicious one?
 
-The order matters less than covering all five before you decide. An analyst who can answer who, what and when, but not where or why, has only a partial case. Partial cases are where investigations go wrong, because the gaps get filled with assumptions instead of facts.
+The order matters less than covering all five before you decide. An analyst who can answer who, what and when but not where or why has only a partial case. Partial cases are where investigations go wrong, because the gaps get filled with assumptions instead of facts.
 
 ```sort
 prompt: Sort each alert detail into the question it answers.

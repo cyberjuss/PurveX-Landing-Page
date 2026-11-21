@@ -76,7 +76,7 @@ Three of these are about how the machine is set up, and they can all show up in 
 
 ### Start Over
 
-If you ever want a fresh start, run the cleanup script on the domain controller. It asks you to confirm first, then deletes the `Departments`, `AccessLevels` and `ServiceAccounts` OUs and everything inside them, while the domain itself and its built-in accounts stay untouched.
+If you ever want a fresh start, run the cleanup script on the domain controller. It asks you to confirm first, then deletes the `Departments`, `AccessLevels` and `ServiceAccounts` OUs and everything inside them. The domain itself and its built-in accounts stay untouched.
 
 ```powershell
 ./Remove-Environment.ps1

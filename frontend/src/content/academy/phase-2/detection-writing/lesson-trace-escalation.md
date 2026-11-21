@@ -3,7 +3,7 @@
 
 Escalation covers what happens the moment a detection fires. Like Technique, it isn't KQL at all, and it's there because a detection firing is the start of the work rather than the end of it. This last step of TRACE decides what severity the alert gets and who or what it notifies. It uses the same P1, P2 and P3 scale you learned in SOC Mindset.
 
-For Password Spraying, that means routing the alert as a P2, High, so it's worked after any open P1. That's how the Shift incident built from this technique already sits in your own queue. The reasoning runs both ways. An attack in progress against real accounts isn't routine, so it shouldn't wait for P3-level attention. But it isn't yet a breach with confirmed access either, so it shouldn't outrank a P1 that's already in front of you.
+For Password Spraying, that means routing the alert as a P2, High. It's worked after any open P1. That's how the Shift incident built from this technique already sits in your own queue. The reasoning runs both ways. An attack in progress against real accounts isn't routine, so it shouldn't wait for P3-level attention. But it isn't yet a breach with confirmed access either, so it shouldn't outrank a P1 that's already in front of you.
 
 Here's the full detection, built by working through all five TRACE letters in order:
 

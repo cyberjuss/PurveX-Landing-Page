@@ -117,4 +117,4 @@ Now open Event Viewer and find the 4625 you just generated. You'll find that its
 
 ### Why It Matters
 
-A vague alert and a documented account can describe the same failed sign-in. The difference is whether the next person to read it has to go and find the who, when, and why themselves, or whether you've already done it for them.
+A vague alert and a documented account can describe the same failed sign-in. The difference is whether the next person to read it has to go and find the who, when and why themselves, or whether you've already done it for them.

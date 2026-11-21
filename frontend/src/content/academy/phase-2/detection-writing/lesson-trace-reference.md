@@ -1,7 +1,7 @@
 ### R: Reference
 <!-- art: logs -->
 
-Reference is the point where TRACE turns into actual KQL. Once you know which technique you're hunting, Reference answers two questions: which table holds the evidence, and how far back you need to look to catch it. This lab's domain is on-prem Active Directory, not Azure AD, so a failed logon isn't a sign-in event at all: it's Windows Security event ID 4625, and events like it live in the `SecurityEvent` table.
+Reference is the point where TRACE turns into actual KQL. Once you know which technique you're hunting, Reference answers two questions: which table holds the evidence, and how far back you need to look to catch it. This lab's domain is on-prem Active Directory, not Azure AD. So a failed logon isn't a sign-in event at all: it's Windows Security event ID 4625, and events like it live in the `SecurityEvent` table.
 
 ```
 SecurityEvent

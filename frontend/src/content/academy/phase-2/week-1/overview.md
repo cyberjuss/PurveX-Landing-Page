@@ -14,4 +14,4 @@ To get you there, this week covers four things:
 - What to do when a malware alert fires on an endpoint
 - The tools you will use to verify, contain and investigate
 
-Don't worry if malware sounds intimidating. You don't need to take malware apart to work a Tier 1 alert. What you do need is to recognize what you're looking at, contain it, and then escalate with the right evidence, and that's what this week builds.
+Don't worry if malware sounds intimidating. You don't need to take malware apart to work a Tier 1 alert. What you do need is to recognize what you're looking at, contain it, and then escalate with the right evidence. That's what this week builds.

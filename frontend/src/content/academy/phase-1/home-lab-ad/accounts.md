@@ -17,7 +17,7 @@ So when a ticket names a person, check the folder and Member Of against The Envi
 
 ### Computer Objects
 
-Machines get accounts too. A **computer object** represents a machine in the same way a user account represents a person. In the baseline, `IT-WKS01` is the only client workstation, living under `OU=Workstations,OU=IT,OU=Departments`, and you read it the same way you read a person, folder first and then Member Of.
+Machines get accounts too. A **computer object** represents a machine in the same way a user account represents a person. In the baseline, `IT-WKS01` is the only client workstation and lives under `OU=Workstations,OU=IT,OU=Departments`. Read it the same way you read a person: folder first, then Member Of.
 
 ### Service Accounts
 

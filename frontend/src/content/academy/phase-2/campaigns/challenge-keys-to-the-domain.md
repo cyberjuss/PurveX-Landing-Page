@@ -147,7 +147,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>If a service genuinely needs its SPN, the account stays Kerberoastable, so it also needs AES turned on and a long, random password. When nobody can explain an SPN and the job behind it no longer runs, the simplest fix is to remove it outright. Either way is better than leaving a crackable ticket sitting in the directory.</p>
+<p>If a service genuinely needs its SPN, the account stays Kerberoastable. It also needs AES turned on and a long, random password. When nobody can explain an SPN and the job behind it no longer runs, the simplest fix is to remove it outright. Either way is better than leaving a crackable ticket sitting in the directory.</p>
 </div>
 </div>
 </div>
@@ -167,7 +167,7 @@
 <p>It's an advanced audit subcategory that's off by default, much like the process-creation auditing you fixed earlier this phase.</p>
 <ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>, then edit <code>Default Domain Controllers Policy</code>.</li>
-<li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Advanced Audit Policy Configuration, Audit Policies, DS Access.</li>
+<li>Go to Computer Configuration → Policies → Windows Settings → Security Settings → Advanced Audit Policy Configuration → Audit Policies → DS Access.</li>
 <li>Open <strong>Audit Directory Service Access</strong>, tick Configure, and tick Success.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>auditpol /get /subcategory:"Directory Service Access"</code>.</li>
 </ul>
@@ -212,7 +212,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The real signal is Control Access (0x100) together with the Properties field naming DS-Replication-Get-Changes and DS-Replication-Get-Changes-All, requested by anything other than a domain controller's own computer account, since 0x100 alone also covers ordinary, unrelated operations.</p>
+<p>The real signal is Control Access (0x100) together with the Properties field naming DS-Replication-Get-Changes and DS-Replication-Get-Changes-All, requested by anything other than a domain controller's own computer account. That distinction matters because 0x100 alone also covers ordinary, unrelated operations.</p>
 </div>
 </div>
 </div>

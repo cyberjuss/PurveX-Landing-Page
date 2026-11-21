@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Three-Minute Job</h3>
-<p class="ad-brief__ask">Something on web01, the Ubuntu server, has been calling out to the domain controller every three minutes, day and night, and nobody on the current team remembers setting it up. Find out what it is, what it hands over, and shut it down the right way.</p>
+<p class="ad-brief__ask">Something on web01 (the Ubuntu server) has been calling out to the domain controller every three minutes, day and night, and nobody on the current team remembers setting it up. Find out what it is, what it hands over, and shut it down the right way.</p>
 <p>You'll need your hosted lab running, with both machines reachable.</p>
 <ul>
 <li>The job is already running in your lab, and web01 ships with Wireshark and Nmap, so there's nothing to download before you capture and read the traffic.</li>
@@ -109,7 +109,7 @@
 <li>Open Wireshark on the web01 desktop and double-click <code>ens5</code>, web01's network card, to start capturing.</li>
 <li>In a terminal, trigger the job now: <code>sudo /usr/local/bin/settlement-push.sh</code>.</li>
 <li>Back in Wireshark, type <code>ldap</code> in the display filter bar and press Enter. Once the LDAP packets show, click the red Stop button. Keep this capture open for the next ticket.</li>
-<li>Click the packet whose Info column reads <strong>bindRequest</strong>. In the middle pane, expand Lightweight Directory Access Protocol, then the bindRequest, then authentication.</li>
+<li>Click the packet whose Info column reads <strong>bindRequest</strong>. In the middle pane, expand Lightweight Directory Access Protocol → bindRequest → authentication.</li>
 <li>The <strong>simple</strong> field there is the password, in plain text.</li>
 </ul>
 </div>
@@ -149,7 +149,7 @@
 <li>Disable the account: in Active Directory Users and Computers, find <strong>Service Settlements</strong> in the Service Accounts folder and disable it, or run <code>Disable-ADAccount svc-settlements</code> on the domain controller.</li>
 <li>On web01, remove the schedule: <code>sudo rm /etc/cron.d/purvex-settlement</code>.</li>
 <li>Remove the access that let it run as root without a password: <code>sudo rm /etc/sudoers.d/purvex-settlement</code>.</li>
-<li>Find the file in the capture from the last ticket: change the display filter to <code>smb2</code> and look for <strong>Create Request File</strong> in the Info column, or open File, Export Objects, SMB. If you closed it, capture again and rerun the job.</li>
+<li>Find the file in the capture from the last ticket: change the display filter to <code>smb2</code> and look for <strong>Create Request File</strong> in the Info column, or open File → Export Objects → SMB. If you closed it, capture again and rerun the job.</li>
 </ul>
 </div>
 <p class="ad-guess__feedback"></p>
@@ -167,7 +167,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Confirm the account no longer signs in and the job no longer fires. If Operations still needs this report, it needs a new account, a new password, and a protocol that does not hand either one over for free.</p>
+<p>Confirm the account no longer signs in and the job no longer fires. If Operations still needs this report, it needs a new account and a new password, plus a protocol that does not hand either one over for free.</p>
 </div>
 </div>
 </div>
@@ -176,7 +176,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="w3-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · Stretch · TLS · Critical · Hardening · INC-1057</span>
 <h4>Name the Fix</h4>
-<p><strong>Jordan Ellis · Finance · 10:30 AM</strong><br>Operations still wants this report running, just not like that. Before they rebuild it, tell them which protocol actually closes this, by name, so it does not come back as a different job with the same problem.</p>
+<p><strong>Jordan Ellis · Finance · 10:30 AM</strong><br>Operations still wants this report running, just not like that. Before they rebuild it, tell them which protocol actually closes this by name. That way it does not come back as a different job with the same problem.</p>
 <p><strong>Task:</strong> Name the encrypted replacement for the plain LDAP simple bind the job used.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Name the Fix" placeholder="a protocol name" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -201,7 +201,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>LDAPS wraps the entire bind in TLS before anything, including the password, ever reaches the wire, the same way HTTPS wraps HTTP. It costs the job nothing it was not already able to do: the account, the password and the query all stay the same. Only the channel changes.</p>
+<p>LDAPS wraps the entire bind in TLS before anything (including the password) ever reaches the wire, the same way HTTPS wraps HTTP. It costs the job nothing it was not already able to do: the account, the password and the query all stay the same. Only the channel changes.</p>
 </div>
 <div>
 <span>What to do</span>

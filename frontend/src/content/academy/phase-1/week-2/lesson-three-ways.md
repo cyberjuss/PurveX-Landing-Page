@@ -23,7 +23,7 @@ Jordan's question matters because the answer changes what happens next:
 | **Encryption** | Random characters that grow with the input | Only with the key |
 | **Hash** | Always the same length: SHA-256 is 64 characters | Never |
 
-Using that table, you can see that Jordan's line is Base64, because the letters, the digits and the trailing `=` are its signature. CyberChef's **From Base64** turns it into `Harbor2026` in a single click, with no key involved at all. So the answer to Jordan is no, it was never encrypted. Two things follow:
+Using that table, you can see that Jordan's line is Base64. The letters, the digits and the trailing `=` are its signature. CyberChef's **From Base64** turns it into `Harbor2026` in a single click, with no key involved at all. So the answer to Jordan is no, it was never encrypted. Two things follow:
 
 <ul>
 <li>Treat the password as exposed and change it</li>

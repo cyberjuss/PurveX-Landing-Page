@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>A New Hire's First Week</h3>
 <p class="ad-brief__ask">Maya Okafor joined Wealth Management on Monday, and nothing about the account has gone right since. Can you work every call from the first week and leave the account the way it should have started?</p>
-<p>Maya's account is already in your directory, sitting in the wrong department just as HR's import left it, and wherever a call asks you to change something, your lab has to show the change before your answer counts.</p>
+<p>Maya's account is already in your directory, sitting in the wrong department just as HR's import left it. Wherever a call asks you to change something, your lab has to show the change before your answer counts.</p>
 </div>
 
 <div class="ad-progress">
@@ -13,7 +13,7 @@
 <div class="ad-mission" data-id="dk-01" data-attempts="0">
 <span class="ad-mission__num">Call 01 · Warm-up · Find an Account · Monday · INC-1094</span>
 <h4>Find the Caller</h4>
-<p><strong>Front Desk · Monday · 8:40 AM</strong><br>Before Maya's calls start coming in, warm up on a quick one. A caller says, "This is Jordan from Finance," and asks what title the directory shows for them, because a new expense system reads it from there.</p>
+<p><strong>Front Desk · Monday · 8:40 AM</strong><br>Before Maya's calls start coming in, warm up on a quick one. A caller says, "This is Jordan from Finance," and asks what title the directory shows for them. A new expense system reads it from there.</p>
 <p><strong>Task:</strong> Use Find to open <code>jordan.ellis</code> without browsing the folders, and report the title on the account.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Find the Caller" placeholder="a job title" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -24,7 +24,7 @@
 <p>Find works from any folder you start in, so there's no need to know which department OU holds the account. The title lives on the Organization tab.</p>
 <ul>
 <li>In Active Directory Users and Computers, right-click the domain and choose Find.</li>
-<li>Keep Users, Contacts, and Groups selected, type <code>jordan.ellis</code>, and click Find Now.</li>
+<li>Keep Users, Contacts, and Groups selected. Type <code>jordan.ellis</code> and click Find Now.</li>
 <li>Open the result and read Title on the Organization tab.</li>
 </ul>
 <p>In PowerShell:</p>
@@ -140,7 +140,7 @@
 <p>Read the folders above the account before you move it, because once it's moved, the old location is gone from view.</p>
 <ul>
 <li>Use Find to locate <code>maya.okafor</code> and note the folder shown in the In Folder column.</li>
-<li>Right-click the account, choose Move, and select Departments, WealthManagement, Users.</li>
+<li>Right-click the account, choose Move, and select Departments → WealthManagement → Users.</li>
 <li>Open that folder and confirm Maya is listed there.</li>
 </ul>
 <p>In PowerShell:</p>
@@ -271,7 +271,7 @@
 <p>Ticking User must change password at next logon sets <code>pwdLastSet</code> to a special value meaning the password has to be replaced before it can be used. The Attribute Editor shows that value in words.</p>
 <ul>
 <li>In Active Directory Users and Computers, open View and turn on Advanced Features.</li>
-<li>Browse to Departments, WealthManagement, Users and open maya.okafor from there, not from Find.</li>
+<li>Browse to Departments → WealthManagement → Users and open maya.okafor from there, not from Find.</li>
 <li>Open the Attribute Editor tab and find <code>pwdLastSet</code>.</li>
 </ul>
 <p>In PowerShell:</p>
@@ -313,7 +313,7 @@
 <p>The Read the Account tab warned about this quirk. Make sure Advanced Features is still on, then compare the two windows tab by tab.</p>
 <ul>
 <li>Open Find, switch to Computers, find <code>IT-WKS01</code> and open it. Note the tabs.</li>
-<li>Close it, browse to Departments, IT, Workstations, and open IT-WKS01 from there.</li>
+<li>Close it, browse to Departments → IT → Workstations, and open IT-WKS01 from there.</li>
 <li>Name the tab that appears only the second time.</li>
 </ul>
 </div>

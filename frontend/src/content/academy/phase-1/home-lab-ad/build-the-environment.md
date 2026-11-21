@@ -5,14 +5,14 @@
 
 ### Build the environment
 
-Now that the domain exists, it's time to fill it. After the domain reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this script, which creates the departments, groups, users, and workstation you learned about on the baseline tabs.
+Now that the domain exists, it's time to fill it. After the domain reboot, sign in as `PURVEXFINANCIAL\Administrator` and run this script. It creates the departments, groups, users and workstation you learned about on the baseline tabs.
 
 **What this script does:**
 
 * Creates two top-level OUs: `Departments` and `AccessLevels`
 * Creates all 5 department OUs (IT, Compliance, Wealth Management, Operations, Finance and Accounting), each with its own `Users` sub-OU (IT also gets a `Workstations` sub-OU)
 * Creates all 8 security groups. Each department gets a standard access group, `IT Admins` is elevated, and `Server Admins` and `Helpdesk` are the Level 2 and Level 3 access groups. Level 1 uses the built-in `Domain Admins`
-* Creates all 9 user accounts from the Full User Directory in The Environment tab, in the right OU, with the right title and department, and adds each one to the right group(s)
+* Creates all 9 user accounts from the Full User Directory in The Environment tab, each one placed in the right OU with the right title and department, then added to the right group(s)
 * Pre-stages the `IT-WKS01` computer object
 * Prompts once for an initial password. Every account must change it at next logon, so nobody keeps that password long-term
 * Is safe to run more than once. It only creates what is missing and never resets or deletes anything that exists
@@ -21,13 +21,13 @@ Now that the domain exists, it's time to fill it. After the domain reboot, sign 
 
 **How the Coach sync works.** Once it's running, a change in the lab folders or the DNS zone is sent within about a second, and firewall or share changes within about two. If an upload ever fails, the change stays queued and is retried within seconds, while the Security log goes out once a minute. If you want to stop the sync, run `./Build-Environment.ps1 -UninstallSync`.
 
-Along with those changes, the sync sends your security settings, such as your password and lockout policy, auditing, and log size. It also adds a 30-day count of Security log events, such as failed sign-ins and accounts created.
+Along with those changes, the sync sends your security settings: your password and lockout policy, auditing and log size. It also adds a 30-day count of Security log events, such as failed sign-ins and accounts created.
 
 What the sync never sends is passwords or raw log entries. The drills and the weekly CTF depend on it, so if you built your lab before this feature existed, download the script again and run it once.
 
 [Download Build-Environment.ps1](/lab-scripts/Build-Environment.ps1)
 
-You can also copy the script from here instead. Keep in mind, though, that a pasted copy isn't linked to your Range account, so Coach and your drills won't be able to see your lab. Use the download whenever you want that link.
+You can also copy the script from here instead. Keep in mind that a pasted copy isn't linked to your Range account, so Coach and your drills won't be able to see your lab. Use the download whenever you want that link.
 
 <details class="ad-code">
 <summary>Show Build-Environment.ps1 (copy/paste)</summary>
