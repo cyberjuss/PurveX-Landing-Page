@@ -30,17 +30,17 @@ import {
 // Compliance Case Files, and all four Phase 2 campaigns) never got its own
 // row here even though it already counted toward the overall score.
 const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb: string }[] = [
-  { key: "weekend-incident-report", label: "The Weekend Incident Report", blurb: "Find and fix a confidentiality, integrity and availability failure." },
-  { key: "tuesday-after-breach", label: "Tuesday After the Breach", blurb: "Decode, hash, crack and contain on a real IT desk morning." },
-  { key: "network-change", label: "The Three-Minute Job", blurb: "Trace a cron job leaking a password, and shut it down the right way." },
-  { key: "access-review", label: "The Quarterly Access Review", blurb: "Find and remove access that should not exist." },
-  { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory." },
-  { key: "ticket-queue", label: "Ticket Queue", blurb: "Help desk tickets you change in the directory." },
-  { key: "client-data", label: "The Client Data Review", blurb: "Review what your own shares hold on real clients." },
-  { key: "credential-campaign", label: "The Credential Campaign", blurb: "A password-spray intrusion, start to finish." },
-  { key: "phishing-chain", label: "The Phishing Chain", blurb: "A phishing attachment, start to finish." },
-  { key: "open-door", label: "The Open Door", blurb: "A forgotten firewall rule, exploited and closed." },
-  { key: "keys-to-the-domain", label: "The Keys to the Domain", blurb: "Kerberoasting and DCSync, the two techniques CISA names most." },
+  { key: "weekend-incident-report", label: "The Weekend Incident Report", blurb: "Find and fix a CIA failure" },
+  { key: "tuesday-after-breach", label: "Tuesday After the Breach", blurb: "Decode, hash, crack and contain" },
+  { key: "network-change", label: "The Three-Minute Job", blurb: "Trace a cron job leaking a password" },
+  { key: "access-review", label: "The Quarterly Access Review", blurb: "Remove access that should not exist" },
+  { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory" },
+  { key: "ticket-queue", label: "Ticket Queue", blurb: "Work help desk tickets in the directory" },
+  { key: "client-data", label: "The Client Data Review", blurb: "Review what your shares hold on clients" },
+  { key: "credential-campaign", label: "The Credential Campaign", blurb: "A password spray start to finish" },
+  { key: "phishing-chain", label: "The Phishing Chain", blurb: "A phishing attachment start to finish" },
+  { key: "open-door", label: "The Open Door", blurb: "A forgotten firewall rule exploited and closed" },
+  { key: "keys-to-the-domain", label: "The Keys to the Domain", blurb: "Kerberoasting and DCSync" },
 ];
 
 type Tone = "good" | "warn" | "bad" | "live" | "none";
@@ -76,12 +76,12 @@ function joinNames(names: string[]) {
 
 function verdict(s: Summary, badges: CompetencyBadge[]) {
   if (s.finished === 0) {
-    return "Nothing is on record yet. Start Operation Day One and look people up in the directory to see what you can already do.";
+    return "Nothing on record yet. Start Operation Day One to see what you can already do.";
   }
   const strong = badges.filter((b) => b.tier === "proficient" || b.tier === "verified");
   // The competency closest to its next tier is the quickest win.
   const next = badges.filter((b) => b.tier !== "verified" && b.next).sort((a, b) => b.proven / b.total - a.proven / a.total)[0];
-  const nextLine = next?.next ? ` Next, ${next.title}: ${next.next.charAt(0).toLowerCase()}${next.next.slice(1)}` : "";
+  const nextLine = next?.next ? ` Next up is ${next.title}: ${next.next.charAt(0).toLowerCase()}${next.next.slice(1)}.` : "";
   if (s.level === "ready" && strong.length === badges.length) {
     return `You are proficient in all ${badges.length} competencies. Redo one ticket on your own lab with the hint closed.`;
   }
@@ -94,7 +94,7 @@ function labStatus(r: MissionResult | undefined): { tone: Tone; label: string; p
   const points = labPoints(r);
   if (points === null) return { tone: "none", label: "Not started", points };
   const legacy = typeof r?.pts !== "number";
-  const label = legacy ? "Passed · score not saved" : r?.solved ? "Passed" : "Not passed";
+  const label = legacy ? "Passed · no score saved" : r?.solved ? "Passed" : "Not passed";
   return { tone: points >= SCORE_READY ? "good" : points >= LEGACY_LAB_PASS_POINTS ? "warn" : "bad", label, points };
 }
 
@@ -134,7 +134,7 @@ function RankAndBadges({ results, badges }: { results: Results; badges: Competen
       <div className="rd-sec__head">
         <span className="rd-sec__n">01</span>
         <h2>Rank</h2>
-        <p>Your title on the job ladder.</p>
+        <p>Your title on the job ladder</p>
       </div>
       <div className="rb-rank">
         <div className="rb-rank__now">
@@ -143,7 +143,7 @@ function RankAndBadges({ results, badges }: { results: Results; badges: Competen
             {rank && <RankEmblem rank={rank} ready={summarize(results).level === "ready"} size={30} />}
             {rank ? rank.title : "Not ranked yet"}
           </strong>
-          <span>{RANKS[held]?.soon ? "The next rank opens with the next phase." : RANKS[held] ? `Next: ${RANKS[held].title}. ${RANKS[held].earn}` : "You hold the top rank open today."}</span>
+          <span>{RANKS[held]?.soon ? "Next rank opens with the next phase" : RANKS[held] ? `Next: ${RANKS[held].title} · ${RANKS[held].earn}` : "Top rank open today"}</span>
         </div>
         <ol className="rb-ladder" aria-label="Rank ladder">
           {RANKS.map((r, i) => (
@@ -161,8 +161,7 @@ function RankAndBadges({ results, badges }: { results: Results; badges: Competen
         <span className="rd-sec__n">02</span>
         <h2>Competencies</h2>
         <p>
-          The core skills a help desk or SOC job asks for, rated from the work you prove in your lab. {earned} of {badges.length} earned. Proficient
-          and Verified ones show on your portfolio.
+          Core help desk and SOC skills rated from work you prove in your lab · {earned} of {badges.length} earned
         </p>
       </div>
       <ul className="rb-grid">
@@ -259,7 +258,7 @@ export function ReadinessDashboard() {
             <p className={`rd-stamp rd-text-${scoreTone}`}>{lv.label}</p>
             {s.accuracy !== null && (
               <p className="rd-acc">
-                Accuracy <strong>{s.accuracy}%</strong> on what you have finished, {s.finished} of {s.total}
+                Accuracy <strong>{s.accuracy}%</strong> on {s.finished} of {s.total} finished
               </p>
             )}
           </div>
@@ -268,7 +267,7 @@ export function ReadinessDashboard() {
             <h1>Are you ready for the job?</h1>
             <blockquote>{verdict(s, badges)}</blockquote>
             <div className="rd-sign">
-              <span>PurveX Coach, Senior Help Desk Lead</span>
+              <span>PurveX Coach · Senior Help Desk Lead</span>
               <button
                 type="button"
                 className="rd-cta"
@@ -310,7 +309,7 @@ export function ReadinessDashboard() {
         <div className="rd-sec__head">
           <span className="rd-sec__n">03</span>
           <h2>Mission log</h2>
-          <p>Every attempt, as it will look to a hiring manager.</p>
+          <p>Every attempt as a hiring manager sees it</p>
         </div>
         {CHALLENGES.map((ch) => {
           const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === ch.key);
@@ -394,7 +393,7 @@ export function ReadinessDashboard() {
                 <ChevronDown className={`rd-log__chevron h-4 w-4 ${logOpen("labs") ? "" : "-rotate-90"}`} aria-hidden />
                 <span>
                   <span className="rd-log__title">Scored labs</span>
-                  <span className="rd-log__blurb">Your first finished score counts, so later replays do not change it.</span>
+                  <span className="rd-log__blurb">Your first finished score counts</span>
                 </span>
               </button>
             </h3>
@@ -431,7 +430,7 @@ export function ReadinessDashboard() {
       </section>
 
       <footer className="rd-foot">
-        <span>Scores update the moment you submit a mission.</span>
+        <span>Scores update when you submit a mission</span>
         {s.finished > 0 && (
           <button type="button" onClick={reset}>
             Reset evaluation
