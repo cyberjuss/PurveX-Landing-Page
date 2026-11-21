@@ -2878,7 +2878,11 @@ body:has(.lp) {
 .academy-prose li > ul, .academy-prose li > ol { margin: 0.35rem 0; }
 .academy-prose blockquote { margin: 1rem 0; padding: 0.65rem 1rem; border-left: 3px solid #6a5cff; background: var(--pvrx-surface-alt-light); border-radius: 0 6px 6px 0; color: var(--pvrx-text-secondary-light); }
 .academy-prose blockquote p { margin: 0.3rem 0; }
-.academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 4px; padding: 0.1em 0.4em; }
+/* An inline mention of an object/command name (`Users`, `dsa.msc`) keeps the
+   body's own font -- only the chip background marks it as a literal, so it
+   never reads as a font change mid-sentence. Real code blocks below (pre,
+   the command display) opt back into monospace on purpose. */
+.academy-prose code { font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 4px; padding: 0.1em 0.4em; }
 .academy-prose pre { margin: 1rem 0; padding: 0.9rem 1rem; background: #0c1220; border: 1px solid rgba(255,255,255,0.1); overflow-x: auto; }
 /* What a command's parts do, read down the left in one pass. Two columns so
    the flags line up, and no rules or boxes: the alignment carries it. */
@@ -2904,8 +2908,9 @@ body:has(.lp) {
   display: block; box-sizing: border-box; width: 100%;
   background: #0c1220; border: 1px solid rgba(255,255,255,0.1); padding: 0.85rem 1rem; color: #e2e8f0; font-weight: 500;
   overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  font-family: var(--font-mono, ui-monospace, monospace);
 }
-.academy-prose pre code { background: none; border: none; color: #e2e8f0; padding: 0; }
+.academy-prose pre code { background: none; border: none; color: #e2e8f0; padding: 0; font-family: var(--font-mono, ui-monospace, monospace); }
 .academy-prose hr { margin: 1.75rem 0; border: none; border-top: 1px solid var(--pvrx-border-light); }
 .academy-prose a { color: var(--rd-accent, #5546e0); font-weight: 600; text-decoration: underline; text-decoration-color: rgba(85,70,224,0.35); text-underline-offset: 2px; }
 .academy-prose a:hover { text-decoration-color: rgba(85,70,224,0.8); }
@@ -5315,7 +5320,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-refsec .academy-prose td:first-child { font-weight: 650; color: var(--rd-ink); }
 .ax-refsec .academy-prose tbody tr { transition: background var(--ax-dur-fast) var(--ax-ease); }
 .ax-refsec .academy-prose tbody tr:hover { background: color-mix(in srgb, var(--rd-accent) 5%, transparent); }
-.ax-refsec .academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.92em; }
+.ax-refsec .academy-prose code { font-size: 0.92em; }
 
 .ax-refcopy {
   display: inline-grid; place-items: center; width: 26px; height: 26px; margin-left: 8px; vertical-align: middle;
