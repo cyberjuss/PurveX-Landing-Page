@@ -35,7 +35,7 @@ The second, **asymmetric encryption**, uses a pair of keys instead.
 HTTPS is a good example of the two working together:
 
 <ul>
-<li>Your browser and the website use their key pairs to agree on a fresh shared key for the session, usually AES</li>
+<li>The website proves who it is with its certificate, and the two sides use public-key math to agree on a fresh shared key for the session, usually AES</li>
 <li>That shared key protects everything sent afterwards</li>
 </ul>
 

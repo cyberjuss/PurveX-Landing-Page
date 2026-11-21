@@ -15,6 +15,8 @@ Rather than giving one account all the power, PurveX Financial splits administra
 
 Reading the table from the bottom up, a Helpdesk login should never touch a server or the Domain Controller. So if you ever see one doing that, the activity doesn't match this table, and that mismatch is where your questions should start.
 
+The rule also runs the other way. A Domain Admin account never signs in to a server or a workstation, because an attacker on that machine can steal the credentials it leaves behind.
+
 ```sort
 prompt: Requests are waiting. Which level should handle each one?
 level: 2

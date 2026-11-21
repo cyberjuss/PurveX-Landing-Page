@@ -6,7 +6,7 @@ All three methods produce output a person can't read. What separates them has no
 
 - **Encoding** can be undone by anybody.
 - **Encryption** can be undone only by somebody holding the key.
-- **Hashing** cannot be undone by anybody, under any circumstances.
+- **Hashing** cannot be undone by anybody. A weak input can still be guessed, which is what cracking is.
 
 Jordan's question matters because the answer changes what happens next:
 

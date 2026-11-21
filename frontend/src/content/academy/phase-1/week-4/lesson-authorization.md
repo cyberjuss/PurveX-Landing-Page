@@ -35,12 +35,12 @@ At PurveX, there's one standard group per department:
 
 On top of those, `IT Admins` adds admin rights beyond `IT Users`.
 
-Administrative power is split into three levels, so that the most dangerous rights sit with the fewest people. The line each level must never cross matters as much as what it controls.
+Administrative power is split into three levels, so that the most dangerous rights sit with the fewest people. The line each level must never cross matters as much as what it controls. A lower level never controls a higher one. A higher-level account never signs in to a lower-level machine, because an attacker on that machine can steal the credentials it leaves behind.
 
-| Level | Controls | Must never touch |
+| Level | Controls | Never signs in to |
 |---|---|---|
-| Level 1, Domain Admin | The domain controller and Active Directory | Nothing above it |
-| Level 2, Server Admin | Application and file servers | The domain controller |
+| Level 1, Domain Admin | The domain controller and Active Directory | Servers or workstations |
+| Level 2, Server Admin | Application and file servers | Workstations or the domain controller |
 | Level 3, Helpdesk | Workstations, password resets, local support | Servers or the domain controller |
 
 ```sort
