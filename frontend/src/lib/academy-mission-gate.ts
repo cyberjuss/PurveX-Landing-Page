@@ -4,7 +4,7 @@ import { repairHostedLab, requestLabSync } from "@/lib/academy-hosted";
 import { formatLabAge, labIsLive } from "@/lib/academy-lab";
 import { checkMission, hasMissionObjects, hasTicketObjects, missingTickets, missionGate, PLANTED_TICKETS } from "@/lib/academy-mission-lab";
 import { missionTickets } from "@/lib/academy-answers";
-import { loadLabState, loadProgress, saveProgress, touchLabLive } from "@/lib/academy-store";
+import { loadLabState, loadProgress, touchLabLive, updateProgress } from "@/lib/academy-store";
 import { LIVE_MINUTES } from "@/lib/academy-verify";
 import { confirmOnLab } from "@/lib/academy-lab-pull";
 
@@ -95,13 +95,21 @@ export async function labGate(student: { id: string; email: string | null }, id:
         console.warn("lab report contradicted by the lab itself", student.id, id);
         return { gated: true, passed: false, results: pull.results, syncedAgo };
       }
-      results[id] = {
-        ...(results[id] ?? { solved: false, wrong: 0, hint: false }),
-        labOk: true,
-        ...(pull.status === "confirmed" ? { labVerified: true } : {}),
-        at: new Date().toISOString(),
-      };
-      await saveProgress(student.id, student.email, results);
+      // Applied to the row as it is now, not as read above: the lab command
+      // takes seconds, and an answer saved meanwhile must not be put back.
+      await updateProgress(student.id, student.email, (saved) =>
+        saved[id]?.labOk
+          ? null
+          : {
+              ...saved,
+              [id]: {
+                ...(saved[id] ?? { solved: false, wrong: 0, hint: false }),
+                labOk: true,
+                ...(pull.status === "confirmed" ? { labVerified: true } : {}),
+                at: new Date().toISOString(),
+              },
+            }
+      ).catch((e) => console.error("lab check not saved", student.id, id, e));
     }
   }
   return { gated: true, passed: false, ...checked, syncedAgo };

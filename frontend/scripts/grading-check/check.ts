@@ -261,6 +261,90 @@ console.log("\n--- the rank ---");
   eq("pinning with less work does not lower the rank", rankIndex(again), rankIndex(done));
 }
 
+console.log("\n--- properties: thousands of random students, rules that must always hold ---");
+{
+  // A seeded generator, so a failure prints a case that reruns the same way.
+  let seed = 0x5eed;
+  const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+  const pick = <T,>(xs: readonly T[]) => xs[Math.floor(rnd() * xs.length)];
+  const allIds = Object.keys(MISSION_SKILLS);
+  const randomRow = (): Results[string] => {
+    const solved = rnd() < 0.6;
+    return { solved, wrong: Math.floor(rnd() * 5), hint: rnd() < 0.4, ...(!solved && rnd() < 0.3 ? { flagged: true } : {}), ...(rnd() < 0.3 ? { labOk: true } : {}) };
+  };
+  const randomStudent = (): Results => {
+    const r: Results = {};
+    const density = rnd();
+    for (const id of allIds) if (rnd() < density) r[id] = randomRow();
+    return sanitizeResults(r, true);
+  };
+  // The rule, written out a second time from the course's own wording, so the
+  // check does not lean on the code it is checking.
+  const spec = (r: Results[string] | undefined): number | null => {
+    if (!r) return null;
+    if (r.solved) return Math.max(0, [100, 70, 40, 0][Math.min(r.wrong, 3)] - (r.hint ? 10 : 0));
+    return r.wrong >= 3 ? 0 : null;
+  };
+  const N = 3000;
+  const bad: Record<string, string> = {};
+  const fail = (rule: string, detail: string) => (bad[rule] ??= detail);
+  for (let n = 0; n < N; n++) {
+    const r = randomStudent();
+    const s = summarize(r);
+    const pts = ids.map((id) => spec(r[id]));
+    const done = pts.filter((p) => p !== null) as number[];
+    const sum = done.reduce((a, b) => a + b, 0);
+    if (s.overall !== Math.round(sum / ids.length)) fail("the score is exactly points earned over points possible", `${s.overall} vs ${Math.round(sum / ids.length)}`);
+    if (s.finished !== done.length || s.total !== ids.length) fail("finished and total count what they say", `${s.finished}/${s.total}`);
+    if (!Number.isInteger(s.overall) || s.overall < 0 || s.overall > 100) fail("the score is a whole number from 0 to 100", String(s.overall));
+    if ((s.accuracy === null) !== (s.finished === 0)) fail("accuracy exists once something is finished", JSON.stringify([s.accuracy, s.finished]));
+    if (s.accuracy !== null && s.accuracy < s.overall) fail("accuracy is never below the score", `${s.accuracy} < ${s.overall}`);
+    if (s.level === "ready" && !(s.finished === s.total && s.overall >= SCORE_READY)) fail("Ready only with everything finished at the bar", JSON.stringify(s));
+    // The same record, as the browser keeps it, scores the same.
+    const copy = sanitizeResults(JSON.parse(JSON.stringify(r)), true);
+    if (JSON.stringify(summarize(copy)) !== JSON.stringify(s)) fail("the browser's copy scores the same as the server's", "");
+    const shuffled = Object.fromEntries(Object.entries(r).sort(() => rnd() - 0.5));
+    if (summarize(shuffled).overall !== s.overall) fail("the order work was saved in does not matter", "");
+    // One more step on a random mission.
+    const id = pick(ids);
+    const cur = r[id] ?? { solved: false, wrong: 0, hint: false };
+    if (!cur.solved) {
+      if (summarize({ ...r, [id]: { ...cur, solved: true } }).overall < s.overall) fail("solving a mission never lowers the score", id);
+      const tried = { ...cur, wrong: Math.min(3, cur.wrong + 1) };
+      if ((spec({ ...tried, solved: true }) ?? 0) > (spec({ ...cur, solved: true }) ?? 0)) fail("a wrong try never raises what a solve is worth", id);
+      if ((spec({ ...cur, hint: true, solved: true }) ?? 0) > (spec({ ...cur, solved: true }) ?? 0)) fail("a hint never raises what a solve is worth", id);
+    }
+    // Pinned, then the work is recounted to less: level and rank hold.
+    const pinned = pinRank(pinReadiness(r));
+    const lv = ["none", "progress", "practice", "almost", "ready"];
+    const fewer = Object.fromEntries(Object.entries(pinned).filter(([k]) => !(k in MISSION_SKILLS) || rnd() < 0.5));
+    if (lv.indexOf(summarize(fewer).level) < lv.indexOf(summarize(pinned).level)) fail("the level never drops once pinned", "");
+    if (rankIndex(fewer) < rankIndex(pinned)) fail("the rank never drops once pinned", "");
+    if (readinessBest(pinned) < (s.finished ? s.overall : 0)) fail("the best score on record is at least the score now", "");
+    // Fields only the server may set are dropped from anything a browser sends.
+    const forged = sanitizeResults({ ...r, [id]: { solved: true, wrong: 0, hint: false, labOk: true, labVerified: true } });
+    if (forged[id]?.labOk || forged[id]?.labVerified) fail("a browser cannot claim a lab check", id);
+  }
+  const rules = [
+    "the score is exactly points earned over points possible",
+    "finished and total count what they say",
+    "the score is a whole number from 0 to 100",
+    "accuracy exists once something is finished",
+    "accuracy is never below the score",
+    "Ready only with everything finished at the bar",
+    "the browser's copy scores the same as the server's",
+    "the order work was saved in does not matter",
+    "solving a mission never lowers the score",
+    "a wrong try never raises what a solve is worth",
+    "a hint never raises what a solve is worth",
+    "the level never drops once pinned",
+    "the rank never drops once pinned",
+    "the best score on record is at least the score now",
+    "a browser cannot claim a lab check",
+  ];
+  for (const rule of rules) t(`${rule} (${N} students)`, !(rule in bad), bad[rule] ?? "");
+}
+
 console.log("\n--- coming-soon phases ---");
 t("a locked phase's missions are not counted toward readiness", Object.keys(SCORED_SKILLS).length <= Object.keys(MISSION_SKILLS).length, `${Object.keys(SCORED_SKILLS).length} of ${Object.keys(MISSION_SKILLS).length}`);
 

@@ -2,10 +2,10 @@ import { after, NextResponse } from "next/server";
 import { checkGuess, hasMissionKey, missFeedback, missionReveal, needsLabForAnswer } from "@/lib/academy-answers";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { labGate } from "@/lib/academy-mission-gate";
-import type { MissionResult } from "@/lib/academy-score";
+import type { MissionResult, Results } from "@/lib/academy-score";
 import { isClassMember } from "@/lib/academy-classes";
 import { challengeTitle, discordWinsConfigured, finishedChallenge, finishedChallenges, postWin } from "@/lib/academy-discord";
-import { loadLabState, loadProfile, loadProgress, saveProgress } from "@/lib/academy-store";
+import { loadLabState, loadProfile, loadProgress, ProgressBusyError, updateProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 
 export const runtime = "nodejs";
@@ -39,19 +39,33 @@ export async function POST(request: Request) {
   const gate = await labGate(student, id);
   if (!gate.passed) return NextResponse.json({ blocked: true, gate });
 
-  const results = await loadProgress(student.id);
-  const cur: MissionResult = results[id] ?? { solved: false, wrong: 0, hint: false };
-  if (cur.solved) return NextResponse.json({ correct: true, result: cur, reveal: missionReveal(id) });
-
   const lab = needsLabForAnswer(id) ? ((await loadLabState(student.id))?.snapshot ?? null) : null;
   const correct = checkGuess(id, guess, lab);
-  const next: MissionResult = correct
-    ? { ...cur, solved: true, at: new Date().toISOString() }
-    : { ...cur, wrong: Math.min(3, cur.wrong + 1), at: new Date().toISOString() };
-  if (next.solved) delete next.flagged;
-  const before = { ...results };
-  results[id] = next;
-  await saveProgress(student.id, student.email, results);
+  // Graded against the row as it is at the moment of writing, so an answer
+  // that overlaps another write (a second tab, the browser's sync) is never
+  // erased and never counts a try twice. See updateProgress.
+  const graded: { before: Results; next: MissionResult | null; already: MissionResult | null } = { before: {}, next: null, already: null };
+  let results: Results;
+  try {
+    results = await updateProgress(student.id, student.email, (saved) => {
+      const cur: MissionResult = saved[id] ?? { solved: false, wrong: 0, hint: false };
+      graded.before = saved;
+      graded.already = cur.solved ? cur : null;
+      if (cur.solved) return null;
+      const next: MissionResult = correct
+        ? { ...cur, solved: true, at: new Date().toISOString() }
+        : { ...cur, wrong: Math.min(3, cur.wrong + 1), at: new Date().toISOString() };
+      if (next.solved) delete next.flagged;
+      graded.next = next;
+      return { ...saved, [id]: next };
+    });
+  } catch (e) {
+    console.error("mission answer not saved", student.id, id, e instanceof ProgressBusyError ? "busy" : e);
+    return NextResponse.json({ error: "Could not save your answer. Try again." }, { status: 503 });
+  }
+  const { before, next, already } = graded;
+  if (already) return NextResponse.json({ correct: true, result: already, reveal: missionReveal(id) });
+  if (!next) return NextResponse.json({ error: "Could not save your answer. Try again." }, { status: 503 });
   // The solve that finished a whole challenge goes to the Discord's #wins,
   // for a student who opted in. After the response, so Discord being slow
   // or down never holds up their answer.

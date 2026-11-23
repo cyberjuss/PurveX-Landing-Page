@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/lib/supabase-admin": ["./fake-supabase.ts"],
+      "@/*": ["../../src/*"],
+      "server-only": ["../grading-check/server-only.ts"]
+    }
+  }
+}

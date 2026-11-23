@@ -3,7 +3,7 @@ import { clearClassCookie, isAcademyUnlocked, readClassCookie } from "@/lib/acad
 import { findClassByCode, joinClass } from "@/lib/academy-classes";
 import { hasReadyBadge, levelBest, MISSION_SKILLS, pinReadiness, readinessBest, sanitizeResults, SERVER_MARKER_IDS, type Results } from "@/lib/academy-score";
 import { pinRank, rankIndex } from "@/lib/academy-badges";
-import { loadProgress, saveProgress } from "@/lib/academy-store";
+import { ProgressBusyError, updateProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
 import { sendEmail } from "@/lib/email";
 import { studentJoinedEmail, studentWelcomeEmail } from "@/lib/academy-emails";
@@ -43,15 +43,22 @@ export async function GET(request: Request) {
   // missions now count, for one -- was never recorded and could later read
   // back lower. Pinning here too, on every read, closes that gap: the floor
   // can only ever rise, so this is safe to run as often as the page loads.
-  const results = await loadProgress(student.id);
-  const pinned = pinRank(pinReadiness(results));
-  const raised =
-    readinessBest(pinned) > readinessBest(results) ||
-    (hasReadyBadge(pinned) && !hasReadyBadge(results)) ||
-    levelBest(pinned) > levelBest(results) ||
-    rankIndex(pinned) > rankIndex(results);
-  if (raised) await saveProgress(student.id, student.email, pinned);
-  return NextResponse.json({ results: raised ? pinned : results });
+  // updateProgress pins on write; returning the row unchanged asks it to write only when a pin would rise.
+  const raised = (results: Results) => {
+    const pinned = pinRank(pinReadiness(results));
+    return (
+      readinessBest(pinned) > readinessBest(results) ||
+      (hasReadyBadge(pinned) && !hasReadyBadge(results)) ||
+      levelBest(pinned) > levelBest(results) ||
+      rankIndex(pinned) > rankIndex(results)
+    );
+  };
+  try {
+    return NextResponse.json({ results: await updateProgress(student.id, student.email, (r) => (raised(r) ? r : null)) });
+  } catch (e) {
+    console.error("progress read failed", student.id, e instanceof ProgressBusyError ? "busy" : e);
+    return NextResponse.json({ error: "Could not load your progress. Try again." }, { status: 503 });
+  }
 }
 
 export async function PUT(request: Request) {
@@ -76,7 +83,7 @@ export async function PUT(request: Request) {
 
   // Solves, tries and lab checks come from the server alone (mission-answer
   // and mission-check). A reset clears a mission but keeps what the lab confirmed.
-  const saved = await loadProgress(student.id);
+  const merge = (saved: Results): Results => {
   const results: Results = {};
   for (const [id, row] of Object.entries(saved)) {
     if (!(id in MISSION_SKILLS)) continue;
@@ -102,6 +109,15 @@ export async function PUT(request: Request) {
     const cur = results[id];
     results[id] = cur ? { ...cur, solved: cur.solved || row.solved, ...(cur.pts === undefined && row.pts !== undefined ? { pts: row.pts } : {}) } : row;
   }
+  return results;
+  };
 
-  return NextResponse.json({ ok: true, results: await saveProgress(student.id, student.email, results) });
+  // Merged into the row as it is at the moment of writing, so a sync that
+  // overlaps an answer can never put back the copy from before the answer.
+  try {
+    return NextResponse.json({ ok: true, results: await updateProgress(student.id, student.email, merge) });
+  } catch (e) {
+    console.error("progress save failed", student.id, e instanceof ProgressBusyError ? "busy" : e);
+    return NextResponse.json({ error: "Could not save your progress. Try again." }, { status: 503 });
+  }
 }

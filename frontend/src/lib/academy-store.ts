@@ -40,7 +40,11 @@ export async function loadProgress(userId: string): Promise<Results> {
   return memoryProgress.get(userId) || {};
 }
 
-/** Returns what was stored: the results with the best score and Ready level pinned. */
+/**
+ * Overwrites the whole row. For scripts and tests; routes use updateProgress,
+ * which cannot erase a change another request made at the same moment.
+ * Returns what was stored: the results with the best score and Ready level pinned.
+ */
 export async function saveProgress(userId: string, email: string | null, scored: Results): Promise<Results> {
   // Every save records the best Readiness and the Ready level, so later
   // course growth can only ever leave a student where they were or higher.
@@ -55,6 +59,67 @@ export async function saveProgress(userId: string, email: string | null, scored:
   });
   if (error) console.error("academy_progress upsert failed", error.message);
   return results;
+}
+
+/** Thrown when a results write could not land because other writes kept winning. Nothing was changed. */
+export class ProgressBusyError extends Error {
+  constructor() {
+    super("academy_progress is busy");
+  }
+}
+
+/**
+ * Read, change and write a student's results as one step.
+ *
+ * Three routes write this one row: an answer, a lab check and the browser's
+ * sync. Each used to read the row, change it and write the whole thing back,
+ * so when two overlapped the slower one put back what it had read and erased
+ * the other's change: a solve lost, or a wrong try forgotten and the score
+ * inflated. Now a write lands only if the row is still the version that was
+ * read (updated_at is the version); otherwise it reads again and reapplies
+ * `change`, which must therefore be quick and free of side effects.
+ *
+ * `change` returns null to write nothing. Returns what is stored after the
+ * call, with the best score, level and rank pinned.
+ */
+export async function updateProgress(userId: string, email: string | null, change: (results: Results) => Results | null): Promise<Results> {
+  if (!supabaseAdmin) {
+    const current = memoryProgress.get(userId) || {};
+    const next = change(current);
+    if (!next) return current;
+    const results = pinRank(pinReadiness(next));
+    memoryProgress.set(userId, results);
+    return results;
+  }
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const { data, error } = await supabaseAdmin.from("academy_progress").select("results, updated_at").eq("user_id", userId).maybeSingle();
+    if (error) throw new Error(`academy_progress read failed: ${error.message}`);
+    const current = sanitizeResults(data?.results, true);
+    const next = change(current);
+    if (!next) return current;
+    const results = pinRank(pinReadiness(next));
+    // Strictly later than the version read, so two writes in the same
+    // millisecond can never both look like that version.
+    const prev = data?.updated_at ? Date.parse(data.updated_at) : 0;
+    const updated_at = new Date(Math.max(Date.now(), prev + 1)).toISOString();
+    if (!data) {
+      const { error: insErr } = await supabaseAdmin.from("academy_progress").insert({ user_id: userId, email, results, updated_at });
+      if (!insErr) return results;
+      if (insErr.code !== "23505") throw new Error(`academy_progress insert failed: ${insErr.message}`);
+    } else {
+      const { data: won, error: upErr } = await supabaseAdmin
+        .from("academy_progress")
+        .update({ results, updated_at, ...(email ? { email } : {}) })
+        .eq("user_id", userId)
+        .eq("updated_at", data.updated_at)
+        .select("user_id");
+      if (upErr) throw new Error(`academy_progress update failed: ${upErr.message}`);
+      if (won && won.length > 0) return results;
+    }
+    // Another write landed first. Back off a little, then read it and reapply.
+    await new Promise((r) => setTimeout(r, 20 + Math.random() * 40 * (attempt + 1)));
+  }
+  throw new ProgressBusyError();
 }
 
 /** Null when the stored copy could not be read, so a caller never mistakes an outage for an empty account. */

@@ -1,6 +1,6 @@
-// Readiness-only-grows check: a student's Readiness score never goes down for
-// something they did not do. New challenges shipping, a mission renamed or
-// split, or a hint opened after the solve must all leave it where it was.
+// Readiness check: the level and the best score on record never go down for
+// something a student did not do, while the score itself always shows what
+// the work earns now. A hint opened after the solve costs nothing.
 // Run: npm run check:range:readiness   (no database, no network)
 
 import { MISSION_SKILLS, READINESS_BEST_ID, READY_BADGE_ID, summarize, type Results } from "@/lib/academy-score";
@@ -27,13 +27,16 @@ async function main() {
   const at20 = summarize(await loadProgress(ME)).overall;
   check("a save records the score as the best", (await loadProgress(ME))[READINESS_BEST_ID]?.pts === at20 && at20 > 0, String((await loadProgress(ME))[READINESS_BEST_ID]?.pts));
 
-  console.log("\nThe course changing under a student never lowers their score");
+  console.log("\nThe course changing under a student: the score shows the work, the level holds");
   // Ten solved missions renamed or split away: the live points drop, as they
   // do when new challenges ship and the total grows.
-  const fewer = { ...solved(10), [READINESS_BEST_ID]: (await loadProgress(ME))[READINESS_BEST_ID] };
-  await saveProgress(ME, null, fewer);
+  const levelAt20 = summarize(await loadProgress(ME)).level;
+  const kept = await loadProgress(ME);
+  const fewer = Object.fromEntries(Object.entries(kept).filter(([id]) => !(id in MISSION_SKILLS))) as Results;
+  await saveProgress(ME, null, { ...fewer, ...solved(10) });
   const after = await loadProgress(ME);
-  check("the score shown stays at the best", summarize(after).overall === at20, `${summarize(after).overall} vs ${at20}`);
+  check("the score shown is what the remaining work earns", summarize(after).overall === summarize(solved(10)).overall, `${summarize(after).overall} vs ${summarize(solved(10)).overall}`);
+  check("the level does not drop", summarize(after).level === levelAt20, `${summarize(after).level} vs ${levelAt20}`);
   check("the recorded best is not lowered", after[READINESS_BEST_ID]?.pts === at20);
 
   console.log("\nIt still climbs with new work");
