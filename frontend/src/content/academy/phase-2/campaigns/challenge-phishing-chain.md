@@ -97,7 +97,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>SHA-256 produces a 256-bit value, written as 64 hexadecimal characters, and that's true of every file you hash with it, this one included.</p>
+<p>SHA-256 produces a 256-bit value, written as 64 hexadecimal characters. That's true of every file you hash with it, this one included.</p>
 <ul>
 <li>On the domain controller, open PowerShell and run <code>Get-FileHash "C:\PurveX\Shares\WealthManagement\Q3_Rebalance_Summary.pdf.exe" -Algorithm SHA256</code>.</li>
 <li>Copy the Hash value it prints.</li>
@@ -114,7 +114,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>This exact hash is real and already in VirusTotal's database. The file contains the EICAR standard antivirus test string, a 68-byte file that every major engine flags on sight, so the lookup shows real detections rather than "no results." A lookup for a freshly built payload, by contrast, often comes back empty, because a brand-new file has no reputation yet. Either answer, flagged or unknown, tells you something real, which is why the disguised extension (T1036.007, Double File Extension) only counts as the first clue. The hash is what proves what the file really is underneath its name.</p>
+<p>This exact hash is real and already in VirusTotal's database. The file contains the EICAR standard antivirus test string, a 68-byte file that every major engine flags on sight, so the lookup shows real detections rather than "no results." By contrast, a lookup for a freshly built payload often comes back empty, because a brand-new file has no reputation yet. Either answer, flagged or unknown, tells you something real. That is why the disguised extension (T1036.007, Double File Extension) only counts as the first clue. The hash is what proves what the file really is underneath its name.</p>
 </div>
 </div>
 </div>
@@ -223,7 +223,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>Disabling the rule stops the beacon, even while the task is still sitting there. If you still have Wireshark open, run the capture again now. The SYN still leaves the task, but nothing lets it out, because the rule, not the task, was what let the traffic through.</p>
+<p>Disabling the rule stops the beacon, even while the task is still sitting there. If you still have Wireshark open, run the capture again now. The SYN still leaves the task, but nothing lets it out. The rule, not the task, was what let the traffic through.</p>
 </div>
 </div>
 </div>

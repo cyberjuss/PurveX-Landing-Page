@@ -41,7 +41,7 @@ Because there's only one, a ticket that names a different workstation is already
 | User accounts | 9 |
 | Client workstations | 1 |
 
-You might wonder why there are only two access level groups when there are three levels. Level 1 uses the built-in `Domain Admins` group, so the build doesn't need to create a third. Once you've built the lab, compare it with these counts, and if anything differs, check the build before you trust any ticket answer.
+You might wonder why there are only two access level groups when there are three levels. Level 1 uses the built-in `Domain Admins` group, so the build doesn't need to create a third. Once you've built the lab, compare it with these counts. If anything differs, check the build before you trust any ticket answer.
 
 ### Ticket Queue Objects
 
@@ -49,7 +49,7 @@ Finally, the Range download also plants the following objects for the Ticket Que
 
 - The `All Employees` and `Finance Reports` groups in `AccessLevels`
 - `old.intern` in IT and `svc-backup-job` in `OU=ServiceAccounts`
-- A contractor account, `kai.mendes`, and one more staff account, `noah.kim`
+- A contractor account (`kai.mendes`) and one more staff account (`noah.kim`)
 - Three more computer objects: `WM-WKS07`, `OPS-WKS03` and a new laptop that still has to be filed
 - Two DNS records, a firewall rule, a screen lock GPO and a Finance share under `C:\PurveX` on the domain controller
 

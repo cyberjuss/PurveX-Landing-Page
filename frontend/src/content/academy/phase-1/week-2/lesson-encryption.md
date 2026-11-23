@@ -72,7 +72,7 @@ Your task on this call is to get that key to the right person, and only to the r
 
 ### Where encryption fails
 
-Attackers go after the key, or after mistakes in how the encryption was set up, so when encrypted data leaks, these are the mistakes to check for:
+Attackers go after the key, or after mistakes in how the encryption was set up. When encrypted data leaks, these are the mistakes to check for:
 
 - **The key sits next to the data.** A key saved in a config file on the same server is stolen in the same breach, and the attacker decrypts everything.
 - **The same input gives the same output.** Without a random value mixed in, users who share a password share an encrypted value.

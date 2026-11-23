@@ -21,7 +21,7 @@ $xml = [xml]$hits[0].ToXml()
 $xml.Event.EventData.Data | Where-Object Name -in "Image","ParentImage","CommandLine" | Select-Object Name, "#text"
 ```
 
-The query pulls every process-creation event and keeps only the ones whose command line asked for a hidden window. From there, it reads each event's raw Sysmon XML and prints the three fields that matter: what ran, what launched it, and what it was told to do.
+The query pulls every process-creation event and keeps only the ones whose command line asked for a hidden window. From there, it reads each event's raw Sysmon XML and prints the three fields that matter: what ran, what launched it and what it was told to do.
 
 <div class="ad-mission" data-id="mw2-01" data-attempts="0">
 <span class="ad-mission__num">Hands-on · INC-1137 · Medium</span>
@@ -44,7 +44,7 @@ The query pulls every process-creation event and keeps only the ones whose comma
 </div>
 <div>
 <span>Why it matters</span>
-<p>Notice how little the process name told you on its own. The command line, read straight from the event's XML, told you exactly where this process is reaching and how often, and that's the evidence an escalation actually needs.</p>
+<p>Notice how little the process name told you on its own. The command line (read straight from the event's XML) told you exactly where this process is reaching and how often, and that's the evidence an escalation actually needs.</p>
 </div>
 </div>
 </div>
@@ -172,7 +172,7 @@ Disable-ScheduledTask -TaskName "WindowsDiagnosticsSync"
 </div>
 <div>
 <span>What to do</span>
-<p>Before you move on, log three things: the address, the task name, and the firewall rule. That way, the next person won't have to hunt it all down again.</p>
+<p>Before you move on, log three things: the address, the task name and the firewall rule. That way, the next person won't have to hunt it all down again.</p>
 </div>
 </div>
 </div>

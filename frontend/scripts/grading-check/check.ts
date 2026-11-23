@@ -34,6 +34,9 @@ import {
 } from "@/lib/academy-score";
 import { rollUp, type RosterStudent } from "@/lib/academy-roster";
 import { currentRank, pinRank, rankIndex } from "@/lib/academy-badges";
+import { COMPETENCIES, competencyBadges, type JobState } from "@/lib/academy-competencies";
+import { JOBS } from "@/lib/academy-drills";
+import { PROOF_TICKETS } from "@/lib/academy-proof";
 
 let failures = 0;
 function t(name: string, ok: boolean, detail = "") {
@@ -343,6 +346,66 @@ console.log("\n--- properties: thousands of random students, rules that must alw
     "a browser cannot claim a lab check",
   ];
   for (const rule of rules) t(`${rule} (${N} students)`, !(rule in bad), bad[rule] ?? "");
+}
+
+console.log("\n--- competency badges ---");
+{
+  // Every job id a competency names must actually be provable somewhere: in
+  // the JOBS catalog (academy-drills.ts, judged by the daily drill or a lab
+  // check), or as the job behind a PROOF_TICKETS entry (a ticket-only proof
+  // like "access-audit", which JOBS never lists). A typo or a renamed job id
+  // here is invisible in the UI -- the badge just quietly caps below
+  // Verified forever, since the one task behind it can never be proven.
+  const jobIds = new Set(JOBS.map((j) => j.id));
+  const ticketJobIds = new Set(Object.values(PROOF_TICKETS).map((p) => p.job));
+  const provable = new Set([...jobIds, ...ticketJobIds]);
+  const unprovable = COMPETENCIES.flatMap((c) => c.jobs.filter((id) => !provable.has(id)).map((id) => `${c.id}:${id}`));
+  t("every competency job id is provable by JOBS or a ticket", unprovable.length === 0, JSON.stringify(unprovable));
+
+  const dupWithin = COMPETENCIES.filter((c) => new Set(c.jobs).size !== c.jobs.length).map((c) => c.id);
+  t("no competency lists the same job id twice", dupWithin.length === 0, JSON.stringify(dupWithin));
+
+  const owner = new Map<string, string>();
+  const sharedAcross: string[] = [];
+  for (const c of COMPETENCIES) for (const id of c.jobs) {
+    const prior = owner.get(id);
+    if (prior && prior !== c.id) sharedAcross.push(`${id}: ${prior} & ${c.id}`);
+    owner.set(id, c.id);
+  }
+  t("no job id is claimed by more than one competency", sharedAcross.length === 0, JSON.stringify(sharedAcross));
+
+  const states = (ids: string[], proven: number, practiced: number): JobState[] => [
+    ...ids.slice(0, proven).map((id) => ({ id, status: "proven" as const })),
+    ...ids.slice(proven, proven + practiced).map((id) => ({ id, status: "practiced" as const })),
+  ];
+  const badge = (id: string, jobs: JobState[]) => competencyBadges(jobs).find((b) => b.id === id)!;
+
+  // monitoring: 4 jobs, half = 2.
+  const mon = COMPETENCIES.find((c) => c.id === "monitoring")!;
+  eq("0 of 4 touched is no tier yet", badge("monitoring", states(mon.jobs, 0, 0)).tier, null);
+  eq("1 of 4 tried is still below the practiced bar", badge("monitoring", states(mon.jobs, 0, 1)).tier, null);
+  eq("2 of 4 tried (none proven) is practiced", badge("monitoring", states(mon.jobs, 0, 2)).tier, "practiced");
+  eq("2 of 4 proven is proficient, not just practiced", badge("monitoring", states(mon.jobs, 2, 0)).tier, "proficient");
+  eq("4 of 4 proven is verified", badge("monitoring", states(mon.jobs, 4, 0)).tier, "verified");
+  eq("verified has no next step", badge("monitoring", states(mon.jobs, 4, 0)).next, null);
+  eq("proficient's next names exactly what is left, singular", badge("monitoring", states(mon.jobs, 3, 0)).next, "Prove 1 more task for Verified.");
+  eq("practiced's next counts toward Proficient, not Verified", badge("monitoring", states(mon.jobs, 0, 2)).next, "Prove 2 more tasks for Proficient.");
+  eq("untouched's next counts toward Practiced, not Proficient", badge("monitoring", states(mon.jobs, 0, 1)).next, "Try 1 more of its 4 tasks.");
+
+  // ad-admin: 5 jobs, half = ceil(5/2) = 3 -- half of an odd total rounds up.
+  const ad = COMPETENCIES.find((c) => c.id === "ad-admin")!;
+  eq("2 of 5 proven, below the rounded-up half, is only practiced", badge("ad-admin", states(ad.jobs, 2, 1)).tier, "practiced");
+  eq("3 of 5 proven clears the rounded-up half into proficient", badge("ad-admin", states(ad.jobs, 3, 0)).tier, "proficient");
+  eq("5 of 5 proven is verified", badge("ad-admin", states(ad.jobs, 5, 0)).tier, "verified");
+
+  // iam: 6 jobs including access-audit, a ticket-only job absent from JOBS.
+  // This is the one case that would silently cap below Verified forever if
+  // the job id were ever mistyped or renamed out from under it.
+  const iam = COMPETENCIES.find((c) => c.id === "iam")!;
+  t("iam names a ticket-only job absent from the JOBS catalog", iam.jobs.some((id) => !jobIds.has(id)));
+  eq("proving every iam job, including the ticket-only one, reaches verified", badge("iam", states(iam.jobs, iam.jobs.length, 0)).tier, "verified");
+
+  eq("a competency with jobs.length 0 names no real competency today", COMPETENCIES.filter((c) => c.jobs.length === 0).length, 0);
 }
 
 console.log("\n--- coming-soon phases ---");

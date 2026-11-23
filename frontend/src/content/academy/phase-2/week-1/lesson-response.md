@@ -54,7 +54,7 @@ Escalate: hand it up with what you found
 
 Before reading on, think about what you would do.
 
-Then let's walk through Verify, Contain, Preserve and Escalate for this specific ticket, rather than the general case.
+Then let's walk through Verify, Contain, Preserve and Escalate for this specific ticket rather than the general case.
 
 #### Verify, for this ticket
 
@@ -62,7 +62,7 @@ Then let's walk through Verify, Contain, Preserve and Escalate for this specific
 
 #### Contain, for this ticket
 
-Since the alert shows the machine is already talking to something outside, isolate Taylor's machine from the network now. Don't power it off, though, because shutting it down can lose whatever is still sitting in memory, which is often the only record of what the trojan did.
+Since the alert shows the machine is already talking to something outside, isolate Taylor's machine from the network now. Don't power it off, because shutting it down can lose whatever is still sitting in memory, which is often the only record of what the trojan did.
 
 #### Preserve, for this ticket
 

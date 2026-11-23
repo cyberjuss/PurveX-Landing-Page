@@ -3,7 +3,7 @@
 // the work earns now. A hint opened after the solve costs nothing.
 // Run: npm run check:range:readiness   (no database, no network)
 
-import { MISSION_SKILLS, READINESS_BEST_ID, READY_BADGE_ID, summarize, type Results } from "@/lib/academy-score";
+import { LEVEL_BEST_ID, MISSION_SKILLS, RANK_BEST_ID, READINESS_BEST_ID, READY_BADGE_ID, summarize, type Results } from "@/lib/academy-score";
 import { loadProgress, saveProgress } from "@/lib/academy-store";
 
 let failures = 0;
@@ -41,14 +41,30 @@ async function main() {
 
   console.log("\nIt still climbs with new work");
   await saveProgress(ME, null, { ...after, ...solved(40) });
-  const at40 = summarize(await loadProgress(ME)).overall;
+  const beforeForgery = await loadProgress(ME);
+  const at40 = summarize(beforeForgery).overall;
   check("solving more raises it past the old best", at40 > at20, `${at40} vs ${at20}`);
-  check("and that becomes the new best", (await loadProgress(ME))[READINESS_BEST_ID]?.pts === at40);
+  check("and that becomes the new best", beforeForgery[READINESS_BEST_ID]?.pts === at40);
+  // saveProgress pins the level and rank on every save (see academy-store.ts),
+  // so by now both already hold whatever this 40-mission pass legitimately
+  // earned. The forgery check below must compare against that real value, not
+  // assume the fields start out empty.
+  const legitLevel = beforeForgery[LEVEL_BEST_ID]?.pts;
+  const legitRank = beforeForgery[RANK_BEST_ID]?.pts;
 
-  console.log("\nA browser cannot set the best score or the Ready level");
-  const forged = await put({ results: { [READINESS_BEST_ID]: { solved: true, wrong: 0, hint: false, pts: 100 }, [READY_BADGE_ID]: { solved: true, wrong: 0, hint: false, pts: 100 } } });
+  console.log("\nA browser cannot set the best score, the level, the rank, or the Ready badge");
+  const forged = await put({
+    results: {
+      [READINESS_BEST_ID]: { solved: true, wrong: 0, hint: false, pts: 100 },
+      [READY_BADGE_ID]: { solved: true, wrong: 0, hint: false, pts: 100 },
+      [LEVEL_BEST_ID]: { solved: true, wrong: 0, hint: false, pts: 4 },
+      [RANK_BEST_ID]: { solved: true, wrong: 0, hint: false, pts: 5 },
+    },
+  });
   check("a forged best is ignored", forged.results[READINESS_BEST_ID]?.pts === at40, JSON.stringify(forged.results[READINESS_BEST_ID]));
   check("a forged Ready level is ignored", !forged.results[READY_BADGE_ID]);
+  check("a forged level floor keeps its real, legitimately-earned value, not the attacker's", forged.results[LEVEL_BEST_ID]?.pts === legitLevel, `${forged.results[LEVEL_BEST_ID]?.pts} vs ${legitLevel}`);
+  check("a forged rank floor keeps its real, legitimately-earned value, not the attacker's", forged.results[RANK_BEST_ID]?.pts === legitRank, `${forged.results[RANK_BEST_ID]?.pts} vs ${legitRank}`);
 
   console.log("\nA hint opened after the solve costs nothing");
   const first = ids[0];

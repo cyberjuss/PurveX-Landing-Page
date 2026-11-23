@@ -93,7 +93,7 @@
 <div class="ad-mission" data-id="w1-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Availability · High · INC-1090</span>
 <h4>Bring the File Shares Back</h4>
-<p><strong>Priya Nair · IT · 8:31 AM</strong><br>The phones haven't stopped. Nobody on the fourth floor, the office network at 10.250.40.0/24, can open a file share this morning, whatever department they're in. The files are all still there on the server, and the only thing that happened this weekend was a maintenance window.</p>
+<p><strong>Priya Nair · IT · 8:31 AM</strong><br>The phones haven't stopped. Nobody on the fourth floor (the office network at 10.250.40.0/24) can open a file share this morning, whatever department they're in. The files are all still there on the server, and the only thing that happened this weekend was a maintenance window.</p>
 <p><strong>Task:</strong> Find the firewall rule the weekend's maintenance left behind on the domain controller and switch it off. Then report the port it was blocking.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Bring the File Shares Back" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -140,7 +140,7 @@
 <span class="ad-mission__num">Ticket 04 · Apply it · Integrity · Critical · INC-1090</span>
 <h4>Catch the Altered Wire</h4>
 <p><strong>Jordan Ellis · Finance · 8:40 AM</strong><br>I approved November's wires on Friday and saved the file's SHA-256 hash next to it, like always. This morning the file looks fine to me, but I'd like it verified before the wires go out at noon. Can you check it against what I signed off?</p>
-<p><strong>Task:</strong> Prove whether <code>Wire_Approvals_Nov.csv</code> in the Finance share still matches the hash Jordan saved. If it doesn't, compare it with the approved copy in <code>C:\PurveX\Archive</code>, restore the approved version, and report the Wire ID that was altered.</p>
+<p><strong>Task:</strong> Prove whether <code>Wire_Approvals_Nov.csv</code> in the Finance share still matches the hash Jordan saved. If it doesn't, compare it with the approved copy in <code>C:\PurveX\Archive</code> and restore the approved version. Then report the Wire ID that was altered.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Wire" placeholder="a Wire ID" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{WR-2203}" data-accept="2203">Submit</button>
@@ -184,7 +184,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="w1-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 05 · Stretch · Risk · Report to the CISO · INC-1090</span>
 <h4>Rank the Weekend</h4>
-<p><strong>CISO · 9:30 AM</strong><br>Looking back at 8:15, when all three tickets were open at once, which one should have been escalated first?<br><strong>A</strong> The client export, because client data was exposed.<br><strong>B</strong> The altered wire, because $9,800 was due to leave the firm at noon to an account nobody approved, and a sent wire is hard to get back.<br><strong>C</strong> The blocked file shares, because they affected the most people.</p>
+<p><strong>CISO · 9:30 AM</strong><br>Looking back at 8:15, when all three tickets were open at once, which one should have been escalated first?<br><strong>A</strong> The client export, because client data was exposed.<br><strong>B</strong> The altered wire, because $9,800 was due to leave the firm at noon to an account nobody approved and a sent wire is hard to get back.<br><strong>C</strong> The blocked file shares, because they affected the most people.</p>
 <p><strong>Task:</strong> Select the ticket with the highest risk at 8:15 and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Rank the Weekend" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -205,7 +205,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The altered wire carried the most certain, soonest, and hardest-to-reverse harm of the three, so escalate it to Finance leadership first and work the rest alongside it.</p>
+<p>The altered wire carried the most certain, soonest and hardest-to-reverse harm of the three. Escalate it to Finance leadership first and work the rest alongside it.</p>
 </div>
 </div>
 </div>

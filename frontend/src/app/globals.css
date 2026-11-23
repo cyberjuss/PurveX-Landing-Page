@@ -2878,7 +2878,11 @@ body:has(.lp) {
 .academy-prose li > ul, .academy-prose li > ol { margin: 0.35rem 0; }
 .academy-prose blockquote { margin: 1rem 0; padding: 0.65rem 1rem; border-left: 3px solid #6a5cff; background: var(--pvrx-surface-alt-light); border-radius: 0 6px 6px 0; color: var(--pvrx-text-secondary-light); }
 .academy-prose blockquote p { margin: 0.3rem 0; }
-.academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 4px; padding: 0.1em 0.4em; }
+/* An inline mention of an object/command name (`Users`, `dsa.msc`) keeps the
+   body's own font -- only the chip background marks it as a literal, so it
+   never reads as a font change mid-sentence. Real code blocks below (pre,
+   the command display) opt back into monospace on purpose. */
+.academy-prose code { font-size: 0.85em; background: var(--pvrx-surface-alt-light); border: 1px solid var(--pvrx-border-light); border-radius: 4px; padding: 0.1em 0.4em; }
 .academy-prose pre { margin: 1rem 0; padding: 0.9rem 1rem; background: #0c1220; border: 1px solid rgba(255,255,255,0.1); overflow-x: auto; }
 /* What a command's parts do, read down the left in one pass. Two columns so
    the flags line up, and no rules or boxes: the alignment carries it. */
@@ -2904,8 +2908,9 @@ body:has(.lp) {
   display: block; box-sizing: border-box; width: 100%;
   background: #0c1220; border: 1px solid rgba(255,255,255,0.1); padding: 0.85rem 1rem; color: #e2e8f0; font-weight: 500;
   overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  font-family: var(--font-mono, ui-monospace, monospace);
 }
-.academy-prose pre code { background: none; border: none; color: #e2e8f0; padding: 0; }
+.academy-prose pre code { background: none; border: none; color: #e2e8f0; padding: 0; font-family: var(--font-mono, ui-monospace, monospace); }
 .academy-prose hr { margin: 1.75rem 0; border: none; border-top: 1px solid var(--pvrx-border-light); }
 .academy-prose a { color: var(--rd-accent, #5546e0); font-weight: 600; text-decoration: underline; text-decoration-color: rgba(85,70,224,0.35); text-underline-offset: 2px; }
 .academy-prose a:hover { text-decoration-color: rgba(85,70,224,0.8); }
@@ -4109,15 +4114,16 @@ html:active-view-transition .ax-page { animation: none }
    past that the last card is waiting on an animation nobody is watching. */
 .lg__grid > li,
 .rd-ledger > .rd-row,
+.rd-log__row,
 .pf-sec,
 .sh-li,
 .siem-table > li {
   animation: ax-enter var(--ax-dur) var(--ax-ease) both;
 }
-.lg__grid > li:nth-child(1), .rd-ledger > .rd-row:nth-child(1), .pf-sec:nth-child(1), .sh-li:nth-child(1), .siem-table > li:nth-child(1) { animation-delay: 0ms }
-.lg__grid > li:nth-child(2), .rd-ledger > .rd-row:nth-child(2), .pf-sec:nth-child(2), .sh-li:nth-child(2), .siem-table > li:nth-child(2) { animation-delay: 55ms }
-.lg__grid > li:nth-child(3), .rd-ledger > .rd-row:nth-child(3), .pf-sec:nth-child(3), .sh-li:nth-child(3), .siem-table > li:nth-child(3) { animation-delay: 110ms }
-.lg__grid > li:nth-child(n+4), .rd-ledger > .rd-row:nth-child(n+4), .pf-sec:nth-child(n+4), .sh-li:nth-child(n+4), .siem-table > li:nth-child(n+4) { animation-delay: 165ms }
+.lg__grid > li:nth-child(1), .rd-ledger > .rd-row:nth-child(1), .rd-log__row:nth-child(1), .pf-sec:nth-child(1), .sh-li:nth-child(1), .siem-table > li:nth-child(1) { animation-delay: 0ms }
+.lg__grid > li:nth-child(2), .rd-ledger > .rd-row:nth-child(2), .rd-log__row:nth-child(2), .pf-sec:nth-child(2), .sh-li:nth-child(2), .siem-table > li:nth-child(2) { animation-delay: 55ms }
+.lg__grid > li:nth-child(3), .rd-ledger > .rd-row:nth-child(3), .rd-log__row:nth-child(3), .pf-sec:nth-child(3), .sh-li:nth-child(3), .siem-table > li:nth-child(3) { animation-delay: 110ms }
+.lg__grid > li:nth-child(n+4), .rd-ledger > .rd-row:nth-child(n+4), .rd-log__row:nth-child(n+4), .pf-sec:nth-child(n+4), .sh-li:nth-child(n+4), .siem-table > li:nth-child(n+4) { animation-delay: 165ms }
 .ax-drawer__scrim { animation: ax-scrim-in var(--ax-dur) var(--ax-ease) both }
 .ax-drawer__panel { animation: ax-drawer-in var(--ax-dur) var(--ax-ease) both; background: #fff; color: #0f172a; }
 .academy-bg[data-academy-theme="dark"] .ax-drawer__panel { background: #000; color: #e8eef8; }
@@ -4125,7 +4131,7 @@ html:active-view-transition .ax-page { animation: none }
   .ax-enter, .ax-enter-fwd, .ax-enter-back, .ax-page, .ax-rise,
   .academy-slide-in-right, .academy-slide-in-left,
   .ax-drawer__scrim, .ax-drawer__panel,
-  .lg__grid > li, .rd-ledger > .rd-row, .pf-sec, .sh-li, .siem-table > li,
+  .lg__grid > li, .rd-ledger > .rd-row, .rd-log__row, .pf-sec, .sh-li, .siem-table > li,
   .academy-prose .ad-flag--shown { animation: none }
 }
 
@@ -4570,10 +4576,14 @@ html:active-view-transition .ax-page { animation: none }
 .rd-legend { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-family: var(--font-mono, ui-monospace, monospace); font-size: var(--ty-kicker); letter-spacing: 0.08em; text-transform: uppercase; color: var(--rd-ink-3); }
 .rd-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .rd-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; }
-.rd-strip { display: flex; gap: 14px; }
-.rd-strip__group { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; flex: 1; }
-.rd-strip__cell { height: 28px; border-radius: 3px; transition: transform var(--ax-dur-fast); }
-.rd-strip__cell:hover { transform: scaleY(1.15); }
+/* On a phone, 12 equal-width groups left no room for the longer challenges --
+   a 22-mission group was squeezed into a few px and its cells vanished. Each
+   cell now holds a 6px floor, so a group that no longer fits its floor pushes
+   the strip into a horizontal scroll instead of collapsing to nothing. */
+.rd-strip { display: flex; gap: 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+.rd-strip__group { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(6px, 1fr); gap: 4px; flex: 1 1 0%; min-width: max-content; }
+.rd-strip__cell { height: 28px; min-width: 6px; border-radius: 3px; transition: transform var(--ax-dur-fast); }
+.rd-strip__cell:hover, .rd-strip__cell:active { transform: scaleY(1.15); }
 
 .rd-sec { margin-top: 64px; }
 .rd-sec__head { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 14px; margin-bottom: 18px; }
@@ -4607,6 +4617,7 @@ html:active-view-transition .ax-page { animation: none }
 .rd-row__score small { font-size: var(--ty-body); margin-left: 1px; color: var(--rd-ink-3); }
 .rd-link { display: inline-flex; align-items: center; gap: 4px; font-size: var(--ty-note); font-weight: 600; color: var(--rd-accent); text-underline-offset: 3px; }
 .rd-link:hover { text-decoration: underline; }
+.rd-link:active { opacity: 0.7; }
 
 .rd-log + .rd-log { margin-top: 36px; }
 .rd-log__head { display: flex; align-items: flex-end; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--rd-ink); }
@@ -4621,6 +4632,7 @@ html:active-view-transition .ax-page { animation: none }
 .rd-log__chevron { flex-shrink: 0; margin-bottom: 5px; color: var(--rd-ink-3); transition: transform var(--ax-dur-fast, 150ms) ease, color var(--ax-dur-fast, 150ms) ease; }
 .rd-log__toggle:hover .rd-log__chevron, .rd-log__toggle:focus-visible .rd-log__chevron { color: var(--rd-accent); }
 .rd-log__toggle:focus-visible { outline: 2px solid var(--rd-accent); outline-offset: 2px; }
+.rd-log__toggle:active { opacity: 0.7; }
 .rd-log ol { list-style: none; margin: 0; padding: 0; }
 .rd-log__row { display: grid; grid-template-columns: 26px 10px minmax(0, 1fr) auto; align-items: center; gap: 4px 14px; padding: 12px 0; border-bottom: 1px solid var(--rd-line-2); font-size: var(--ty-body); }
 .rd-log__row:hover { background: linear-gradient(90deg, transparent, var(--rd-line-2) 20%, var(--rd-line-2) 80%, transparent); }
@@ -5308,7 +5320,7 @@ a.ax-path__row:active, a.ax-curriculum__row:active, a.dr-home:active { transform
 .ax-refsec .academy-prose td:first-child { font-weight: 650; color: var(--rd-ink); }
 .ax-refsec .academy-prose tbody tr { transition: background var(--ax-dur-fast) var(--ax-ease); }
 .ax-refsec .academy-prose tbody tr:hover { background: color-mix(in srgb, var(--rd-accent) 5%, transparent); }
-.ax-refsec .academy-prose code { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.92em; }
+.ax-refsec .academy-prose code { font-size: 0.92em; }
 
 .ax-refcopy {
   display: inline-grid; place-items: center; width: 26px; height: 26px; margin-left: 8px; vertical-align: middle;
@@ -6365,7 +6377,10 @@ a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transpare
 .rb-skillshead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 22px 0 12px; }
 .rb-skillshead h3 { margin: 0; font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--rd-ink); }
 .rb-skillshead span { font-size: var(--ty-small, 13px); color: var(--rd-ink-3); }
-.rb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+/* minmax(300px, 1fr) alone forces a 300px column even on a narrower phone --
+   a hard overflow on anything under ~330px wide. Capping the minimum at
+   100% lets a single column shrink to fit instead. */
+.rb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
 .rb-badge { display: flex; flex-direction: column; gap: 12px; padding: 18px; background: color-mix(in srgb, var(--rd-ink) 2%, transparent); box-shadow: inset 0 0 0 1px var(--rd-line); }
 .rb-badge__top { display: flex; align-items: center; gap: 12px; }
 .rb-badge__top > div { display: grid; gap: 4px; min-width: 0; }

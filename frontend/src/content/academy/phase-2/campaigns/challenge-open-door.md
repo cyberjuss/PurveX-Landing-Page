@@ -52,7 +52,7 @@
 <span class="ad-mission__num">Stage 1 · Exploitation · T1021.002 SMB/Windows Admin Shares · INC-1067 · High</span>
 <h4>Prove It Is Being Used</h4>
 <p><strong>IT Lead · Zero Trust rollout review · 11:02 AM</strong><br>A rule that could be abused and a rule that is actively carrying traffic are two different findings. Confirm which one this is before you close it.</p>
-<p><strong>Task:</strong> In the Security log, find a successful network logon (event 4624, Logon Type 3) on port 445 from a source other than the domain controller itself, and report the logon type number.</p>
+<p><strong>Task:</strong> In the Security log, find a successful network logon (event 4624, Logon Type 3) on port 445 from a source other than the domain controller itself. Report the logon type number.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Prove It Is Being Used" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{3}">Submit</button>
@@ -287,7 +287,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The Cyber Kill Chain describes a typical sequence, not a checklist every attacker has to complete, so a misconfigured trust boundary can let an attacker skip straight past Reconnaissance, Weaponization and Delivery, because being inside the network already accomplished what those stages exist to achieve.</p>
+<p>The Cyber Kill Chain describes a typical sequence, not a checklist every attacker has to complete. A misconfigured trust boundary can let an attacker skip straight past Reconnaissance, Weaponization and Delivery, because being inside the network already accomplished what those stages exist to achieve.</p>
 </div>
 </div>
 </div>

@@ -52,7 +52,7 @@ Password expired: Taylor's password reached the end of its allowed age
 A password or MFA reset is an authentication decision, not an administrative chore:
 
 <ul>
-<li>For the length of that call, you are the authentication system, able to set aside every control the organization has built, for one account</li>
+<li>For the length of that call, you are the authentication system, able to set aside every control the organization has built for one account</li>
 <li>That's precisely why attackers target this call</li>
 <li>In 2023, they reportedly got their first foothold at MGM Resorts without any technical exploit, simply by talking the help desk into resetting an employee's MFA</li>
 </ul>
@@ -114,7 +114,7 @@ All of these sign-ins leave a record you can read. Event **4624** is a successfu
 | 3 | Over the network, such as a file share |
 | 10 | Remote Desktop |
 
-Its partner, event **4625**, is a failed sign-in. Two fields tell you why it failed: **Status** and **Sub Status**. For a bad password or a bad username, Status reads `0xC000006D`, a general "sign-in failed", so look at Sub Status for the reason:
+Its partner, event **4625**, is a failed sign-in. Two fields tell you why it failed: **Status** and **Sub Status**. For a bad password or a bad username, Status reads `0xC000006D`, a general "sign-in failed." Look at Sub Status for the reason:
 
 <ul>
 <li><code>0xC000006A</code> (Sub Status): a wrong password for a real account</li>

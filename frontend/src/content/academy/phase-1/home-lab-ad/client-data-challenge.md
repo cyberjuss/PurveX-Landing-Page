@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>The Client Data Review</h3>
 <p class="ad-brief__ask">Before the auditor arrives, can you find what client data sits on the file shares, check that it's sound, and make sure only the right people can read it?</p>
-<p>Compliance has asked the desk to review the department shares on the domain controller, and every record you'll find there is made up: the SSNs fall in a range that's never issued, the phone numbers are reserved for fiction, and the email addresses all use example.com.</p>
+<p>Compliance has asked the desk to review the department shares on the domain controller. Every record you'll find there is made up: the SSNs fall in a range that's never issued, the phone numbers are reserved for fiction, and the email addresses all use example.com.</p>
 </div>
 
 <div class="ad-progress">
@@ -265,7 +265,7 @@
 <p>Least privilege means the people who need the data and nobody else. So build that group first, and then look at who the share lets in.</p>
 <ul>
 <li>Open Active Directory Users and Computers with Win+R and <code>dsa.msc</code>.</li>
-<li>Right-click <code>AccessLevels</code>, choose New, Group, and create <code>Client Data Readers</code> as a Global Security group.</li>
+<li>Right-click <code>AccessLevels</code>, choose New → Group, and create <code>Client Data Readers</code> as a Global Security group.</li>
 <li>Add the two advisors and the two Compliance reviewers on its Members tab, and nobody else.</li>
 <li>In PowerShell, run <code>Get-SmbShareAccess -Name Shares</code> and read the AccountName that has Read.</li>
 </ul>

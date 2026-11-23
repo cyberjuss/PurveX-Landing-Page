@@ -24,7 +24,7 @@
 <p>What you need is a Password Settings Object, a second, stricter policy layered on top of the domain's default. It applies only to the group you target and nowhere else.</p>
 <ul>
 <li>Open Active Directory Administrative Center with Win+R and <code>dsac.exe</code>.</li>
-<li>Go to System, then Password Settings Container, then New, then Password Settings.</li>
+<li>Go to System → Password Settings Container → New → Password Settings.</li>
 <li>Give it a name and a precedence, set the minimum length to 12, and set the lockout threshold somewhere between 8 and 12.</li>
 <li>Under Directly Applies To, add Wealth Management Users.</li>
 <li>Confirm with <code>Get-ADFineGrainedPasswordPolicy -Filter *</code>.</li>

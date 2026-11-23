@@ -16,7 +16,7 @@ Confidentiality matters most for information where simply seeing it does the dam
 - medical records
 - unreleased deals
 
-What sets this apart from the other two failures is that you can't undo it. You can bring a crashed system back online, and you can correct data that was altered, but once a secret has been read, it stays read.
+What sets this apart from the other two failures is that you can't undo it. You can bring a crashed system back online, and you can correct data that was altered. But once a secret has been read, it stays read.
 
 **Controls:** authentication, access control and encryption.
 

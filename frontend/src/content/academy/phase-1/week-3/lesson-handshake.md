@@ -22,7 +22,7 @@ You have just seen that TCP keeps checking the other side heard it. That checkin
 
 Data only starts to flow once all three steps are complete.
 
-Those sequence numbers are the reason TCP can call itself reliable, because the handshake is where each side declares the number it will count from. UDP, the other transport protocol you will meet constantly, skips the handshake and the acknowledgements entirely, trading reliability for speed. That is the right trade for voice and video calls, where a packet that arrives late is useless anyway.
+Those sequence numbers are the reason TCP can call itself reliable, because the handshake is where each side declares the number it will count from. UDP (the other transport protocol you will meet constantly) skips the handshake and the acknowledgements entirely, trading reliability for speed. That is the right trade for voice and video calls, where a packet that arrives late is useless anyway.
 
 So when you are working through a capture, look for all three steps before you trust a conversation:
 

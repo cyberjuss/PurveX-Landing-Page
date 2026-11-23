@@ -1,7 +1,7 @@
 import "server-only";
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { isClassMember } from "@/lib/academy-classes";
+import { isClassAffiliated } from "@/lib/academy-classes";
 import { rangeEntitlement } from "@/lib/range-plan";
 import type { AcademyStudent } from "@/lib/academy-student";
 
@@ -140,12 +140,12 @@ export async function syncDiscordRole(userId: string, student?: AcademyStudent |
   try {
     const link = await loadLink(userId);
     if (!link) return "unlinked";
-    // Class students have no Discord. One who linked before joining a class is unlinked, which takes the Pro role back.
-    if (await isClassMember(userId)) {
+    const who = student ?? (await studentById(userId));
+    // Class students and instructors have no Discord. One who linked before is unlinked, which takes the Pro role back.
+    if (await isClassAffiliated(userId, who?.email)) {
       await unlink(userId);
       return "removed";
     }
-    const who = student ?? (await studentById(userId));
     const pro = (await rangeEntitlement(who)).plan === "pro";
     const path = `/guilds/${guildId()}/members/${link.discord_user_id}/roles/${proRoleId()}`;
     const res = await bot(pro ? "PUT" : "DELETE", path, undefined, pro ? "Range Pro is active" : "Range Pro has ended");
@@ -176,7 +176,7 @@ export async function syncDiscordRole(userId: string, student?: AcademyStudent |
  */
 export async function finishLink(userId: string, code: string, origin: string): Promise<{ ok: true; username: string } | { ok: false; reason: string }> {
   if (!discordLinkConfigured() || !supabaseAdmin) return { ok: false, reason: "not-configured" };
-  if (await isClassMember(userId)) return { ok: false, reason: "class" };
+  if (await isClassAffiliated(userId, (await studentById(userId))?.email)) return { ok: false, reason: "class" };
   const tokenRes = await fetch("https://discord.com/api/oauth2/token", {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },

@@ -12,7 +12,6 @@ import { passedExamDates } from "@/lib/academy-goals";
 import { LEVELS, summarize } from "@/lib/academy-score";
 import { currentRank } from "@/lib/academy-badges";
 import { RankEmblem } from "@/components/academy/rank-emblem";
-import type { CompetencyBadge } from "@/lib/academy-competencies";
 import { useMounted } from "@/lib/use-mounted";
 import { useAcademyTheme } from "@/lib/use-academy-theme";
 
@@ -105,22 +104,6 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
   const { profile, editGoals } = useAcademyGoals();
   const needsUpdate = passedExamDates(profile).length > 0;
   const [open, setOpen] = useState(false);
-  // How many core job skills are earned, read when the menu opens. Null until it loads.
-  const [skills, setSkills] = useState<{ earned: number; total: number } | null>(null);
-  useEffect(() => {
-    if (!open) return;
-    let live = true;
-    academyFetch("/academy/api/proof")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d: { competencies?: CompetencyBadge[] } | null) => {
-        const list = d?.competencies;
-        if (live && list?.length) setSkills({ earned: list.filter((c) => c.tier).length, total: list.length });
-      })
-      .catch(() => {});
-    return () => {
-      live = false;
-    };
-  }, [open]);
   const mounted = useMounted();
   const [pos, setPos] = useState({ top: 72, right: 16 });
   const root = useRef<HTMLDivElement>(null);
@@ -240,10 +223,9 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               [data-ax-account] > strong { display: flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
               [data-ax-account] > span { display: block; margin: 2px 0 12px; font-size: 12px; opacity: 0.65; word-break: break-all; }
               [data-ax-account] .ax-account__rank { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; align-items: center; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.12); color: inherit; text-decoration: none; }
-              [data-ax-account] .ax-account__rank .rd-kicker, [data-ax-account] .ax-account__rank b, [data-ax-account] .ax-account__rank small { grid-column: 1; }
-              [data-ax-account] .ax-account__rank b { margin-top: 4px; font-size: 14px; font-weight: 600; }
-              [data-ax-account] .ax-account__rank small { margin-top: 2px; font-size: 12px; opacity: 0.6; }
-              [data-ax-account] .ax-account__rank svg { grid-column: 2; grid-row: 1 / span 3; opacity: 0.6; }
+              [data-ax-account] .ax-account__rank .rd-kicker, [data-ax-account] .ax-account__rank b { grid-column: 1; }
+              [data-ax-account] .ax-account__rank b { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 14px; font-weight: 600; }
+              [data-ax-account] .ax-account__rank-arrow { grid-column: 2; opacity: 0.6; }
               [data-ax-account] .ax-account__rank:hover b { color: #9a8cff; }
               [data-ax-account][data-theme="light"] .ax-account__rank { border-color: rgba(15,23,42,0.12); }
               [data-ax-account][data-theme="light"] .ax-account__rank:hover b { color: #5546e0; }
@@ -294,13 +276,11 @@ export function AcademyProfileMenu({ onSignOut }: { onSignOut: () => void }) {
               {student?.email && <span>{student.email}</span>}
               <Link href={`${READINESS_PATH}#rank`} className="ax-account__rank" onClick={() => setOpen(false)}>
                 <span className="rd-kicker">Rank and competencies</span>
-                <b>{rank ? rank.title : "Not ranked yet"}</b>
-                {skills && (
-                  <small>
-                    {skills.earned} of {skills.total} competencies earned
-                  </small>
-                )}
-                <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                <b>
+                  {rank && <RankEmblem rank={rank} ready={readiness.level === "ready"} size={20} />}
+                  {rank ? rank.title : "Not ranked yet"}
+                </b>
+                <ArrowRight className="ax-account__rank-arrow h-3.5 w-3.5" aria-hidden />
               </Link>
               <Link href={READINESS_PATH} className="ax-account__score" onClick={() => setOpen(false)}>
                 <span className="rd-kicker">Readiness</span>

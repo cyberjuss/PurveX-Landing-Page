@@ -39,7 +39,7 @@ For that reason, ransomware is always a top-severity incident, and speed matters
 
 #### Spyware and infostealers
 
-Spyware watches what a user does, while an infostealer goes after specific data, such as passwords and session cookies, and sends it to the attacker.
+Spyware watches what a user does. An infostealer goes after specific data, such as passwords and session cookies, and sends it to the attacker.
 
 The danger here is how quiet it is. Since no files get locked, it can run for weeks without anyone noticing. So when you suspect it, treat the account's credentials and sessions as compromised, not just the machine.
 

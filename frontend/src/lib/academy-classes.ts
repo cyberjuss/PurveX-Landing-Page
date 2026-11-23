@@ -198,6 +198,28 @@ export async function isClassMember(userId: string): Promise<boolean> {
   return [...memoryMembers.values()].some((list) => list.some((m) => m.userId === userId));
 }
 
+/** Runs at least one class. Narrower than classesFor: an admin who instructs
+ *  nothing is not an instructor, even though classesFor shows them every class. */
+export async function isClassInstructor(email: string | null | undefined): Promise<boolean> {
+  if (!email) return false;
+  if (supabaseAdmin) {
+    const { data, error } = await supabaseAdmin.from("academy_classes").select("id").eq("instructor_email", lower(email)).limit(1);
+    if (!error) return Boolean(data?.length);
+    console.error("academy_classes instructor lookup failed", error.message);
+  }
+  return [...memoryClasses.values()].some((c) => lower(c.instructorEmail) === lower(email));
+}
+
+/**
+ * Discord and the rest of the individual-Pro-only features assume someone with
+ * nobody else to coordinate through. A class member has an instructor for that,
+ * and an instructor already has their class as the way they reach students, so
+ * neither needs Range's own Discord. True for either role, student or instructor.
+ */
+export async function isClassAffiliated(userId: string, email: string | null | undefined): Promise<boolean> {
+  return (await isClassMember(userId)) || (await isClassInstructor(email));
+}
+
 export async function classMembers(classId: string): Promise<ClassMember[]> {
   if (supabaseAdmin) {
     const { data, error } = await supabaseAdmin.from("academy_class_members").select("user_id, email, name, joined_at").eq("class_id", classId);

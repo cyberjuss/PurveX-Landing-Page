@@ -3,7 +3,7 @@ import { checkGuess, hasMissionKey, missFeedback, missionReveal, needsLabForAnsw
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { labGate } from "@/lib/academy-mission-gate";
 import type { MissionResult, Results } from "@/lib/academy-score";
-import { isClassMember } from "@/lib/academy-classes";
+import { isClassAffiliated } from "@/lib/academy-classes";
 import { challengeTitle, discordWinsConfigured, finishedChallenge, finishedChallenges, postWin } from "@/lib/academy-discord";
 import { loadLabState, loadProfile, loadProgress, ProgressBusyError, updateProgress } from "@/lib/academy-store";
 import { getAcademyStudent } from "@/lib/academy-student";
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
   // ever finish: the moment they most want to show someone. Nothing is posted
   // unless they say yes (/academy/api/share-win).
   let shareWin: { challenge: string; title: string } | null = null;
-  if (finished && !(await isClassMember(student.id))) {
+  if (finished && !(await isClassAffiliated(student.id, student.email))) {
     const profile = await loadProfile(student.id).catch(() => null);
     if (profile?.extras?.shareWins) after(() => postWin(profile.callMe || student.name || "", finished).then(() => undefined));
     else if (discordWinsConfigured() && finishedChallenges(before).length === 0) {

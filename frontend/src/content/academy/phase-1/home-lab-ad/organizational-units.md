@@ -5,9 +5,9 @@
 
 ### Organizational Units (OUs)
 
-An **OU**, or organizational unit, is the folder an account lives in. It's more than a folder, though, because permissions and Group Policy attach to it directly. The domain uses it both to record which department something belongs to and to apply that department's rules.
+An organizational unit is the folder an account lives in. It is more than a folder because permissions and Group Policy attach to it directly. The domain uses it both to record which department an account belongs to and to apply that department's rules.
 
-At PurveX Financial, each of the five departments is its own OU, with a `Users` sub-OU one level below it. IT also has a `Workstations` sub-OU, so the lab's one client machine sits under IT rather than next to the people.
+Each of the five departments at PurveX Financial is its own organizational unit, with a `Users` sub-folder one level below it. IT also has a `Workstations` sub-folder, so the lab's one client machine sits under IT rather than next to the people.
 
 <div class="ad-tree" aria-label="purvexfinancial.local directory">
   <div class="ad-tree__root">

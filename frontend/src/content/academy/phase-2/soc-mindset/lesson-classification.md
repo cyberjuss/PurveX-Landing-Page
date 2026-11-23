@@ -2,7 +2,7 @@
 
 Once you've confirmed that something really is wrong, you're only halfway there. The other half is deciding how urgently it needs to be worked, and that decision has a name: severity classification. If you get it wrong in one direction, a real breach sits in the queue behind routine tickets. Get it wrong in the other direction, and every alert becomes a fire drill, which teaches the team to stop trusting the word "critical."
 
-The good news is that you already have a working version of this scale. In your own Shift console, every incident carries a severity of P1, P2, or P3, and the console spells out what each one means:
+The good news is that you already have a working version of this scale. In your own Shift console, every incident carries a severity of P1, P2 or P3. The console spells out what each one means:
 
 - **P1, Critical:** gets worked first.
 - **P2, High:** comes after any open P1.

@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Tuesday After the Breach</h3>
-<p class="ad-brief__ask">Last night a training vendor that PurveX staff use announced a breach, and this morning the IT desk is full of tickets that come down to one question: is this encoded, encrypted or hashed, and what does that mean we have to do?</p>
+<p class="ad-brief__ask">A training vendor that PurveX staff use announced a breach last night. The IT desk is full of tickets this morning that come down to one question: is this encoded, encrypted or hashed, and what do you do about it?</p>
 </div>
 
 <div class="ad-progress">
@@ -96,7 +96,7 @@
 <p>A file's SHA-256 changes completely if even one character changes, so the genuine copies all produce exactly the published value, and an altered copy produces something else.</p>
 <ul>
 <li>On your lab's domain controller, read the published value in <code>C:\PurveX\Shares\IT\checksums.txt</code>.</li>
-<li>In PowerShell, run <code>Get-FileHash C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-a.txt</code>, then the same command on mirror-b and mirror-c, and compare each Hash value to the one in checksums.txt.</li>
+<li>In PowerShell, run <code>Get-FileHash C:\PurveX\Shares\IT\vpn-client-2.4.1-mirror-a.txt</code>, then the same command on mirror-b and mirror-c. Compare each Hash value to the one in checksums.txt.</li>
 <li>Move the one that doesn't match into <code>C:\PurveX\Quarantine</code>, since moving it keeps it as evidence.</li>
 </ul>
 <p>In PowerShell, checking all three mirrors in one command:</p>
@@ -137,7 +137,7 @@
 <button type="button" class="ad-hint__btn">Hint</button>
 </div>
 <div class="ad-hint__text">
-<p>With no salt, the same password always produces the same hash, so you can hash every word in the list and look for a match, which is what an attacker holding this table would do.</p>
+<p>With no salt, the same password always produces the same hash. That means you can hash every word in the list and look for a match, which is what an attacker holding this table would do.</p>
 <ul>
 <li>On your lab's domain controller, open <code>C:\PurveX\Shares\IT\exported-hashes.txt</code> and find the two accounts with the same hash.</li>
 <li>Open CyberChef, and paste the whole contents of <code>common-passwords.txt</code> into Input, one word per line.</li>
@@ -166,7 +166,7 @@
 </div>
 <div>
 <span>What to do</span>
-<p>Force a change at next logon for everyone in the exported list, starting with these two, and advise them not to reuse passwords between work and outside services. A salted, slow hash, as described in the lesson, is what stops one breach from becoming this.</p>
+<p>Force a change at next logon for everyone in the exported list, starting with these two, and advise them not to reuse passwords between work and outside services. A salted, slow hash (as described in the lesson) is what stops one breach from becoming this.</p>
 </div>
 </div>
 </div>

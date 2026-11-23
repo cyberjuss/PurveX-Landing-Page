@@ -12,7 +12,7 @@ Every sign-in, and every click that follows it, answers two separate questions:
 <li><strong>Now that the system knows, what are you allowed to do?</strong></li>
 </ul>
 
-In everyday speech we squash both into one word, "access", but keeping them apart is the foundation of this week, because they fail separately, get attacked separately and get fixed by different people.
+In everyday speech we squash both into one word, "access." But keeping them apart is the foundation of this week, because they fail separately, get attacked separately and get fixed by different people.
 
 Three pieces share that work:
 

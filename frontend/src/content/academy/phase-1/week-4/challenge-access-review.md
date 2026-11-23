@@ -87,7 +87,7 @@
 <span class="ad-mission__num">Finding 03 · Apply it · Authorization · High · INC-1071 · INC-1093</span>
 <h4>Access That Outlived the Audit</h4>
 <p><strong>Devon Brooks · Compliance · 9:30 AM</strong><br>Noor Ahmadi on the help desk can still open our case files. Noor was given access in March to export data for one audit, and nobody took it away. Please remove it today.</p>
-<p><strong>Task:</strong> Open <code>noor.ahmadi</code>, find the group that gives Compliance access, remove Noor from it, and report the group's name.</p>
+<p><strong>Task:</strong> Open <code>noor.ahmadi</code> and find the group that gives Compliance access. Remove Noor from it and report the group's name.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Access That Outlived the Audit" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Compliance Users}">Submit</button>

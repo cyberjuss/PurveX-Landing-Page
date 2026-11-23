@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
 <p class="ad-brief__ask">When a request lands in your queue, can you check what's actually true in Active Directory, and then make the change the ticket needs?</p>
-<p>Welcome to the PurveX Financial help desk queue, where every request is a claim to verify before you change anything. The early tickets stay in Active Directory, the later ones take you further into DNS, the firewall, Group Policy and the file shares, and your lab has to show each change before your answer counts.</p>
+<p>Welcome to the PurveX Financial help desk queue, where every request is a claim to verify before you change anything. The early tickets stay in Active Directory. The later ones take you further into DNS, the firewall, Group Policy and the file shares. Your lab has to show each change before your answer counts.</p>
 </div>
 
 <div class="ad-progress">
@@ -786,7 +786,7 @@
 <ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>.</li>
 <li>Expand the domain, right-click <code>Default Domain Policy</code> and choose Edit.</li>
-<li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Account Policies, Account Lockout Policy.</li>
+<li>Go to Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies → Account Lockout Policy.</li>
 <li>Set the threshold to 10 or fewer, and both the duration and the reset counter to 15 minutes or more.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>Get-ADDefaultDomainPasswordPolicy</code>.</li>
 </ul>
@@ -831,7 +831,7 @@
 <p>You'll find this under the advanced audit subcategories, rather than among the nine basic categories.</p>
 <ul>
 <li>Open Group Policy Management with Win+R and <code>gpmc.msc</code>, then edit <code>Default Domain Controllers Policy</code>.</li>
-<li>Go to Computer Configuration, Policies, Windows Settings, Security Settings, Advanced Audit Policy Configuration, Audit Policies, Detailed Tracking.</li>
+<li>Go to Computer Configuration → Policies → Windows Settings → Security Settings → Advanced Audit Policy Configuration → Audit Policies → Detailed Tracking.</li>
 <li>Open <strong>Audit Process Creation</strong>, tick Configure, and tick Success.</li>
 <li>Run <code>gpupdate /force</code>, then confirm with <code>auditpol /get /subcategory:"Process Creation"</code>.</li>
 <li>Start any program and look for the new event in the Security log.</li>
@@ -872,7 +872,7 @@
 <p>The domain password policy applies to everyone, so a second, stricter policy for one group needs a Password Settings Object.</p>
 <ul>
 <li>Open Active Directory Administrative Center with Win+R and <code>dsac.exe</code>.</li>
-<li>Go to System, then Password Settings Container, then New, then Password Settings.</li>
+<li>Go to System → Password Settings Container → New → Password Settings.</li>
 <li>Give it a name and a precedence, set the minimum length to 16, and set the lockout threshold to 5 or fewer.</li>
 <li>Under Directly Applies To, add the group holding the IT administrators.</li>
 <li>Confirm with <code>Get-ADFineGrainedPasswordPolicy -Filter *</code>.</li>

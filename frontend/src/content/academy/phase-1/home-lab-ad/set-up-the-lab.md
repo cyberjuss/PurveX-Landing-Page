@@ -5,7 +5,7 @@
 
 ### What you need
 
-The lab runs as virtual machines, or VMs, on your own computer, so before you touch Active Directory, you'll need two machines on the same virtual network:
+The lab runs as virtual machines (VMs) on your own computer. Before you touch Active Directory, you'll need two machines on the same virtual network:
 
 - **A Windows Server 2022 VM.** It becomes the domain controller.
 - **A Windows 10 VM.** It becomes the workstation you join to the domain.
@@ -53,7 +53,7 @@ Next, you need an installer for each operating system. These come as ISO files, 
 
 ### Create a virtual machine
 
-With both ISO files saved, you can create the VMs. Both use the same wizard, so open VMware, choose Create a New Virtual Machine, and walk through these screens:
+With both ISO files saved, you can create the VMs. Both use the same wizard: open VMware, choose Create a New Virtual Machine, and walk through these screens:
 
 <div class="ad-shots">
 <figure class="ad-shot">
@@ -82,7 +82,7 @@ With both ISO files saved, you can create the VMs. Both use the same wizard, so 
 </figure>
 </div>
 
-There's one more setting to check before you click Finish. Open Customize Hardware, select Network Adapter, then choose Custom and pick the NAT network, which is usually `VMnet8 (NAT)`.
+There's one more setting to check before you click Finish. Open Customize Hardware, select Network Adapter, then choose Custom and pick the NAT network. It's usually `VMnet8 (NAT)`.
 
 <figure class="ad-shot">
 <img src="/academy/home-lab-ad/setup/vm-network.png" alt="VM hardware settings with Network Adapter set to Custom, VMnet8 (NAT)" />
@@ -135,7 +135,7 @@ If VMware offers Easy Install, skip the product key and any edition it suggests,
 
 Before you start it, confirm the network adapter uses the same `VMnet8 (NAT)` network as the workstation, then power on the server and run Windows Setup.
 
-Choose Custom: Install Windows only, just as you did for the workstation, and when the server restarts, it will ask you to set the Administrator password.
+Choose Custom: Install Windows only, just as you did for the workstation. When the server restarts, it will ask you to set the Administrator password.
 
 <div class="ad-shots">
 <figure class="ad-shot">

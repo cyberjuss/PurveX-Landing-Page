@@ -46,7 +46,7 @@
 </div>
 <div>
 <span>Why it matters</span>
-<p>The account's Description names IT-WKS01 as the only workstation this overnight work is authorized from, yet the alert's sign-in came from REMOTE-SUPPORT4. On the time alone, this looked like routine after-hours maintenance, but once you read every field, the record tells a fuller story.</p>
+<p>The account's Description names IT-WKS01 as the only workstation this overnight work is authorized from, yet the alert's sign-in came from REMOTE-SUPPORT4. On the time alone, this looked like routine after-hours maintenance. But once you read every field, the record tells a fuller story.</p>
 </div>
 <div>
 <span>What to do</span>
@@ -59,7 +59,7 @@
 <div class="ad-mission ad-mission--capstone" data-id="sm-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · INC-1065 · High</span>
 <h4>Classify What You Actually Found</h4>
-<p><strong>SOC Queue · Follow-up · 3:45 AM</strong><br>You now know morgan.reyes's 3:40 AM sign-in falls inside the account's approved overnight window, but it came from REMOTE-SUPPORT4, not IT-WKS01, the one workstation that record authorizes.<br><strong>A</strong> P1, Critical: an off-hours sign-in is always worked first.<br><strong>B</strong> P2, High: the time checks out, but the workstation does not, and that gap needs a fast look before the ticket closes.<br><strong>C</strong> P3, Routine: the sign-in matches the account's own approved window, so it is worked when the queue allows.<br><strong>D</strong> Not an incident at all, and the alert should be deleted.</p>
+<p><strong>SOC Queue · Follow-up · 3:45 AM</strong><br>You now know morgan.reyes's 3:40 AM sign-in falls inside the account's approved overnight window, but it came from REMOTE-SUPPORT4, not IT-WKS01 (the one workstation that record authorizes).<br><strong>A</strong> P1, Critical: an off-hours sign-in is always worked first.<br><strong>B</strong> P2, High: the time checks out, but the workstation does not. That gap needs a fast look before the ticket closes.<br><strong>C</strong> P3, Routine: the sign-in matches the account's own approved window, so it is worked when the queue allows.<br><strong>D</strong> Not an incident at all, and the alert should be deleted.</p>
 <p><strong>Task:</strong> Select the classification that fits what the record showed, and enter its letter.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Classify What You Actually Found" placeholder="A, B, C, or D" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -68,7 +68,7 @@
 </div>
 <div class="ad-hint__text">
 <p>Classify by what the evidence showed. Don't classify by how alarming "3:40 AM sign-in" sounds, or by only the half of the record that checks out.</p>
-<p>The time matching the approved window explains the hour, but it doesn't explain the workstation, because an approved window names one machine, not any machine at that hour.</p>
+<p>The time matching the approved window explains the hour, but it doesn't explain the workstation. An approved window names one machine, not any machine at that hour.</p>
 </div>
 <p class="ad-guess__feedback"></p>
 <div class="ad-miss" data-guess="a">Treating every off-hours alert as Critical is what buries the real ones. Part of this record does check out.</div>

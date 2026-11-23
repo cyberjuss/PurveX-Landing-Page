@@ -23,7 +23,7 @@ So a system should store a **salted, slow hash** of each password, and each half
 - **Salt:** a random value added per user. Two people with the same password get different hashes, so reuse is hidden.
 - **Slow hash:** Argon2id or bcrypt. One high-end graphics card tries about 22 billion SHA-256 guesses a second. At bcrypt's minimum recommended cost of 10, the same card manages about 6,000.
 
-Without both halves, tools such as Hashcat and John the Ripper can work through common passwords across the whole table at once, and against a fast, unsalted hash they do it so quickly that cracking becomes trivial. That's exactly what happened to LinkedIn in 2012. It's also why the way a breached company stored its passwords tells you far more about the danger than the size of the breach does.
+Without both halves, tools such as Hashcat and John the Ripper can work through common passwords across the whole table at once. Against a fast, unsalted hash, they do it so quickly that cracking becomes trivial. That's exactly what happened to LinkedIn in 2012. It's also why the way a breached company stored its passwords tells you far more about the danger than the size of the breach does.
 
 ```sort
 prompt: A vendor was breached. How exposed are PurveX staff, based on how the vendor stored passwords?

@@ -94,7 +94,7 @@ Now go looking for it. Open Event Viewer and go to Applications and Services Log
 <div class="ad-mission ad-mission--capstone" data-id="la2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · INC-1146 · High</span>
 <p><strong>Detection Engineering · Design Question · 4:15 PM</strong><br>An attacker who knows this logging exists Base64-encodes a command before running it, hoping to keep it unreadable.</p>
-<p><strong>Task:</strong> What does script-block logging capture once PowerShell runs that command? Enter its letter.<br><strong>A</strong> Nothing useful, an encoded command defeats this logging completely.<br><strong>B</strong> The decoded, plain-text command, since PowerShell has to decode it before it can run, and script-block logging captures what the engine executes.<br><strong>C</strong> PowerShell refuses to run a command that is encoded.</p>
+<p><strong>Task:</strong> What does script-block logging capture once PowerShell runs that command? Enter its letter.<br><strong>A</strong> Nothing useful, an encoded command defeats this logging completely.<br><strong>B</strong> The decoded, plain-text command, because script-block logging captures what the engine executes after PowerShell decodes it.<br><strong>C</strong> PowerShell refuses to run a command that is encoded.</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for what script-block logging captures when a command is encoded" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

@@ -5,7 +5,7 @@
 
 ### Finding Users and Computers
 
-Most tickets start with a name, so the first skill on the desk is finding the right account quickly. The **Find** dialog does that far faster than scrolling through OUs. In Active Directory Users and Computers, right-click the domain or any OU, choose **Find**, and pick what you're looking for:
+Most tickets start with a name, so the first skill on the desk is finding the right account quickly. The **Find** dialog does that far faster than scrolling through OUs. In Active Directory Users and Computers, right-click the domain or any OU, then choose **Find** and pick what you're looking for:
 
 - Users, Contacts, and Groups for a person
 - Computers for a machine
