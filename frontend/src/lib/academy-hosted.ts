@@ -115,12 +115,10 @@ function cfg() {
   };
 }
 
-/** Thrown when a student has spent their month. The route turns it into a 429
- *  with this message, which is written for the student rather than the log. */
+/** Thrown when a student has spent their month, or has so little left that a
+ *  session could not finish booting on it. The route turns it into a 429 with
+ *  this message, which is written for the student rather than the log. */
 export class LabHoursSpentError extends Error {
-  // Only thrown when the week is actually gone. A session no longer reserves
-  // its hours, it just runs for whatever is left, so there is no "a session
-  // needs three hours and you have two" case any more.
   constructor(public readonly used: number, public readonly limit: number, session = 0) {
     const left = Math.max(0, limit - used);
     super(
@@ -206,10 +204,20 @@ async function endSession(userId: string, row: HostedLabRow): Promise<void> {
   if (await claimLabSessionEnd(userId, row.stopAt)) await chargeElapsed(userId, row);
 }
 
+// A domain controller alone can take up to 20 minutes to boot and finish
+// promoting the forest (the build screen says as much). A session shorter
+// than this was handed out silently -- no idle, orphan, or lapsed-Pro log,
+// just the ordinary due-sweep -- and stopped the machine before it ever
+// finished becoming a domain, which is what "AD won't let me log in" turned
+// out to be. Refusing the start instead costs nothing: no session opened, no
+// hours charged.
+const MIN_USEFUL_SESSION_MINUTES = 30;
+
 /**
- * Refuses a start when the week is spent, and says how long the session may
- * run for. A student with forty minutes left gets forty minutes, not a
- * three-hour session they cannot pay for.
+ * Refuses a start when the week is spent, or when what's left could not
+ * finish a build, and says how long the session may run for otherwise. A
+ * student with forty minutes left gets forty minutes, not a three-hour
+ * session they cannot pay for.
  */
 async function sessionLengthMs(userId: string): Promise<number> {
   const c = cfg();
@@ -217,7 +225,10 @@ async function sessionLengthMs(userId: string): Promise<number> {
   if (!c.weeklyHours) return full;
   const { used, limit } = await labHours(userId);
   if (used >= limit) throw new LabHoursSpentError(Math.round(used), limit);
-  return Math.min(full, Math.max(5 * 60_000, (limit - used) * 3600_000));
+  const minHours = MIN_USEFUL_SESSION_MINUTES / 60;
+  const left = limit - used;
+  if (left < minHours) throw new LabHoursSpentError(Math.round(used * 10) / 10, limit, minHours);
+  return Math.min(full, left * 3600_000);
 }
 
 /** How long one session runs before the lab stops itself. The briefing and the
@@ -1461,14 +1472,13 @@ async function ssmOnline(instanceId: string): Promise<boolean> {
  * key, which is what lets Range check a lab's state without trusting the lab's
  * own report of it. The command text is always written by Range.
  */
-export async function runOnLab(userId: string, commands: string[], timeoutMs = 25_000): Promise<string | null> {
-  const id = await runningInstance(userId);
-  if (!id || !(await ssmOnline(id))) return null;
+async function runOnInstance(instanceId: string, documentName: string, commands: string[], timeoutMs: number): Promise<string | null> {
+  if (!(await ssmOnline(instanceId))) return null;
   try {
     const out = await ssm().send(
       new SendCommandCommand({
-        InstanceIds: [id],
-        DocumentName: "AWS-RunPowerShellScript",
+        InstanceIds: [instanceId],
+        DocumentName: documentName,
         Comment: "Range lab check",
         TimeoutSeconds: 60,
         Parameters: { commands },
@@ -1479,15 +1489,33 @@ export async function runOnLab(userId: string, commands: string[], timeoutMs = 2
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       await new Promise((r) => setTimeout(r, 700));
-      const inv = await ssm().send(new GetCommandInvocationCommand({ CommandId: commandId, InstanceId: id })).catch(() => null);
+      const inv = await ssm().send(new GetCommandInvocationCommand({ CommandId: commandId, InstanceId: instanceId })).catch(() => null);
       if (!inv || inv.Status === "Pending" || inv.Status === "InProgress" || inv.Status === "Delayed") continue;
       return inv.Status === "Success" ? (inv.StandardOutputContent ?? "") : null;
     }
     return null;
   } catch (err) {
-    console.error("runOnLab failed", err instanceof Error ? err.message : err);
+    console.error("runOnInstance failed", documentName, err instanceof Error ? err.message : err);
     return null;
   }
+}
+
+export async function runOnLab(userId: string, commands: string[], timeoutMs = 25_000): Promise<string | null> {
+  const id = await runningInstance(userId);
+  if (!id) return null;
+  return runOnInstance(id, "AWS-RunPowerShellScript", commands, timeoutMs);
+}
+
+/** Same as runOnLab, but for the Ubuntu server beside the domain controller.
+ *  Built for the health check: the DC has runOnLab, and the pod's other half
+ *  had no way to ask "is anything actually listening" short of opening it in
+ *  the browser. */
+export async function runOnLinux(userId: string, commands: string[], timeoutMs = 25_000): Promise<string | null> {
+  const row = await loadHostedLab(userId);
+  if (!row?.linuxInstanceId) return null;
+  const inst = await describe(row.linuxInstanceId).catch(() => null);
+  if (inst?.state !== "running") return null;
+  return runOnInstance(row.linuxInstanceId, "AWS-RunShellScript", commands, timeoutMs);
 }
 
 /**
@@ -1923,7 +1951,13 @@ export async function stopDueHostedLabs(): Promise<number> {
   let stopped = 0;
   for (const { userId, row } of await hostedLabsDueToStop()) {
     try {
-      if (await stopPod(row)) stopped++;
+      const wasStopped = await stopPod(row);
+      if (wasStopped) stopped++;
+      // The only auto-stop path that used to leave no trace. A session ending
+      // on time is routine, but it needed to be routine *and visible* -- the
+      // silence here is what hid a six-minute session until someone went
+      // looking at AWS directly.
+      console.log("hosted lab auto-stop (session ended)", userId, row.instanceId, wasStopped);
       // Through endSession, not a bare write. Clearing the stop time here and
       // billing nowhere made a session that ran to its own end -- the most
       // ordinary stop there is -- free.

@@ -26,6 +26,7 @@
     "check:tickets:live": "npx -y tsx --tsconfig scripts/shift-live/tsconfig.json scripts/shift-live/tickets.ts",
     "check:shift:live": "npx -y tsx --tsconfig scripts/shift-live/tsconfig.json scripts/shift-live/check.ts",
     "check:verify-pull:live": "npx -y tsx --tsconfig scripts/shift-live/tsconfig.json scripts/shift-live/verify-pull.ts",
+    "check:lab-health": "npx -y tsx --tsconfig scripts/lab-health-check/tsconfig.json scripts/lab-health-check/check.ts",
     "notify:phase": "npx -y tsx --tsconfig scripts/notify-phase/tsconfig.json scripts/notify-phase/notify.ts",
     "pods:repair": "npx -y tsx --tsconfig scripts/shift-live/tsconfig.json scripts/shift-live/repair-all.ts",
     "discord:setup": "npx -y tsx scripts/discord/setup.ts",
