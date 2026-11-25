@@ -397,7 +397,15 @@ export function firstBootScript(key: string, password: string, url: string): str
     'Start-Transcript -Path "$dir\\first-boot.log" -Append',
     "# Active Directory takes a minute or two after boot.",
     "for ($i = 0; $i -lt 60; $i++) { try { Import-Module ActiveDirectory -ErrorAction Stop; Get-ADDomain -ErrorAction Stop | Out-Null; break } catch { Start-Sleep -Seconds 10 } }",
-    `Set-ADAccountPassword -Identity Administrator -Reset -NewPassword (ConvertTo-SecureString ${ps(password)} -AsPlainText -Force)`,
+    // Get-ADDomain answering means AD is reachable, not that a password write
+    // against it will succeed yet -- a change made within the next few seconds
+    // of that can still throw. This had no retry and no -ErrorAction Stop, so
+    // a throw here logged itself and the script carried on to build the rest
+    // of the lab, which still reached "ready": a pod that answered the brief
+    // perfectly while running the image's own baked-in password underneath,
+    // which is not the one Guacamole was handed. NLA then failed against it,
+    // and whatever the student saw next was the student's problem to explain.
+    `for ($pwi = 0; $pwi -lt 12; $pwi++) { try { Set-ADAccountPassword -Identity Administrator -Reset -NewPassword (ConvertTo-SecureString ${ps(password)} -AsPlainText -Force) -ErrorAction Stop; break } catch { if ($pwi -eq 11) { Write-Host "Administrator password reset never took: $($_.Exception.Message)" }; Start-Sleep -Seconds 10 } }`,
     // Prefer the script Range serves now over the copy baked into the image. A
     // ticket added to the script after the image was built is otherwise missing
     // from every pod cloned from it, with nothing that ever repairs it. The
