@@ -911,14 +911,26 @@ export async function startHostedLab(userId: string): Promise<void> {
 }
 
 // How long a pod is allowed to spend becoming usable before the idle clock
-// means anything. A Windows domain controller boots, waits for Active
-// Directory, builds the forest and plants the tickets, and nobody is signed
-// in for any of it. Was 30: with the default 20-minute idle window that put
-// the earliest possible stop at 50 minutes of session time, which read as
-// "idle stop doesn't work" to a student who walked away at 30. Cut to 10,
-// a real but smaller margin, not removed outright -- this exact rule has
-// cost a student a paid session twice before by moving too fast.
+// means anything to someone who has *already* worked in it and then stopped.
+// Was 30: with the default 20-minute idle window that put the earliest
+// possible stop at 50 minutes of session time, which read as "idle stop
+// doesn't work" to a student who walked away at 30. Cut to 10, a real but
+// smaller margin, not removed outright -- this exact rule has cost a student
+// a paid session twice before by moving too fast.
 const IDLE_BUILD_GRACE_MINUTES = 10;
+
+// The same grace, but for a lab nobody has ever connected to yet -- which is
+// not "a student mid-session went quiet," it is "the build might still be
+// running." A domain controller can take up to 20 minutes to boot, join the
+// forest and plant the tickets (the build screen says so itself), and the
+// 10-minute margin above added to the 20-minute idle window left as little
+// as 10 minutes between a slow build finishing and the lab being killed for
+// having never been opened -- not much room to notice "ready" and click in.
+// Pods were observed dying at almost exactly session-minute 30, never
+// connected once, which is this number doing exactly what it was set to do,
+// just too eagerly. Large enough to clear a worst-case build with real room
+// to spare, since nothing here is refunded for being hard to notice in time.
+const UNOPENED_BUILD_GRACE_MINUTES = 30;
 
 /**
  * Should a lab be stopped for want of anyone using it?
@@ -940,7 +952,8 @@ export function shouldStopIdle(args: {
   now: number;
   idleStopMinutes: number;
   unopenedStopMinutes: number;
-  buildGraceMinutes: number;
+  openedBuildGraceMinutes: number;
+  unopenedBuildGraceMinutes: number;
 }): { stop: boolean; why: string } {
   const { idleMinutes, everConnected, sessionStartedMs, now } = args;
   if (typeof idleMinutes !== "number") return { stop: false, why: "the pod did not report its idleness" };
@@ -960,7 +973,11 @@ export function shouldStopIdle(args: {
   // build, and this makes a third mistake like it cost nothing.
   if (!Number.isFinite(sessionStartedMs)) return { stop: false, why: "the session start could not be read" };
   const sessionMinutes = (now - sessionStartedMs) / 60_000;
-  if (sessionMinutes < after + args.buildGraceMinutes) {
+  // Different grace for each: once opened, the build is over and the only
+  // question is how fast a real idle stop should bite. Never opened, the
+  // question is still whether the build is even done.
+  const buildGrace = opened ? args.openedBuildGraceMinutes : args.unopenedBuildGraceMinutes;
+  if (sessionMinutes < after + buildGrace) {
     return { stop: false, why: `the session is ${Math.round(sessionMinutes)} minutes old, inside the build grace` };
   }
   return { stop: true, why: opened ? `idle ${Math.round(idleMinutes)} minutes` : `never opened, ${Math.round(idleMinutes)} minutes` };
@@ -988,7 +1005,8 @@ export async function stopIdleHostedLab(userId: string, idleMinutes: number | un
     now: Date.now(),
     idleStopMinutes: c.idleStopMinutes,
     unopenedStopMinutes: c.unopenedStopMinutes,
-    buildGraceMinutes: IDLE_BUILD_GRACE_MINUTES,
+    openedBuildGraceMinutes: IDLE_BUILD_GRACE_MINUTES,
+    unopenedBuildGraceMinutes: UNOPENED_BUILD_GRACE_MINUTES,
   });
   if (!verdict.stop) return false;
   const inst = await describe(row.instanceId).catch(() => null);
