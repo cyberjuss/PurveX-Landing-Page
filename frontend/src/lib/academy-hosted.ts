@@ -995,13 +995,20 @@ export async function stopIdleHostedLab(userId: string, idleMinutes: number | un
   const row = await loadHostedLab(userId);
   // stopAt is null on a lab that is already stopped, so this never fires twice.
   if (!row?.stopAt) return false;
-  // stopAt is set to now plus the session length on every start, so working
-  // back from it gives the start of the session in hand. createdAt would not:
-  // a restart boots and builds again and leaves createdAt where it was.
+  // updatedAt is the session's own start: a start and an extend both write
+  // it and nothing else touches the row before the lab stops (see sessionMinutes
+  // above). Working stopAt backward by the *configured* sessionHours used to
+  // stand in for this, which is only right when the session actually ran the
+  // full configured length -- a session capped short by the weekly-hour limit
+  // runs less than that, so the old math placed its start earlier than it
+  // really was and read every such session as older than it is, letting both
+  // build-grace windows expire too soon for exactly the students closest to
+  // their cap. createdAt would not do either: a restart boots and builds
+  // again and leaves createdAt where it was.
   const verdict = shouldStopIdle({
     idleMinutes,
     everConnected,
-    sessionStartedMs: Date.parse(row.stopAt) - c.sessionHours * 3600_000,
+    sessionStartedMs: Date.parse(row.updatedAt),
     now: Date.now(),
     idleStopMinutes: c.idleStopMinutes,
     unopenedStopMinutes: c.unopenedStopMinutes,

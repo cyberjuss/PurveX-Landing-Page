@@ -192,11 +192,17 @@ try {
   //
   // The pod now starts that clock when the lab is ready. This checks the
   // second guard, the one that does not depend on the pod being right.
+  //
+  // Measured from updatedAt, the session's own start (a start and an extend
+  // both write it), not worked back from stopAt by the configured
+  // sessionHours -- that math assumed every session ran the full configured
+  // length, which a session capped short by the weekly-hour limit does not,
+  // and it read every such session as older than it really was.
   const idleLines = readFileSync(join(root, "src", "lib", "academy-hosted.ts"), "utf8");
   t(
-    "the idle stop measures the session from stopAt, not from createdAt",
-    /sessionStartedMs: Date\.parse\(row\.stopAt\) - c\.sessionHours \* 3600_000/.test(idleLines),
-    "a restart leaves createdAt where it was"
+    "the idle stop measures the session from updatedAt, not from createdAt or a sessionHours guess",
+    /sessionStartedMs: Date\.parse\(row\.updatedAt\)/.test(idleLines),
+    "a restart leaves createdAt where it was; a capped session runs short of sessionHours"
   );
 
   // And the pod's half: the clock is restarted when the sync loop starts, so
