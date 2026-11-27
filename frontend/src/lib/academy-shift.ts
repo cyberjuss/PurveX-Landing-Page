@@ -1,6 +1,7 @@
 import "server-only";
 import type { RoleId } from "@/lib/academy-certs";
 import { evalCheck, seeded, shuffle, type Check } from "@/lib/academy-drills";
+import { ticketFor } from "@/lib/academy-mission-lab";
 import type { LabEvents, LabSnapshot } from "@/lib/academy-lab";
 
 // Shift: a 30-minute tour on the PurveX Financial desk. Real incidents fire
@@ -340,18 +341,21 @@ export const INCIDENTS: IncidentDef[] = [
     points: 180,
     from: "SIEM · automated detection",
     title: "Domain password policy was weakened",
-    brief: "The domain password policy was changed to allow short passwords and no lockout. Restore a safe policy and report who changed it.",
+    brief: "The domain password policy was changed to accept short simple passwords. Restore password strength and report who changed it.",
+    // Strength, not lockout: the domain has one lockout policy, and restoring it
+    // is the Ticket Queue's own fix (Nothing Stops Password Guessing). The shift
+    // practises the other half of the same policy.
     resolve: [
       { c: { t: "policy", key: "minLength", min: 12 }, label: "Minimum password length is back to at least 12" },
-      { c: { t: "policy", key: "lockoutThreshold", min: 1, max: 10 }, label: "Account lockout is enforced again" },
+      { c: { t: "policy", key: "complexity", bool: true }, label: "Password complexity is required again" },
     ],
     evidence: (e) => evPolicy(e),
     diagnosis: { prompt: "Which event ID records a domain policy change?", accept: ["4739", "event 4739", "id 4739"] },
-    rubric: ["Named what changed in the policy", "Named the event id for the policy change", "Restored length and lockout to safe values", "Reported who made the change"],
+    rubric: ["Named what changed in the policy", "Named the event id for the policy change", "Restored length and complexity to safe values", "Reported who made the change"],
     hints: [
       "Check the Default Domain Policy password settings against what they should be.",
-      "A safe baseline is at least 12 characters with lockout after a handful of tries.",
-      "Set minimum length back to 12+ and turn lockout back on, then report the change with the event.",
+      "A safe baseline is at least 12 characters with complexity required.",
+      "Set minimum length back to 12+ and turn complexity back on, then report the change with the event.",
     ],
   },
   {
@@ -1318,8 +1322,17 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
   // One question per incident from its pool. A prompt already asked this shift
   // is passed over while another is left, so two incidents rarely ask alike.
   const asked = new Set<string>();
+  // A victim whose fix is also a challenge's own fix is drawn again: the
+  // shift practises the same job on someone else, so it never finishes a
+  // challenge ticket behind the student's back (spray on riley.kwan is the
+  // Ticket Queue's Locked Out). Each clash leaves that account marked used.
+  const bindApart = (def: IncidentDef): Bind | undefined => {
+    let bind = def.bind?.(pickOne);
+    for (let tries = 0; bind && tries < 12 && ticketFor(bind.resolve.map((x) => x.c)); tries++) bind = def.bind?.(pickOne);
+    return bind;
+  };
   return chosen.map((def, n) => {
-    const bind = def.bind?.(pickOne);
+    const bind = bindApart(def);
     const pool = shuffle(r, questionsFor(def, bind));
     const question = pool.find((q) => !asked.has(q.prompt)) ?? pool[0];
     asked.add(question.prompt);
