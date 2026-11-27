@@ -7,7 +7,7 @@ import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert,
   Lock, Unlock, KeyRound, UserPlus, UserMinus, UserX, UserCog, ArrowLeftRight, FolderTree, SprayCan, Target,
   Crown, DoorOpen, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
-  Wrench, Info, ArrowUpRight, FileText, X, Zap, Inbox, CheckCircle2, Radar, Hash, GraduationCap, Mail,
+  Wrench, Info, ArrowUpRight, Headset, FileText, X, Zap, Inbox, CheckCircle2, Radar, Hash, GraduationCap, Mail,
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow, useHostedLab } from "@/components/academy/hosted-lab-button";
@@ -367,7 +367,6 @@ const PRIORITY_NOTE: Record<"P1" | "P2" | "P3", string> = {
   P3: "Routine · when the queue allows",
 };
 
-const SEV_CLASS: Record<Sev, string> = { P1: "sh-sev--p1", P2: "sh-sev--p2", P3: "sh-sev--p3" };
 /** The word behind each code, spelled out wherever a badge has the room for it. */
 const SEV_WORD: Record<Sev, string> = { P1: "Critical", P2: "High", P3: "Routine" };
 
@@ -1019,56 +1018,103 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
     } catch {}
   }, []);
   const pct = report.maxScore ? Math.round((report.totalScore / report.maxScore) * 100) : 0;
-  const R = 56;
-  const C = 2 * Math.PI * R;
-  const ringCls = pct >= 85 ? "sh-gauge__fg--good" : pct < 50 ? "sh-gauge__fg--low" : "";
+  const left = Math.max(0, report.incidents.length - report.resolvedCount - report.escalatedCount);
+  const pri = (sev: string) => (sev === "P1" ? 1 : sev === "P2" ? 2 : 3);
   return (
     <div className="shift-app shift-app--center" data-academy-theme={theme}>
-      <div className="sh-report">
-        <header className="sh-report__head">
-          <div className="sh-gauge">
-            <svg viewBox="0 0 128 128" aria-hidden="true">
-              <circle className="sh-gauge__bg" cx="64" cy="64" r={R} />
-              <circle className={`sh-gauge__fg ${ringCls}`} cx="64" cy="64" r={R} style={{ strokeDasharray: C, strokeDashoffset: C * (1 - pct / 100) }} />
-            </svg>
-            <span className="sh-gauge__num">{pct}%</span>
+      <div className="sh-report dk dk--report">
+        <header className="dk-head">
+          <div className="dk-head__id">
+            <span className="dk-mark" aria-hidden>
+              <Headset className="h-5 w-5" />
+            </span>
+            <div>
+              <span className="dk-kicker">PurveX Financial · Shift report</span>
+              <h1>{report.headline}</h1>
+            </div>
           </div>
-          <div>
-            <p className="sh-kicker">Shift report</p>
-            <p className="sh-report__headline">{report.headline}</p>
-            <p className="sh-report__score"><b>{report.totalScore}</b> of {report.maxScore} points</p>
-            <p className="sh-report__sub">
-                {report.resolvedCount} of {report.incidents.length} closed
-                {report.escalatedCount ? ` · ${report.escalatedCount} escalated` : ""}
-              </p>
+          <div className="dk-head__live">
+            <span className="dk-status">
+              <i aria-hidden />
+              Clocked out
+            </span>
           </div>
         </header>
 
-        <div className="sh-report__rows">
-          {report.incidents.map((i, n) => (
-            <div key={n} className="sh-rep">
-              <span className={`sh-sev ${SEV_CLASS[i.severity as Sev] ?? ""}`}>{i.severity} · {SEV_WORD[i.severity as Sev] ?? ""}</span>
-              <span className="sh-rep__title">{i.title}</span>
-              <span className="sh-rep__tags">
-                <em className={i.resolved ? "ok" : i.escalated ? "up" : "no"}>{i.resolved ? "Solved" : i.escalated ? "Escalated" : i.touched ? "Missed" : "Not worked"}</em>
-                {i.touched && !i.noHarm && <em className="no">Collateral</em>}
-                {i.resolved && !i.diagnosisRight && <em className="no">Weak diagnosis</em>}
-                {i.hintsUsed > 0 && <em className="hint">{i.hintsUsed} hint{i.hintsUsed === 1 ? "" : "s"}</em>}
-              </span>
-              <span className="sh-rep__score">{i.score}<small>/{i.max}</small></span>
-              {i.review && (
-                <div className="sh-review">
-                  <p className="sh-review__head">
-                    <ArrowUpRight className="h-3.5 w-3.5" /> Tier 2 review{i.review.by === "coach" ? " from Coach" : ""}
-                    <b className={`sh-review__grade is-${i.review.score}`}>{i.review.grade}</b>
-                  </p>
-                  <p><strong>Your handoff.</strong> {i.review.handoff}</p>
-                  <p><strong>What you could have done.</strong> {i.review.couldHave}</p>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        <dl className="dk-kpis dk-kpis--4">
+          <div>
+            <dt>Score</dt>
+            <dd className={pct >= 85 ? "rd-text-good" : pct < 50 ? "rd-text-bad" : ""}>{pct}%</dd>
+            <span className="dk-kpis__note">
+              {report.totalScore} of {report.maxScore} points
+            </span>
+          </div>
+          <div>
+            <dt>Closed</dt>
+            <dd>
+              {report.resolvedCount}
+              <small className="dk-kpis__of">/{report.incidents.length}</small>
+            </dd>
+            <span className="dk-kpis__note">fixed in your lab</span>
+          </div>
+          <div>
+            <dt>Escalated</dt>
+            <dd>{report.escalatedCount}</dd>
+            <span className="dk-kpis__note">handed to tier 2</span>
+          </div>
+          <div>
+            <dt>Left open</dt>
+            <dd className={left ? "rd-text-bad" : ""}>{left}</dd>
+            <span className="dk-kpis__note">when the shift ended</span>
+          </div>
+        </dl>
+
+        <section className="dk-queue" aria-label="Shift tickets">
+          <div className="dk-queue__bar">
+            <h2>Shift tickets</h2>
+            <span>{report.incidents.length} arrived · highest priority first</span>
+          </div>
+          <ul>
+            {[...report.incidents]
+              .sort((x, y) => pri(x.severity) - pri(y.severity))
+              .map((i, n) => {
+                const tone = i.resolved ? "done" : i.escalated ? "open" : "missed";
+                return (
+                  <li key={n} className={`dk-row dk-row--rep dk-row--p${pri(i.severity)}`}>
+                    <span className="dk-pri">
+                      <b>{i.severity}</b>
+                      <small>{SEV_WORD[i.severity as Sev] ?? ""}</small>
+                    </span>
+                    <span className="dk-ticket">
+                      <strong>{i.title}</strong>
+                      <span className="dk-tags">
+                        {i.touched && !i.noHarm && <em className="is-bad">Collateral</em>}
+                        {i.resolved && !i.diagnosisRight && <em className="is-bad">Weak diagnosis</em>}
+                        {i.hintsUsed > 0 && <em>{i.hintsUsed} hint{i.hintsUsed === 1 ? "" : "s"}</em>}
+                      </span>
+                    </span>
+                    <span className="dk-cell" data-label="State">
+                      <em className={`dk-state dk-state--${tone}`}>{i.resolved ? "Solved" : i.escalated ? "Escalated" : i.touched ? "Missed" : "Not worked"}</em>
+                    </span>
+                    <span className="dk-score">
+                      {i.score}
+                      <small>/{i.max}</small>
+                    </span>
+                    {i.review && (
+                      <div className="sh-review dk-review">
+                        <p className="sh-review__head">
+                          <ArrowUpRight className="h-3.5 w-3.5" /> Tier 2 review{i.review.by === "coach" ? " from Coach" : ""}
+                          <b className={`sh-review__grade is-${i.review.score}`}>{i.review.grade}</b>
+                        </p>
+                        <p><strong>Your handoff</strong> {i.review.handoff}</p>
+                        <p><strong>What you could have done</strong> {i.review.couldHave}</p>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+          </ul>
+        </section>
 
         {report.metrics && report.triage && report.desk && report.timeline && (
           <DeskSummary
@@ -1078,12 +1124,12 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
           />
         )}
 
-        <p className="sh-report__habit"><strong>One habit to work on:</strong> {report.habit}</p>
+        <p className="sh-report__habit"><strong>One habit to work on</strong> {report.habit}</p>
         <div className="sh-report__actions">
           <button type="button" className="sh-go" disabled={busy} onClick={onAgain}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start another shift <ArrowRight className="h-4 w-4" />
           </button>
-          <Link href="/range" className="sh-report__leave"><ArrowLeft className="h-3.5 w-3.5" /> Back to Range</Link>
+          <Link href="/range/drill" className="sh-report__leave"><ArrowLeft className="h-3.5 w-3.5" /> Back to the Desk</Link>
         </div>
         {/* A new shift needs the hosted lab connected. Without this the Start
             button spun and stopped with nothing said. */}

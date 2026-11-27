@@ -218,7 +218,7 @@ function DeskCard({ ev, now, busy, post, inline, onDone }: { ev: DeskEvent; now:
 
 export type DeskReport = {
   desk: { title: string; correct: boolean; score: number; max: number; lesson: string }[];
-  triage: { score: number; max: number; misses: { opened: string; waiting: string; atSec: number }[] };
+  triage: { score: number; max: number; worked?: boolean; misses: { opened: string; waiting: string; atSec: number }[] };
   metrics: { timeToAckSec: number | null; timeToResolveSec: number | null; breaches: number; arrived: number };
   timeline: { atSec: number; text: string; tone: "info" | "good" | "bad" }[];
 };
@@ -248,11 +248,11 @@ export function DeskSummary({ r, headline, totals }: { r: DeskReport; headline: 
           <small>at the end, of {r.metrics.arrived} that arrived</small>
         </div>
         <div>
-          <b className={r.triage.misses.length ? "is-bad" : ""}>
+          <b className={r.triage.misses.length || r.triage.worked === false ? "is-bad" : ""}>
             {r.triage.score}/{r.triage.max}
           </b>
           <span>Severity order</span>
-          <small>{r.triage.misses.length ? `${r.triage.misses.length} time${r.triage.misses.length === 1 ? "" : "s"} a higher one waited` : "Highest first every time"}</small>
+          <small>{r.triage.worked === false ? "Nothing closed so no order to judge" : r.triage.misses.length ? `${r.triage.misses.length} time${r.triage.misses.length === 1 ? "" : "s"} a higher one waited` : "Highest first every time"}</small>
         </div>
       </div>
 

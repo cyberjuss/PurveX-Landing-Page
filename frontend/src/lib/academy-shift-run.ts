@@ -109,7 +109,7 @@ export type ShiftReport = {
   habit: string;
   /** The desk around the incidents, triage order, timing and the replay. */
   desk: { title: string; correct: boolean; score: number; max: number; lesson: string }[];
-  triage: { score: number; max: number; misses: { opened: string; waiting: string; atSec: number }[] };
+  triage: { score: number; max: number; worked?: boolean; misses: { opened: string; waiting: string; atSec: number }[] };
   metrics: { timeToAckSec: number | null; timeToResolveSec: number | null; breaches: number; arrived: number };
   timeline: TimelineItem[];
 };
@@ -693,6 +693,7 @@ function buildReport(run: ShiftRun): ShiftReport {
     triage: {
       score: run.incidents.length ? order.score : 0,
       max: run.incidents.length ? order.max : 0,
+      worked: order.worked,
       misses: order.misses.map((m) => ({
         opened: `${m.opened} ${titleOf(byUid.get(m.openedUid)!)}`,
         waiting: `${m.waiting} ${titleOf(byUid.get(m.waitingUid)!)}`,

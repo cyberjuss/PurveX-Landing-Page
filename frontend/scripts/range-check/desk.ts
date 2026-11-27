@@ -7,6 +7,8 @@ import { SKILLS, type Skill } from "@/lib/academy-score";
 import { JOB_LESSON_IDS, lessonFor } from "@/lib/academy-job-lessons";
 import { echoesChallenge } from "@/lib/academy-scenario";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
+import { triage } from "@/lib/academy-shift-desk";
+import type { IncidentRun } from "@/lib/academy-shift";
 
 let failures = 0;
 const check = (name: string, ok: boolean, detail = "") => {
@@ -45,6 +47,18 @@ check(
   !echoesChallenge({ title: "Contractor Badge Still Opens the Vault", prompt: "Which change closes this without losing the audit trail?" })
 );
 check("a reworded challenge title is caught", echoesChallenge({ title: "The Locked Out Account", prompt: "" }) || echoesChallenge({ title: "Locked Out", prompt: "" }));
+
+console.log("\nShift report: severity order is earned, not given");
+{
+  const inc = (uid: string, severity: string, over: Partial<IncidentRun> = {}) =>
+    ({ uid, severity, arriveSec: 0, deadlineSec: 600, ackedAtSec: null, resolvedAtSec: null, escalatedAtSec: null, ...over }) as IncidentRun;
+  const idle = triage([inc("a", "P2", { ackedAtSec: 0 }), inc("b", "P3"), inc("c", "P3")]);
+  check("a shift with nothing closed earns no severity-order points", idle.score === 0 && idle.worked === false, JSON.stringify(idle));
+  const clean = triage([inc("a", "P2", { ackedAtSec: 5, resolvedAtSec: 200 }), inc("b", "P3", { ackedAtSec: 210, resolvedAtSec: 400 })]);
+  check("working the highest first earns the full points", clean.score === clean.max && clean.worked, JSON.stringify(clean));
+  const wrong = triage([inc("a", "P2", { ackedAtSec: 300, resolvedAtSec: 500 }), inc("b", "P3", { ackedAtSec: 5, resolvedAtSec: 200 })]);
+  check("opening the P3 while the P2 waits costs points", wrong.score < wrong.max, JSON.stringify(wrong));
+}
 
 console.log(failures ? `\n${failures} desk check(s) failed.` : "\nAll desk checks passed.");
 process.exit(failures ? 1 : 0);

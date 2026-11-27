@@ -812,3 +812,33 @@
   .shift-app .sh-side, .shift-app .sh-main, .shift-app .sh-right, .shift-app .sh-body { scroll-behavior: auto; }
 }
 @media (min-width: 1600px) { .sh-detail, .sh-inbox-sec { max-width: 1000px; } }
+
+/* ── Shift report in the Desk's design (desk-queue.tsx, globals.css .dk-*) ── */
+.sh-report.dk--report { max-width: 980px; gap: 20px; }
+.dk--report .dk-kpis--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.dk--report .dk-kpis__of { font-size: 0.95rem; font-weight: 600; color: var(--rd-ink-3); }
+.dk--report .dk-row--rep { grid-template-columns: 92px minmax(0, 1fr) 130px 72px; }
+.dk--report .dk-score { justify-self: end; font-family: var(--font-mono, ui-monospace, monospace); font-size: 1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.dk--report .dk-score small { font-weight: 600; color: var(--rd-ink-3); }
+.dk--report .dk-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.dk--report .dk-tags:empty { display: none; }
+.dk--report .dk-tags em { font-style: normal; font-size: 0.6875rem; font-weight: 700; padding: 2px 7px; border: 1px solid var(--rd-line); color: var(--rd-ink-2); }
+.dk--report .dk-tags em.is-bad { color: var(--rd-bad); border-color: currentColor; }
+.dk--report .dk-review { grid-column: 2 / -1; margin: 4px 0 0; }
+
+/* The timing and order numbers read as the same row of stats as the Desk. */
+.dk--report .sdr__metrics { gap: 0; border: 1px solid var(--rd-line); }
+.dk--report .sdr__metrics div { box-shadow: none; border-left: 1px solid var(--rd-line); padding: 14px 16px; gap: 4px; }
+.dk--report .sdr__metrics div:first-child { border-left: 0; }
+.dk--report .sdr__metrics b { font-size: 1.5rem; font-weight: 760; }
+.dk--report .sdr__metrics span { order: -1; font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
+.dk--report .sdr__metrics small { font-size: 0.75rem; }
+
+@media (max-width: 720px) {
+  .dk--report .dk-kpis--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dk--report .dk-kpis--4 > div:last-child { grid-column: auto; border-left: 1px solid var(--rd-line); }
+  .dk--report .dk-row--rep { grid-template-columns: auto minmax(0, 1fr); }
+  .dk--report .dk-row--rep > .dk-score { grid-column: 2; justify-self: start; }
+  .dk--report .sdr__metrics div:nth-child(odd) { border-left: 0; }
+  .dk--report .sdr__metrics div:nth-child(n + 3) { border-top: 1px solid var(--rd-line); }
+}

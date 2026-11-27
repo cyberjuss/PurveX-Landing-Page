@@ -26,7 +26,7 @@ export type DeskTicket = {
   tour?: string;
 };
 
-const PRIORITY: Record<DeskTicket["priority"], string> = { 1: "Critical", 2: "High", 3: "Moderate", 4: "Low" };
+const PRIORITY: Record<DeskTicket["priority"], string> = { 1: "Critical", 2: "High", 3: "Routine", 4: "Low" };
 
 function LiveClock() {
   // The server has no idea of the viewer's time zone, so the time shows once in the browser.

@@ -770,10 +770,16 @@ export type TriageMiss = { openedUid: string; opened: Severity; waitingUid: stri
  * the analyst picked up lower-priority work while a higher one sat. Five points
  * off per miss. A queue that never had two things waiting at once has nothing
  * to miss and keeps the full points.
+ *
+ * Order is only worth points once work was actually done: a shift where
+ * nothing was fixed or handed off has no order to judge, so it earns nothing
+ * here rather than the full marks for making no mistakes.
  */
-export function triage(incidents: IncidentRun[]): { misses: TriageMiss[]; score: number; max: number } {
+export function triage(incidents: IncidentRun[]): { misses: TriageMiss[]; score: number; max: number; worked: boolean } {
   const misses: TriageMiss[] = [];
   const doneAt = (i: IncidentRun) => Math.min(i.resolvedAtSec ?? Infinity, i.escalatedAtSec ?? Infinity);
+  const worked = incidents.some((i) => doneAt(i) !== Infinity);
+  if (!worked) return { misses, score: 0, max: TRIAGE_POINTS, worked };
   for (const opened of incidents) {
     if (opened.ackedAtSec === null) continue;
     const t = opened.ackedAtSec;
@@ -789,7 +795,7 @@ export function triage(incidents: IncidentRun[]): { misses: TriageMiss[]; score:
       .sort((a, b) => RANK[b.severity] - RANK[a.severity] || a.arriveSec - b.arriveSec)[0];
     if (waiting) misses.push({ openedUid: opened.uid, opened: opened.severity, waitingUid: waiting.uid, waiting: waiting.severity, atSec: t });
   }
-  return { misses, score: Math.max(0, TRIAGE_POINTS - 5 * misses.length), max: TRIAGE_POINTS };
+  return { misses, score: Math.max(0, TRIAGE_POINTS - 5 * misses.length), max: TRIAGE_POINTS, worked };
 }
 
 /**
