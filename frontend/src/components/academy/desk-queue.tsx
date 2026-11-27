@@ -108,7 +108,6 @@ export function DeskQueue({
   footer?: ReactNode;
 }) {
   const open = tickets.filter((t) => t.state.tone !== "done" && t.state.tone !== "missed");
-  const closed = tickets.length - open.length;
   // Highest priority first, the way a queue is worked.
   const sorted = [...tickets].sort((a, b) => Number(a.state.tone === "done" || a.state.tone === "missed") - Number(b.state.tone === "done" || b.state.tone === "missed") || a.priority - b.priority);
 
@@ -158,16 +157,6 @@ export function DeskQueue({
               <i key={d.day} title={`${d.label} ${d.date}`} className={`${d.done ? "is-done" : ""}${d.today ? " is-today" : ""}`} />
             ))}
           </span>
-        </div>
-        <div>
-          <dt>Open</dt>
-          <dd>{open.length}</dd>
-          <span className="dk-kpis__note">in your queue</span>
-        </div>
-        <div>
-          <dt>Closed</dt>
-          <dd>{closed}</dd>
-          <span className="dk-kpis__note">this cycle</span>
         </div>
         <div>
           <dt>Case level</dt>

@@ -6447,7 +6447,7 @@ a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transpare
 .academy-bg[data-academy-theme="dark"] .dk-mark, .academy-bg[data-academy-theme="dark"] .dk-clockin__go, .academy-bg[data-academy-theme="dark"] .dk-go:not(.dk-go--quiet) { color: #0b0b12; }
 .academy-bg[data-academy-theme="dark"] .dk-clockin.is-locked .dk-clockin__go { color: var(--rd-accent); }
 
-.dk-kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; border: 1px solid var(--rd-line); }
+.dk-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border: 1px solid var(--rd-line); }
 .dk-kpis > div { display: grid; align-content: start; gap: 4px; padding: 14px 16px; border-left: 1px solid var(--rd-line); min-width: 0; }
 .dk-kpis > div:first-child { border-left: 0; }
 .dk-kpis dt { font-family: var(--font-mono, ui-monospace, monospace); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rd-ink-3); }
