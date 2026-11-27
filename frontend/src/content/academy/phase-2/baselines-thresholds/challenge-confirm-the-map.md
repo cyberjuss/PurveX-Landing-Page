@@ -1,8 +1,12 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Ask the Machine, Not the Lesson</h3>
-<p class="ad-brief__ask">A lesson names five services, but can you read the real list straight off the machine?</p>
-<p>You'll need your hosted lab running, with the domain controller reachable.</p>
+<p class="ad-brief__ask">Can you read what the domain controller is really listening on?</p>
+<p>A lesson names five services but the machine is the only source you can trust</p>
+<ul>
+<li>The real list of listening ports straight off the machine</li>
+</ul>
+<p>A map you checked yourself<br>You'll need your hosted lab running with the domain controller reachable</p>
 </div>
 
 <div class="ad-progress">

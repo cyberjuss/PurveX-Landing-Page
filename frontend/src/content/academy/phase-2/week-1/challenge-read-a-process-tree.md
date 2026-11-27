@@ -1,8 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Follow the Process Tree to What Keeps It Alive</h3>
-<p class="ad-brief__ask">When an alert says a process ran, can you hunt it down to whatever keeps it alive, then shut that down without destroying the evidence?</p>
-<p>You'll need your hosted lab running, with the domain controller reachable, and Sysmon is already installed.</p>
+<p class="ad-brief__ask">Can you follow a process back to whatever keeps it alive?</p>
+<p>An alert says a process ran on the domain controller</p>
+<ul>
+<li>The parent that launched it</li>
+<li>What brings it back after a restart</li>
+</ul>
+<p>The persistence shut down with the evidence kept<br>You'll need your hosted lab running and Sysmon is already installed</p>
 </div>
 
 <div class="ad-progress">

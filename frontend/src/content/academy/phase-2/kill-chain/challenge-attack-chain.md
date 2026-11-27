@@ -1,8 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Chain You Already Worked</h3>
-<p class="ad-brief__ask">Four attackers came in four different ways, so can you step back and read the pattern underneath all four?</p>
-<p>There's no new ticket here, just the four campaigns from this phase, read side by side.</p>
+<p class="ad-brief__ask">Can you read the pattern underneath four different attacks?</p>
+<p>Four attackers came in four different ways this phase</p>
+<ul>
+<li>What the four campaigns have in common</li>
+<li>Where each one could have been stopped</li>
+</ul>
+<p>One pattern you can spot in the next attack<br>There's no new ticket here so read the four campaigns side by side</p>
 </div>
 
 ### Four Ways In, Four Chains

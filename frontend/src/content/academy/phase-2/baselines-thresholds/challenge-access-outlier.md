@@ -1,8 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Baseline a Team, Then Find Who Breaks It</h3>
-<p class="ad-brief__ask">Can you build a real baseline from peer accounts and find the one access grant that does not belong, on your own lab?</p>
-<p>All three steps check your Phase 1 lab, so keep it running.</p>
+<p class="ad-brief__ask">Can you tell which access grant does not belong on a team?</p>
+<p>Wealth Management accounts should all look alike but one does not</p>
+<ul>
+<li>What normal access looks like for the team</li>
+<li>The one grant that breaks the pattern</li>
+</ul>
+<p>The extra access removed and the team back to its baseline<br>All three steps check your Phase 1 lab so keep it running</p>
 </div>
 
 <div class="ad-progress">

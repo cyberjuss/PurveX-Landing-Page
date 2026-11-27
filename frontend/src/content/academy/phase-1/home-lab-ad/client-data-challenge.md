@@ -1,8 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Client Data Review</h3>
-<p class="ad-brief__ask">Before the auditor arrives can you find the client data on the file shares and check it's sound and make sure only the right people can read it?</p>
-<p>Compliance asked the desk to review the department shares on the domain controller<br>Every record there is made up: the SSNs fall in a range that's never issued and the phone numbers are reserved for fiction and the email addresses all use example.com</p>
+<p class="ad-brief__ask">Can you find the client data on the file shares and make sure only the right people can read it?</p>
+<p>Compliance asked the desk to review the department shares before the auditor arrives</p>
+<ul>
+<li>Where the Social Security numbers live and how many clients they cover</li>
+<li>Which reviews and payments and batches are still open</li>
+<li>Who can read the client register today</li>
+</ul>
+<p>A hashed register that only four people can read<br>Every record is made up so nothing real is exposed</p>
 </div>
 
 <div class="ad-progress">

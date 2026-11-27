@@ -1,8 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Operation Day One</h3>
-<p class="ad-brief__ask">Can you find your way around Active Directory well enough to handle a help desk technician's first day?</p>
-<p>It's your first day on the PurveX Financial help desk so nobody expects you to close incidents yet<br>The lead on the desk wants to see that you can find any person or group or computer and read what the directory says about it</p>
+<p class="ad-brief__ask">Can you find your way around Active Directory well enough for a help desk technician's first day?</p>
+<p>It's your first day on the PurveX Financial help desk and nobody expects you to close incidents yet</p>
+<ul>
+<li>Any person or group or computer the desk asks about</li>
+<li>Who holds elevated access and where those groups live</li>
+<li>What the directory says about each one</li>
+</ul>
+<p>You can answer any question about the directory without guessing</p>
 </div>
 
 <div class="ad-progress">

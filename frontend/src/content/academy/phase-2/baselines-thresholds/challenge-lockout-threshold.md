@@ -1,8 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Set a Defensible Lockout Threshold</h3>
-<p class="ad-brief__ask">Can you set a real threshold that balances catching an attacker against locking out your own users, on your own lab?</p>
-<p>This step checks your Phase 1 lab, so keep it running.</p>
+<p class="ad-brief__ask">Can you set a lockout threshold that stops an attacker without locking out your own users?</p>
+<p>Wealth Management needs its own rule for failed sign-ins</p>
+<ul>
+<li>How many failed sign-ins normal users make</li>
+<li>Where an attacker's guessing starts</li>
+</ul>
+<p>A threshold you can defend<br>This step checks your Phase 1 lab so keep it running</p>
 </div>
 
 <div class="ad-progress">

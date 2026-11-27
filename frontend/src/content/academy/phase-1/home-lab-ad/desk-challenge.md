@@ -1,8 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>A New Hire's First Week</h3>
-<p class="ad-brief__ask">Maya Okafor joined Wealth Management on Monday and nothing about the account has gone right since<br>Can you work every call from the first week and leave the account the way it should have started?</p>
-<p>Maya's account is already in your directory in the wrong department just as HR's import left it<br>Wherever a call asks for a change your lab has to show it before your answer counts</p>
+<p class="ad-brief__ask">Can you fix Maya Okafor's account one call at a time until it is the way it should have started?</p>
+<p>Maya joined Wealth Management on Monday and HR's import put the account in the wrong department</p>
+<ul>
+<li>Why Maya cannot sign in and what each call actually needs</li>
+<li>Where the account sits and which groups it belongs to</li>
+<li>What the raw attributes say about it</li>
+</ul>
+<p>Maya's account sits in Wealth Management with the right access<br>Your lab shows every change before it counts</p>
 </div>
 
 <div class="ad-progress">

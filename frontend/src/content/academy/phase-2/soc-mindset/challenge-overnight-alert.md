@@ -1,9 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Approved Overnight, or Not?</h3>
-<p class="ad-brief__ask">Using your own lab, can you tell a real attack apart from an alert that only looks like one?</p>
-<p>Before you escalate anything, work it the way the 5 W's taught you: check the record first, and read every field of it.</p>
-<p>Both steps check your Phase 1 lab, so keep it running while you work.</p>
+<p class="ad-brief__ask">Can you tell a real attack from an alert that only looks like one?</p>
+<p>An overnight alert landed and it might have been approved</p>
+<ul>
+<li>What the record actually says in every field</li>
+<li>Whether it was approved or an attack</li>
+</ul>
+<p>The alert classified before anything is escalated<br>Both steps check your Phase 1 lab so keep it running</p>
 </div>
 
 <div class="ad-progress">

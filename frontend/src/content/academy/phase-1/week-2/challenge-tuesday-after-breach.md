@@ -1,7 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Tuesday After the Breach</h3>
-<p class="ad-brief__ask">A training vendor that PurveX staff use announced a breach last night<br>Every ticket this morning comes down to one question: is this encoded or encrypted or hashed and what do you do about it?</p>
+<p class="ad-brief__ask">Can you tell whether each thing is encoded or encrypted or hashed and act on it?</p>
+<p>A training vendor that PurveX staff use announced a breach last night and the IT desk is full</p>
+<ul>
+<li>Whether a script's password is really encrypted</li>
+<li>Which download does not match its checksum</li>
+<li>Which password two staff accounts share</li>
+</ul>
+<p>Every exposed secret contained and the script fixed for good</p>
 </div>
 
 <div class="ad-progress">

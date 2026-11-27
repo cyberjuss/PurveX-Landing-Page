@@ -1,8 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Build the Detection That Would Have Caught It</h3>
-<p class="ad-brief__ask">You disabled <code>WindowsDiagnosticsSync</code> by hand in Week 2, but the rule that let it call out is still open, so build the standing detection and then close what you left behind.</p>
-<p>You'll need your hosted lab running, with the domain controller reachable.</p>
+<p class="ad-brief__ask">Can you build the detection that would have caught it the first time?</p>
+<p>You disabled <code>WindowsDiagnosticsSync</code> by hand in Week 2 but the rule that let it call out is still open</p>
+<ul>
+<li>What a standing detection needs to see</li>
+<li>The rule you left behind</li>
+</ul>
+<p>A detection that fires on its own and the open rule closed<br>You'll need your hosted lab running with the domain controller reachable</p>
 </div>
 
 <div class="ad-progress">

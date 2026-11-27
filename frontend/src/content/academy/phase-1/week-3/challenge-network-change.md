@@ -1,12 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Three-Minute Job</h3>
-<p class="ad-brief__ask">Something on web01 (the Ubuntu server) has been calling the domain controller every three minutes day and night<br>Nobody on the team remembers setting it up<br>Find out what it is and what it hands over then shut it down the right way</p>
-<p>You'll need your hosted lab running with both machines reachable</p>
+<p class="ad-brief__ask">Can you find out what keeps calling the domain controller and shut it down the right way?</p>
+<p>Something on web01 calls the domain controller every three minutes and nobody remembers setting it up</p>
 <ul>
-<li>The job is already running in your lab and web01 ships with Wireshark and Nmap so there is nothing to download</li>
-<li>Read a command before you run it as root because <code>sudo</code> does not ask twice</li>
+<li>The scheduled job behind the connection</li>
+<li>What it sends and whether it sends it safely</li>
+<li>The password and file it hands over</li>
 </ul>
+<p>The job and its account shut down and the safe replacement named<br>You'll need your hosted lab running with both machines reachable</p>
 </div>
 
 <div class="ad-progress">

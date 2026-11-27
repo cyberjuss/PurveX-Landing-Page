@@ -1,8 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
-<p class="ad-brief__ask">When a request lands in your queue can you check what's actually true in Active Directory and then make the change the ticket needs?</p>
-<p>Welcome to the PurveX Financial help desk queue where every request is a claim to verify before you change anything<br>The early tickets stay in Active Directory and the later ones go into DNS and the firewall and Group Policy and the file shares<br>Your lab has to show each change before your answer counts</p>
+<p class="ad-brief__ask">When a request lands in your queue can you check what is actually true before you change anything?</p>
+<p>The PurveX Financial help desk queue is full and every ticket is a claim to verify</p>
+<ul>
+<li>Accounts and groups that do not match what the ticket says</li>
+<li>Settings in DNS and the firewall and Group Policy that are wrong</li>
+<li>Gaps in logging and password rules</li>
+</ul>
+<p>Each ticket closed with the right change in your lab</p>
 </div>
 
 <div class="ad-progress">

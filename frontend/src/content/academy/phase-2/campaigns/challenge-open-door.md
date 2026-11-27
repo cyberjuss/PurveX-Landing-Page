@@ -1,8 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Campaign 3 of 4</p>
 <h3>The Open Door</h3>
-<p class="ad-brief__ask">When an intrusion starts with a door that was already open, can you find it, prove it and close the chain?</p>
-<p>Most steps check your Phase 1 lab, so keep it running.</p>
+<p class="ad-brief__ask">Can you find the door the attacker walked through and close it?</p>
+<p>This intrusion started with a rule that was already open</p>
+<ul>
+<li>The rule the attacker used and proof it was used</li>
+<li>What they left behind</li>
+<li>What they were after</li>
+</ul>
+<p>The door closed and the data taken off the share<br>Most steps check your Phase 1 lab so keep it running</p>
 </div>
 
 <div class="ad-progress">

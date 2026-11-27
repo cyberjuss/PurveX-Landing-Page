@@ -1,8 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Campaign 2 of 4</p>
 <h3>The Phishing Chain</h3>
-<p class="ad-brief__ask">This time the way in is a disguised attachment, so can you work it from Reconnaissance all the way to Actions on Objectives?</p>
-<p>Most steps check your Phase 1 lab, so keep it running.</p>
+<p class="ad-brief__ask">Can you follow a phishing attachment from the first email to what it took?</p>
+<p>This time the way in was a disguised attachment</p>
+<ul>
+<li>The disguised file and what it really is</li>
+<li>What it planted and where it calls home</li>
+<li>What it collected</li>
+</ul>
+<p>Every stage of the chain found and closed<br>Most steps check your Phase 1 lab so keep it running</p>
 </div>
 
 <div class="ad-progress">

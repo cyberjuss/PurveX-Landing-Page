@@ -1,8 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Campaign 1 of 4</p>
 <h3>The Credential Campaign</h3>
-<p class="ad-brief__ask">With no malware involved, just guessed and stolen passwords, can you work it from start to finish as one operation instead of twelve alerts?</p>
-<p>Most steps check your Phase 1 lab, so keep it running.</p>
+<p class="ad-brief__ask">Can you work a password attack from start to finish as one operation?</p>
+<p>Someone has been guessing and stealing passwords with no malware at all</p>
+<ul>
+<li>How many accounts were sprayed and which one got through</li>
+<li>What the attacker did with it</li>
+<li>What they left running</li>
+</ul>
+<p>The intrusion closed and a detection written for next time<br>Most steps check your Phase 1 lab so keep it running</p>
 </div>
 
 <div class="ad-progress">

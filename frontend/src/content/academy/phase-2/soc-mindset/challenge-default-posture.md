@@ -1,8 +1,12 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>What the Firewall Does With What You Never Mentioned</h3>
-<p class="ad-brief__ask">Can you read the default every firewall has already chosen for traffic you never mentioned?</p>
-<p>You'll need your hosted lab running, with the domain controller reachable.</p>
+<p class="ad-brief__ask">Can you read what the firewall does with traffic nobody mentioned?</p>
+<p>Every firewall has already made a choice for traffic you never wrote a rule for</p>
+<ul>
+<li>The domain controller's real default for inbound and outbound traffic</li>
+</ul>
+<p>You know what the machine allows before you add a rule<br>You'll need your hosted lab running with the domain controller reachable</p>
 </div>
 
 <div class="ad-progress">

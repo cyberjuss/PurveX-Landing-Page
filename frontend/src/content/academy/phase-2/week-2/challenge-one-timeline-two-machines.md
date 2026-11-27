@@ -1,8 +1,13 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>One Timeline, Two Machines</h3>
-<p class="ad-brief__ask">An incident rarely stays on one machine, so can you line up the logs from two operating systems into one account?</p>
-<p>You'll need your hosted lab running, with both machines reachable.</p>
+<p class="ad-brief__ask">Can you line up the logs from two machines into one account?</p>
+<p>An incident rarely stays on one machine</p>
+<ul>
+<li>The same sign-in in the Windows and Linux logs</li>
+<li>The order things happened in</li>
+</ul>
+<p>One timeline across both machines<br>You'll need your hosted lab running with both machines reachable</p>
 </div>
 
 <div class="ad-progress">

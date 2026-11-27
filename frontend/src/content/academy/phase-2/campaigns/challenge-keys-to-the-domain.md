@@ -1,8 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Campaign 4 of 4</p>
 <h3>The Keys to the Domain</h3>
-<p class="ad-brief__ask">With no guessed password, no attachment and no open door, just Active Directory used exactly as designed, can you catch Kerberoasting and DCSync?</p>
-<p>Most steps check your Phase 1 lab, so keep it running.</p>
+<p class="ad-brief__ask">Can you catch an attack that uses Active Directory exactly as designed?</p>
+<p>No guessed password and no attachment and no open door this time</p>
+<ul>
+<li>The Kerberoasting request and the account behind it</li>
+<li>The DCSync and what allowed it</li>
+<li>The audit that would have caught both</li>
+</ul>
+<p>Both techniques caught and the attack surface closed<br>Most steps check your Phase 1 lab so keep it running</p>
 </div>
 
 <div class="ad-progress">

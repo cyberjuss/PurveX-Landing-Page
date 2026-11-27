@@ -1,8 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Quarterly Access Review</h3>
-<p class="ad-brief__ask">Every quarter the auditors ask whether everyone has exactly the access their job needs and whether the firm can prove who did what<br>Can you find what fails that test in your directory and fix it before they arrive?</p>
-<p>Each finding Compliance sent is a real account or setting in your lab<br>Auditors want evidence as well as a fix so you'll pull some of it from the Security log with <strong>Event Viewer</strong></p>
+<p class="ad-brief__ask">Can you find who has more access than their job needs and fix it before the auditors arrive?</p>
+<p>Compliance sent IT this quarter's findings and each one is a real account or setting in your lab</p>
+<ul>
+<li>Staff accounts with admin rights they should not keep</li>
+<li>Access that outlived the reason it was given</li>
+<li>Shared logins and guessed passwords in the Security log</li>
+</ul>
+<p>Every finding fixed with evidence an auditor can check</p>
 </div>
 
 <div class="ad-progress">
