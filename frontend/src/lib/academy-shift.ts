@@ -1217,8 +1217,14 @@ export function canAlternate(phase: number, level: number): boolean {
   return open.filter((i) => i.kind === "ticket").length >= 3 && open.filter((i) => i.kind === "alert").length >= 3;
 }
 
-export function pickShift(seed: string, phase: number, level: number, roles: RoleId[] = [], mix?: ShiftMix): ShiftIncident[] {
+/** The student's previous shift, so the next one does not repeat it. */
+export type LastShift = { defIds: string[]; prompts: string[] };
+
+export function pickShift(seed: string, phase: number, level: number, roles: RoleId[] = [], mix?: ShiftMix, last?: LastShift): ShiftIncident[] {
   const r = seeded(seed);
+  // Last shift's incidents go to the back of the line: a different incident
+  // whenever one is eligible, and only a repeat when the level has too few.
+  const seenLast = new Set(last?.defIds ?? []);
   const eligible = INCIDENTS.filter((i) => i.minPhase <= phase && i.minLevel <= level);
   const real = eligible.filter((i) => !i.falseAlarm);
   const alarms = eligible.filter((i) => i.falseAlarm);
@@ -1229,10 +1235,10 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
 
   const chosen: IncidentDef[] = [];
   // From Hard up, one slot is a false alarm when one is eligible.
-  if (level >= 3 && alarms.length) chosen.push(shuffle(r, alarms)[0]);
+  if (level >= 3 && alarms.length) chosen.push(shuffle(r, alarms).sort((a, b) => Number(seenLast.has(a.id)) - Number(seenLast.has(b.id)))[0]);
 
   const weighted = shuffle(r, real)
-    .map((i) => ({ i, w: (i.weight ?? 1) * roleFit(i) * (0.6 + level * 0.2) + r() }))
+    .map((i) => ({ i, w: (i.weight ?? 1) * roleFit(i) * (0.6 + level * 0.2) + r() - (seenLast.has(i.id) ? 1000 : 0) }))
     .sort((a, b) => b.w - a.w)
     .map((x) => x.i);
   // Track exclusive groups already used so paired incidents (e.g. the Kerberoast
@@ -1319,9 +1325,10 @@ export function pickShift(seed: string, phase: number, level: number, roles: Rol
     if (key !== null) usedTargets.add(key);
     return picked;
   };
-  // One question per incident from its pool. A prompt already asked this shift
-  // is passed over while another is left, so two incidents rarely ask alike.
-  const asked = new Set<string>();
+  // One question per incident from its pool. A prompt already asked this shift,
+  // or last shift, is passed over while another is left, so a repeat incident
+  // still asks something new.
+  const asked = new Set<string>(last?.prompts ?? []);
   // A victim whose fix is also a challenge's own fix is drawn again: the
   // shift practises the same job on someone else, so it never finishes a
   // challenge ticket behind the student's back (spray on riley.kwan is the
@@ -1593,8 +1600,8 @@ export type ShiftRun = {
 };
 
 /** Build a fresh shift for this student. The caller persists it and injects the incidents. */
-export function newShiftRun(seed: string, phase: number, level: number, roles: RoleId[] = [], now = Date.now(), mix?: ShiftMix): ShiftRun {
-  const picked = pickShift(seed, phase, level, roles, mix);
+export function newShiftRun(seed: string, phase: number, level: number, roles: RoleId[] = [], now = Date.now(), mix?: ShiftMix, last?: LastShift): ShiftRun {
+  const picked = pickShift(seed, phase, level, roles, mix, last);
   return {
     id: `shift-${now.toString(36)}`,
     startedAt: new Date(now).toISOString(),

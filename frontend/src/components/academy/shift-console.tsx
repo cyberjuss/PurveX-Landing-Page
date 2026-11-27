@@ -71,6 +71,8 @@ type Shift = {
   /** Calls, status requests and urgent asks that have arrived. */
   desk?: DeskEvent[];
   report: Report | null;
+  /** This week's shift has been worked; the next opens Monday. */
+  weekDone?: boolean;
 };
 type LabState = "none" | "starting" | "ready" | "stopping" | "stopped";
 
@@ -252,7 +254,7 @@ function ShiftConsoleInner() {
       </div>
     );
 
-  if (shift?.status === "done" && shift.report && !leftReport) return <ShiftReport theme={theme} report={shift.report} onAgain={again} busy={busy} error={error} />;
+  if (shift?.status === "done" && shift.report && !leftReport) return <ShiftReport theme={theme} report={shift.report} onAgain={again} busy={busy} error={error} weekDone={Boolean(shift.weekDone)} />;
   if (active && shift) return <ActiveShift theme={theme} shift={shift} now={now} busy={busy} error={error} post={post} />;
 
   return <ShiftIntro theme={theme} labState={labState} busy={busy} error={error} queued={queued} onStart={() => post({ action: "start" })} onStartLab={queueShift} onRefresh={load} />;
@@ -1107,7 +1109,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead }: { inc: Incident; no:
 
 // ---- report ---------------------------------------------------------------
 
-function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" | "dark"; report: Report; onAgain: () => void; busy: boolean; error: string | null }) {
+function ShiftReport({ theme, report, onAgain, busy, error, weekDone }: { theme: "light" | "dark"; report: Report; onAgain: () => void; busy: boolean; error: string | null; weekDone: boolean }) {
   // The shift is over, so the drafts typed into its incidents have done their job.
   useEffect(() => {
     try {
@@ -1230,9 +1232,13 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
 
         <p className="sh-report__habit"><strong>One habit to work on</strong> {report.habit}</p>
         <div className="sh-report__actions">
-          <button type="button" className="sh-go" disabled={busy} onClick={onAgain}>
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start another shift <ArrowRight className="h-4 w-4" />
-          </button>
+          {weekDone ? (
+            <p className="sh-report__next">One shift a week · Your next shift opens Monday</p>
+          ) : (
+            <button type="button" className="sh-go" disabled={busy} onClick={onAgain}>
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Start another shift <ArrowRight className="h-4 w-4" />
+            </button>
+          )}
           <Link href="/range/drill" className="sh-report__leave"><ArrowLeft className="h-3.5 w-3.5" /> Back to the Desk</Link>
         </div>
         {/* A new shift needs the hosted lab connected. Without this the Start

@@ -32,7 +32,9 @@ import { CERTS, examFocus, examLinks, jobsForDomain, type StudentProfile } from 
 import { createRealCtf } from "@/lib/academy-live";
 import { generateCtf, generateDaily, responseGrader } from "@/lib/academy-scenario";
 import { summarize, type Results } from "@/lib/academy-score";
-import { loadDailyDrill, loadDrills, loadLabLive, loadLabState, loadProfile, loadProgress, saveDailyDrill, saveDrill, touchLabLive } from "@/lib/academy-store";
+import { loadDailyDrill, loadDrills, loadLabLive, loadLabState, loadProfile, loadProgress, loadShift, saveDailyDrill, saveDrill, touchLabLive } from "@/lib/academy-store";
+import { sameShiftWeek } from "@/lib/academy-shift-run";
+import { shiftOver } from "@/lib/academy-shift";
 import { LIVE_MINUTES, isVerified } from "@/lib/academy-verify";
 import { isRangePro } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
@@ -82,12 +84,13 @@ function examAim(profile: StudentProfile | null, results: Results, entries: Dril
 }
 
 async function status(userId: string, day: string) {
-  const [entries, labState, results, labLive, profile] = await Promise.all([
+  const [entries, labState, results, labLive, profile, lastShift] = await Promise.all([
     loadDrills(userId),
     loadLabState(userId),
     loadProgress(userId),
     loadLabLive(userId),
     loadProfile(userId),
+    loadShift(userId).catch(() => null),
   ]);
   const lab = labInfo(labState, isVerified(labLive.verifiedAt));
   const gap = summarize(results).focus[0];
@@ -102,6 +105,8 @@ async function status(userId: string, day: string) {
     focus: gap ? gap.label : null,
     level: { n: level, name: LEVEL_NAMES[level - 1] },
     ctf: { week: weekStart(day), entry: ctfOf(entries, day) },
+    // One shift a week: worked means a shift started this week and has ended.
+    shiftDone: Boolean(lastShift && sameShiftWeek(lastShift.startedAt) && (lastShift.status === "done" || shiftOver(lastShift))),
     report: weeklyReport(entries, day),
     missed: missedQuestions(entries, 8),
     chats: { base: COACH_DAILY_LIMIT, ...chats, bonus: effectiveCoachBonus(chats.bonus) },

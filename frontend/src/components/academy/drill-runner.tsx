@@ -22,6 +22,8 @@ function offerProofShot(entry: DrillEntry) {
 }
 
 export type DrillStatus = {
+  /** This week's live shift has been worked. */
+  shiftDone?: boolean;
   stats: {
     days: string[];
     streak: number;
@@ -1090,7 +1092,9 @@ export function DrillRunner() {
             tickets={[weekly, daily].filter((t): t is DeskTicket => Boolean(t))}
             tools={<JobTasks jobs={status.jobs} security={status.lab.security} />}
             shift={
-              hostedLab
+              hostedLab && status.shiftDone
+                ? { href: "/range/shift", label: "See this week's report", note: "One shift a week · Your next shift opens Monday", locked: true }
+                : hostedLab
                 ? { href: "/range/shift", label: "Clock in", note: "Three live incidents fire into your lab · Work them by priority before the clock runs out", locked: false }
                 : { href: "/range/upgrade", label: "See Range Pro", note: "Live shifts run in a hosted lab that comes with Range Pro", locked: true }
             }

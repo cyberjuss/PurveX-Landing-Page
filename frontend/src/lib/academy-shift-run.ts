@@ -4,7 +4,7 @@ import { confirmOnLab } from "@/lib/academy-lab-pull";
 import { HANDOFF_GRADES, handoffReviewer, responseGrader, shiftNarrator, type HandoffReview } from "@/lib/academy-scenario";
 import { cleanupShiftLab, hostedLabStatus, injectIncident, requestLabSync } from "@/lib/academy-hosted";
 import { roleLabel } from "@/lib/academy-certs";
-import { levelFor, type DrillEntry, type Item } from "@/lib/academy-drills";
+import { levelFor, weekStart, type DrillEntry, type Item } from "@/lib/academy-drills";
 import type { Results, Skill } from "@/lib/academy-score";
 import { loadDrills, loadLabState, loadProfile, loadProgress, loadShift, saveDrill, saveShift } from "@/lib/academy-store";
 import { SHIFT_JOB } from "@/lib/academy-proof";
@@ -132,6 +132,8 @@ export type PublicShift = {
   incidents: PublicIncident[];
   desk: PublicDesk[];
   report: ShiftReport | null;
+  /** This week's shift has been worked; the next opens Monday. */
+  weekDone: boolean;
 };
 
 // ---- context --------------------------------------------------------------
@@ -202,6 +204,7 @@ function publicShift(run: ShiftRun, now = Date.now()): PublicShift {
     incidents: run.incidents.map((inc) => toPublic(run, inc, elapsed)).filter((x): x is PublicIncident => x !== null),
     desk: (run.desk ?? []).map((d) => toPublicDesk(d, elapsed)).filter((x): x is PublicDesk => x !== null),
     report: run.status === "done" ? buildReport(run) : null,
+    weekDone: run.status === "done" && sameShiftWeek(run.startedAt, now),
   };
 }
 
@@ -323,10 +326,24 @@ async function narrateShift(run: ShiftRun, roles: import("@/lib/academy-certs").
   });
 }
 
+/** Said when this week's shift has been worked. */
+export const SHIFT_TAKEN = "You worked this week's shift · The next one opens Monday";
+
+/** True when a shift started in the current week (Monday to Sunday, UTC). */
+export function sameShiftWeek(startedAt: string, now = Date.now()): boolean {
+  const t = Date.parse(startedAt);
+  if (Number.isNaN(t)) return false;
+  return weekStart(new Date(t).toISOString().slice(0, 10)) === weekStart(new Date(now).toISOString().slice(0, 10));
+}
+
 export async function startShift(userId: string): Promise<{ shift?: PublicShift; error?: string }> {
   const existing = await loadShift(userId);
   if (existing && existing.status === "active" && !shiftOver(existing)) {
     return { shift: await getShift(userId) ?? undefined };
+  }
+  // One shift a week, like the weekly investigation: the week starts Monday.
+  if (existing && sameShiftWeek(existing.startedAt)) {
+    return { error: SHIFT_TAKEN };
   }
   // The lab must be Online: running and linked, so incidents can be fired into it.
   const status = await hostedLabStatus(userId).catch(() => null);
@@ -341,7 +358,9 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
   const phase = phaseFor(results);
   const level = levelFor(entries);
   const mix: ShiftMix | undefined = canAlternate(phase, level) ? (existing?.mix === "alerts" ? "tickets" : "alerts") : undefined;
-  const run = newShiftRun(`${userId}:${Date.now()}`, phase, level, roles, Date.now(), mix);
+  // Never the same shift twice: last shift's incidents and questions go to the back.
+  const last = existing ? { defIds: existing.incidents.map((i) => i.defId), prompts: existing.incidents.map((i) => i.question?.prompt ?? "").filter(Boolean) } : undefined;
+  const run = newShiftRun(`${userId}:${Date.now()}`, phase, level, roles, Date.now(), mix, last);
   run.selfTriage = true;
   run.desk = planDesk(run.id, run.level, run.incidents);
   // Composing the shift (Claude's wording) takes a few seconds; don't let that

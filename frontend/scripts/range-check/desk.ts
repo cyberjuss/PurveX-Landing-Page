@@ -6,12 +6,12 @@ import { JOBS, standardSnapshot } from "@/lib/academy-drills";
 import { auditLab, pickFinding } from "@/lib/academy-audit";
 import { SKILLS, type Skill } from "@/lib/academy-score";
 import { INCIDENT_LESSON_IDS, JOB_LESSON_IDS, lessonFor } from "@/lib/academy-job-lessons";
-import { INCIDENTS } from "@/lib/academy-shift";
+import { INCIDENTS, newShiftRun } from "@/lib/academy-shift";
 import { echoesChallenge } from "@/lib/academy-scenario";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
 import { triage } from "@/lib/academy-shift-desk";
 import { labFeed } from "@/lib/academy-lab-feed";
-import { CALL_POINTS, callPoints } from "@/lib/academy-shift-run";
+import { CALL_POINTS, callPoints, sameShiftWeek } from "@/lib/academy-shift-run";
 import type { IncidentRun } from "@/lib/academy-shift";
 
 let failures = 0;
@@ -102,6 +102,36 @@ check("the right priority earns the full points", callPoints("P2", "P2") === CAL
 check("one level off earns some", callPoints("P3", "P2") === 4 && callPoints("P1", "P2") === 4);
 check("two levels off earns none", callPoints("P3", "P1") === 0);
 check("never triaged earns none", callPoints(undefined, "P1") === 0);
+
+console.log("\nEvery shift is new, and there is one a week");
+{
+  // A student's run of shifts, each drawn knowing the one before, at every Phase 1 level.
+  for (const level of [1, 2, 3, 4]) {
+    let prev = newShiftRun(`u:0`, 1, level, [], Date.UTC(2026, 0, 1));
+    let repeats = 0;
+    let typeRepeats = 0;
+    let n = 0;
+    for (let k = 1; k < 120; k++) {
+      const last = { defIds: prev.incidents.map((i) => i.defId), prompts: prev.incidents.map((i) => i.question?.prompt ?? "") };
+      const run = newShiftRun(`u:${k}`, 1, level, [], Date.UTC(2026, 0, 1), undefined, last);
+      const before = new Set(prev.incidents.map((i) => `${i.defId}|${i.question?.prompt}`));
+      for (const i of run.incidents) {
+        n++;
+        if (before.has(`${i.defId}|${i.question?.prompt}`)) repeats++;
+        // The false-alarm slot is exempt: Phase 1 has one false-alarm type, so it recurs with a new question.
+        if (last.defIds.includes(i.defId) && !INCIDENTS.find((d) => d.id === i.defId)?.falseAlarm) typeRepeats++;
+      }
+      prev = run;
+    }
+    check(`level ${level}: no incident comes back with the same question as last shift`, repeats === 0, `${repeats} of ${n}`);
+    if (level > 1) check(`level ${level}: no incident type comes back from last shift`, typeRepeats === 0, `${typeRepeats} of ${n}`);
+  }
+  // The week starts Monday, the same as the weekly investigation.
+  const sun = Date.UTC(2026, 10, 29, 22); // Sunday 29 November
+  const mon = Date.UTC(2026, 10, 30, 1); // Monday 30 November
+  check("a shift on Sunday blocks another that Sunday", sameShiftWeek(new Date(Date.UTC(2026, 10, 23, 9)).toISOString(), sun));
+  check("and opens again on Monday", !sameShiftWeek(new Date(Date.UTC(2026, 10, 29, 9)).toISOString(), mon));
+}
 
 console.log("\nShift report: severity order is earned, not given");
 {

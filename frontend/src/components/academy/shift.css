@@ -1107,3 +1107,5 @@
 .sx-triage__pick button b { font-family: inherit; font-size: 0.95rem; }
 .sh-li__sev { width: auto !important; min-width: 0 !important; font-family: inherit; letter-spacing: 0; }
 @media (min-width: 721px) { .dk--report .dk-row--rep { grid-template-columns: 100px minmax(0, 1fr) 130px 72px; } }
+
+.sh-report__next { margin: 0; font-size: 0.875rem; font-weight: 600; color: var(--rd-ink-2); }
