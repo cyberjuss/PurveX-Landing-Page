@@ -93,26 +93,46 @@ function flags(s: Student): string[] {
   return out;
 }
 
-/** mailto for one student, with the reason already in the subject. */
-function mailOne(s: Student, className: string): string | null {
-  if (!s.email) return null;
-  const why = flags(s);
-  const subject = why.length ? `${className}: checking in` : `${className}`;
-  const body = [
-    `Hi ${who(s)},`,
-    "",
-    why.length ? `I noticed ${why[0].toLowerCase()}. Anything I can help unblock?` : "Checking in on how you are getting on.",
-    "",
-  ].join("\n");
-  return `mailto:${encodeURIComponent(s.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
-
-/** One mail to everyone who needs a look, bcc so they cannot see each other. */
-function mailGroup(students: Student[], className: string): string | null {
-  const to = students.map((s) => s.email).filter((e): e is string => Boolean(e));
-  if (!to.length) return null;
-  const body = ["Hi,", "", "Checking in on where you are. Reply here if anything is blocking you.", ""].join("\n");
-  return `mailto:?bcc=${encodeURIComponent(to.join(","))}&subject=${encodeURIComponent(`${className}: checking in`)}&body=${encodeURIComponent(body)}`;
+/**
+ * Sends a check-in in one click. The server picks the addresses from the class
+ * and writes the message from each student's record, and replies come to the
+ * instructor. A student is mailed at most once a day, so a second click is safe.
+ */
+function SendNudge({ classId, ids, label, icon = false, className }: { classId: string; ids: string[]; label: string; icon?: boolean; className: string }) {
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "already" | "error">("idle");
+  const [count, setCount] = useState(0);
+  const send = async () => {
+    setState("sending");
+    try {
+      const res = await academyFetch("/academy/api/instructor/nudge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ classId, studentIds: ids }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { sent?: number; already?: number; failed?: number };
+      if (!res.ok) return setState("error");
+      setCount(data.sent ?? 0);
+      setState(data.sent ? "sent" : data.already ? "already" : "error");
+    } catch {
+      setState("error");
+    }
+  };
+  const text =
+    state === "sending" ? "Sending…" : state === "sent" ? (ids.length > 1 ? `Sent ${count}` : "Sent") : state === "already" ? "Sent today" : state === "error" ? "Could not send · Retry" : label;
+  const done = state === "sent" || state === "already";
+  return (
+    <button
+      type="button"
+      className={`${className}${done ? " is-sent" : ""}`}
+      disabled={state === "sending" || done}
+      onClick={() => void send()}
+      aria-label={icon ? `${label} · ${text}` : undefined}
+      title={icon ? (done ? text : label) : undefined}
+    >
+      {done ? <Check className="h-3.5 w-3.5" /> : <Mail className="h-3.5 w-3.5" />}
+      {!icon && ` ${text}`}
+    </button>
+  );
 }
 
 const csvCell = (v: unknown) => {
@@ -202,8 +222,7 @@ function InviteBlock({ code }: { code: string }) {
 }
 
 /** Everything known about one student, opened from their row. */
-function StudentDetail({ s, classTitle }: { s: Student; classTitle: string }) {
-  const mail = mailOne(s, classTitle);
+function StudentDetail({ s, classId }: { s: Student; classId: string }) {
   const rated = s.skills.filter((k) => k.score !== null);
   return (
     <div className="iv-detail">
@@ -289,11 +308,7 @@ function StudentDetail({ s, classTitle }: { s: Student; classTitle: string }) {
 
       {s.email && (
         <div className="iv-detail__act">
-          {mail && (
-            <a className="iv-copy" href={mail}>
-              <Mail className="h-3.5 w-3.5" /> Email {who(s)}
-            </a>
-          )}
+          <SendNudge classId={classId} ids={[s.userId]} label={`Email ${who(s)}`} className="iv-copy" />
           <CopyLink text={s.email} label="Copy address" />
         </div>
       )}
@@ -356,7 +371,7 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
     return r.students.filter(keep).sort(cmp[sort]);
   }, [r.students, filter, sort]);
 
-  const groupMail = mailGroup(attention.map((a) => a.s), r.class.name);
+  const reachable = attention.filter((a) => a.s.email);
 
   return (
     <div className="iv-cc">
@@ -490,7 +505,7 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
                         {ago(s.lastActive)}
                       </span>
                     </div>
-                    {isOpen && <StudentDetail s={s} classTitle={r.class.name} />}
+                    {isOpen && <StudentDetail s={s} classId={r.class.id} />}
                   </div>
                 );
               })}
@@ -501,10 +516,8 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
             <section className="iv-panel">
               <div className="iv-panel__head">
                 <h2>Needs a look</h2>
-                {groupMail && attention.length > 1 && (
-                  <a className="iv-copy iv-panel__act" href={groupMail}>
-                    <Mail className="h-3.5 w-3.5" /> Email {attention.length}
-                  </a>
+                {reachable.length > 1 && (
+                  <SendNudge classId={r.class.id} ids={reachable.map((a) => a.s.userId)} label={`Email ${reachable.length}`} className="iv-copy iv-panel__act" />
                 )}
               </div>
               {attention.length === 0 ? (
@@ -512,16 +525,11 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
               ) : (
                 <ul className="iv-attn">
                   {attention.map(({ s, why }) => {
-                    const mail = mailOne(s, r.class.name);
                     return (
                       <li key={s.userId}>
                         <strong>{who(s)}</strong>
                         <span>{why.join(" \u00b7 ")}</span>
-                        {mail && (
-                          <a className="iv-attn__mail" href={mail} aria-label={`Email ${who(s)}`}>
-                            <Mail className="h-3.5 w-3.5" />
-                          </a>
-                        )}
+                        {s.email && <SendNudge classId={r.class.id} ids={[s.userId]} label={`Email ${who(s)}`} icon className="iv-attn__mail" />}
                       </li>
                     );
                   })}
