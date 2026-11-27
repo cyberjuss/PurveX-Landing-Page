@@ -33,7 +33,6 @@ export async function POST(request: Request) {
     options: redirectTo ? { redirectTo } : undefined,
   });
   if (error) {
-    console.error(`[signup] generateLink failed for ${email}:`, error.message);
     // Supabase answers "User already registered" for an address that exists.
     // Wording it differently is not enough, because the status code answers the
     // same question on its own: a taken address replied 400 where a new one
@@ -57,6 +56,8 @@ export async function POST(request: Request) {
       }
       return NextResponse.json({ ok: true, emailed: true });
     }
+    // Only an unexpected failure is logged, and without the address: a taken address is the normal case above.
+    console.error("[signup] generateLink failed:", error.message);
     return NextResponse.json({ error: "Could not create your account. Check the address and try again." }, { status: 400 });
   }
 

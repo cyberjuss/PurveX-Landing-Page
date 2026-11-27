@@ -125,7 +125,7 @@ function skillOf(v: unknown, fallback: Skill): Skill {
 function parseChoice(raw: string, fallback: Skill, seed: string, theme: string): Item | null {
   const j = json(raw);
   if (!j) {
-    console.error("scenario: no JSON in reply", raw.slice(0, 200));
+    console.error("scenario: no JSON in reply", raw.length, raw.slice(0, 120), "…", raw.slice(-120));
     return null;
   }
   const choices = Array.isArray(j.choices) ? j.choices.map((c) => text(c, 200)).filter(Boolean) : [];
@@ -211,7 +211,9 @@ async function ask(apiKey: string, system: string, user: string, maxTokens: numb
     console.error("scenario: model request failed", res.status, model, detail.slice(0, 300));
     return null;
   }
-  const body = (await res.json()) as { content?: { type: string; text?: string }[] };
+  const body = (await res.json()) as { content?: { type: string; text?: string }[]; stop_reason?: string };
+  // A reply cut off at the token limit is half a JSON object that no parser can read; say so in the log.
+  if (body.stop_reason === "max_tokens") console.warn("scenario: reply hit max_tokens", model, maxTokens);
   return (body.content ?? []).filter((b) => b.type === "text").map((b) => b.text ?? "").join("\n");
 }
 
@@ -289,13 +291,15 @@ Return only JSON, no other text:
   // One retry if the first draft reads like something they already had.
   const began = Date.now();
   for (let attempt = 0; attempt < 2; attempt++) {
-    if (attempt && Date.now() - began > 22_000) break;
+    // The route has 60 seconds in all, so a retry only gets the time that is left.
+    const left = 46_000 - (Date.now() - began);
+    if (attempt && left < 10_000) break;
     const raw = await ask(
       params.apiKey,
       system,
       attempt ? `${user}\n\nYour last draft was too close to a recent one. Use a different situation and different people.` : user,
       2400,
-      28_000
+      Math.min(28_000, left)
     );
     const item = raw ? parseChoice(raw, skill, `${seed}:${attempt}`, theme) : null;
     if (item && (attempt === 1 || !tooSimilar(item, params.recent))) return item;
