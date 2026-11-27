@@ -8,7 +8,7 @@
 <li>Where the account sits and which groups it belongs to</li>
 <li>What the raw attributes say about it</li>
 </ul>
-<p>Maya's account sits in Wealth Management with the right access<br>Your lab shows every change before it counts</p>
+<p>Maya's account sits in Wealth Management with the right access</p>
 </div>
 
 <div class="ad-progress">
