@@ -2,15 +2,19 @@ import "server-only";
 import { seeded, shuffle, type Check, type Task } from "@/lib/academy-drills";
 import type { LabSnapshot, LabUser } from "@/lib/academy-lab";
 import type { Skill } from "@/lib/academy-score";
-import { ticketFor } from "@/lib/academy-mission-lab";
+import { CHALLENGE_ACCOUNTS, ticketFor } from "@/lib/academy-mission-lab";
 
 // A real audit of the student's own lab. Nothing here is invented: every
 // finding is read from their latest snapshot, and every fix is checked against
 // the next one. If the lab has nothing wrong, there is nothing to fix, and the
 // daily drill uses a written or multiple-choice case instead.
 
-/** Objects the Ticket Queue and the 2 AM Login missions are about. Left out so a finding never spoils them. */
-const MISSION_OBJECTS = new Set(["old.intern", "svc-backup-job", "jamie.torres", "riley.kwan", "casey.reed", "taylor.osei", "alex.rivera"]);
+/**
+ * Accounts the challenges are about. Left out so a finding never spoils them.
+ * Every account a challenge ticket checks is added on its own, so a new
+ * challenge is covered the day it ships (maya.okafor once slipped through).
+ */
+const MISSION_OBJECTS = new Set(["old.intern", "svc-backup-job", "jamie.torres", "riley.kwan", "casey.reed", "taylor.osei", "alex.rivera", ...CHALLENGE_ACCOUNTS]);
 const MISSION_COMPUTERS = new Set(["wm-wks07", "ops-wks03"]);
 const DAY = 24 * 60 * 60 * 1000;
 

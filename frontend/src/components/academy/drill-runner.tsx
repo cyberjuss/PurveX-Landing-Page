@@ -102,6 +102,11 @@ export function streakLine(s: DrillStatus["stats"]) {
   return "One scenario a day · About two minutes";
 }
 
+/** The day of the year, for the daily ticket number. Matches the Desk. */
+function dayOfYear(d = new Date()) {
+  return Math.floor((d.getTime() - new Date(d.getFullYear(), 0, 0).getTime()) / 86_400_000);
+}
+
 /** The ISO week number, for the weekly alert's ticket number. */
 function isoWeek(d = new Date()) {
   const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -131,20 +136,21 @@ function TaskPanel({ task, checkRes }: { task: TaskInfo; checkRes: CheckRes | nu
     <div className="dr-task">
       <span className="rd-kicker">Fix it in your lab</span>
       {showResults ? (
-        <div className="dr-checks">
-          <ul>
-            {checkRes!.results.map((r) => (
-              <li key={r.label} className={r.ok ? "is-ok" : "is-bad"}>
-                <span>{r.ok ? "✓" : "✗"}</span>
-                {r.label}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="dr-task__list">
+          {checkRes!.results.map((r) => (
+            <li key={r.label} className={r.ok ? "is-ok" : "is-bad"}>
+              <i aria-hidden>{r.ok ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}</i>
+              {r.label}
+            </li>
+          ))}
+        </ul>
       ) : task.checklist ? (
         <ul className="dr-task__list">
           {task.checklist.map((c) => (
-            <li key={c}>{c}</li>
+            <li key={c}>
+              <i aria-hidden />
+              {c}
+            </li>
           ))}
         </ul>
       ) : (
@@ -738,8 +744,12 @@ export function DrillRunner() {
     const picked = answers[idx];
     const pick = (c: string) => setAnswers((a) => a.map((v, i) => (i === idx ? c : v)));
     return (
-      <div className="rd dr dr--play">
-        <div className="dr-bar">
+      <div className="rd dr dr--play dr--ws">
+        <div className="dr-bar dr-bar--ticket">
+          <span className="dr-ticket">
+            <span className={`dr-ticket__pri${run.mode === "ctf" ? " is-p2" : ""}`}>{run.mode === "ctf" ? "P2 · High" : "P3 · Routine"}</span>
+            <code className="dr-ticket__no">{run.mode === "ctf" ? `SEC-${isoWeek()}` : `INC-${20000 + dayOfYear()}`}</code>
+          </span>
           <span className="rd-kicker">
             {run.mode === "timed"
               ? `Quick drill · ${idx + 1} of ${run.items.length}`
@@ -756,7 +766,7 @@ export function DrillRunner() {
                       : "Daily scenario"}
           </span>
           <span className="dr-bar__end">
-            <span className={`dr-clock${left !== null && left <= 30 ? " dr-clock--low" : ""}`}>
+            <span className={`dr-clock dr-clock--big${left !== null && left <= 30 ? " dr-clock--low" : ""}`}>
               <Timer className="h-4 w-4" />
               {clock(left ?? elapsed)}
             </span>
@@ -777,10 +787,14 @@ export function DrillRunner() {
         <div className="dr-actions">
           <span className="dr-actions__side">
             {leaving ? (
-              <span className="dr-leave">
-                Leave this drill?
-                <button type="button" className="dr-link" onClick={() => setLeaving(false)}>Stay</button>
-                <button type="button" className="dr-link dr-link--bad" onClick={exitDrill}>Leave</button>
+              <span className="dr-leave" role="alertdialog" aria-label="Leave this case?">
+                <strong>Leave this case?</strong>
+                <button type="button" className="dr-leave__stay" onClick={() => setLeaving(false)}>
+                  Keep working
+                </button>
+                <button type="button" className="dr-leave__go" onClick={exitDrill}>
+                  Leave
+                </button>
               </span>
             ) : (
               <button type="button" className="dr-exit" onClick={() => setLeaving(true)}>
@@ -966,7 +980,7 @@ export function DrillRunner() {
   const nameOf = (e: DrillEntry | null | undefined) => e?.detail?.[0]?.t ?? null;
   const aimed = wantJob ? (status?.jobs.find((j) => j.id === wantJob) ?? null) : null;
   // The queue: the weekly alert and today's case as tickets, the shift as clocking in.
-  const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000);
+  const doy = dayOfYear();
   const daily: DeskTicket | null =
     status && s
       ? {

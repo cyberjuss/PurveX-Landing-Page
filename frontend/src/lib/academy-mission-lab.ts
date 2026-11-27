@@ -357,9 +357,21 @@ function checkKey(c: Check): string {
   return `${c.t}:${String(subject).toLowerCase()}`;
 }
 
-const TICKET_KEYS: [string, Set<string>][] = Object.entries(MISSION_LAB as Record<string, Gate>)
-  .filter(([id]) => /^tq-/.test(id) || id === "w2-02")
-  .map(([id, g]) => [id, new Set(g.checks.map(({ c }) => checkKey(c)))]);
+// Every challenge ticket, not only the Ticket Queue's: a challenge plants its
+// problem in the lab (maya.okafor in the wrong department for A New Hire's
+// First Week), and a daily case built from that problem would hand the
+// student the challenge's own fix.
+const TICKET_KEYS: [string, Set<string>][] = Object.entries(MISSION_LAB as Record<string, Gate>).map(([id, g]) => [
+  id,
+  new Set(g.checks.map(({ c }) => checkKey(c))),
+]);
+
+/** Every account a challenge ticket checks, lowercased. A daily lab task leaves these alone. */
+export const CHALLENGE_ACCOUNTS: ReadonlySet<string> = new Set(
+  Object.values(MISSION_LAB as Record<string, Gate>).flatMap((g) =>
+    g.checks.map(({ c }) => (c as Record<string, unknown>).sam).filter((v): v is string => typeof v === "string").map((v) => v.toLowerCase())
+  )
+);
 
 /** The ticket whose fix is this change, if any. A finding it covers is that ticket's work, not a separate job. */
 export function ticketFor(checks: Check[]): string | null {

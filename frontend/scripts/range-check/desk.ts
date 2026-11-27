@@ -2,7 +2,8 @@
 // Run: npm run check:range:desk   (no database, no network)
 
 import { findEntry } from "@/lib/academy-content";
-import { JOBS } from "@/lib/academy-drills";
+import { JOBS, standardSnapshot } from "@/lib/academy-drills";
+import { auditLab, pickFinding } from "@/lib/academy-audit";
 import { SKILLS, type Skill } from "@/lib/academy-score";
 import { INCIDENT_LESSON_IDS, JOB_LESSON_IDS, lessonFor } from "@/lib/academy-job-lessons";
 import { INCIDENTS } from "@/lib/academy-shift";
@@ -50,6 +51,29 @@ check(
   !echoesChallenge({ title: "Contractor Badge Still Opens the Vault", prompt: "Which change closes this without losing the audit trail?" })
 );
 check("a reworded challenge title is caught", echoesChallenge({ title: "The Locked Out Account", prompt: "" }) || echoesChallenge({ title: "Locked Out", prompt: "" }));
+
+console.log("\nDaily lab tasks never hand out a challenge's own fix");
+{
+  // A New Hire's First Week plants maya.okafor in the Operations folder. A
+  // daily "make the change" case built from that would be the challenge's answer.
+  const base = standardSnapshot();
+  // Built from a real Operations user, so the folder path is in the lab's own format.
+  const ops = base.users.find((u) => /OU=Operations,/i.test(u.container) && u.enabled) ?? base.users[0];
+  const wm = base.users.find((u) => /OU=WealthManagement,/i.test(u.container));
+  const misfiled = (sam: string, name: string) => ({ ...ops, sam, name, department: wm?.department ?? "Wealth Management", memberOf: ["Operations Users"], enabled: true });
+  const planted = {
+    ...base,
+    // The lab reports its department folders; the misfiled rule reads them.
+    ous: ["IT", "Compliance", "Operations", "WealthManagement", "FinanceAccounting"].map((d) => ({ path: `OU=${d},OU=Departments`, description: "" })),
+    users: [...base.users, misfiled("maya.okafor", "Maya Okafor"), misfiled("pat.control", "Pat Control")],
+  };
+  const daily = auditLab(planted).filter((f) => f.task && !f.ticket);
+  check("Maya's misfiled account never becomes a daily lab task", !daily.some((f) => /maya\.okafor/i.test(f.facts)), daily.map((f) => f.id).join(", "));
+  // The control: the same problem on an account no challenge uses still does, so the check above is not passing by accident.
+  check("the same problem on an account no challenge uses still does", daily.some((f) => f.id === "misplaced-account:pat.control"), daily.map((f) => f.id).join(", "));
+  const pick = pickFinding({ snapshot: planted, seed: "x", level: 1, avoid: [] });
+  check("and the daily pick never lands on Maya", !pick || !/maya\.okafor/i.test(pick.facts), pick?.facts ?? "");
+}
 
 console.log("\nShift report: severity order is earned, not given");
 {
