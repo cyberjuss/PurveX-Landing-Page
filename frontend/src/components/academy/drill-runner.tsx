@@ -8,6 +8,7 @@ import { useCoach } from "@/components/academy/coach-context";
 import { useHostedLab } from "@/components/academy/hosted-lab-button";
 import { academyFetch, localDay, READINESS_PATH, useResults } from "@/lib/academy-client";
 import { DeskQueue, type DeskTicket } from "@/components/academy/desk-queue";
+import type { FeedRow } from "@/lib/academy-lab-feed";
 import { lessonFor } from "@/lib/academy-job-lessons";
 import { currentRank } from "@/lib/academy-badges";
 import { askForProofShot } from "@/lib/academy-proof";
@@ -31,7 +32,7 @@ export type DrillStatus = {
     lastTimed: DrillEntry | null;
     lastDay: string | null;
   };
-  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean; events: boolean; verified?: boolean };
+  lab: { synced: boolean; syncedAt: string | null; ago: string | null; days: number | null; security: boolean; events: boolean; verified?: boolean; feed?: FeedRow[] };
   focus: string | null;
   level: { n: number; name: string };
   ctf: { week: string; entry: DrillEntry | null };
@@ -552,6 +553,18 @@ export function DrillRunner() {
     const t = window.setInterval(load, 15_000);
     return () => window.clearInterval(t);
   }, [labUp, ctfWaiting, load]);
+
+  // The live feed: the lab reports about once a minute, so the Desk re-reads
+  // it on the same beat while it is on screen, and stops while a case is open.
+  const onFloor = !run && !result;
+  const labSynced = Boolean(status?.lab.synced);
+  useEffect(() => {
+    if (!onFloor || !labSynced) return;
+    const t = window.setInterval(() => {
+      if (document.visibilityState === "visible") load();
+    }, 60_000);
+    return () => window.clearInterval(t);
+  }, [onFloor, labSynced, load]);
 
   // Pressing "Start your lab" on the investigation row means they want the
   // investigation, so it opens on its own once the lab has something to draw from.
@@ -1076,6 +1089,9 @@ export function DrillRunner() {
             week={week.map((d) => ({ ...d, done: s.days.includes(d.day), today: d.day === today }))}
             level={status.level.name}
             rank={rank ? { title: rank.title, href: `${READINESS_PATH}#rank` } : null}
+            feed={status.lab.feed ?? []}
+            feedAgo={status.lab.ago}
+            labOn={status.lab.synced}
           />
           {error && !errorMode && <p className="dr-error">{error}</p>}
           {/* A hosted lab is verified by Range itself, so there is no code to plant. */}

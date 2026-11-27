@@ -10,6 +10,7 @@ import { INCIDENTS } from "@/lib/academy-shift";
 import { echoesChallenge } from "@/lib/academy-scenario";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
 import { triage } from "@/lib/academy-shift-desk";
+import { labFeed } from "@/lib/academy-lab-feed";
 import type { IncidentRun } from "@/lib/academy-shift";
 
 let failures = 0;
@@ -73,6 +74,26 @@ console.log("\nDaily lab tasks never hand out a challenge's own fix");
   check("the same problem on an account no challenge uses still does", daily.some((f) => f.id === "misplaced-account:pat.control"), daily.map((f) => f.id).join(", "));
   const pick = pickFinding({ snapshot: planted, seed: "x", level: 1, avoid: [] });
   check("and the daily pick never lands on Maya", !pick || !/maya\.okafor/i.test(pick.facts), pick?.facts ?? "");
+}
+
+console.log("\nThe Desk's live feed");
+{
+  const feed = labFeed({
+    windowDays: 7,
+    failures: [{ account: "devon.brooks", count: 6, last: "2026-11-27T14:14:00Z" }, { account: "never.seen", count: 1, last: null }],
+    lockouts: [{ account: "devon.brooks", count: 1, last: "2026-11-27T14:15:00Z" }],
+    created: [],
+    disabled: [{ account: "kai.mendes", at: "2026-11-27T13:00:00Z", by: "alex.rivera" }],
+    groupAdds: [{ member: "sam.whitfield", group: "Domain Admins", at: "2026-11-27T14:20:00Z", by: "alex.rivera" }],
+    accountChanges: [],
+    policyChanges: [],
+    auditChanges: [],
+  });
+  check("newest event first", feed[0]?.id === 4728 && feed[1]?.id === 4740, feed.map((r) => r.id).join(" "));
+  check("a failure with no time is left out rather than dated wrong", !feed.some((r) => r.who === "never.seen"));
+  check("an admin group add is flagged red", feed[0]?.tone === "bad");
+  check("a failure shows how many", feed.find((r) => r.id === 4625)?.count === 6);
+  check("who did it is named when it was someone else", feed.find((r) => r.id === 4725)?.who === "kai.mendes by alex.rivera");
 }
 
 console.log("\nShift report: severity order is earned, not given");

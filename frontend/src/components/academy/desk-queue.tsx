@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, Clock3, Flame, Headset, Radio } from "lucide-react";
 import { useMounted } from "@/lib/use-mounted";
+import type { FeedRow } from "@/lib/academy-lab-feed";
 
 // The Desk: today's case, this week's investigation and the shift as one
 // service-desk queue, laid out the way a ticketing tool shows a real one.
@@ -39,6 +40,42 @@ function LiveClock() {
   return <span className="dk-clock">{mounted ? now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "––:––"}</span>;
 }
 
+/** A SOC wall screen in miniature: the newest events from the student's own lab. */
+function LiveFeed({ rows, ago, on }: { rows: FeedRow[]; ago: string | null; on: boolean }) {
+  const mounted = useMounted();
+  const time = (iso: string) => (mounted ? new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "");
+  return (
+    <aside className="dk-feed" aria-label="Live from your lab">
+      <div className="dk-feed__bar">
+        <span className={`dk-feed__live${on ? "" : " is-off"}`}>
+          <i aria-hidden /> {on ? "Live" : "Lab offline"}
+        </span>
+        <span className="dk-feed__title">Your Security log</span>
+        <span className="dk-feed__ago">{ago ? `Updated ${ago}` : ""}</span>
+      </div>
+      {rows.length === 0 ? (
+        <p className="dk-feed__empty">
+          {on ? "No events yet · Sign-ins and changes in your lab show here within a minute" : "Start your lab and its events show here"}
+        </p>
+      ) : (
+        <ol className="dk-feed__list">
+          {rows.map((r, i) => (
+            <li key={`${r.at}-${r.id}-${i}`} className={`is-${r.tone}`}>
+              <time dateTime={r.at}>{time(r.at)}</time>
+              <code>{r.id}</code>
+              <span className="dk-feed__what">
+                {r.what}
+                {r.count && r.count > 1 ? <b> ×{r.count}</b> : null}
+              </span>
+              <span className="dk-feed__who">{r.who}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </aside>
+  );
+}
+
 export function DeskQueue({
   tickets,
   shift,
@@ -48,7 +85,15 @@ export function DeskQueue({
   rank,
   tools,
   footer,
+  feed = [],
+  feedAgo = null,
+  labOn = false,
 }: {
+  /** The newest events from the student's own Security log. */
+  feed?: FeedRow[];
+  /** When the lab last reported, as "2 min ago". */
+  feedAgo?: string | null;
+  labOn?: boolean;
   tickets: DeskTicket[];
   /** The clock-in action for a full shift, or the way to unlock one. */
   shift: { href: string; label: string; note: string; locked: boolean };
@@ -134,6 +179,7 @@ export function DeskQueue({
         </div>
       </dl>
 
+      <div className="dk-split">
       <section className="dk-queue" aria-label="Your queue">
         <div className="dk-queue__bar">
           <h2>My queue</h2>
@@ -178,6 +224,8 @@ export function DeskQueue({
           ))}
         </ul>
       </section>
+      <LiveFeed rows={feed} ago={feedAgo} on={labOn} />
+      </div>
       {footer}
     </div>
   );

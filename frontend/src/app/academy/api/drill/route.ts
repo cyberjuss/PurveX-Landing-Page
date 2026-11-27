@@ -36,6 +36,7 @@ import { loadDailyDrill, loadDrills, loadLabLive, loadLabState, loadProfile, loa
 import { LIVE_MINUTES, isVerified } from "@/lib/academy-verify";
 import { isRangePro } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
+import { labFeed } from "@/lib/academy-lab-feed";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -49,7 +50,7 @@ async function auth(request: Request) {
 
 // What the student's own lab says about when they last worked in it.
 function labInfo(lab: Awaited<ReturnType<typeof loadLabState>>, verified = false) {
-  if (!lab) return { synced: false, syncedAt: null, ago: null, days: null, security: false, events: false, verified: false };
+  if (!lab) return { synced: false, syncedAt: null, ago: null, days: null, security: false, events: false, verified: false, feed: [] };
   const age = formatLabAge(lab.uploadedAt);
   return {
     synced: true,
@@ -62,6 +63,8 @@ function labInfo(lab: Awaited<ReturnType<typeof loadLabState>>, verified = false
     events: Boolean(lab.snapshot.events),
     // True when a planted challenge code showed up in a snapshot in the last 30 days.
     verified,
+    // The newest Security log events, for the Desk's live feed.
+    feed: lab.snapshot.events ? labFeed(lab.snapshot.events) : [],
   };
 }
 
