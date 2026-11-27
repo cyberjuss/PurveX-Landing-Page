@@ -74,19 +74,21 @@ function joinNames(names: string[]) {
   return `${names.slice(0, -1).join(", ")}, and ${names[names.length - 1]}`;
 }
 
-function verdict(s: Summary, badges: CompetencyBadge[]) {
-  if (s.finished === 0) {
-    return "Nothing is on record yet. Start Operation Day One and look people up in the directory to see what you can already do.";
-  }
+/** The coach's read, one short line each: where you stand, then the quickest next step. */
+function verdict(s: Summary, badges: CompetencyBadge[]): string[] {
+  if (s.finished === 0) return ["Nothing on record yet", "Start with Operation Day One"];
   const strong = badges.filter((b) => b.tier === "proficient" || b.tier === "verified");
+  if (s.level === "ready" && strong.length === badges.length) {
+    return [`Proficient in all ${badges.length} competencies`, "Redo a ticket on your lab with no hint"];
+  }
   // The competency closest to its next tier is the quickest win.
   const next = badges.filter((b) => b.tier !== "verified" && b.next).sort((a, b) => b.proven / b.total - a.proven / a.total)[0];
-  const nextLine = next?.next ? ` Next, ${next.title}: ${next.next.charAt(0).toLowerCase()}${next.next.slice(1)}` : "";
-  if (s.level === "ready" && strong.length === badges.length) {
-    return `You are proficient in all ${badges.length} competencies. Redo one ticket on your own lab with the hint closed.`;
-  }
-  if (!strong.length) return `You have started, but no competency is proficient yet.${nextLine}`;
-  return `You are proficient in ${joinNames(strong.map((b) => b.title))}.${nextLine}`;
+  const stand = !strong.length
+    ? "No competency is proficient yet"
+    : strong.length <= 2
+      ? `Proficient in ${joinNames(strong.map((b) => b.title))}`
+      : `Proficient in ${strong.length} of ${badges.length} competencies`;
+  return next?.next ? [stand, `Next up ${next.title} · ${next.next}`] : [stand];
 }
 
 /** A scored browser lab: its first finished score, or open. */
@@ -134,7 +136,7 @@ function RankAndBadges({ results, badges }: { results: Results; badges: Competen
       <div className="rd-sec__head">
         <span className="rd-sec__n">01</span>
         <h2>Rank</h2>
-        <p>Your title on the job ladder.</p>
+        <p>Your title on the job ladder</p>
       </div>
       <div className="rb-rank">
         <div className="rb-rank__now">
@@ -161,8 +163,7 @@ function RankAndBadges({ results, badges }: { results: Results; badges: Competen
         <span className="rd-sec__n">02</span>
         <h2>Competencies</h2>
         <p>
-          The core skills a help desk or SOC job asks for, rated from the work you prove in your lab. {earned} of {badges.length} earned. Proficient
-          and Verified ones show on your portfolio.
+          Core job skills proven in your lab · {earned} of {badges.length} earned
         </p>
       </div>
       <ul className="rb-grid">
@@ -259,14 +260,20 @@ export function ReadinessDashboard() {
             <p className={`rd-stamp rd-text-${scoreTone}`}>{lv.label}</p>
             {s.accuracy !== null && (
               <p className="rd-acc">
-                Accuracy <strong>{s.accuracy}%</strong> on what you have finished, {s.finished} of {s.total}
+                Accuracy <strong>{s.accuracy}%</strong> on the {s.finished} of {s.total} you finished
               </p>
             )}
           </div>
 
           <div className="rd-hero__verdict">
             <h1>Are you ready for the job?</h1>
-            <blockquote>{verdict(s, badges)}</blockquote>
+            <blockquote>
+              {verdict(s, badges).map((line) => (
+                <span key={line} style={{ display: "block" }}>
+                  {line}
+                </span>
+              ))}
+            </blockquote>
             <div className="rd-sign">
               <span>PurveX Coach, Senior Help Desk Lead</span>
               <button
@@ -310,7 +317,7 @@ export function ReadinessDashboard() {
         <div className="rd-sec__head">
           <span className="rd-sec__n">03</span>
           <h2>Mission log</h2>
-          <p>Every attempt, as it will look to a hiring manager.</p>
+          <p>Every attempt as a hiring manager sees it</p>
         </div>
         {CHALLENGES.map((ch) => {
           const list = Object.values(MISSION_CATALOG).filter((m) => m.challenge === ch.key);
@@ -394,7 +401,7 @@ export function ReadinessDashboard() {
                 <ChevronDown className={`rd-log__chevron h-4 w-4 ${logOpen("labs") ? "" : "-rotate-90"}`} aria-hidden />
                 <span>
                   <span className="rd-log__title">Scored labs</span>
-                  <span className="rd-log__blurb">Your first finished score counts, so later replays do not change it.</span>
+                  <span className="rd-log__blurb">Your first finished score is the one that counts</span>
                 </span>
               </button>
             </h3>

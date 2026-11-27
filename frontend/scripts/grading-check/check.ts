@@ -388,9 +388,9 @@ console.log("\n--- competency badges ---");
   eq("2 of 4 proven is proficient, not just practiced", badge("monitoring", states(mon.jobs, 2, 0)).tier, "proficient");
   eq("4 of 4 proven is verified", badge("monitoring", states(mon.jobs, 4, 0)).tier, "verified");
   eq("verified has no next step", badge("monitoring", states(mon.jobs, 4, 0)).next, null);
-  eq("proficient's next names exactly what is left, singular", badge("monitoring", states(mon.jobs, 3, 0)).next, "Prove 1 more task for Verified.");
-  eq("practiced's next counts toward Proficient, not Verified", badge("monitoring", states(mon.jobs, 0, 2)).next, "Prove 2 more tasks for Proficient.");
-  eq("untouched's next counts toward Practiced, not Proficient", badge("monitoring", states(mon.jobs, 0, 1)).next, "Try 1 more of its 4 tasks.");
+  eq("proficient's next names exactly what is left, singular", badge("monitoring", states(mon.jobs, 3, 0)).next, "Prove 1 more task for Verified");
+  eq("practiced's next counts toward Proficient, not Verified", badge("monitoring", states(mon.jobs, 0, 2)).next, "Prove 2 more tasks for Proficient");
+  eq("untouched's next counts toward Practiced, not Proficient", badge("monitoring", states(mon.jobs, 0, 1)).next, "Try 1 more of 4 tasks");
 
   // ad-admin: 5 jobs, half = ceil(5/2) = 3 -- half of an odd total rounds up.
   const ad = COMPETENCIES.find((c) => c.id === "ad-admin")!;

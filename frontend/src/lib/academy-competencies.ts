@@ -16,37 +16,37 @@ export const COMPETENCIES: Competency[] = [
   {
     id: "help-desk",
     title: "Help Desk Support",
-    why: "Resolves sign-in and access tickets safely, checking the claim before acting.",
+    why: "Resolves sign-in and access tickets after checking the claim",
     jobs: ["verify-claim", "enable-account", "reset-password", "dns-fix"],
   },
   {
     id: "ad-admin",
     title: "Active Directory Administration",
-    why: "Creates, files and retires accounts, groups and computers to the firm's standard.",
+    why: "Manages users and groups to the firm's standard",
     jobs: ["create-user", "fix-ou", "group-type", "stale-objects", "gpo-scope"],
   },
   {
     id: "iam",
     title: "Identity and Access Management",
-    why: "Grants access through roles and groups, and takes away what should not be there.",
+    why: "Grants access through groups and removes what should not be there",
     jobs: ["group-access", "role-based-access", "least-privilege", "access-audit", "offboard", "service-account"],
   },
   {
     id: "hardening",
     title: "Security Hardening",
-    why: "Closes the settings attackers use: weak password rules, lockouts, exposed ports.",
+    why: "Closes the weak settings attackers look for",
     jobs: ["password-hygiene", "password-policy", "lockout-policy", "admin-password-policy", "firewall-rule", "harden-account"],
   },
   {
     id: "monitoring",
     title: "Log Analysis and Monitoring",
-    why: "Turns on the logging a SOC needs and reads Windows security events.",
+    why: "Turns on logging and reads Windows security events",
     jobs: ["enable-auditing", "log-retention", "read-logs", "trace-logon"],
   },
   {
     id: "incident-response",
     title: "Incident Response",
-    why: "Triages an alert, contains the damage, keeps the evidence and escalates clearly.",
+    why: "Contains an alert and keeps the evidence",
     jobs: ["triage-alert", "contain-account", "contain-wire-credential", "quarantine-file", "verify-build-integrity", "escalate-note"],
   },
 ];
@@ -83,10 +83,10 @@ export function competencyBadges(jobs: JobState[]): CompetencyBadge[] {
       tier === "verified"
         ? null
         : tier === "proficient"
-          ? `Prove ${total - proven} more ${total - proven === 1 ? "task" : "tasks"} for Verified.`
+          ? `Prove ${total - proven} more ${total - proven === 1 ? "task" : "tasks"} for Verified`
           : tier === "practiced"
-            ? `Prove ${half - proven} more ${half - proven === 1 ? "task" : "tasks"} for Proficient.`
-            : `Try ${half - tried} more of its ${total} tasks.`;
+            ? `Prove ${half - proven} more ${half - proven === 1 ? "task" : "tasks"} for Proficient`
+            : `Try ${half - tried} more of ${total} tasks`;
     return { id: c.id, title: c.title, why: c.why, tier, proven, total, next };
   });
 }
