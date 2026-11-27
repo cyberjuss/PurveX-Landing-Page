@@ -51,7 +51,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-1",
     title: "Week 1 — CIA Triad",
-    summary: "Name what failed, then separate a threat from a vulnerability before ranking the risk.",
+    summary: "Name what failed and tell a threat from a vulnerability",
     objectives: [
       "Name which part of the CIA triad failed",
       "Tell a weakness from a threat",
@@ -75,7 +75,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-2",
     title: "Week 2 — Encryption & Hashing",
-    summary: "Prove a file was not changed, and tell encoding, encryption and hashing apart in a real password breach.",
+    summary: "Tell encoding from encryption and hashing in a real breach",
     objectives: [
       "Tell encoding, encryption and hashing apart",
       "Decode Base64 and hex values",
@@ -96,7 +96,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-3",
     title: "Week 3 — Networking",
-    summary: "Read a network capture by checking the address, the handshake, the port, and the protocol, and then decide whether the traffic is ordinary.",
+    summary: "Read a network capture and decide if the traffic is normal",
     objectives: [
       "Read an IP address and its subnet",
       "Scan a server for open ports",
@@ -119,7 +119,7 @@ const phase1Weeks: WeekDef[] = [
   {
     slug: "week-4",
     title: "Week 4 — Authentication, Authorization & Access Control",
-    summary: "Prove who someone is, give them only what their job needs, and check it on every request. Then break an app that forgot to.",
+    summary: "Give people only the access their job needs",
     objectives: [
       "Separate who someone is from what they can reach",
       "Rank MFA methods by how hard they are to phish",
@@ -146,7 +146,7 @@ const phase1HomeLabs: HomeLabDef[] = [
   {
     slug: "home-lab-setup",
     title: "Set Up",
-    summary: "Learn the PurveX Financial environment, then build it on your own machine.",
+    summary: "Learn the PurveX Financial environment then build it",
     objectives: [
       "Know the firm you protect",
       "Build your own domain controller",
@@ -168,7 +168,7 @@ const phase1HomeLabs: HomeLabDef[] = [
   {
     slug: "home-lab-directory",
     title: "The Directory",
-    summary: "What lives in Active Directory and how the firm's accounts, groups and policy fit together.",
+    summary: "How the firm's accounts and groups fit together in Active Directory",
     objectives: [
       "Join a computer to the domain",
       "Tell an OU from a group",
@@ -187,7 +187,7 @@ const phase1HomeLabs: HomeLabDef[] = [
   {
     slug: "home-lab-desk",
     title: "Working the Desk",
-    summary: "The four jobs a help desk does all day, done in your own directory.",
+    summary: "The four jobs a help desk does all day",
     objectives: [
       "Find any account in seconds",
       "Choose between an unlock and a reset",
@@ -205,7 +205,7 @@ const phase1HomeLabs: HomeLabDef[] = [
   {
     slug: "home-lab-challenges",
     title: "Day One, Tickets and Client Data",
-    summary: "A first day on the desk, a full ticket queue and a client data review, graded against your own lab.",
+    summary: "Real help desk work graded against your own lab",
     objectives: [
       "Check a ticket before you act",
       "Fix real tickets end to end",
@@ -225,7 +225,7 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "soc-mindset",
     title: "Week 1 — Think Like a SOC Analyst",
-    summary: "The tier structure, the investigation mindset, and how an incident gets named and classified before it ever reaches a tool.",
+    summary: "How a SOC is structured and how an analyst thinks",
     sections: [
       { label: "Overview", file: "phase-2/soc-mindset/overview.md" },
       { label: "What a SOC Analyst Does", file: "phase-2/soc-mindset/lesson-role.md" },
@@ -246,7 +246,7 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "week-1",
     title: "Week 2 — Malware",
-    summary: "How malware works, how it spreads, and what arrives along with it.",
+    summary: "How malware works and how it spreads",
     sections: [
       { label: "Overview", file: "phase-2/week-1/overview.md" },
       { label: "Types of Malware", file: "phase-2/week-1/lesson-types.md" },
@@ -261,7 +261,7 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "week-2",
     title: "Week 3 — Log Analysis Fundamentals",
-    summary: "Read the host, the account, and the log before deciding what happened.",
+    summary: "Read the host and the log before you decide what happened",
     sections: [
       { label: "Overview", file: "phase-2/week-2/overview.md" },
       { label: "Challenge: One Timeline, Two Machines", file: "phase-2/week-2/challenge-one-timeline-two-machines.md" },
@@ -275,7 +275,7 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "baselines-thresholds",
     title: "Week 4 — Baselines, Thresholds & Zero Trust",
-    summary: "Map your own lab's network, tell an outlier from a baseline, place MITRE ATT&CK on attacker behavior you've already seen, and learn what a detection threshold actually costs in either direction.",
+    summary: "Map your network and tell an outlier from the baseline",
     sections: [
       { label: "Overview", file: "phase-2/baselines-thresholds/overview.md" },
       { label: "Mapping Your Environment", file: "phase-2/baselines-thresholds/lesson-map-environment.md" },
@@ -293,7 +293,7 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "detection-writing",
     title: "Week 5 — Writing Detections with KQL",
-    summary: "Learn KQL and TRACE, a five-part method for turning an ATT&CK technique and a threshold into a real detection query.",
+    summary: "Turn an ATT&CK technique into a real detection query with KQL",
     sections: [
       { label: "Overview", file: "phase-2/detection-writing/overview.md" },
       { label: "KQL Basics", file: "phase-2/detection-writing/lesson-kql-basics.md" },
@@ -310,7 +310,7 @@ const phase2Weeks: WeekDef[] = [
   {
     slug: "kill-chain",
     title: "Week 6 — The Cyber Kill Chain",
-    summary: "See how individual ATT&CK techniques you already know chain into one intrusion, then work a real five-stage chain in your own Shift queue.",
+    summary: "See how techniques chain into one intrusion then work one",
     sections: [
       { label: "Overview", file: "phase-2/kill-chain/overview.md" },
       { label: "The Cyber Kill Chain", file: "phase-2/kill-chain/lesson-kill-chain.md" },
@@ -335,7 +335,7 @@ const phase2Capstone: HomeLabDef[] = [
   {
     slug: "capstone",
     title: "Phase 2 — Challenges",
-    summary: "Four real attack campaigns, worked start to finish on your own lab, each mapped to the Cyber Kill Chain and MITRE ATT&CK.",
+    summary: "Four real attack campaigns worked start to finish in your lab",
     // Four separate attackers, four separate chains, each its own real
     // story: credential guessing, a phishing attachment, a forgotten
     // firewall rule, and abuse of Kerberos and AD replication exactly as
