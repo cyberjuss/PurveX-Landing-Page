@@ -367,7 +367,7 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
 const PRIORITY_NOTE: Record<"P1" | "P2" | "P3", string> = {
   P1: "Critical · work it first",
   P2: "High · after any P1",
-  P3: "Routine · when the queue allows",
+  P3: "Routine",
 };
 
 /** The word behind each code, spelled out wherever a badge has the room for it. */
@@ -864,7 +864,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead }: { inc: Incident; no:
             <span className="sx-chip">
               <GraduationCap className="h-3.5 w-3.5" /> {cap(skillOf(inc.kind))}
             </span>
-            <span className="sx-case__sla">{inc.resolved ? "Solved" : inc.escalated ? "With tier 2" : inc.untriaged ? "Set its priority first" : cap(PRIORITY_NOTE[inc.severity].split(" · ")[1])}</span>
+            <span className="sx-case__sla">{inc.resolved ? "Solved" : inc.escalated ? "With tier 2" : inc.untriaged ? "Set its priority first" : cap(PRIORITY_NOTE[inc.severity].split(" · ")[1] ?? "")}</span>
           </div>
           <h1 className="sx-case__title">{inc.title}</h1>
           <ol className="sx-life" aria-label="Where this incident stands">
