@@ -201,7 +201,7 @@ export function MissionPager({
       .map((m) => m.getAttribute("data-id"))
       .filter((id): id is string => Boolean(id));
     if (!ids.length) return;
-    if (!window.confirm("Reset this challenge? Every ticket in it starts over. Other challenges stay as they are. This does not undo changes in your lab.")) return;
+    if (!window.confirm("Reset this challenge? Every ticket in it starts over · Your lab is not changed")) return;
     const all = loadResults();
     ids.forEach((id) => {
       delete all[id];

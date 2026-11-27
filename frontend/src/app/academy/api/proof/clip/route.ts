@@ -24,11 +24,11 @@ export const runtime = "nodejs";
 async function auth(request: Request, requirePro: boolean) {
   if (!(await isAcademyUnlocked())) return { error: NextResponse.json({ error: "Locked" }, { status: 401 }) } as const;
   const student = await getAcademyStudent(request);
-  if (!student) return { error: NextResponse.json({ error: "Sign in first." }, { status: 401 }) } as const;
+  if (!student) return { error: NextResponse.json({ error: "Sign in first" }, { status: 401 }) } as const;
   if (requirePro && !(await isRangePro(student))) {
     return { error: NextResponse.json(proRequired("Adding a challenge clip to your profile"), { status: 403 }) } as const;
   }
-  if (!clipsAvailable()) return { error: NextResponse.json({ error: "Clip uploads aren't switched on yet." }, { status: 503 }) } as const;
+  if (!clipsAvailable()) return { error: NextResponse.json({ error: "Clip uploads aren't switched on yet" }, { status: 503 }) } as const;
   return { student } as const;
 }
 
@@ -53,7 +53,7 @@ export async function GET(request: Request) {
   if (id) {
     const clip = clips.find((c) => c.id === id);
     const url = clip ? await clipPlayUrl(clip, params.get("poster") === "1") : null;
-    return url ? NextResponse.json({ url }) : NextResponse.json({ error: "Not found." }, { status: 404 });
+    return url ? NextResponse.json({ url }) : NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   return NextResponse.json({ clips: clips.map(view) });
 }
@@ -66,17 +66,17 @@ export async function POST(request: Request) {
   try {
     body = (await request.json()) as typeof body;
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
-  if (!isChallengeKey(body.challenge)) return NextResponse.json({ error: "That isn't a challenge." }, { status: 400 });
+  if (!isChallengeKey(body.challenge)) return NextResponse.json({ error: "That isn't a challenge" }, { status: 400 });
   const size = Number(body.sizeBytes);
   const seconds = Number.isFinite(Number(body.durationSec)) ? Number(body.durationSec) : 0;
-  if (!Number.isFinite(size) || size <= 0) return NextResponse.json({ error: "The recording is empty." }, { status: 400 });
+  if (!Number.isFinite(size) || size <= 0) return NextResponse.json({ error: "The recording is empty" }, { status: 400 });
   if (size > CLIP_MAX_BYTES || seconds > CLIP_MAX_SECONDS) {
-    return NextResponse.json({ error: "Clips can be up to 15 minutes. Record a shorter one to add it to your profile." }, { status: 413 });
+    return NextResponse.json({ error: "Clips can be up to 15 minutes · Record a shorter one to add it to your profile" }, { status: 413 });
   }
   const startedMs = typeof body.recordedAt === "string" ? Date.parse(body.recordedAt) : NaN;
-  if (Number.isNaN(startedMs)) return NextResponse.json({ error: "Couldn't tell when that was recorded. Try again." }, { status: 400 });
+  if (Number.isNaN(startedMs)) return NextResponse.json({ error: "Couldn't tell when that was recorded · Try again" }, { status: 400 });
   // recordedAt is read off the student's clock and every solve off ours. A
   // computer even a minute out would otherwise never match its own solve, so
   // move the start onto the server's clock by however far the browser is off.
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
     );
   }
   const started = await startClip(a.student.id, body.challenge, size, seconds, recordedAt, solvedAt);
-  if (!started) return NextResponse.json({ error: "Couldn't start the upload. Try again in a minute." }, { status: 500 });
+  if (!started) return NextResponse.json({ error: "Couldn't start the upload · Try again in a minute" }, { status: 500 });
   return NextResponse.json(started);
 }
 
@@ -103,7 +103,7 @@ export async function PATCH(request: Request) {
   if (a.error) return a.error;
   const id = new URL(request.url).searchParams.get("id") ?? "";
   const clip = await confirmClip(a.student.id, id);
-  if (!clip) return NextResponse.json({ error: "The upload didn't arrive. Try adding it again." }, { status: 409 });
+  if (!clip) return NextResponse.json({ error: "The upload didn't arrive · Try adding it again" }, { status: 409 });
   return NextResponse.json({ clip: view(clip) });
 }
 
@@ -111,6 +111,6 @@ export async function DELETE(request: Request) {
   const a = await auth(request, false);
   if (a.error) return a.error;
   const id = new URL(request.url).searchParams.get("id") ?? "";
-  if (!(await deleteClip(a.student.id, id))) return NextResponse.json({ error: "Not found." }, { status: 404 });
+  if (!(await deleteClip(a.student.id, id))) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ ok: true });
 }

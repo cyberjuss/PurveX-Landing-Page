@@ -92,14 +92,14 @@ export function ShareWinPrompt() {
               Not now
             </button>
           </div>
-          {state === "error" && <p className="pq__error">That didn&rsquo;t post. Try again in a minute.</p>}
+          {state === "error" && <p className="pq__error">That didn&rsquo;t post · Try again in a minute</p>}
         </div>
       )}
       {ask && state === "posted" && (
         <div className="pq__body">
           <span className="pq__ok">✓ Posted to #wins</span>
           <h2 id="sw-title">{ask.title}</h2>
-          <p>Your win is in the Range Discord. Your next wins will post there too.</p>
+          <p>Your win is in the Range Discord · Next wins post there too</p>
           <div className="pq__actions">
             <button type="button" className="pq__btn pq__btn--primary" onClick={close}>
               Continue

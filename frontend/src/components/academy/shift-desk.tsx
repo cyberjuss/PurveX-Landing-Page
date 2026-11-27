@@ -252,7 +252,7 @@ export function DeskSummary({ r, headline, totals }: { r: DeskReport; headline: 
             {r.triage.score}/{r.triage.max}
           </b>
           <span>Severity order</span>
-          <small>{r.triage.misses.length ? `${r.triage.misses.length} time${r.triage.misses.length === 1 ? "" : "s"} a higher one waited` : "Highest first, every time"}</small>
+          <small>{r.triage.misses.length ? `${r.triage.misses.length} time${r.triage.misses.length === 1 ? "" : "s"} a higher one waited` : "Highest first every time"}</small>
         </div>
       </div>
 

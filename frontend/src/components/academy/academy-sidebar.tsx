@@ -110,7 +110,7 @@ export function AcademySidebar({ phases, onNavigate, discord = false }: { phases
               href={`/range/${phase.slug}`}
               onClick={onNavigate}
               className="flex items-center justify-between gap-2 font-mono text-[13.5px] font-bold uppercase tracking-[0.08em] text-[var(--rd-ink-3)] transition hover:text-[var(--rd-ink)]"
-              title="Coming soon. Get an email when it opens."
+              title="Coming soon · Get an email when it opens"
             >
               <span className="truncate">{phase.label} · {phase.title}</span>
               <span className="shrink-0 rounded-full border border-[var(--rd-line)] px-1.5 py-px text-[10px] tracking-[0.06em]">Soon</span>

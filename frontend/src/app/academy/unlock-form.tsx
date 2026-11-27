@@ -61,7 +61,7 @@ export function UnlockForm() {
       {/* Two ways in, and neither is the default. A class was given a code. An
           individual buys Pro and needs no code at all, so this screen cannot
           open by asking who their instructor is. */}
-      <AuthHeading sub="Enter the code your class was given. Anyone here on their own needs no code.">
+      <AuthHeading sub="Enter your class code · No code needed on your own">
         Open Range
       </AuthHeading>
 

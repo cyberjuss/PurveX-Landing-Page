@@ -16,21 +16,21 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
-  if (!discordWinsConfigured() || (await isClassAffiliated(student.id, student.email))) return NextResponse.json({ error: "Sharing wins is not set up." }, { status: 404 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
+  if (!discordWinsConfigured() || (await isClassAffiliated(student.id, student.email))) return NextResponse.json({ error: "Sharing wins is not set up" }, { status: 404 });
 
   let body: { challenge?: unknown };
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const finished = finishedChallenges(await loadProgress(student.id));
   const challenge = finished.find((k) => k === body.challenge);
-  if (!challenge) return NextResponse.json({ error: "That challenge is not finished yet." }, { status: 400 });
+  if (!challenge) return NextResponse.json({ error: "That challenge is not finished yet" }, { status: 400 });
 
   const { profile, failed } = await readProfile(student.id);
-  if (failed || !profile) return NextResponse.json({ error: "Couldn't load your profile. Try again." }, { status: 503 });
+  if (failed || !profile) return NextResponse.json({ error: "Couldn't load your profile · Try again" }, { status: 503 });
   const next = sanitizeProfile({ ...profile, extras: { ...profile.extras, shareWins: true }, updatedAt: new Date().toISOString() });
   if (next) await saveProfile(student.id, next);
 

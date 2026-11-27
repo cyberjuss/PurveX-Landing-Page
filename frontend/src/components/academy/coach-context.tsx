@@ -172,7 +172,7 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
       const question = text.trim() || (shots.length ? COACH_SHOT_ASK : "");
       if (!question || busyRef.current) return;
       if (remaining === 0) {
-        setError(`You have used all ${limit} coach questions for today. They reset tomorrow.`);
+        setError(`All ${limit} coach questions used today · They reset tomorrow`);
         return;
       }
       busyRef.current = true;
@@ -202,12 +202,12 @@ export function CoachProvider({ children, profile = null }: { children: React.Re
         if (typeof data.remaining === "number") setRemaining(Math.min(data.remaining, typeof data.limit === "number" ? data.limit : data.remaining));
         if (typeof data.bonus === "number") setBonus(data.bonus);
         if (!res.ok || typeof data.reply !== "string" || !data.reply.trim()) {
-          setError(typeof data.error === "string" && data.error ? data.error : "PurveX Coach is unavailable right now.");
+          setError(typeof data.error === "string" && data.error ? data.error : "PurveX Coach is unavailable right now");
           return;
         }
         setMessages([...next, { role: "assistant", content: data.reply, receipt: typeof data.receipt === "string" ? data.receipt : undefined }]);
       } catch (err) {
-        setError(err instanceof DOMException && err.name === "TimeoutError" ? "Coach took too long. Try again." : "Could not reach PurveX Coach.");
+        setError(err instanceof DOMException && err.name === "TimeoutError" ? "Coach took too long · Try again" : "Could not reach PurveX Coach");
       } finally {
         busyRef.current = false;
         setBusy(false);

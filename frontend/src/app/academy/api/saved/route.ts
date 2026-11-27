@@ -16,22 +16,22 @@ async function auth(request: Request) {
 
 export async function GET(request: Request) {
   const student = await auth(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   const saved = await loadSaved(student.id);
-  if (!saved) return NextResponse.json({ error: "Could not load your saved work." }, { status: 503 });
+  if (!saved) return NextResponse.json({ error: "Could not load your saved work" }, { status: 503 });
   return NextResponse.json({ saved });
 }
 
 export async function PUT(request: Request) {
   const student = await auth(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const saved = await patchSaved(student.id, sanitizePatch((body as { patch?: unknown })?.patch));
-  if (!saved) return NextResponse.json({ error: "Could not save your work." }, { status: 503 });
+  if (!saved) return NextResponse.json({ error: "Could not save your work" }, { status: 503 });
   return NextResponse.json({ ok: true });
 }

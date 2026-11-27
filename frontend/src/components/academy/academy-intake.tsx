@@ -242,12 +242,12 @@ export function AcademyIntake({
         body: JSON.stringify({ profile: { certs, otherCerts: initial?.otherCerts ?? "", roles, start, background, extras } }),
       });
       const data = (await res.json().catch(() => ({}))) as { profile?: StudentProfile; error?: string };
-      if (!res.ok || !data.profile) throw new Error(data.error || "We couldn't save your answers. Please try again.");
+      if (!res.ok || !data.profile) throw new Error(data.error || "Could not save your answers · Try again");
       // Busy stays on while the Discord screen shows, so Enter cannot save twice.
       if (discordReady && !initial) setJoinAsk(data.profile);
       else onSaved(data.profile);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "We couldn't save your answers. Please try again.");
+      setError(err instanceof Error ? err.message : "Could not save your answers · Try again");
       setBusy(false);
     }
   }
@@ -283,7 +283,7 @@ export function AcademyIntake({
   if (step === "roles") {
     section = "Your goal";
     title = "What role are you working toward?";
-    hint = "Choose up to two.";
+    hint = "Choose up to two";
     multi = true;
     choices = ROLES.map((r) => ({ label: r.label, on: roles.includes(r.id), pick: () => toggleRole(r.id), icon: ROLE_ICONS[r.id], desc: r.blurb }));
   } else if (step === "timeline") {
@@ -297,7 +297,7 @@ export function AcademyIntake({
   } else if (step === "done") {
     section = "Experience";
     title = "Which of these have you done before?";
-    hint = "Select all that apply.";
+    hint = "Select all that apply";
     multi = true;
     choices = [
       ...DONE.map((d) => ({ label: d.label, on: Boolean(done?.includes(d.id)), pick: () => toggleDone(d.id), icon: DONE_ICONS[d.id] })),
@@ -308,7 +308,7 @@ export function AcademyIntake({
     const picked = quick[quickQ.id];
     section = `Quick check · ${n} of ${QUICK_CHECK.length}`;
     title = quickQ.prompt;
-    hint = "There's no right or wrong here. Your answer shows where you're already strong and where to start, so go with your first instinct.";
+    hint = "There is no wrong answer · Go with your first instinct";
     choices = quickQ.options.map((o, k) => ({
       label: o,
       on: picked === k,
@@ -317,7 +317,7 @@ export function AcademyIntake({
   } else if (step === "machine") {
     section = "Setup";
     title = "What computer will you use?";
-    hint = "The home lab requires a Windows PC. Other devices use the cloud lab in your browser.";
+    hint = "The home lab needs a Windows PC · Other devices use the cloud lab";
     choices = MACHINES.map((m) => ({ label: m.label, on: machine === m.id, pick: () => pickAndGo(setMachine, m.id), icon: MACHINE_ICONS[m.id] }));
   } else if (step === "help") {
     section = "Setup";
@@ -356,7 +356,7 @@ export function AcademyIntake({
       );
   } else {
     section = "About you";
-    title = "Tell us about yourself.";
+    title = "Tell us about yourself";
     choices = START_LEVELS.map((st) => ({ label: st.label, on: start === st.id, pick: () => setStart(st.id), icon: START_ICONS[st.id], desc: st.blurb }));
     extra = (
       <div className="axq-fields">
@@ -434,7 +434,7 @@ export function AcademyIntake({
     if (body?.url) window.location.assign(body.url);
     else {
       setJoinBusy(false);
-      setJoinError("Could not reach Discord. Try again, or skip and connect later from Goals.");
+      setJoinError("Could not reach Discord · Skip and connect later from Goals");
     }
   }
 

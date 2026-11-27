@@ -79,7 +79,7 @@ export function PhaseEntry({ phase, entry }: { phase: PhaseDef; entry: WeekDef }
 
       {sections.length === 0 ? (
         <>
-          <ComingSoon message="Content for this week is still being written. It will appear here as soon as it is ready." />
+          <ComingSoon message="This week is still being written" />
           {(prevEntry || nextEntry) && (
             <nav className="ax-pager">
               {prevEntry ? (

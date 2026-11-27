@@ -43,7 +43,7 @@ export const maxDuration = 60;
 async function auth(request: Request) {
   if (!(await isAcademyUnlocked())) return { error: NextResponse.json({ error: "Locked" }, { status: 401 }) };
   const student = await getAcademyStudent(request);
-  if (!student) return { error: NextResponse.json({ error: "Sign in first." }, { status: 401 }) };
+  if (!student) return { error: NextResponse.json({ error: "Sign in first" }, { status: 401 }) };
   return { student };
 }
 
@@ -176,7 +176,7 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const day = cleanDay(body.day);
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -294,15 +294,15 @@ export async function POST(request: Request) {
 
   // A gated CTF: the typed answer unlocks the lab task.
   if (body.action === "unlock") {
-    if (typeof body.token !== "string") return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    if (typeof body.token !== "string") return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     const unlocked = unlockGate(userId, body.token, body.answers);
-    if (!unlocked) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
+    if (!unlocked) return NextResponse.json({ error: "That drill expired · Start a new one" }, { status: 400 });
     return NextResponse.json(unlocked);
   }
 
   // Check a lab change against the newest snapshot the student's domain controller sent.
   if (body.action === "check") {
-    if (typeof body.token !== "string") return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    if (typeof body.token !== "string") return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     // Push a fresh snapshot now and wait briefly for it to land, so a change the
     // student just made grades in seconds instead of waiting for the heartbeat.
     const before = await loadLabState(userId);
@@ -317,7 +317,7 @@ export async function POST(request: Request) {
     }
     const lab = await loadLabState(userId);
     const checked = checkChange(userId, body.token, lab, body.answers);
-    if (!checked) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
+    if (!checked) return NextResponse.json({ error: "That drill expired · Start a new one" }, { status: 400 });
     const syncedAgo = lab ? formatLabAge(lab.uploadedAt).ago : null;
     if (!checked.passed) {
       // The student is waiting on the lab, so let it sync every few minutes for a while.
@@ -325,29 +325,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ ...checked, syncedAgo });
     }
     const graded = await gradeDrill(userId, body.token, body.answers ?? [], { changePassed: true });
-    if (!graded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
+    if (!graded) return NextResponse.json({ error: "That drill expired · Start a new one" }, { status: 400 });
     const recorded = await record(userId, graded, day);
-    if (!recorded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
+    if (!recorded) return NextResponse.json({ error: "That drill expired · Start a new one" }, { status: 400 });
     return NextResponse.json({ ...checked, syncedAgo, ...recorded });
   }
 
   if (body.action === "finish") {
-    if (typeof body.token !== "string") return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    if (typeof body.token !== "string") return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     let graded;
     try {
       graded = await gradeDrill(userId, body.token, body.answers, { grader: apiKey ? responseGrader(apiKey) : undefined });
     } catch {
-      return NextResponse.json({ error: "Could not mark your answer just now. Try again." }, { status: 503 });
+      return NextResponse.json({ error: "Could not mark your answer just now · Try again" }, { status: 503 });
     }
-    if (!graded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
+    if (!graded) return NextResponse.json({ error: "That drill expired · Start a new one" }, { status: 400 });
     // A wrong typed answer to the weekly CTF does not close it, the same as on the assistant side. Only giving up does.
     if (graded.entry.mode === "ctf" && body.final !== true && graded.review.every((r) => !r.correct)) {
       return NextResponse.json({ retry: true });
     }
     const recorded = await record(userId, graded, day);
-    if (!recorded) return NextResponse.json({ error: "That drill expired. Start a new one." }, { status: 400 });
+    if (!recorded) return NextResponse.json({ error: "That drill expired · Start a new one" }, { status: 400 });
     return NextResponse.json(recorded);
   }
 
-  return NextResponse.json({ error: "Unknown action." }, { status: 400 });
+  return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }

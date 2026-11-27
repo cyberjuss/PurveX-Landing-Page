@@ -174,13 +174,13 @@ function ShiftConsoleInner() {
       const data = await r.json();
       if (!r.ok) {
         // A background action (like the auto-ack on open) should not throw a banner.
-        if (!opts?.silent) setError(data.error ?? "Something went wrong.");
+        if (!opts?.silent) setError(data.error ?? "Something went wrong");
         return null;
       }
       if (data.shift) setShift(data.shift);
       return data;
     } catch {
-      setError("Could not reach your shift. Try again.");
+      setError("Could not reach your shift · Try again");
       return null;
     } finally {
       setBusy(false);
@@ -244,7 +244,7 @@ function ShiftConsoleInner() {
       <div className="shift-app shift-app--center" data-academy-theme={theme}>
         <div className="sh-gate-card">
           <h1>Shift</h1>
-          <p>Shifts need a hosted lab and that comes with Range Pro. Email support@purvex.io if you already have it.</p>
+          <p>Shifts need a hosted lab with Range Pro · Email support@purvex.io if you have it</p>
         </div>
       </div>
     );
@@ -285,24 +285,24 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           </div>
         </div>
         <p className="sh-lede">
-          You are on the desk for 30 minutes. Three incidents fire into your own lab across the shift, and an email lands in your inbox. Work them highest priority first, and close all three before the shift ends.
+          You are on the desk for 30 minutes · Three incidents fire into your lab · Close all three by priority before the shift ends
         </p>
 
         <ul className="sh-rules">
           <li>
             <span className="sh-rules__ic"><ShieldAlert className="h-4 w-4" /></span>
             <strong>Real attacks hit your own lab</strong>
-            <small>Nothing is scripted for show. The same events land in your domain controller.</small>
+            <small>The events land in your own domain controller</small>
           </li>
           <li>
             <span className="sh-rules__ic"><Clock className="h-4 w-4" /></span>
             <strong>One 30-minute window, worked by priority</strong>
-            <small>No ticket has its own timer. P1 before P2 before P3. Anything still open when the shift ends loses its points for the fix, and keeps only what you put against it.</small>
+            <small>P1 before P2 before P3 · Anything open at the end loses its fix points</small>
           </li>
           <li>
             <span className="sh-rules__ic"><LifeBuoy className="h-4 w-4" /></span>
             <strong>Coach thinks it through with you</strong>
-            <small>Ask what to check next. Coach asks questions back and never hands you the answer.</small>
+            <small>Coach asks questions back and never hands you the answer</small>
           </li>
         </ul>
 
@@ -315,18 +315,18 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           </p>
           <p className="sh-lab__note">
             {online
-              ? "The desk is ready. Tickets start arriving the moment you begin."
+              ? "The desk is ready · Tickets arrive the moment you begin"
               : starting
                 ? queued
-                  ? "Your shift starts on its own the moment the lab is Online. First boot takes a couple of minutes."
-                  : "First boot takes a couple of minutes. This updates on its own."
+                  ? "Your shift starts once the lab is Online · First boot takes a couple of minutes"
+                  : "First boot takes a couple of minutes"
                 : state === "stopping" && queued
-                  ? "Your lab is still saving from its last stop. It starts again as soon as that finishes, then your shift begins."
+                  ? "Your lab is still saving · Your shift begins once it restarts"
                 : lab.locked
-                  ? "Shifts need a hosted lab and that comes with Range Pro."
+                  ? "Shifts need a hosted lab with Range Pro"
                   : lab.notEnabled
-                    ? "Your cloud lab is not switched on for this account yet. Email support@purvex.io and we will turn it on."
-                    : "Shifts run in your own lab. Start it and the desk opens."}
+                    ? "Your cloud lab is not on yet · Email support@purvex.io"
+                    : "Start your lab and the desk opens"}
           </p>
 
           {shown && <p className="sh-error">{shown}</p>}
@@ -704,8 +704,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                 <span className="sh-empty__radar" aria-hidden>
                   <Radar className="h-8 w-8" />
                 </span>
-                <p>The first incident will land shortly.</p>
-                <small>Keep your lab open. Alerts and tickets arrive on their own.</small>
+                <p>The first incident lands shortly</p>
+                <small>Keep your lab open · Alerts arrive on their own</small>
               </div>
 
               <section className="sh-inbox-sec" aria-label="Inbox">
@@ -870,14 +870,14 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
             <Check className="h-5 w-5" />
           </span>
           <span>
-            <strong>Closed.</strong> Your lab shows the fix and your answer is right. It counts toward your shift score.
+            <strong>Closed</strong> · Your lab shows the fix and it counts toward your score
           </span>
         </div>
       ) : inc.escalated ? (
         <div className="sh-handoff">
           <p className="sh-handoff__head"><ArrowUpRight className="h-4 w-4" /> Handed to tier 2</p>
-          <p>Tier 2 owns this now and it is off your queue. Coach, as the tier 2 lead, has your finding and your closing note, and reviews the handoff in your shift report: what tier 2 could use, and what you could have done yourself.</p>
-          <p className="sh-handoff__cost">It scores as a handoff, not a fix: you keep the credit for the finding, the write-up and leaving the rest alone, and you give up the points for resolving it.</p>
+          <p>Tier 2 owns this now · Coach reviews the handoff in your shift report</p>
+          <p className="sh-handoff__cost">It scores as a handoff · You keep the finding points but not the fix points</p>
         </div>
       ) : (
         <div className="sh-work">
@@ -890,7 +890,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
             <li><FileText className="h-3.5 w-3.5" /> Answer and note</li>
             <li><Check className="h-3.5 w-3.5" /> Submit and check</li>
           </ol>
-          <p className="sh-work__note">Range marks your answer and reads your live lab. Both have to be right to close it.</p>
+          <p className="sh-work__note">Your answer and your live lab both have to be right to close it</p>
           <label className="sh-q">
             <span className="sh-q__k">The question</span>
             <span className="sh-q__p">{inc.diagnosisPrompt}</span>
@@ -899,7 +899,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
 
           <label className="sh-field">
             <span><FileText className="h-3.5 w-3.5" /> Closing note</span>
-            <textarea value={response} onChange={(e) => setResponse(e.target.value)} onKeyDown={submitKey} rows={3} placeholder="What happened, what you changed, and what the next person should check." />
+            <textarea value={response} onChange={(e) => setResponse(e.target.value)} onKeyDown={submitKey} rows={3} placeholder="What happened and what you changed" />
           </label>
 
           {hints.length > 0 && (
@@ -946,10 +946,9 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
           {confirming ? (
             <div className="sh-confirm">
               <p className="sh-confirm__head"><ArrowUpRight className="h-4 w-4" /> Hand this to tier 2?</p>
-              <p>Coach, as the tier 2 lead, takes the incident with your finding and closing note, and it comes off your queue. After the shift, Coach grades the handoff and tells you what you could have done yourself.</p>
+              <p>Coach takes it as the tier 2 lead and grades the handoff after the shift</p>
               <p className="sh-confirm__cost">
-                It closes for you at that point. You keep the credit for your finding, your closing note and for leaving the
-                accounts that were fine alone, and you give up the points for fixing it.
+                You keep the finding points but give up the fix points
               </p>
               <div className="sh-confirm__btns">
                 <button type="button" className="sh-escalate sh-escalate--go" disabled={busy} onClick={() => submit(true)}>

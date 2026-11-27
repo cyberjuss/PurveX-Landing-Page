@@ -13,7 +13,7 @@ export const runtime = "nodejs";
 export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   const [portal, moved] = await Promise.all([loadPortal(student.id), loadMovedPortal(student.id)]);
   // A briefly-live build saved progress to academy_saved instead. Folded in
   // here; the page's next save writes the union back to the portal column.
@@ -35,13 +35,13 @@ function mergePortal(a: PortalState, b: PortalState): PortalState {
 export async function PUT(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
 
   let payload: unknown;
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const incoming = sanitizePortal((payload as { portal?: unknown })?.portal);
   const saved = await loadPortal(student.id);

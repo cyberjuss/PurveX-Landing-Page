@@ -12,7 +12,7 @@ export function TopicVideo() {
       </span>
       <div>
         <p className="ax-video__title">A word from Justin</p>
-        <p className="ax-video__note">Video coming soon.</p>
+        <p className="ax-video__note">Video coming soon</p>
       </div>
     </div>
   );

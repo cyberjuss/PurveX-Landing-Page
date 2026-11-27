@@ -21,13 +21,13 @@ const RETURN_URL = "https://purvex.io/range/upgrade";
 
 export async function POST(request: Request) {
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   if (!stripe) {
     console.error("[billing-portal] STRIPE_SECRET_KEY not configured.");
-    return NextResponse.json({ error: "Billing is not set up. Email support@purvex.io." }, { status: 503 });
+    return NextResponse.json({ error: "Billing is not set up · Email support@purvex.io" }, { status: 503 });
   }
   if (!supabaseAdmin) {
-    return NextResponse.json({ error: "Billing is not set up. Email support@purvex.io." }, { status: 503 });
+    return NextResponse.json({ error: "Billing is not set up · Email support@purvex.io" }, { status: 503 });
   }
 
   const { data } = await supabaseAdmin
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   // cancel. Saying which is kinder than a portal that cannot open.
   if (!customerId) {
     return NextResponse.json(
-      { error: "No subscription on this account. A seat from a school or a comped account is managed by whoever set it up." },
+      { error: "No subscription on this account · A seat from a school or a comped account is managed by whoever set it up" },
       { status: 404 }
     );
   }
@@ -52,6 +52,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: session.url });
   } catch (err) {
     console.error("[billing-portal] Could not open a portal session:", err instanceof Error ? err.message : err);
-    return NextResponse.json({ error: "Could not open billing right now. Try again, or email support@purvex.io." }, { status: 502 });
+    return NextResponse.json({ error: "Could not open billing · Email support@purvex.io" }, { status: 502 });
   }
 }

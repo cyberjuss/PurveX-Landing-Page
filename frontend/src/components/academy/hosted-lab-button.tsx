@@ -105,7 +105,7 @@ async function act(action: "start" | "stop" | "extend" | "reset") {
   try {
     const r = await academyFetch("/academy/api/hosted-lab", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action }) });
     const data = await r.json();
-    if (!r.ok) set({ error: data.error ?? "Something went wrong." });
+    if (!r.ok) set({ error: data.error ?? "Something went wrong" });
     else {
       set({ status: { available: true, ...data } });
       // A start that answers with a lab still sitting at "none" leaves nothing
@@ -120,7 +120,7 @@ async function act(action: "start" | "stop" | "extend" | "reset") {
       if (action === "stop" && snap.status?.state !== "stopping" && snap.status?.state !== "stopped") window.setTimeout(() => void load(), 5_000);
     }
   } catch {
-    set({ error: "Could not reach Range. Try again." });
+    set({ error: "Could not reach Range · Try again" });
   } finally {
     set({ busy: false });
   }
@@ -135,7 +135,7 @@ async function open() {
     const data = await r.json();
     if (!r.ok || !data.url) {
       tab?.close();
-      set({ error: data.error ?? "Could not open your lab." });
+      set({ error: data.error ?? "Could not open your lab" });
       void load();
       return;
     }
@@ -147,7 +147,7 @@ async function open() {
     }
   } catch {
     tab?.close();
-    set({ error: "Could not reach Range. Try again." });
+    set({ error: "Could not reach Range · Try again" });
   } finally {
     set({ busy: false });
   }
@@ -271,7 +271,7 @@ export function HostedLabButton() {
         {error && !starting && (
           <>
             <span className="hl-chip__bad" aria-hidden="true" />
-            <span className="sr-only">Your lab reported a problem. Open it to read it.</span>
+            <span className="sr-only">Your lab reported a problem</span>
           </>
         )}
       </button>
@@ -303,8 +303,8 @@ export function HostedLabSetupNote() {
           <Server className="h-5 w-5" />
         </span>
         <div className="hl-note__text">
-          <p className="hl-note__title">Pro builds this lab for you.</p>
-          <p className="hl-note__body">Pro gives you your own Windows domain in a browser tab, with the ticket objects and Coach sync already in place. Or follow this tab and build it yourself for free.</p>
+          <p className="hl-note__title">Pro builds this lab for you</p>
+          <p className="hl-note__body">Pro gives you a ready Windows domain in a browser tab · Or build it yourself for free here</p>
         </div>
         <a href="/range/upgrade" className="hl-note__go">
           Get Pro
@@ -323,8 +323,8 @@ export function HostedLabSetupNote() {
           <Server className="h-5 w-5" />
         </span>
         <div className="hl-note__text">
-          <p className="hl-note__title">Your cloud lab is not switched on yet.</p>
-          <p className="hl-note__body">Your account has it, but we have not enabled it on our side. Email support and we will turn it on. Meanwhile this tab builds the same lab on your own machine for free.</p>
+          <p className="hl-note__title">Your cloud lab is not on yet</p>
+          <p className="hl-note__body">Email support and we will turn it on · Until then you can build it on your own machine</p>
         </div>
         <a href="mailto:support@purvex.io?subject=Switch%20on%20my%20cloud%20lab" className="hl-note__go">
           Email support
@@ -340,8 +340,8 @@ export function HostedLabSetupNote() {
         <Server className="h-5 w-5" />
       </span>
       <div className="hl-note__text">
-        <p className="hl-note__title">Your lab is hosted. Skip this setup.</p>
-        <p className="hl-note__body">Range already built PurveX Financial for you, ticket objects and Coach sync in place. Read this tab to see what the setup does, then work in your lab.</p>
+        <p className="hl-note__title">Your lab is hosted · Skip this setup</p>
+        <p className="hl-note__body">Range already built PurveX Financial for you · Read on to see what the setup does</p>
       </div>
       <button type="button" className="hl-note__go" onClick={primary} disabled={busy || state === "starting" || state === "stopping"}>
         {state === "ready" ? "Open" : state === "starting" ? "Starting" : state === "stopping" ? "Stopping" : state === "stopped" ? "Resume" : "Start"}
@@ -452,7 +452,7 @@ function StartTracker({ status }: { status: Status }) {
             whole thing can run to twenty. "Almost there" for a quarter of an
             hour reads as broken, and the student has no way to tell whether
             it is. */}
-        <em>{elapsed <= total ? `About ${left} min left` : first ? "Taking longer than usual. A first build can run to 20 minutes." : "Almost there"}</em>
+        <em>{elapsed <= total ? `About ${left} min left` : first ? "Taking longer than usual · A first build can take 20 minutes" : "Almost there"}</em>
       </p>
       {/* A 4px rule with a 5% fill read as a stray dash, so the empty part of
           the track is drawn and the fill never shrinks below a visible stub. */}
@@ -566,10 +566,10 @@ function LinuxSignIn() {
         body: JSON.stringify({ action: "credentials" }),
       });
       const data = await r.json();
-      if (!r.ok) setErr(data.error ?? "Could not read the sign-in.");
+      if (!r.ok) setErr(data.error ?? "Could not read the sign-in");
       else setCreds(data as { username: string; password: string });
     } catch {
-      setErr("Could not reach Range. Try again.");
+      setErr("Could not reach Range · Try again");
     } finally {
       setLoading(false);
     }
@@ -582,7 +582,7 @@ function LinuxSignIn() {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
-      setErr("Your browser blocked the copy. Select the password and copy it by hand.");
+      setErr("Your browser blocked the copy · Copy the password by hand");
     }
   }
 
@@ -647,11 +647,11 @@ export function HostedLabMenu() {
   const legacySingle = state !== "none" && !status.linux;
   const note =
     state === "ready"
-      ? status.stopAt ? `Stops at ${clock(status.stopAt)}.` : "Running."
+      ? status.stopAt ? `Stops at ${clock(status.stopAt)}` : "Running"
       : state === "starting" || state === "stopped" || state === "stopping"
         ? null
         : state === "none"
-          ? "A Windows domain controller and an Ubuntu desktop, yours alone. Ready in a few minutes, in a browser tab."
+          ? "Your own Windows domain controller and Ubuntu desktop · Ready in a few minutes"
           : null;
 
   return (
@@ -686,7 +686,7 @@ export function HostedLabMenu() {
           this panel would ever tell them why their Ubuntu server is missing. */}
       {legacySingle && (
         <p className="hl__legacy">
-          This lab predates the Ubuntu server. Reset it to get both machines.
+          This lab predates the Ubuntu server · Reset it to get both machines
         </p>
       )}
 
@@ -754,8 +754,8 @@ export function HostedLabMenu() {
             onClick={() => {
               const ask =
                 state === "starting"
-                  ? "Your lab is still building for the first time, so resetting now won't do anything until it finishes. If it seems stuck, use Help instead. Try anyway?"
-                  : "Reset your lab? You get a fresh PurveX Financial. Everything you changed in the lab is gone. Your Range progress stays.";
+                  ? "Your lab is still building · If it seems stuck use Help instead · Try anyway?"
+                  : "Reset your lab? Lab changes are wiped but your Range progress stays";
               if (window.confirm(ask)) void act("reset");
             }}
           >

@@ -135,10 +135,10 @@ export function GoalsPanel({
         }),
       });
       const data = (await res.json().catch(() => ({}))) as { profile?: StudentProfile; error?: string };
-      if (!res.ok || !data.profile) throw new Error(data.error || "Unable to save your goals. Check your connection and try again.");
+      if (!res.ok || !data.profile) throw new Error(data.error || "Could not save your goals · Try again");
       onSaved(data.profile);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to save your goals. Check your connection and try again.");
+      setError(err instanceof Error ? err.message : "Could not save your goals · Try again");
       setBusy(false);
     }
   }
@@ -158,7 +158,7 @@ export function GoalsPanel({
 
           <section className="gp-sec">
             <h3>Target role</h3>
-            <p className="gp-hint">Choose up to two.</p>
+            <p className="gp-hint">Choose up to two</p>
             <div className="gp-chips">
               {ROLES.map((r) => (
                 <button key={r.id} type="button" role="checkbox" aria-checked={roles.includes(r.id)} className="gp-chip" onClick={() => toggleRole(r.id)}>
@@ -296,7 +296,7 @@ export function GoalsPanel({
           </section>
           <section className="gp-sec">
             <h3>Experience</h3>
-            <p className="gp-hint">Select all that apply.</p>
+            <p className="gp-hint">Select all that apply</p>
             <div className="gp-chips">
               {DONE.map((o) => (
                 <button key={o.id} type="button" role="checkbox" aria-checked={done.includes(o.id)} className="gp-chip" onClick={() => toggleDone(o.id)}>
@@ -326,7 +326,7 @@ export function GoalsPanel({
               <h3>Community</h3>
               <label className="gp-check">
                 <input type="checkbox" checked={shareWins} onChange={(e) => setShareWins(e.target.checked)} />
-                <span>Share my finished challenges in the PurveX Discord. Only your first name and the challenge name are posted.</span>
+                <span>Share my finished challenges in the PurveX Discord · Only your first name and the challenge are posted</span>
               </label>
               <DiscordConnect />
               <a className="gp-link" href={DISCORD_URL} target="_blank" rel="noreferrer">
@@ -342,7 +342,7 @@ export function GoalsPanel({
               {error}
             </p>
           )}
-          {!roles.length && <p className="gp-error">Choose at least one target role.</p>}
+          {!roles.length && <p className="gp-error">Choose at least one target role</p>}
           <div className="gp-foot__row">
             <button type="button" className="gp-btn" onClick={onClose} disabled={busy}>
               Cancel

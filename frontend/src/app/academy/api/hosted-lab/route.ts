@@ -128,25 +128,25 @@ export async function GET(request: Request) {
   try {
     return NextResponse.json(await statusPayload(student.id));
   } catch {
-    return NextResponse.json({ available: true, state: "none", error: "Could not reach AWS. Try again in a minute." });
+    return NextResponse.json({ available: true, state: "none", error: "Could not reach AWS · Try again in a minute" });
   }
 }
 
 export async function POST(request: Request) {
   const student = await auth(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   // "Buy Pro" and "this is broken right now" are different answers, and a
   // paying student told to buy what they already bought has no way forward.
   if (isDenied(student)) {
     return student.denied === "pro"
       ? NextResponse.json(proRequired("Your own cloud lab"), { status: 403 })
-      : NextResponse.json({ error: "Cloud labs are not switched on for this account yet. Email support@purvex.io." }, { status: 503 });
+      : NextResponse.json({ error: "Cloud labs are not switched on for this account yet · Email support@purvex.io" }, { status: 503 });
   }
   let action = "";
   try {
     action = String(((await request.json()) as { action?: unknown }).action || "");
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   try {
     if (action === "start") await startHostedLab(student.id);
@@ -168,15 +168,15 @@ export async function POST(request: Request) {
     else if (action === "reset") await beginReset(student.id);
     else if (action === "open") {
       const url = await hostedLabLink(student.id);
-      if (!url) return NextResponse.json({ error: "The lab is not running yet. Start it first." }, { status: 409 });
+      if (!url) return NextResponse.json({ error: "The lab is not running yet · Start it first" }, { status: 409 });
       return NextResponse.json({ url });
     } else if (action === "credentials") {
       // Asked for, never pushed. The Ubuntu desktop signs in on its own, so
       // this exists for the sudo prompt the domain-join lab runs into.
       const creds = await linuxCredentials(student.id);
-      if (!creds) return NextResponse.json({ error: "The Ubuntu machine is not running yet." }, { status: 409 });
+      if (!creds) return NextResponse.json({ error: "The Ubuntu machine is not running yet" }, { status: 409 });
       return NextResponse.json(creds);
-    } else return NextResponse.json({ error: "Unknown action." }, { status: 400 });
+    } else return NextResponse.json({ error: "Unknown action" }, { status: 400 });
     return NextResponse.json(await statusPayload(student.id));
   } catch (err) {
     // Running out of hours is not a fault, so it does not get the AWS wording
@@ -201,6 +201,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: err.message }, { status: 503 });
     }
     console.error("hosted lab action failed", action, err instanceof Error ? err.message : err);
-    return NextResponse.json({ error: "AWS did not accept that. Try again in a minute." }, { status: 502 });
+    return NextResponse.json({ error: "AWS did not accept that · Try again in a minute" }, { status: 502 });
   }
 }

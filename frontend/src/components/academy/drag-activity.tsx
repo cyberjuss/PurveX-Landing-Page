@@ -118,14 +118,14 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
       const next = { ...placed, [id]: bucket };
       setPlaced(next);
       setStreak((n) => n + 1);
-      setNote(match ? `Correct. That is ${card.text}.` : `Correct. ${card.text} goes in ${activity.buckets[bucket].name}.`);
+      setNote(match ? `Correct · That is ${card.text}` : `Correct · ${card.text} goes in ${activity.buckets[bucket].name}`);
       if (Object.keys(next).length === cards.length) window.setTimeout(() => confettiFrom(rootRef.current, 40), 120);
     } else {
       setMistakes((m) => m + 1);
       setStreak(0);
       setMiss(id);
       setLastWrong(match ? `"${card.text}" on the line "${activity.buckets[bucket].name}"` : `"${card.text}" in "${activity.buckets[bucket].name}"`);
-      setNote(match ? `Not that one. ${card.text} belongs on another line.` : `Not ${activity.buckets[bucket].name}. Try another.`);
+      setNote(match ? `Not that one · ${card.text} belongs on another line` : `Not ${activity.buckets[bucket].name} · Try another`);
       window.setTimeout(() => setMiss((m) => (m === id ? null : m)), 450);
     }
   }
@@ -155,7 +155,7 @@ function SortActivity({ activity }: { activity: Extract<DeckActivity, { kind: "s
     <div className="lkd" ref={rootRef}>
       <p className="lkd__prompt">{curlyQuotes(dropLonePeriod(activity.prompt))}</p>
       <p className="lkd__how">
-        {match ? "Drag each term onto the line it matches, or tap a term and then a line" : "Drag each card into a box, or tap a card and then a box"}
+        {match ? "Drag each term onto the line it matches" : "Drag each card into a box"}
       </p>
 
       <div className={`lkd__pool${done ? " is-empty" : ""}`} aria-label="Cards to sort">
@@ -319,7 +319,7 @@ function OrderActivity({ activity }: { activity: Extract<DeckActivity, { kind: "
   return (
     <div className="lkd" ref={rootRef}>
       <p className="lkd__prompt">{curlyQuotes(dropLonePeriod(activity.prompt))}</p>
-      <p className="lkd__how">Drag the steps into order or use the arrows, then check</p>
+      <p className="lkd__how">Drag the steps into order then check</p>
       <ol className="lkd__list">
         {order.map((item, pos) => {
           const state = checked ? (item === pos ? " is-right" : " is-wrong") : "";
@@ -476,7 +476,7 @@ function ConnectActivity({ activity }: { activity: Extract<DeckActivity, { kind:
   return (
     <div className="lkd">
       <p className="lkd__prompt">{curlyQuotes(dropLonePeriod(activity.prompt))}</p>
-      <p className="lkd__how">Draw a line from each idea to what it connects to, or tap one and then the other</p>
+      <p className="lkd__how">Draw a line from each idea to what it connects to</p>
       <div className="lkn-board" ref={boardRef} onPointerMove={onMove}>
         <svg className="lkn-wires" aria-hidden>
           {[...links].map((i) =>
@@ -594,13 +594,13 @@ function ChoiceActivity({ activity }: { activity: Extract<DeckActivity, { kind: 
     ? ""
     : predict
       ? last.correct
-        ? "Here's why."
-        : "Hold that thought. Here's what the next slides show."
+        ? "Here's why"
+        : "Hold that thought · The next slides show why"
       : last.correct
         ? tried.length === 1
-          ? "Right on the first try."
-          : "That's the one."
-        : "Not this one. Try another.";
+          ? "Right on the first try"
+          : "That's the one"
+        : "Not this one · Try another";
 
   return (
     <div className="lkd lkc" ref={rootRef}>

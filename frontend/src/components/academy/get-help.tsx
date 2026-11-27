@@ -61,7 +61,7 @@ function HelpPanel({ email, initialTopic }: { email: string | null; initialTopic
 
   const send = async () => {
     if (message.trim().length < 5) {
-      setError("Say in a few words what went wrong.");
+      setError("Say in a few words what went wrong");
       return;
     }
     setPhase("sending");
@@ -74,14 +74,14 @@ function HelpPanel({ email, initialTopic }: { email: string | null; initialTopic
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok) {
-        setError(data.error ?? "Could not send. Try again.");
+        setError(data.error ?? "Could not send · Try again");
         setPhase("edit");
         return;
       }
       setMessage("");
       setPhase("sent");
     } catch {
-      setError("Could not reach Range. Check your connection and try again.");
+      setError("Could not reach Range · Check your connection");
       setPhase("edit");
     }
   };
@@ -134,7 +134,7 @@ function HelpPanel({ email, initialTopic }: { email: string | null; initialTopic
                 value={message}
                 maxLength={2000}
                 rows={4}
-                placeholder="For example: I clicked Open and the tab stays blank."
+                placeholder="For example I clicked Open and the tab stays blank"
                 onChange={(e) => setMessage(e.target.value)}
               />
             </label>

@@ -106,7 +106,7 @@ export function ProofEditor() {
   const fetchData = useCallback(async (): Promise<Data | string> => {
     const res = await academyFetch("/academy/api/proof");
     const body = (await res.json().catch(() => null)) as Data | { error?: string } | null;
-    if (!res.ok || !body || !("items" in body)) return (body && "error" in body && body.error) || "Unable to load your portfolio. Try again later.";
+    if (!res.ok || !body || !("items" in body)) return (body && "error" in body && body.error) || "Could not load your portfolio · Try again later";
     return body;
   }, []);
 
@@ -238,7 +238,7 @@ export function ProofEditor() {
     const body = (await res.json().catch(() => ({}))) as { error?: string };
     setBusy(false);
     if (!res.ok) {
-      say(body.error || "Unable to save. Try again.", true);
+      say(body.error || "Could not save · Try again", true);
       return;
     }
     await load();
@@ -257,7 +257,7 @@ export function ProofEditor() {
       const res = await academyFetch("/academy/api/proof", { method: "POST", body: form });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        say(body.error || "Unable to upload that screenshot.", true);
+        say(body.error || "Could not upload that screenshot", true);
         break;
       }
     }
@@ -277,7 +277,7 @@ export function ProofEditor() {
     setBusy(false);
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as { error?: string };
-      say(body.error || `Unable to save your ${what}.`, true);
+      say(body.error || `Could not save your ${what}`, true);
       return;
     }
     await load();
@@ -288,7 +288,7 @@ export function ProofEditor() {
     setBusy(true);
     const res = await academyFetch(`/academy/api/proof?${kind}=1`, { method: "DELETE" });
     setBusy(false);
-    if (!res.ok) say(`Unable to remove your ${kind === "avatar" ? "photo" : "resume"}. Try again.`, true);
+    if (!res.ok) say(`Could not remove your ${kind === "avatar" ? "photo" : "resume"} · Try again`, true);
     await load();
   }
 
@@ -296,7 +296,7 @@ export function ProofEditor() {
     setBusy(true);
     const res = await academyFetch(`/academy/api/proof/clip?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     setBusy(false);
-    if (!res.ok) say("Unable to remove that clip. Try again.", true);
+    if (!res.ok) say("Could not remove that clip · Try again", true);
     await load();
   }
 
@@ -304,7 +304,7 @@ export function ProofEditor() {
     setBusy(true);
     const res = await academyFetch(`/academy/api/proof?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     setBusy(false);
-    if (!res.ok) say("Unable to remove that screenshot. Try again.", true);
+    if (!res.ok) say("Could not remove that screenshot · Try again", true);
     await load();
   }
 
@@ -337,7 +337,7 @@ export function ProofEditor() {
           <path d="M6 9l6 6 6-6" />
         </svg>
       </summary>
-      <p>Each one joins your portfolio once your lab confirms it. Locked tasks unlock when you resolve them in a live shift. Pick the role you are applying for.</p>
+      <p>Each one joins your portfolio once your lab confirms it · Locked tasks unlock in a live shift</p>
       <div className="pf-seg" role="group" aria-label="Role">
         {TRACKS.map((t) => (
           <button key={t} type="button" aria-pressed={track === t} onClick={() => setTrack(t)}>
@@ -371,7 +371,7 @@ export function ProofEditor() {
       <header className="pf-head">
         <p className="rd-kicker">Portfolio</p>
         <h1>Show employers your lab work</h1>
-        <p className="pf-lede">Every item comes from a fix your lab confirmed. Share the link on applications, your resume and LinkedIn.</p>
+        <p className="pf-lede">Every item is a fix your lab confirmed · Share the link when you apply</p>
       </header>
 
       {items.length > 0 && (
@@ -422,7 +422,7 @@ export function ProofEditor() {
         <>
           <section className="pf-sec">
             <h2>Nothing to show yet</h2>
-            <p>The portfolio fills in as the lab confirms your work. Pick a task below. The lab has to be connected with its light green.</p>
+            <p>Your portfolio fills in as the lab confirms your work · Pick a task below</p>
           </section>
           {todoSection}
         </>
@@ -436,8 +436,8 @@ export function ProofEditor() {
                   <b>{settings.published ? "Public" : "Private"}</b>
                   <small>
                     {settings.published
-                      ? "Anyone with your link or QR code can see your portfolio, and your credential shows as valid."
-                      : "Only you can see your portfolio. The link shows nothing and the credential reads as not active."}
+                      ? "Anyone with your link can see your portfolio"
+                      : "Only you can see your portfolio"}
                   </small>
                 </div>
                 <button
@@ -447,7 +447,7 @@ export function ProofEditor() {
                   aria-label="Make my portfolio public"
                   className="pf-switch"
                   disabled={busy || data.locked || (!settings.published && data.blockers.length > 0)}
-                  onClick={() => save({ published: !settings.published }, settings.published ? "The portfolio is private. The link no longer works." : "The portfolio is public.")}
+                  onClick={() => save({ published: !settings.published }, settings.published ? "Your portfolio is private" : "Your portfolio is public")}
                 />
               </div>
               {/* Shown instead of the blockers list, not alongside it: on
@@ -456,10 +456,9 @@ export function ProofEditor() {
                   first would be misleading. */}
               {data.locked && (
                 <div className="pf-blockers">
-                  <b>Publishing your portfolio is part of Range Pro.</b>
+                  <b>Publishing your portfolio is part of Range Pro</b>
                   <p className="pf-blockers__p">
-                    Keep building it here for free. Pro gives you the public link, the QR code and a credential ID any
-                    employer can check.{" "}
+                    Keep building it here for free · Pro adds the public link and a credential employers can check{" "}
                     <a href="/range/upgrade">Get Pro for $49 a month</a>
                   </p>
                 </div>
@@ -486,7 +485,7 @@ export function ProofEditor() {
                     <button
                       type="button"
                       className="pf-slug__copy"
-                      onClick={async () => say((await copyText(`https://${link}`)) ? (settings.published ? "Link copied" : "Link copied. It works once your portfolio is public.") : "Select the link and copy it")}
+                      onClick={async () => say((await copyText(`https://${link}`)) ? (settings.published ? "Link copied" : "Link copied · It works once your portfolio is public") : "Select the link and copy it")}
                     >
                       Copy
                     </button>
@@ -497,7 +496,7 @@ export function ProofEditor() {
                   href={`/p/${settings.slug}/qr`}
                   download={`purvex-portfolio-${settings.slug}.png`}
                   title="A QR code that opens your portfolio from a phone camera"
-                  onClick={() => say(settings.published ? "QR code downloaded" : "QR code downloaded. It opens your portfolio once you make it public.")}
+                  onClick={() => say(settings.published ? "QR code downloaded" : "QR code downloaded · It works once your portfolio is public")}
                 >
                   Download QR code
                 </a>
@@ -507,13 +506,13 @@ export function ProofEditor() {
 
           <section className="pf-sec">
             <h2>Your details</h2>
-            <p>Shown on your portfolio so an employer can reach you. Leave anything blank to hide it.</p>
+            <p>Shown so an employer can reach you · Leave anything blank to hide it</p>
             <div className="pf-photo">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {avatar ? <img src={avatar} alt="Your profile photo" /> : <span aria-hidden="true">{(name || "?").trim().charAt(0).toUpperCase()}</span>}
               <div>
                 <b>Profile photo</b>
-                <small>Optional. A clear headshot, PNG or JPEG under 4 MB.</small>
+                <small>Optional · A PNG or JPEG headshot under 4 MB</small>
                 <div className="pf-photo__actions">
                   <label className="pf-btn" htmlFor="pf-photo-file">
                     {settings.avatarPath ? "Change photo" : "Upload photo"}
@@ -589,7 +588,7 @@ export function ProofEditor() {
             <div className="pf-file">
               <div>
                 <b>Resume</b>
-                <small>{settings.resumePath ? "Employers can download it from your portfolio." : "Optional. A PDF under 4 MB."}</small>
+                <small>{settings.resumePath ? "Employers can download it from your portfolio" : "Optional · A PDF under 4 MB"}</small>
               </div>
               <div className="pf-row">
                 {resumeUrl && (
@@ -612,7 +611,7 @@ export function ProofEditor() {
               <div className="pf-certs__head">
                 <div>
                   <b>Certifications</b>
-                  <small>Security+ and CySA+ come from your Goals. Add any others here.</small>
+                  <small>Security+ and CySA+ come from your Goals · Add others here</small>
                 </div>
                 <button type="button" className="pf-btn" onClick={editGoals}>
                   Update in Goals
@@ -648,7 +647,7 @@ export function ProofEditor() {
                   list="pf-cert-suggestions"
                   value={certDraft.name}
                   maxLength={80}
-                  placeholder="Add a certification, e.g. CompTIA A+"
+                  placeholder="Add a certification like CompTIA A+"
                   aria-label="Certification name"
                   onChange={(e) => setCertDraft({ ...certDraft, name: e.target.value })}
                 />
@@ -696,7 +695,7 @@ export function ProofEditor() {
 
           <section className="pf-sec">
             <h2>Resume bullets</h2>
-            <p>Each bullet opens with an action verb and follows STAR. Pick the role you are applying for.</p>
+            <p>Each bullet opens with an action verb · Pick the role you are applying for</p>
             <div className="pf-seg" role="group" aria-label="Role">
               {TRACKS.map((t) => (
                 <button key={t} type="button" aria-pressed={track === t} onClick={() => setTrack(t)}>
@@ -732,7 +731,7 @@ export function ProofEditor() {
                   Show on profile
                 </label>
               </div>
-              <p>Keywords applicant tracking systems scan for, from work you did in Range.</p>
+              <p>Keywords hiring systems scan for from your Range work</p>
               <div className="pf-ats">
                 <p>
                   {data.skills.map((g) => (
@@ -846,8 +845,7 @@ function PortfolioLocked({ items }: { items: WorkItem[] }) {
         <p className="rd-kicker">Portfolio</p>
         <h1>Your portfolio is part of Range Pro</h1>
         <p className="pf-lede">
-          Pro turns the work your lab confirms into one page employers can check: your verified fixes, screenshots and recorded solves, with a
-          credential ID a hiring manager can look up.
+          Pro turns the work your lab confirms into one page employers can check
         </p>
       </header>
       <section className="pf-sec pf-locked">
@@ -872,14 +870,14 @@ function PortfolioLocked({ items }: { items: WorkItem[] }) {
         ) : (
           <p className="pf-locked__count">
             <BadgeCheck className="h-5 w-5" aria-hidden />
-            <span>Every fix your lab confirms is kept, so all of it is on your portfolio the day you go Pro.</span>
+            <span>Every confirmed fix is kept for the day you go Pro</span>
           </p>
         )}
         <div className="pf-locked__cta">
           <a className="pf-btn pf-btn--primary" href="/range/upgrade">
-            Get Pro, free for 3 days
+            Get Pro free for 3 days
           </a>
-          <span>$49 a month after the trial. Cancel in one click.</span>
+          <span>$49 a month after the trial · Cancel in one click</span>
         </div>
       </section>
     </div>

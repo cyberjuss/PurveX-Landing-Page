@@ -31,18 +31,18 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
 
   let payload: unknown;
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const place = sanitizeActivityPlace((payload as { place?: unknown })?.place);
   const entry = place && findEntry(place.phase, place.entry);
   const known = entry && (place.kind === "quiz" || entry.sections.some((s) => tabName(s.label) === place.tab));
-  if (!place || !known) return NextResponse.json({ error: "Unknown page." }, { status: 400 });
+  if (!place || !known) return NextResponse.json({ error: "Unknown page" }, { status: 400 });
 
   await saveActivity(student.id, place);
   return NextResponse.json({ ok: true });

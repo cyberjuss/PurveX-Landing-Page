@@ -20,18 +20,18 @@ export async function GET() {
 
 export async function POST(request: Request) {
   if (!(await isAcademyUnlocked())) {
-    return NextResponse.json({ error: "Unlock the academy first." }, { status: 401 });
+    return NextResponse.json({ error: "Unlock the academy first" }, { status: 401 });
   }
   const student = await getAcademyStudent(request);
   if (!student) {
-    return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+    return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   }
 
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
   const saved = await saveFeedback(student.id, {
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   });
   // The only way to get here is a receipt that will not open or belongs to
   // someone else. Both mean the rating is not about a reply we sent.
-  if (!saved) return NextResponse.json({ error: "That reply could not be matched." }, { status: 400 });
+  if (!saved) return NextResponse.json({ error: "That reply could not be matched" }, { status: 400 });
 
   return NextResponse.json({ ok: true, rating: saved.rating });
 }

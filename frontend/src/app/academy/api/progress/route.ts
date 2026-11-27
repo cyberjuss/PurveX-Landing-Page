@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   }
   const student = await getAcademyStudent(request);
   if (!student) {
-    return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+    return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   }
   // Unlocked with a class code: join that class now that we know who this is.
   const code = await readClassCookie();
@@ -57,7 +57,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ results: await updateProgress(student.id, student.email, (r) => (raised(r) ? r : null)) });
   } catch (e) {
     console.error("progress read failed", student.id, e instanceof ProgressBusyError ? "busy" : e);
-    return NextResponse.json({ error: "Could not load your progress. Try again." }, { status: 503 });
+    return NextResponse.json({ error: "Could not load your progress · Try again" }, { status: 503 });
   }
 }
 
@@ -67,13 +67,13 @@ export async function PUT(request: Request) {
   }
   const student = await getAcademyStudent(request);
   if (!student) {
-    return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+    return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   }
   let payload: unknown;
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const body = payload as { results?: unknown; reset?: unknown };
   const incoming = sanitizeResults(body.results);
@@ -118,6 +118,6 @@ export async function PUT(request: Request) {
     return NextResponse.json({ ok: true, results: await updateProgress(student.id, student.email, merge) });
   } catch (e) {
     console.error("progress save failed", student.id, e instanceof ProgressBusyError ? "busy" : e);
-    return NextResponse.json({ error: "Could not save your progress. Try again." }, { status: 503 });
+    return NextResponse.json({ error: "Could not save your progress · Try again" }, { status: 503 });
   }
 }

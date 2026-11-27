@@ -31,19 +31,19 @@ export async function GET(request: Request) {
     return NextResponse.json({ available: true, shift, labState: lab?.state ?? "none" });
   } catch (err) {
     console.error("shift state failed", err instanceof Error ? err.message : err);
-    return NextResponse.json({ available: true, shift: null, labState: "none", error: "Could not reach your shift." });
+    return NextResponse.json({ available: true, shift: null, labState: "none", error: "Could not reach your shift" });
   }
 }
 
 export async function POST(request: Request) {
   const { s, denied } = await student(request);
   if (denied === "pro") return NextResponse.json(proRequired("The Shift"), { status: 403 });
-  if (!s) return NextResponse.json({ error: "Shifts need a hosted lab." }, { status: 403 });
+  if (!s) return NextResponse.json({ error: "Shifts need a hosted lab" }, { status: 403 });
   let body: { action?: unknown; uid?: unknown; defId?: unknown; diagnosis?: unknown; response?: unknown; escalate?: unknown; choice?: unknown; text?: unknown };
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const action = String(body.action || "");
   const uid = String(body.uid || body.defId || "");
@@ -73,9 +73,9 @@ export async function POST(request: Request) {
       const r = await finishShift(s.id);
       return "error" in r ? NextResponse.json({ error: r.error }, { status: 409 }) : NextResponse.json({ shift: r });
     }
-    return NextResponse.json({ error: "Unknown action." }, { status: 400 });
+    return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (err) {
     console.error("shift action failed", action, err instanceof Error ? err.message : err);
-    return NextResponse.json({ error: "Something went wrong. Try again." }, { status: 502 });
+    return NextResponse.json({ error: "Something went wrong · Try again" }, { status: 502 });
   }
 }

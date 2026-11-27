@@ -36,7 +36,7 @@ export function PhaseNotify({ phase }: { phase: string }) {
     }).catch(() => null);
     if (r?.ok) return setState("on");
     const d = await r?.json().catch(() => null);
-    setMessage(d?.error ?? "Couldn't save that. Try again.");
+    setMessage(d?.error ?? "Could not save that · Try again");
     setState("error");
   }
 

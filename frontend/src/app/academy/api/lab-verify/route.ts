@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 async function auth(request: Request) {
   if (!(await isAcademyUnlocked())) return { error: NextResponse.json({ error: "Locked" }, { status: 401 }) };
   const student = await getAcademyStudent(request);
-  if (!student) return { error: NextResponse.json({ error: "Sign in first." }, { status: 401 }) };
+  if (!student) return { error: NextResponse.json({ error: "Sign in first" }, { status: 401 }) };
   return { student };
 }
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   const userId = a.student.id;
   const body = (await request.json().catch(() => ({}))) as { action?: string };
   const lab = await loadLabState(userId);
-  if (!lab) return NextResponse.json({ error: "Connect your lab first. Run the script from Build the Environment." }, { status: 400 });
+  if (!lab) return NextResponse.json({ error: "Connect your lab first · Run the script from Build the Environment" }, { status: 400 });
 
   if (body.action === "start") {
     const live = await loadLabLive(userId);
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
   if (body.action === "check") {
     const live = await loadLabLive(userId);
     if (!(challengeOpen(live.challengeAt) && live.challengeCode)) {
-      return NextResponse.json({ ...(await state(userId)), error: "No open challenge. Start a new one." }, { status: 400 });
+      return NextResponse.json({ ...(await state(userId)), error: "No open challenge · Start a new one" }, { status: 400 });
     }
     await touchLabLive(userId, LIVE_MINUTES);
     // Push a fresh snapshot and wait briefly so the code the student just set lands fast.
@@ -89,5 +89,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ ...(await state(userId)), passed: false, fresh });
   }
 
-  return NextResponse.json({ error: "Unknown action." }, { status: 400 });
+  return NextResponse.json({ error: "Unknown action" }, { status: 400 });
 }

@@ -16,7 +16,7 @@ export const maxDuration = 60;
 async function auth(request: Request) {
   if (!(await isAcademyUnlocked())) return { error: NextResponse.json({ error: "Locked" }, { status: 401 }) } as const;
   const student = await getAcademyStudent(request);
-  if (!student) return { error: NextResponse.json({ error: "Sign in first." }, { status: 401 }) } as const;
+  if (!student) return { error: NextResponse.json({ error: "Sign in first" }, { status: 401 }) } as const;
   return { student } as const;
 }
 
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   if (a.error) return a.error;
   const { profile, failed } = await readProfile(a.student.id);
   // A failed read is "try again", never "no answers yet": the page would ask the questions all over.
-  if (failed) return NextResponse.json({ error: "Couldn't load your goals. Try again." }, { status: 503 });
+  if (failed) return NextResponse.json({ error: "Couldn't load your goals · Try again" }, { status: 503 });
   // A class student or instructor has no Discord, so the page hides every way in.
   return NextResponse.json({ profile, discord: !(await isClassAffiliated(a.student.id, a.student.email)) });
 }
@@ -37,7 +37,7 @@ export async function PUT(request: Request) {
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const incoming = (payload as { profile?: Record<string, unknown> }).profile ?? {};
   // A form that only edits goals (the goals panel) sends no extras. Keep the
@@ -45,7 +45,7 @@ export async function PUT(request: Request) {
   const extras = "extras" in incoming ? incoming.extras : (await readProfile(a.student.id)).profile?.extras;
   const profile = sanitizeProfile({ ...incoming, extras, updatedAt: new Date().toISOString() });
   if (!profile) {
-    return NextResponse.json({ error: "Please complete every question and select at least one role." }, { status: 400 });
+    return NextResponse.json({ error: "Please complete every question and select at least one role" }, { status: 400 });
   }
   // A database problem is logged by the store. It never keeps a student out: the browser keeps a copy too.
   const saved = await saveProfile(a.student.id, profile);

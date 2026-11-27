@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 export async function GET(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
 
   const lab = await loadLabState(student.id);
   if (!lab) {

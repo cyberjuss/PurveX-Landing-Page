@@ -23,10 +23,10 @@ async function auth(request: Request) {
 
 export async function POST(request: Request) {
   const me = await auth(request);
-  if (!me) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
-  if (!isAcademyAdmin(me.email)) return NextResponse.json({ error: "Only an admin can repair pods." }, { status: 403 });
-  if (!supabaseAdmin) return NextResponse.json({ error: "No Supabase service key in the environment." }, { status: 500 });
-  if (!hostedLabsConfigured()) return NextResponse.json({ error: "Hosted labs are not configured." }, { status: 500 });
+  if (!me) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
+  if (!isAcademyAdmin(me.email)) return NextResponse.json({ error: "Only an admin can repair pods" }, { status: 403 });
+  if (!supabaseAdmin) return NextResponse.json({ error: "No Supabase service key in the environment" }, { status: 500 });
+  if (!hostedLabsConfigured()) return NextResponse.json({ error: "Hosted labs are not configured" }, { status: 500 });
 
   const { data, error } = await supabaseAdmin.from("academy_hosted_labs").select("user_id, instance_id").not("instance_id", "is", null);
   if (error) return NextResponse.json({ error: `Could not list hosted labs: ${error.message}` }, { status: 500 });

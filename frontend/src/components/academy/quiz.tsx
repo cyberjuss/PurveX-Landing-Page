@@ -231,7 +231,7 @@ export function QuizBlock({
           {left.length > 0 ? (
             <>
               <p className="ax-quiz__left">
-                {left.length === 1 ? "One more to finish the week." : `${left.length} more to finish the week.`}
+                {left.length === 1 ? "One more to finish the week" : `${left.length} more to finish the week`}
               </p>
               {nextBeyond && (
                 <button type="button" className="ax-quiz__go" onClick={nextBeyond.go}>
@@ -241,7 +241,7 @@ export function QuizBlock({
             </>
           ) : (
             <>
-              <p className="ax-quiz__left">That finishes the week.</p>
+              <p className="ax-quiz__left">That finishes the week</p>
               {nextBeyond && (
                 <button type="button" className="ax-quiz__go" onClick={nextBeyond.go}>
                   {plain(nextBeyond.label)}

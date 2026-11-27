@@ -236,7 +236,7 @@ function RateReply({
   return (
     <div className="pc-rate">
       {rated ? (
-        <p className="pc-rate__done">{rated.rating === "up" ? "Thanks. Noted." : "Thanks. Coach will adjust."}</p>
+        <p className="pc-rate__done">{rated.rating === "up" ? "Thanks · Noted" : "Thanks · Coach will adjust"}</p>
       ) : (
         <div className="pc-rate__row">
           <span className="pc-rate__ask">Was this helpful?</span>
@@ -361,12 +361,12 @@ export function CoachChat() {
     try {
       const next = await filesToCoachImages(files, images.length);
       if (!next.length) {
-        setAttachError("Could not read that screenshot. Paste or upload a PNG or JPG.");
+        setAttachError("Could not read that screenshot · Use a PNG or JPG");
         return;
       }
       setImages((prev) => [...prev, ...next].slice(0, COACH_IMAGE_MAX));
     } catch (err) {
-      setAttachError(err instanceof Error ? err.message : "Could not add that image.");
+      setAttachError(err instanceof Error ? err.message : "Could not add that image");
     } finally {
       setAttaching(false);
     }
@@ -389,8 +389,8 @@ export function CoachChat() {
           <div className="pc-open">
             <p className="pc-open__lead">
               {mode === "interview"
-                ? "Mock Tier 1 interviews scored like the real thing, and resume help built from the work you have proven."
-                : "Picked from where you left off or where you struggled."}
+                ? "Mock Tier 1 interviews and resume help built from your proven work"
+                : "Picked from where you left off or struggled"}
             </p>
             <ul className="pc-tickets">
               {prompts.map((s) => (
@@ -406,7 +406,7 @@ export function CoachChat() {
         )}
         {messages.length === 0 && remaining === 0 && (
           <div className="pc-empty">
-            <p>That’s all for today.<br />Your 25 chats reset tomorrow.</p>
+            <p>That’s all for today<br />Your 25 chats reset tomorrow</p>
             {process.env.NODE_ENV !== "production" && (
               <button type="button" className="pc-dock__send" onClick={() => void resetToday()}>
                 Reset for testing
@@ -465,13 +465,13 @@ export function CoachChat() {
             </a>
           </p>
         ) : (
-          !enabled && <p className="pc-error">PurveX Coach is not switched on yet. Email support@purvex.io.</p>
+          !enabled && <p className="pc-error">PurveX Coach is not on yet · Email support@purvex.io</p>
         )}
       </div>
 
       {remaining === 0 && messages.length > 0 ? (
         <p className="pc-dock pc-dock__done">
-          That’s all for today. Your 25 chats reset tomorrow.
+          That’s all for today · Your 25 chats reset tomorrow
         </p>
       ) : remaining !== 0 ? (
         <form
@@ -545,7 +545,7 @@ export function CoachChat() {
                 : mode === "mentor"
                   ? "What real-world situation are you mapping?"
                   : mode === "interview"
-                    ? "Answer the question, say start, or paste your resume."
+                    ? "Answer the question or paste your resume"
                     : "Where are you stuck?"
             }
             maxLength={6000}

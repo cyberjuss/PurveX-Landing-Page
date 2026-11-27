@@ -59,7 +59,7 @@ export function ProofPrompt() {
         const res = await academyFetch("/academy/api/proof", { method: "POST", body: form });
         if (!res.ok) {
           const body = (await res.json().catch(() => ({}))) as { error?: string };
-          setError(body.error || "Unable to save that screenshot.");
+          setError(body.error || "Could not save that screenshot");
           break;
         }
         count += 1;

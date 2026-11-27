@@ -41,7 +41,7 @@ export async function GET(request: Request) {
   }
   const student = await getAcademyStudent(request);
   if (!student) {
-    return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+    return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   }
   // Coach is in the Pro column on the pricing page and not in Explore's, so
   // a free account is told what it costs instead of being told the feature
@@ -66,11 +66,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   if (!(await isAcademyUnlocked())) {
-    return NextResponse.json({ error: "Unlock the academy first." }, { status: 401 });
+    return NextResponse.json({ error: "Unlock the academy first" }, { status: 401 });
   }
   const student = await getAcademyStudent(request);
   if (!student) {
-    return NextResponse.json({ error: "Sign in to use PurveX Coach." }, { status: 401 });
+    return NextResponse.json({ error: "Sign in to use PurveX Coach" }, { status: 401 });
   }
 
   // Checked before the API key, before the body is read and before any
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
-      { error: "PurveX Coach is not switched on yet. Email support@purvex.io." },
+      { error: "PurveX Coach is not switched on yet · Email support@purvex.io" },
       { status: 503 }
     );
   }
@@ -92,7 +92,7 @@ export async function POST(request: Request) {
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
   const body = payload as {
@@ -109,12 +109,12 @@ export async function POST(request: Request) {
   const rawImages = Array.isArray(body.images) ? body.images : [];
   const images = sanitizeCoachImages(rawImages);
   if (rawImages.length > 0 && images.length === 0) {
-    return NextResponse.json({ error: "That screenshot could not be read. Paste or upload a PNG or JPG." }, { status: 400 });
+    return NextResponse.json({ error: "That screenshot could not be read · Paste or upload a PNG or JPG" }, { status: 400 });
   }
   // Long enough for a pasted resume in Job prep.
   const message = String(body.message || "").trim().slice(0, 6000) || (images.length ? COACH_SHOT_ASK : "");
   if (!message) {
-    return NextResponse.json({ error: "Ask a question first." }, { status: 400 });
+    return NextResponse.json({ error: "Ask a question first" }, { status: 400 });
   }
 
   const history = Array.isArray(body.history)
@@ -177,7 +177,7 @@ export async function POST(request: Request) {
       // manual API call against Anthropic directly to tell apart.
       console.error("coach lab turn failed", err instanceof Error ? err.message : err);
       await Promise.all([releaseCoachQuestion(student.id, day), releaseLabCoachQuestion(student.id, place.lab, day)]);
-      return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
+      return NextResponse.json({ error: "PurveX Coach is unavailable right now" }, { status: 502 });
     }
   }
 
@@ -204,6 +204,6 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("coach turn failed", err instanceof Error ? err.message : err);
     if (!charged.any) await releaseCoachQuestion(student.id, day);
-    return NextResponse.json({ error: "PurveX Coach is unavailable right now." }, { status: 502 });
+    return NextResponse.json({ error: "PurveX Coach is unavailable right now" }, { status: 502 });
   }
 }

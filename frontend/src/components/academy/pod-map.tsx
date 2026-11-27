@@ -30,7 +30,7 @@ function useNetwork() {
         else setNet(d);
       })
       .catch(() => {
-        if (alive) setError("Could not reach AWS. Try again in a minute.");
+        if (alive) setError("Could not reach AWS · Try again in a minute");
       });
     return () => {
       alive = false;

@@ -28,11 +28,11 @@ const HELP_DESK: ChallengeKey[] = ["day-one", "ticket-queue", "new-hire-week"];
 const PHASE_ONE: ChallengeKey[] = [...HELP_DESK, "client-data", "weekend-incident-report", "tuesday-after-breach", "network-change", "access-review"];
 
 export const RANKS: Rank[] = [
-  { id: "trainee", title: "Trainee", earn: "Solve your first challenge question." },
-  { id: "help-desk", title: "Help Desk Analyst", earn: "Finish Operation Day One, the Ticket Queue and A New Hire's First Week." },
-  { id: "junior-soc", title: "Junior SOC Analyst", earn: "Finish every Phase 1 challenge and reach Ready." },
-  { id: "soc-tier-2", title: "SOC Analyst, Tier 2", earn: "Opens with Phase 2.", soon: true },
-  { id: "incident-responder", title: "Incident Responder", earn: "Opens with Phase 3.", soon: true },
+  { id: "trainee", title: "Trainee", earn: "Solve your first challenge question" },
+  { id: "help-desk", title: "Help Desk Analyst", earn: "Finish Operation Day One and the Ticket Queue and A New Hire's First Week" },
+  { id: "junior-soc", title: "Junior SOC Analyst", earn: "Finish every Phase 1 challenge and reach Ready" },
+  { id: "soc-tier-2", title: "SOC Analyst, Tier 2", earn: "Opens with Phase 2", soon: true },
+  { id: "incident-responder", title: "Incident Responder", earn: "Opens with Phase 3", soon: true },
 ];
 
 /** How many ranks this record has earned, 0 for none yet: what it shows now, or the best it has held. */

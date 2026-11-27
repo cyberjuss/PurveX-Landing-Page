@@ -485,7 +485,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
       face.className = "ad-guess__win";
       // A drawn check rather than a glyph, so a live solve can draw it in.
       face.innerHTML =
-        '<span class="ad-guess__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.25 4.25L18.5 8"/></svg></span> Answered right.';
+        '<span class="ad-guess__mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.25 4.25L18.5 8"/></svg></span> Answered right';
       const motion = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       // Only a solve that just happened plays the moment. A solve restored on
       // page load lands already drawn.
@@ -606,15 +606,15 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
     const missNote = (feedback: HTMLElement, text: string) => {
       feedback.textContent = "";
       feedback.className = "ad-guess__feedback ad-guess__feedback--err";
-      feedback.append(text + " ");
+      feedback.append(text + " · ");
       const note = document.createElement("span");
       note.className = "ad-guess__free";
-      note.textContent = "No attempt used.";
+      note.textContent = "No attempt used";
       feedback.appendChild(note);
     };
 
     const labOffNote = (feedback: HTMLElement, text: string) => {
-      feedback.textContent = `${text} `;
+      feedback.textContent = `${text} · `;
       feedback.className = "ad-guess__feedback ad-guess__feedback--err";
       const start = document.createElement("button");
       start.type = "button";
@@ -686,17 +686,17 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           gate = await labGate(missionId);
         }
         if (!gate) {
-          missNote(feedback, "Could not check your lab, so try submit again.");
+          missNote(feedback, "Could not check your lab · Submit again");
           placeMiss(wrap);
           return;
         }
         if ((gate.noLab || gate.stale) && hasHostedLab()) {
-          labOffNote(feedback, "Lab is offline.");
+          labOffNote(feedback, "Lab is offline");
           placeMiss(wrap);
           return;
         }
         if (gate.noLab) {
-          missNote(feedback, "No lab has reported yet, so run Build-Environment.ps1 once as Administrator and look for Lab snapshot sent.");
+          missNote(feedback, "No lab has reported yet · Run Build-Environment.ps1 as Administrator");
           placeMiss(wrap);
           return;
         }
@@ -712,8 +712,8 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           missNote(
             feedback,
             hasHostedLab()
-              ? "This ticket's objects are not in your lab yet, and we are adding them now, so give it half a minute."
-              : "This ticket's objects are not in your lab yet, so run Build-Environment.ps1 again and give it a minute."
+              ? "Adding this ticket's objects to your lab · Give it half a minute"
+              : "This ticket's objects are not in your lab · Run Build-Environment.ps1 again"
           );
           placeMiss(wrap);
           return;
@@ -723,7 +723,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
           // The checks already name what is missing, so the sentence does not
           // also have to say "make the change and submit again" -- that is the
           // only thing left to do.
-          missNote(feedback, missing ? `Not in your lab yet: ${missing}.` : "Your lab does not show this change yet.");
+          missNote(feedback, missing ? `Not in your lab yet · ${missing}` : "Your lab does not show this change yet");
           placeMiss(wrap);
           return;
         }
@@ -733,7 +733,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
         if (!reply || reply.blocked) {
           missNote(
             feedback,
-            reply?.blocked ? "Your lab does not show this change yet." : "Could not check your answer, so try submit again."
+            reply?.blocked ? "Your lab does not show this change yet" : "Could not check your answer · Submit again"
           );
           placeMiss(wrap);
           return;
@@ -1237,7 +1237,7 @@ export function AcademyShell({ phases, children, unlocked }: { phases: PhaseDef[
               note.style.cssText = "display:block;margin-top:6px;color:#d92d20;font-size:.85rem";
               scriptLink.insertAdjacentElement("afterend", note);
             }
-            const why = err instanceof Error && err.message ? err.message : "Could not link the script to your account.";
+            const why = err instanceof Error && err.message ? err.message : "Could not link the script to your account";
             note.textContent = `${why} Sign in again, then use this link once more. A plain copy will not report your lab.`;
           },
         );

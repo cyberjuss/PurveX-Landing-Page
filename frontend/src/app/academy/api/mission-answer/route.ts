@@ -22,18 +22,18 @@ async function auth(request: Request) {
 
 export async function POST(request: Request) {
   const student = await auth(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
 
   let body: { id?: unknown; guess?: unknown };
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const id = String(body.id || "");
   const guess = String(body.guess || "").slice(0, 120);
-  if (!hasMissionKey(id)) return NextResponse.json({ error: "Unknown mission." }, { status: 400 });
-  if (!guess.trim()) return NextResponse.json({ error: "Type an answer first." }, { status: 400 });
+  if (!hasMissionKey(id)) return NextResponse.json({ error: "Unknown mission" }, { status: 400 });
+  if (!guess.trim()) return NextResponse.json({ error: "Type an answer first" }, { status: 400 });
 
   // The page waits for the lab first. This makes sure a solve always has it.
   const gate = await labGate(student, id);
@@ -61,11 +61,11 @@ export async function POST(request: Request) {
     });
   } catch (e) {
     console.error("mission answer not saved", student.id, id, e instanceof ProgressBusyError ? "busy" : e);
-    return NextResponse.json({ error: "Could not save your answer. Try again." }, { status: 503 });
+    return NextResponse.json({ error: "Could not save your answer · Try again" }, { status: 503 });
   }
   const { before, next, already } = graded;
   if (already) return NextResponse.json({ correct: true, result: already, reveal: missionReveal(id) });
-  if (!next) return NextResponse.json({ error: "Could not save your answer. Try again." }, { status: 503 });
+  if (!next) return NextResponse.json({ error: "Could not save your answer · Try again" }, { status: 503 });
   // The solve that finished a whole challenge goes to the Discord's #wins,
   // for a student who opted in. After the response, so Discord being slow
   // or down never holds up their answer.
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
 /** The boxes this student has earned, for missions restored on page load. */
 export async function GET(request: Request) {
   const student = await auth(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   const ids = (new URL(request.url).searchParams.get("ids") ?? "").split(",").filter(hasMissionKey).slice(0, 40);
   const results = await loadProgress(student.id);
   const reveals = Object.fromEntries(ids.filter((id) => earned(results[id])).map((id) => [id, missionReveal(id)]));

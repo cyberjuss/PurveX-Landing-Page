@@ -69,31 +69,31 @@ const HOME: Tour = {
       sel: '[data-tour="readiness"]',
       icon: Gauge,
       title: "Readiness",
-      body: "One score out of 100. Open it to see which competencies are behind.",
+      body: "One score out of 100 · Open it to see what is behind",
     },
     {
       sel: '[data-tour="drills"]',
       icon: Flame,
       title: "Drills",
-      body: "A named case a day against your own directory. The streak tracks how often you turn up.",
+      body: "A named case a day in your own directory",
     },
     {
       sel: '[data-tour="path"]',
       icon: Route,
       title: "The course",
-      body: "Fundamentals, then a live directory, then alerts and logs. In that order.",
+      body: "Fundamentals then a live directory then alerts and logs",
     },
     {
       sel: '[data-tour="lab"]',
       icon: Server,
       title: "Your lab",
-      body: "A Windows domain controller and an Ubuntu desktop, yours alone, in a browser tab.",
+      body: "Your own Windows domain controller and Ubuntu desktop in a browser tab",
     },
     {
       sel: '[data-tour="account"]',
       icon: Headset,
       title: "Account",
-      body: "The coach, the full readiness report, your Proof Profile, and sign out.",
+      body: "Coach · Readiness report · Proof Profile · Sign out",
     },
   ],
 };
@@ -111,25 +111,25 @@ const PORTAL: Tour = {
       sel: '[data-tour="menu-desktop"], [data-tour="menu"]',
       icon: ListTree,
       title: "Course menu",
-      body: "Every lesson in order. Anything finished is ticked and you can jump back to it.",
+      body: "Every lesson in order · Finished ones are ticked",
     },
     {
       sel: '[data-tour="lab"]',
       icon: Server,
       title: "Your lab",
-      body: "Start it or open it from any page. The same two machines follow you everywhere.",
+      body: "Start or open your lab from any page",
     },
     {
       sel: '[data-tour="account"]',
       icon: Headset,
       title: "Account",
-      body: "The coach, the full readiness report, your Proof Profile, and sign out.",
+      body: "Coach · Readiness report · Proof Profile · Sign out",
     },
     {
       sel: '[data-tour="theme"]',
       icon: Palette,
       title: "Light or dark",
-      body: "Range follows whichever you pick and remembers it across every page.",
+      body: "Range remembers whichever you pick",
     },
   ],
 };
@@ -147,19 +147,19 @@ const DRILLS: Tour = {
       sel: '[data-tour="case"]',
       icon: PlayCircle,
       title: "A case a day",
-      body: "One scenario written against your own directory. A decision, a write-up, or a real change.",
+      body: "One scenario a day in your own directory",
     },
     {
       sel: '[data-tour="ctf"]',
       icon: Flag,
       title: "This week’s investigation",
-      body: "One hard investigation a week against your own Security log. A new one every Monday.",
+      body: "One hard investigation a week · A new one every Monday",
     },
     {
       sel: '[data-tour="shift"]',
       icon: Clock,
       title: "Shift",
-      body: "Thirty minutes on the desk. Real incidents fire into your lab, each with a priority. Work the highest first.",
+      body: "Thirty minutes on the desk · Work the highest priority first",
     },
   ],
 };
@@ -176,23 +176,23 @@ const LESSON: Tour = {
     {
       icon: LayoutList,
       title: "Tabs across the top",
-      body: "Reading sections first, then the week's challenge, then the quiz at the end.",
+      body: "Reading first then the challenge then the quiz",
     },
     {
       icon: CheckSquare,
       title: "Mark complete",
-      body: "Tick the week off when you are done. The course menu and your progress follow it.",
+      body: "Tick the week off when you are done",
     },
     {
       icon: ArrowRight,
       title: "Previous and next",
-      body: "Move to the week either side from the foot of the page, without going back to the menu.",
+      body: "Move to the next or last week from the foot of the page",
     },
     {
       sel: '[data-tour="menu-desktop"], [data-tour="menu"]',
       icon: ListTree,
       title: "Course menu",
-      body: "Every week in order, with anything finished ticked. Jump back to any of it.",
+      body: "Every week in order · Finished ones are ticked",
     },
   ],
 };
@@ -207,17 +207,17 @@ const READINESS: Tour = {
     {
       icon: Gauge,
       title: "One score",
-      body: "Out of 100, across everything you have done. It opens at zero and climbs as you work.",
+      body: "Out of 100 · It starts at zero and climbs as you work",
     },
     {
       icon: Route,
       title: "Competencies",
-      body: "Each one measured against the bar for a Tier 1 hire, so you can see what is behind.",
+      body: "Each one measured against the bar for a Tier 1 hire",
     },
     {
       icon: FileText,
       title: "Mission log",
-      body: "Every attempt, as it will look to a hiring manager. The misses stay on the record.",
+      body: "Every attempt as a hiring manager sees it",
     },
   ],
 };
@@ -232,17 +232,17 @@ const PORTFOLIO: Tour = {
     {
       icon: FileText,
       title: "Resume bullets",
-      body: "Written from your finished work, ready to paste into a CV or a LinkedIn profile.",
+      body: "Written from your finished work for a CV or LinkedIn",
     },
     {
       icon: Image,
       title: "Screenshots",
-      body: "Evidence from your own lab. A hiring manager can see the thing rather than take your word.",
+      body: "Evidence from your own lab that a hiring manager can see",
     },
     {
       icon: BadgeCheck,
       title: "Part of Range Pro",
-      body: "Pro turns your verified work into a page with a public link, a QR code and a credential ID employers can check.",
+      body: "Pro turns your verified work into a public page employers can check",
     },
   ],
 };
@@ -257,17 +257,17 @@ const SHIFT: Tour = {
     {
       icon: Ticket,
       title: "Tickets arrive on their own",
-      body: "You do not pick them. They land while you are still working the last one, the way a queue does.",
+      body: "They land while you are still working the last one",
     },
     {
       icon: Timer,
       title: "Every ticket has a clock",
-      body: "P1 five minutes, P2 eight, P3 twelve. Miss it and the ticket closes late against you.",
+      body: "P1 five minutes · P2 eight · P3 twelve",
     },
     {
       icon: ShieldAlert,
-      title: "Fixed in the lab, not on paper",
-      body: "A ticket closes when the change is real in your own directory, so the check reads the lab.",
+      title: "Fixed in the lab not on paper",
+      body: "A ticket closes when the change is real in your directory",
     },
   ],
 };

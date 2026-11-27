@@ -35,7 +35,7 @@ export function DiscordConnect() {
     if (body?.url) window.location.assign(body.url);
     else {
       setBusy(false);
-      setError("Could not reach Discord. Try again in a minute.");
+      setError("Could not reach Discord · Try again in a minute");
     }
   }
 
@@ -45,7 +45,7 @@ export function DiscordConnect() {
     const res = await academyFetch("/academy/api/discord", { method: "DELETE" }).catch(() => null);
     setBusy(false);
     if (res?.ok && status?.configured) setStatus({ ...status, linked: null });
-    else setError("Could not disconnect. Try again in a minute.");
+    else setError("Could not disconnect · Try again in a minute");
   }
 
   const linked = status.linked;
@@ -56,10 +56,10 @@ export function DiscordConnect() {
           <p>
             Connected to Discord as <strong>@{linked.username ?? "your account"}</strong>.{" "}
             {!status.inServer
-              ? "Join the server with the link below and your role follows."
+              ? "Join the server with the link below and your role follows"
               : status.pro
-                ? "You have the Pro role and the Pro channels."
-                : "Get Range Pro and the Pro role and channels open up by themselves."}
+                ? "You have the Pro role and channels"
+                : "Get Range Pro to open the Pro role and channels"}
           </p>
           <button type="button" className="gp-link gp-link--btn" onClick={() => void disconnect()} disabled={busy}>
             {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : "Disconnect Discord"}
@@ -67,7 +67,7 @@ export function DiscordConnect() {
         </>
       ) : (
         <>
-          <p>Connect your Discord account and the Pro role and channels follow Range Pro by themselves, with nobody to message.</p>
+          <p>Connect Discord and the Pro role follows Range Pro on its own</p>
           <button type="button" className="gp-btn gp-btn--primary gp-discord__connect" onClick={() => void connect()} disabled={busy}>
             {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : "Connect Discord"}
           </button>

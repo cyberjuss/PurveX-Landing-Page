@@ -35,18 +35,18 @@ function ago(iso: string | null | undefined): string {
 export async function POST(request: Request) {
   if (!(await isAcademyUnlocked())) return NextResponse.json({ error: "Locked" }, { status: 401 });
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
 
   let body: { topic?: unknown; message?: unknown; page?: unknown };
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const topic: Topic = typeof body.topic === "string" && body.topic in TOPICS ? (body.topic as Topic) : "other";
   const message = typeof body.message === "string" ? body.message.replace(/\u0000/g, "").trim().slice(0, 2000) : "";
   const page = typeof body.page === "string" && body.page.startsWith("/") ? body.page.slice(0, 200) : "";
-  if (message.length < 5) return NextResponse.json({ error: "Say in a few words what went wrong." }, { status: 400 });
+  if (message.length < 5) return NextResponse.json({ error: "Say in a few words what went wrong" }, { status: 400 });
 
   if ((await countHelpRequestsSince(student.id, new Date(Date.now() - 86_400_000))) >= PER_DAY) {
     return NextResponse.json({ error: `You have sent ${PER_DAY} requests today. We have them and will reply by email.` }, { status: 429 });

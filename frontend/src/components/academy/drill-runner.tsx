@@ -90,14 +90,14 @@ export function drillPassed(e: DrillEntry) {
 export function labLine(lab: DrillStatus["lab"]) {
   if (!lab.synced) return "";
   const stale = lab.days !== null && lab.days >= 7;
-  return stale ? "Turn your domain controller on to refresh it." : "";
+  return stale ? "Turn your domain controller on to refresh it" : "";
 }
 
 export function streakLine(s: DrillStatus["stats"]) {
-  if (s.today) return s.streak > 1 ? `${s.streak} days in a row. See you tomorrow.` : "Done for today. Come back tomorrow to start a streak.";
+  if (s.today) return s.streak > 1 ? `${s.streak} days in a row · See you tomorrow` : "Done for today · Come back tomorrow to start a streak";
   if (s.streak > 0) return `${s.streak}-day streak. Do today's scenario to keep it.`;
-  if (s.total > 0) return "The streak reset. Start a new one today.";
-  return "One scenario a day. About two minutes.";
+  if (s.total > 0) return "The streak reset · Start a new one today";
+  return "One scenario a day · About two minutes";
 }
 
 function lastSeven() {
@@ -144,11 +144,11 @@ function TaskPanel({ task, checkRes }: { task: TaskInfo; checkRes: CheckRes | nu
         </p>
       )}
       <p className="dr-task__sync">
-        Your lab reports about every minute. Make the change, wait for it to report, then check.
+        Your lab reports about every minute · Make the change then check
       </p>
       {checkRes?.needsSetup && (
         <p className="dr-checks__stale">
-          Your lab reported, but the practice account is not there yet. Run the setup script on the domain controller, wait for the next report, then check again.
+          The practice account is not in your lab yet · Run the setup script on the domain controller then check again
         </p>
       )}
       {checkRes && !checkRes.fresh && (
@@ -274,7 +274,7 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
       ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action }) }
       : undefined);
     const data = await res.json();
-    if (!res.ok && !data.challenge) throw new Error(data.error || "Could not reach the lab check.");
+    if (!res.ok && !data.challenge) throw new Error(data.error || "Could not reach the lab check");
     return data as VerifyState & { passed?: boolean; fresh?: boolean; error?: string };
   }, []);
 
@@ -290,14 +290,14 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
       setState(data);
       if (action === "check") {
         if (data.passed) {
-          setNote("Verified. You can remove the code from the description now.");
+          setNote("Verified · You can remove the code from the description now");
           onVerified();
         } else {
-          setNote(data.fresh ? "The lab reported and the code is not in it yet. Check the description and try again." : "Waiting for a report that includes this code.");
+          setNote(data.fresh ? "The code is not in your lab yet · Check the description and try again" : "Waiting for a report that includes this code");
         }
       }
     } catch (err) {
-      setNote(err instanceof Error ? err.message : "Could not check your lab.");
+      setNote(err instanceof Error ? err.message : "Could not check your lab");
     } finally {
       setBusy(false);
     }
@@ -311,8 +311,8 @@ function VerifyLab({ verified, onVerified }: { verified: boolean; onVerified: ()
         <h2>Verify your lab</h2>
         <p>
           {verified
-            ? "The lab is verified. A code you planted showed up in a live snapshot. Verify again any time."
-            : "Plant a one-time code in your lab to show your snapshots come from a lab you control right now."}
+            ? "Lab verified · A code you planted showed up live"
+            : "Plant a one-time code to prove the lab is yours"}
         </p>
       </div>
       {open ? (
@@ -412,7 +412,7 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
               <div className="dr-jobsheet__head">
                 <div>
                   <span>Work you have done</span>
-                  <p>Use this when you apply. It lists only the real work your lab already shows, so you can talk about what you have done.</p>
+                  <p>Use this when you apply · It lists only real work your lab shows</p>
                 </div>
                 <button type="button" className="dr-jobsheet__close" onClick={() => setOpen(false)}>
                   <X className="h-4 w-4" />
@@ -422,12 +422,12 @@ function JobTasks({ jobs, security }: { jobs: JobRow[]; security: boolean }) {
                 {!security && jobs.some((j) => j.security) && (
                   <p className="dr-jobs__note">
                     {hostedLab
-                      ? "Security settings show up here once your lab reports them, which it does on its own."
-                      : "Security settings show up here after you run the updated lab script from Build the Environment once on the domain controller."}
+                      ? "Security settings show up here once your lab reports them"
+                      : "Run the updated lab script from Build the Environment to show security settings here"}
                   </p>
                 )}
                 {done.length === 0 ? (
-                  <p className="dr-jobs__empty">Nothing here yet. When your lab shows a change you made, it is added so you have it for applications.</p>
+                  <p className="dr-jobs__empty">Nothing here yet · Changes your lab shows are added here</p>
                 ) : (
                   <ul className="dr-jobs__list">
                     {done.map((j) => (
@@ -550,9 +550,9 @@ export function DrillRunner() {
         body: JSON.stringify({ action: "hint", token }),
       });
       const data = await res.json();
-      setHint(typeof data.hint === "string" ? data.hint : "No hint for this one.");
+      setHint(typeof data.hint === "string" ? data.hint : "No hint for this one");
     } catch {
-      setHint("Could not load a hint.");
+      setHint("Could not load a hint");
     }
   }
 
@@ -569,14 +569,14 @@ export function DrillRunner() {
         body: JSON.stringify({ action: "unlock", token: current.token, answers: given }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not check your answer.");
+      if (!res.ok) throw new Error(data.error || "Could not check your answer");
       if (!data.ok) {
-        setError("That is not right. Read the evidence again, or ask for the hint.");
+        setError("Not right · Read the evidence again or ask for the hint");
         return;
       }
       setUnlock({ setup: data.setup, checklist: data.checklist, checkCount: data.checkCount });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not check your answer.");
+      setError(err instanceof Error ? err.message : "Could not check your answer");
     } finally {
       setBusy(false);
     }
@@ -592,7 +592,7 @@ export function DrillRunner() {
         body: JSON.stringify({ action: "check", token: current.token, answers: given, day: localDay() }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not check your lab.");
+      if (!res.ok) throw new Error(data.error || "Could not check your lab");
       if (data.passed && data.entry) {
         offerProofShot(data.entry);
         setResult({ ...data, items: current.items });
@@ -602,7 +602,7 @@ export function DrillRunner() {
       }
       setCheckRes({ needsSetup: Boolean(data.needsSetup), fresh: Boolean(data.fresh), results: data.results ?? [], syncedAgo: data.syncedAgo ?? null, passed: false });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not check your lab.");
+      setError(err instanceof Error ? err.message : "Could not check your lab");
     } finally {
       setBusy(false);
     }
@@ -629,13 +629,13 @@ export function DrillRunner() {
       } catch {
         data = null;
       }
-      if (!res.ok || !data) throw new Error(data?.error || "Could not start the drill. Try again in a minute.");
+      if (!res.ok || !data) throw new Error(data?.error || "Could not start the drill · Try again in a minute");
       if (data.done) {
         setStatus(data as DrillStatus);
         return;
       }
       if (!data.token || !Array.isArray(data.items) || data.items.length === 0) {
-        throw new Error(data.error || "Could not write this one. Try again in a minute.");
+        throw new Error(data.error || "Could not write this one · Try again in a minute");
       }
       finishing.current = false;
       setResult(null);
@@ -648,7 +648,7 @@ export function DrillRunner() {
       setRun({ mode, token: data.token, items: data.items as Run["items"], limit: data.limitSeconds ?? 0, ai: Boolean(data.ai), startedAt: Date.now() });
     } catch (err) {
       const aborted = err instanceof DOMException && err.name === "AbortError";
-      setError(aborted ? "That took too long. Try again in a minute." : err instanceof Error ? err.message : "Could not start the drill.");
+      setError(aborted ? "That took too long · Try again in a minute" : err instanceof Error ? err.message : "Could not start the drill");
       setErrorMode(mode);
     } finally {
       window.clearTimeout(timer);
@@ -680,11 +680,11 @@ export function DrillRunner() {
         body: JSON.stringify({ action: "finish", token: current.token, answers: given, day: localDay(), final }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not score the drill.");
+      if (!res.ok) throw new Error(data.error || "Could not score the drill");
       // A wrong typed answer to the weekly CTF does not close it. They can try again or give up.
       if (data.retry) {
         finishing.current = false;
-        setError("That is not right. Read the evidence again, or ask for the hint.");
+        setError("Not right · Read the evidence again or ask for the hint");
         return;
       }
       if (data.entry) offerProofShot(data.entry);
@@ -693,7 +693,7 @@ export function DrillRunner() {
       setRun(null);
     } catch (err) {
       finishing.current = false;
-      setError(err instanceof Error ? err.message : "Could not score the drill.");
+      setError(err instanceof Error ? err.message : "Could not score the drill");
     } finally {
       setBusy(false);
     }
@@ -727,7 +727,7 @@ export function DrillRunner() {
               ? `Quick drill · ${idx + 1} of ${run.items.length}`
               : run.mode === "ctf"
                 ? run.items[0]?.gated
-                  ? "Weekly CTF · find it, then contain it"
+                  ? "Weekly CTF · find it then contain it"
                   : "Weekly CTF · type your answer"
                 : run.items[0]?.kind === "change"
                   ? "Daily lab task · make the change"
@@ -849,8 +849,8 @@ export function DrillRunner() {
         )}
 
         {entry.mode === "daily" && <p className="dr-note">{streakLine(result.stats)}</p>}
-        {entry.mode === "ctf" && <p className="dr-note">One investigation a week. The next one opens Monday.</p>}
-        {!result.counted && entry.mode === "daily" && <p className="dr-note">Today&apos;s first result stands. This is your score for the day.</p>}
+        {entry.mode === "ctf" && <p className="dr-note">One investigation a week · The next one opens Monday</p>}
+        {!result.counted && entry.mode === "daily" && <p className="dr-note">Today&apos;s first result is your score for the day</p>}
 
         <ol className="dr-review">
           {review.map((r, i) => (
@@ -897,7 +897,7 @@ export function DrillRunner() {
                       <i />
                       <i />
                       <i />
-                      <span>On the job, the same thing in PowerShell</span>
+                      <span>The same thing in PowerShell on the job</span>
                     </div>
                     <pre>{r.runbook.join("\n")}</pre>
                   </div>
@@ -952,7 +952,7 @@ export function DrillRunner() {
       <header className="dr-mast">
         <div className="ax-titleblock">
           <h1>Drills</h1>
-          <p>Practice on your own directory. One named case a day.</p>
+          <p>Practice on your own directory · One named case a day</p>
         </div>
         {status && <JobTasks jobs={status.jobs} security={status.lab.security} />}
       </header>
@@ -980,7 +980,7 @@ export function DrillRunner() {
                 {rank.title}
               </Link>
             )}
-            <span className="dr-difficulty" title="How hard today's cases are, from how your recent answers went">
+            <span className="dr-difficulty" title="How hard today's cases are based on your recent answers">
               Cases · {status.level.name}
             </span>
           </div>
@@ -999,9 +999,9 @@ export function DrillRunner() {
                   </span>
                   <span className="ax-path__body">
                     {s.today
-                      ? `Done in ${clock(s.today.seconds)}. ${aimed ? "Open that task again tomorrow and it can be the next one." : streakLine(s)}`
+                      ? `Done in ${clock(s.today.seconds)} · ${aimed ? "Open that task again tomorrow for the next one" : streakLine(s)}`
                       : aimed
-                        ? `Aimed at: ${aimed.label}. About five minutes, from your own lab.`
+                        ? `Aimed at ${aimed.label} · About five minutes in your own lab`
                         : `One scenario from your own lab, about five minutes${status.focus ? `, on ${status.focus.toLowerCase()}` : ""}. You make a call, write it up, or fix something for real.`}
                   </span>
                   {errorMode === "daily" && error && <span className="ax-path__err">{error}</span>}
@@ -1028,16 +1028,16 @@ export function DrillRunner() {
                         coming online. None of that is the student's job, so the wait is
                         reported rather than handed to them as a task. */}
                     {status.ctf.entry
-                      ? "A new one opens Monday."
+                      ? "A new one opens Monday"
                       : status.lab.events
-                        ? "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."
+                        ? "One hard investigation a week from your own lab · About twenty minutes"
                         : ctfQuietLog
-                          ? "One hard investigation a week, drawn from what actually happened in your lab. Your lab is connected, but nothing has happened in it recently to investigate. Work one ticket in the Ticket Queue and this opens about a minute later."
+                          ? "Nothing has happened in your lab to investigate yet · Work one ticket in the Ticket Queue to open this"
                         : hostedLab && labState !== "ready" && labState !== "starting"
-                          ? "One hard investigation a week, drawn from what actually happened in your lab. Your lab is off, so there is nothing to draw from yet."
+                          ? "Your lab is off · Start it to open this week's investigation"
                           : hostedLab
-                            ? "One hard investigation a week, drawn from what actually happened in your lab. Around twenty minutes."
-                            : "One hard investigation a week, drawn from what actually happened in your lab. Your domain controller has not sent its Security log yet."}
+                            ? "One hard investigation a week from your own lab · About twenty minutes"
+                            : "Waiting for your domain controller to send its Security log"}
                   </span>
                   {errorMode === "ctf" && error && <span className="ax-path__err">{error}</span>}
                 </span>

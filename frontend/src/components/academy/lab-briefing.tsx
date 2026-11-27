@@ -41,35 +41,35 @@ function points(sessionHours: number, weeklyHours: number | null, idleStopMinute
     {
       Icon: Server,
       title: "Two machines, yours alone",
-      body: "A Windows Server 2022 domain controller running purvexfinancial.local, and an Ubuntu 24.04 desktop, on a private network nobody else shares.",
+      body: "A Windows Server 2022 domain controller and an Ubuntu 24.04 desktop on your own private network",
     },
     {
       Icon: MonitorPlay,
       title: "They open in a new tab",
-      body: "Both machines run inside your browser, no download and no VPN. Allow pop-ups for this site or the tab will not open.",
+      body: "Both machines run in your browser · Allow pop-ups for this site",
     },
     {
       Icon: Timer,
       title: "The first build takes a few minutes",
-      body: "A real server has to boot and build the domain. Resuming later takes about a minute. You can keep reading Range while it works.",
+      body: "A real server has to build the domain · Resuming later takes about a minute",
     },
     {
       Icon: Clock,
       title: `It stops itself after ${sessionHours} ${sessionHours === 1 ? "hour" : "hours"}`,
-      body: `It also stops after ${idleStopMinutes} minutes idle, once it's been up ${idleReadyMinutes} minutes or more. Nothing is lost -- Resume picks up right where you left off.`,
+      body: `After ${idleReadyMinutes} minutes up it stops when idle for ${idleStopMinutes} · Resume picks up where you left off`,
     },
   ];
   if (weeklyHours) {
     list.push({
       Icon: Gauge,
       title: `${weeklyHours} lab hours a week`,
-      body: `They reset every Monday, and only the time the lab is actually running counts against them.`,
+      body: `They reset every Monday · Only running time counts`,
     });
   }
   list.push({
     Icon: KeyRound,
     title: "The Ubuntu password is in the panel",
-    body: "The desktop opens already signed in. When a command asks for a sudo password, open the lab panel and reveal it there.",
+    body: "The desktop opens signed in · The sudo password is in the lab panel",
   });
   return list;
 }

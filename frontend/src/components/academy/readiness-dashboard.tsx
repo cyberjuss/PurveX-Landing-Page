@@ -30,17 +30,17 @@ import {
 // Compliance Case Files, and all four Phase 2 campaigns) never got its own
 // row here even though it already counted toward the overall score.
 const CHALLENGES: { key: MissionCatalogEntry["challenge"]; label: string; blurb: string }[] = [
-  { key: "weekend-incident-report", label: "The Weekend Incident Report", blurb: "Find and fix a confidentiality, integrity and availability failure." },
-  { key: "tuesday-after-breach", label: "Tuesday After the Breach", blurb: "Decode, hash, crack and contain on a real IT desk morning." },
-  { key: "network-change", label: "The Three-Minute Job", blurb: "Trace a cron job leaking a password, and shut it down the right way." },
-  { key: "access-review", label: "The Quarterly Access Review", blurb: "Find and remove access that should not exist." },
-  { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory." },
-  { key: "ticket-queue", label: "Ticket Queue", blurb: "Help desk tickets you change in the directory." },
-  { key: "client-data", label: "The Client Data Review", blurb: "Review what your own shares hold on real clients." },
-  { key: "credential-campaign", label: "The Credential Campaign", blurb: "A password-spray intrusion, start to finish." },
-  { key: "phishing-chain", label: "The Phishing Chain", blurb: "A phishing attachment, start to finish." },
-  { key: "open-door", label: "The Open Door", blurb: "A forgotten firewall rule, exploited and closed." },
-  { key: "keys-to-the-domain", label: "The Keys to the Domain", blurb: "Kerberoasting and DCSync, the two techniques CISA names most." },
+  { key: "weekend-incident-report", label: "The Weekend Incident Report", blurb: "Find and fix a CIA failure" },
+  { key: "tuesday-after-breach", label: "Tuesday After the Breach", blurb: "Decode and crack and contain on an IT desk morning" },
+  { key: "network-change", label: "The Three-Minute Job", blurb: "Trace a cron job leaking a password and shut it down" },
+  { key: "access-review", label: "The Quarterly Access Review", blurb: "Find and remove access that should not exist" },
+  { key: "day-one", label: "Operation Day One", blurb: "Find the facts in the directory" },
+  { key: "ticket-queue", label: "Ticket Queue", blurb: "Help desk tickets you work in the directory" },
+  { key: "client-data", label: "The Client Data Review", blurb: "Review what your shares hold on clients" },
+  { key: "credential-campaign", label: "The Credential Campaign", blurb: "A password-spray intrusion start to finish" },
+  { key: "phishing-chain", label: "The Phishing Chain", blurb: "A phishing attachment start to finish" },
+  { key: "open-door", label: "The Open Door", blurb: "A forgotten firewall rule exploited and closed" },
+  { key: "keys-to-the-domain", label: "The Keys to the Domain", blurb: "Kerberoasting and DCSync" },
 ];
 
 type Tone = "good" | "warn" | "bad" | "live" | "none";
@@ -145,7 +145,7 @@ function RankAndBadges({ results, badges }: { results: Results; badges: Competen
             {rank && <RankEmblem rank={rank} ready={summarize(results).level === "ready"} size={30} />}
             {rank ? rank.title : "Not ranked yet"}
           </strong>
-          <span>{RANKS[held]?.soon ? "The next rank opens with the next phase." : RANKS[held] ? `Next: ${RANKS[held].title}. ${RANKS[held].earn}` : "You hold the top rank open today."}</span>
+          <span>{RANKS[held]?.soon ? "The next rank opens with the next phase" : RANKS[held] ? `Next ${RANKS[held].title} · ${RANKS[held].earn}` : "You hold the top rank open today"}</span>
         </div>
         <ol className="rb-ladder" aria-label="Rank ladder">
           {RANKS.map((r, i) => (
@@ -236,7 +236,7 @@ export function ReadinessDashboard() {
   const toggleLog = (key: string) => setOpenLog((prev) => ({ ...prev, [key]: !prev[key] }));
 
   function reset() {
-    if (!window.confirm("Reset your readiness score? This clears every mission result.")) return;
+    if (!window.confirm("Reset your readiness score? Every mission result is cleared")) return;
     clearResults();
     window.dispatchEvent(new Event(RESULTS_CHANGED_EVENT));
     academyFetch("/academy/api/progress", {
@@ -275,7 +275,7 @@ export function ReadinessDashboard() {
               ))}
             </blockquote>
             <div className="rd-sign">
-              <span>PurveX Coach, Senior Help Desk Lead</span>
+              <span>PurveX Coach · Senior Help Desk Lead</span>
               <button
                 type="button"
                 className="rd-cta"
@@ -438,7 +438,7 @@ export function ReadinessDashboard() {
       </section>
 
       <footer className="rd-foot">
-        <span>Scores update the moment you submit a mission.</span>
+        <span>Scores update the moment you submit</span>
         {s.finished > 0 && (
           <button type="button" onClick={reset}>
             Reset evaluation

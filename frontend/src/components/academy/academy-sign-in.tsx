@@ -90,7 +90,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
     } catch (err) {
       busyRef.current = false;
       setBusy(false);
-      setError(errorText(err, "Unable to start Google sign-in."));
+      setError(errorText(err, "Could not start Google sign-in"));
     }
   }
 
@@ -98,7 +98,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
     e.preventDefault();
     const value = email.trim();
     if (!value || !value.includes("@") || !value.includes(".")) {
-      setError("Enter a valid email address.");
+      setError("Enter a valid email address");
       return;
     }
     if (mode === "signup" && !agreed) {
@@ -114,11 +114,11 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
     e.preventDefault();
     if (busyRef.current) return;
     if (!password) {
-      setError("Enter your password.");
+      setError("Enter your password");
       return;
     }
     if (mode === "signup" && password.length < 8) {
-      setError("Use at least 8 characters for your password.");
+      setError("Use at least 8 characters");
       return;
     }
     busyRef.current = true;
@@ -134,7 +134,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
         if (!session) setSentTo(email.trim());
       }
     } catch (err) {
-      setError(errorText(err, mode === "signin" ? "Unable to sign in." : "Unable to create your account."));
+      setError(errorText(err, mode === "signin" ? "Could not sign in" : "Could not create your account"));
     } finally {
       busyRef.current = false;
       setBusy(false);
@@ -155,7 +155,7 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
   if (!configured) {
     return (
       <AuthMinimal product="Range">
-        <AuthHeading sub="Email support@purvex.io and we will finish setting it up.">Range sign-in is not ready yet</AuthHeading>
+        <AuthHeading sub="Email support@purvex.io and we will finish setting it up">Range sign-in is not ready yet</AuthHeading>
       </AuthMinimal>
     );
   }
@@ -194,8 +194,8 @@ export function AcademySignIn({ configured }: { configured: boolean }) {
           <AuthHeading
             sub={
               mode === "signup"
-                ? "One account for your course, your labs, and your progress."
-                : "Sign in with the email you use for Range."
+                ? "One account for your course and your labs"
+                : "Sign in with the email you use for Range"
             }
           >
             {mode === "signin" ? "Welcome back" : "Create your account"}

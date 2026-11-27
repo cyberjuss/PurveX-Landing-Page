@@ -170,7 +170,7 @@ function CopyLink({ text, label }: { text: string; label: string }) {
 function DeleteClassButton({ classId, name, onDeleted }: { classId: string; name: string; onDeleted: () => void }) {
   const [busy, setBusy] = useState(false);
   const del = async () => {
-    if (!window.confirm(`Delete ${name}? This removes the class and its roster. Students keep their own progress and labs.`)) return;
+    if (!window.confirm(`Delete ${name}? Students keep their own progress and labs`)) return;
     setBusy(true);
     try {
       const res = await academyFetch(`/academy/api/instructor?classId=${encodeURIComponent(classId)}`, { method: "DELETE" });
@@ -211,7 +211,7 @@ function StudentDetail({ s, classTitle }: { s: Student; classTitle: string }) {
         <section>
           <h3>Open missions</h3>
           {s.stuck.length === 0 ? (
-            <p className="iv-detail__none">Nothing open. Every mission attempted is solved.</p>
+            <p className="iv-detail__none">Nothing open · Every attempted mission is solved</p>
           ) : (
             <ul className="iv-detail__stuck">
               {s.stuck.map((m) => (
@@ -232,7 +232,7 @@ function StudentDetail({ s, classTitle }: { s: Student; classTitle: string }) {
         <section>
           <h3>Competencies</h3>
           {rated.length === 0 ? (
-            <p className="iv-detail__none">No scored work yet, so there is nothing to read here.</p>
+            <p className="iv-detail__none">No scored work yet</p>
           ) : (
             <ul className="iv-detail__skills">
               {s.skills.map((k) => (
@@ -399,21 +399,21 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
           <p>
             Class code <strong>{r.class.code}</strong>
             <CopyLink text={r.class.code} label="Copy" />
-            <span>Fallback for the join screen.</span>
+            <span>Fallback for the join screen</span>
           </p>
         </div>
       )}
 
       {r.students.length === 0 ? (
         <section className="iv-panel">
-          <p className="iv-empty">No students yet. Share the join link above to get started.</p>
+          <p className="iv-empty">No students yet · Share the join link above</p>
         </section>
       ) : (
         <div className="iv-cc__grid">
           <section className="iv-panel iv-cc__roster">
             <div className="iv-panel__head">
               <h2>Roster</h2>
-              <p>Open a name for the full record.</p>
+              <p>Open a name for the full record</p>
               <button type="button" className="iv-copy iv-panel__act" onClick={() => exportCsv(r)}>
                 <Download className="h-3.5 w-3.5" /> CSV
               </button>
@@ -438,7 +438,7 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
               </label>
             </div>
 
-            {shown.length === 0 && <p className="iv-empty">No students match that filter.</p>}
+            {shown.length === 0 && <p className="iv-empty">No students match that filter</p>}
             <div className="iv-table" role="table" aria-label={`${r.class.name} students`}>
               <div className="iv-tr iv-tr--head" role="row">
                 <span role="columnheader">Student</span>
@@ -508,7 +508,7 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
                 )}
               </div>
               {attention.length === 0 ? (
-                <p className="iv-empty iv-empty--sm">Everyone is moving. Nobody is stuck or quiet.</p>
+                <p className="iv-empty iv-empty--sm">Everyone is moving · Nobody is stuck</p>
               ) : (
                 <ul className="iv-attn">
                   {attention.map(({ s, why }) => {
@@ -532,7 +532,7 @@ function ClassView({ r, kicker = "Instructor view" }: { r: Report; kicker?: stri
             <section className="iv-panel">
               <div className="iv-panel__head">
                 <h2>Class skills</h2>
-                <p>Reteach the lowest first.</p>
+                <p>Reteach the lowest first</p>
               </div>
               <ul className="iv-skills">
                 {skills.map((k) => {
@@ -584,12 +584,12 @@ function PodsRepairPanel() {
       const res = await academyFetch(`/academy/api/admin/pods-repair${dry ? "?dry=1" : ""}`, { method: "POST" });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Could not reach the repair endpoint.");
+        setError(data.error ?? "Could not reach the repair endpoint");
         return;
       }
       setResult(data);
     } catch {
-      setError("Could not reach the server. Try again.");
+      setError("Could not reach the server · Try again");
     } finally {
       setBusy(null);
     }
@@ -599,7 +599,7 @@ function PodsRepairPanel() {
     <section className="rd-sec ov-pods-repair">
       <div className="rd-sec__head">
         <h2>Hosted pods</h2>
-        <p>Replant any ticket objects missing from a live lab, on every running pod at once. No student action needed.</p>
+        <p>Replant missing ticket objects on every running pod at once</p>
       </div>
       <div className="ov-class__actions">
         <button type="button" className="iv-copy" disabled={busy !== null} onClick={() => run(true)}>
@@ -612,7 +612,7 @@ function PodsRepairPanel() {
       {error && <p className="iv-error">{error}</p>}
       {result && (
         <p className="iv-note">
-          {result.dryRun ? `${result.pods} pod(s) on record.` : `Repair sent to ${result.sent} of ${result.pods} pod(s); ${result.skipped} stopped or not reachable.`}
+          {result.dryRun ? `${result.pods} pod(s) on record` : `Repair sent to ${result.sent} of ${result.pods} pod(s) · ${result.skipped} stopped or not reachable`}
         </p>
       )}
     </section>
@@ -638,7 +638,7 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Could not create the class.");
+        setError(data.error ?? "Could not create the class");
         return;
       }
       setMade({ name: data.class.name, code: data.class.code, emailed: Boolean(data.emailed), to: email });
@@ -646,7 +646,7 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
       setEmail("");
       onCreated();
     } catch {
-      setError("Could not reach the server. Try again.");
+      setError("Could not reach the server · Try again");
     } finally {
       setBusy(false);
     }
@@ -656,7 +656,7 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
     <section className="rd-sec iv-new">
       <div className="rd-sec__head">
         <h2>Create a class</h2>
-        <p>Assign an instructor by email. They sign in to Range with it to run the class.</p>
+        <p>Assign an instructor by email to run the class</p>
       </div>
       <form onSubmit={submit} className="iv-form">
         <label>
@@ -676,7 +676,7 @@ function NewClassForm({ onCreated }: { onCreated: () => void }) {
         <div className="iv-made">
           <p>
             Created <strong>{made.name}</strong>.{" "}
-            {made.emailed ? `We emailed the join link and sign-in steps to ${made.to}.` : `Couldn't send the email automatically — copy the link below and send it to ${made.to}.`}
+            {made.emailed ? `Join link and sign-in steps emailed to ${made.to}` : `Could not send the email · Copy the link below and send it to ${made.to}`}
           </p>
           <InviteBlock code={made.code} />
           <p className="iv-note">Code (fallback): <strong>{made.code}</strong></p>
@@ -696,7 +696,7 @@ function IndividualsPanel({ n }: { n: Individuals }) {
       <div className="rd-sec__head">
         <span className="rd-sec__n">{String(n.total).padStart(2, "0")}</span>
         <h2>Individuals</h2>
-        <p>Everyone who signed up on their own, free or Pro, outside any class.</p>
+        <p>Everyone who signed up on their own outside a class</p>
       </div>
       <dl className="ov-class__stats ov-individuals__stats">
         <div>
@@ -716,7 +716,7 @@ function IndividualsPanel({ n }: { n: Individuals }) {
           <dd className={n.proSubscription ? "rd-text-good" : ""}>{n.proSubscription}</dd>
         </div>
         <div>
-          <dt>New, 7 days</dt>
+          <dt>New in 7 days</dt>
           <dd>{n.newLast7Days}</dd>
         </div>
       </dl>
@@ -756,7 +756,7 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
       <header className="rd-mast">
         <p className="rd-kicker">Owner</p>
         <h1 className="iv-title">Classes</h1>
-        <p className="ov-lede">Create a class and assign an instructor to run it.</p>
+        <p className="ov-lede">Create a class and assign an instructor</p>
       </header>
 
       {data.individuals && <IndividualsPanel n={data.individuals} />}
@@ -769,10 +769,10 @@ function OwnerView({ data, reload }: { data: Data; reload: () => void }) {
         <div className="rd-sec__head">
           <span className="rd-sec__n">{String(data.classes.length).padStart(2, "0")}</span>
           <h2>Your classes</h2>
-          <p>Every class you have created, with its instructor and join link.</p>
+          <p>Every class with its instructor and join link</p>
         </div>
         {data.classes.length === 0 ? (
-          <p className="iv-empty">No classes yet. Create your first one above.</p>
+          <p className="iv-empty">No classes yet · Create one above</p>
         ) : (
           <ul className="ov-classes">
             {data.classes.map((r) => {
@@ -831,7 +831,7 @@ export function InstructorDashboard() {
     academyFetch("/academy/api/instructor")
       .then(async (r) => {
         const body = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(r.status === 403 ? "This account does not teach a class yet. Ask PurveX to set one up for your email." : body.error ?? "Could not load your classes.");
+        if (!r.ok) throw new Error(r.status === 403 ? "This account does not teach a class yet · Ask PurveX to set one up" : body.error ?? "Could not load your classes");
         setData(body as Data);
         setError(null);
       })
@@ -876,7 +876,7 @@ export function InstructorDashboard() {
           ))}
         </nav>
       )}
-      {current ? <ClassView r={current} /> : <p className="iv-empty">No classes yet.</p>}
+      {current ? <ClassView r={current} /> : <p className="iv-empty">No classes yet</p>}
     </div>
   );
 }

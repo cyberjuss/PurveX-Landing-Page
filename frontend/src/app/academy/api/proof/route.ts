@@ -45,7 +45,7 @@ function bytesMatch(bytes: Buffer, type: string): boolean {
 async function auth(request: Request, requirePro = true) {
   if (!(await isAcademyUnlocked())) return { error: NextResponse.json({ error: "Locked" }, { status: 401 }) } as const;
   const student = await getAcademyStudent(request);
-  if (!student) return { error: NextResponse.json({ error: "Sign in first." }, { status: 401 }) } as const;
+  if (!student) return { error: NextResponse.json({ error: "Sign in first" }, { status: 401 }) } as const;
   const pro = await isRangePro(student);
   if (requirePro && !pro) {
     return { error: NextResponse.json(proRequired("A shareable Proof Profile"), { status: 403 }) } as const;
@@ -108,29 +108,29 @@ export async function PUT(request: Request) {
   try {
     body = (await request.json()) as Partial<ProofSettings>;
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const data = await loadProofData(a.student.id);
   const prev = data.settings;
   const displayName = String(body.displayName ?? prev?.displayName ?? draftName(a.student)).replace(/\s+/g, " ").trim().slice(0, 60);
   const slug = String(body.slug ?? prev?.slug ?? slugify(displayName)).toLowerCase().trim();
-  if (!displayName) return NextResponse.json({ error: "Add the name employers should see." }, { status: 400 });
-  if (!validSlug(slug)) return NextResponse.json({ error: "Use 3 to 40 lowercase letters, numbers or hyphens for your link." }, { status: 400 });
+  if (!displayName) return NextResponse.json({ error: "Add the name employers should see" }, { status: 400 });
+  if (!validSlug(slug)) return NextResponse.json({ error: "Use 3 to 40 lowercase letters or numbers or hyphens" }, { status: 400 });
   const jobs = new Set(data.items.map((i) => i.job));
   // Contact and availability: optional, checked here because they go public.
   const text = (v: unknown, prevV: string | null | undefined, max: number) => (v === undefined ? prevV ?? null : String(v ?? "").replace(/\s+/g, " ").trim().slice(0, max) || null);
   const contactEmail = text(body.contactEmail, prev?.contactEmail, 120);
-  if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) return NextResponse.json({ error: "Enter an email address like name@example.com." }, { status: 400 });
+  if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) return NextResponse.json({ error: "Enter an email address like name@example.com" }, { status: 400 });
   let linkedinUrl = text(body.linkedinUrl, prev?.linkedinUrl, 200);
   if (linkedinUrl && !/^https?:\/\//i.test(linkedinUrl)) linkedinUrl = `https://${linkedinUrl}`;
   if (linkedinUrl && !/^https:\/\/([a-z]{2,3}\.)?(www\.)?linkedin\.com\/in\/[A-Za-z0-9\-_%]+\/?$/i.test(linkedinUrl.replace(/^http:/i, "https:"))) {
-    return NextResponse.json({ error: "Use your LinkedIn profile link, like linkedin.com/in/your-name." }, { status: 400 });
+    return NextResponse.json({ error: "Use your LinkedIn link like linkedin.com/in/your-name" }, { status: 400 });
   }
   if (linkedinUrl) linkedinUrl = linkedinUrl.replace(/^http:/i, "https:");
   let githubUrl = text(body.githubUrl, prev?.githubUrl, 200);
   if (githubUrl && !/^https?:\/\//i.test(githubUrl)) githubUrl = `https://${githubUrl}`;
   if (githubUrl && !/^https?:\/\/(www\.)?github\.com\/[A-Za-z0-9-]+\/?$/i.test(githubUrl)) {
-    return NextResponse.json({ error: "Use your GitHub profile link, like github.com/your-name." }, { status: 400 });
+    return NextResponse.json({ error: "Use your GitHub link like github.com/your-name" }, { status: 400 });
   }
   if (githubUrl) githubUrl = githubUrl.replace(/^http:/i, "https:");
   let websiteUrl = text(body.websiteUrl, prev?.websiteUrl, 200);
@@ -140,16 +140,16 @@ export async function PUT(request: Request) {
       const u = new URL(websiteUrl);
       if (!/^https?:$/.test(u.protocol) || !u.hostname.includes(".")) throw new Error("bad");
     } catch {
-      return NextResponse.json({ error: "Enter your website address, like yourname.com." }, { status: 400 });
+      return NextResponse.json({ error: "Enter your website like yourname.com" }, { status: 400 });
     }
   }
   const location = text(body.location, prev?.location, 60);
   const availability = text(body.availability, prev?.availability, 40);
-  if (availability && !(AVAILABILITY as readonly string[]).includes(availability)) return NextResponse.json({ error: "Pick when you can start from the list." }, { status: 400 });
+  if (availability && !(AVAILABILITY as readonly string[]).includes(availability)) return NextResponse.json({ error: "Pick when you can start from the list" }, { status: 400 });
   const workAuth = text(body.workAuth, prev?.workAuth, 60);
-  if (workAuth && !(WORK_AUTH as readonly string[]).includes(workAuth)) return NextResponse.json({ error: "Pick your work authorization from the list." }, { status: 400 });
+  if (workAuth && !(WORK_AUTH as readonly string[]).includes(workAuth)) return NextResponse.json({ error: "Pick your work authorization from the list" }, { status: 400 });
   const clearance = text(body.clearance, prev?.clearance, 60);
-  if (clearance && !(CLEARANCE as readonly string[]).includes(clearance)) return NextResponse.json({ error: "Pick your clearance from the list." }, { status: 400 });
+  if (clearance && !(CLEARANCE as readonly string[]).includes(clearance)) return NextResponse.json({ error: "Pick your clearance from the list" }, { status: 400 });
   let extraCerts: ExtraCert[] = prev?.extraCerts ?? [];
   if (Array.isArray(body.extraCerts)) {
     extraCerts = [];
@@ -191,8 +191,8 @@ export async function PUT(request: Request) {
     updatedAt: new Date().toISOString(),
   };
   const saved = await saveProofSettings(a.student.id, next);
-  if (saved === "taken") return NextResponse.json({ error: "That link is taken. Try another." }, { status: 409 });
-  if (saved === "error") return NextResponse.json({ error: "Unable to save your portfolio right now. Try again later." }, { status: 500 });
+  if (saved === "taken") return NextResponse.json({ error: "That link is taken · Try another" }, { status: 409 });
+  if (saved === "error") return NextResponse.json({ error: "Unable to save your portfolio right now · Try again later" }, { status: 500 });
   return NextResponse.json({ settings: next, blockers: shareBlockers(data.items) });
 }
 
@@ -204,18 +204,18 @@ export async function POST(request: Request) {
   try {
     form = await request.formData();
   } catch {
-    return NextResponse.json({ error: "Invalid upload." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid upload" }, { status: 400 });
   }
   const job = String(form.get("job") ?? "");
   const file = form.get("file");
-  if (!(file instanceof File)) return NextResponse.json({ error: "Choose an image to upload." }, { status: 400 });
-  if (file.size > MAX_BYTES) return NextResponse.json({ error: "Upload a file under 4 MB." }, { status: 400 });
+  if (!(file instanceof File)) return NextResponse.json({ error: "Choose an image to upload" }, { status: 400 });
+  if (file.size > MAX_BYTES) return NextResponse.json({ error: "Upload a file under 4 MB" }, { status: 400 });
 
   // A profile photo or resume replaces the last one.
   const kind = form.get("kind");
   if (kind === "avatar" || kind === "resume") {
-    if (kind === "avatar" && !TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG photo." }, { status: 400 });
-    if (kind === "resume" && file.type !== "application/pdf") return NextResponse.json({ error: "Upload your resume as a PDF." }, { status: 400 });
+    if (kind === "avatar" && !TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG photo" }, { status: 400 });
+    if (kind === "resume" && file.type !== "application/pdf") return NextResponse.json({ error: "Upload your resume as a PDF" }, { status: 400 });
     const what = kind === "avatar" ? "photo" : "resume";
     const bytes = Buffer.from(await file.arrayBuffer());
     if (!bytesMatch(bytes, file.type)) return NextResponse.json({ error: kind === "avatar" ? "That file is not a PNG or JPEG photo." : "That file is not a PDF." }, { status: 400 });
@@ -232,17 +232,17 @@ export async function POST(request: Request) {
     if (old) await removeFile(old);
     return NextResponse.json(patch);
   }
-  if (!TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG screenshot." }, { status: 400 });
+  if (!TYPES.has(file.type)) return NextResponse.json({ error: "Upload a PNG or JPEG screenshot" }, { status: 400 });
   const data = await loadProofData(a.student.id);
-  if (!data.items.some((i) => i.job === job)) return NextResponse.json({ error: "That lab task is not in your portfolio yet." }, { status: 400 });
+  if (!data.items.some((i) => i.job === job)) return NextResponse.json({ error: "That lab task is not in your portfolio yet" }, { status: 400 });
   if (data.shots.filter((s) => s.job === job).length >= SHOTS_PER_ITEM) {
     return NextResponse.json({ error: `This task already has ${SHOTS_PER_ITEM} screenshots. Remove one first.` }, { status: 400 });
   }
   const caption = String(form.get("caption") ?? "").replace(/\s+/g, " ").trim().slice(0, 140);
   const shotBytes = Buffer.from(await file.arrayBuffer());
-  if (!bytesMatch(shotBytes, file.type)) return NextResponse.json({ error: "That file is not a PNG or JPEG screenshot." }, { status: 400 });
+  if (!bytesMatch(shotBytes, file.type)) return NextResponse.json({ error: "That file is not a PNG or JPEG screenshot" }, { status: 400 });
   const shot = await addShot(a.student.id, job, shotBytes, file.type, caption);
-  if (!shot) return NextResponse.json({ error: "Unable to save the screenshot right now. Try again later." }, { status: 500 });
+  if (!shot) return NextResponse.json({ error: "Unable to save the screenshot right now · Try again later" }, { status: 500 });
 
   // Adding a screenshot switches that task's screenshots on. A student who
   // has not saved a profile yet gets an unpublished draft to hold it.
@@ -275,6 +275,6 @@ export async function DELETE(request: Request) {
   }
   const id = new URL(request.url).searchParams.get("id") ?? "";
   const ok = await deleteShot(a.student.id, id);
-  if (!ok) return NextResponse.json({ error: "Screenshot not found." }, { status: 404 });
+  if (!ok) return NextResponse.json({ error: "Screenshot not found" }, { status: 404 });
   return NextResponse.json({ ok: true });
 }

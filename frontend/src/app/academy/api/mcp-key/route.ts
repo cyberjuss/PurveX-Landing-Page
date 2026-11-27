@@ -12,13 +12,13 @@ async function requireStudent(request: Request) {
 
 export async function GET(request: Request) {
   const student = await requireStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   return NextResponse.json({ key: await getMcpKeyInfo(student.id) });
 }
 
 export async function POST(request: Request) {
   const student = await requireStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   try {
     const key = await createMcpKey(student.id);
     return NextResponse.json({ key, info: await getMcpKeyInfo(student.id) });
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   const student = await requireStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   try {
     await revokeMcpKey(student.id);
     return NextResponse.json({ ok: true });

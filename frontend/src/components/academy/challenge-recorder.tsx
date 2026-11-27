@@ -171,7 +171,7 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
         body: JSON.stringify({ challenge, sizeBytes: take.blob.size, durationSec: take.seconds, recordedAt: take.recordedAt, clientNow: new Date().toISOString() }),
       });
       const body = (await res.json().catch(() => ({}))) as { id?: string; uploadUrl?: string; posterUploadUrl?: string | null; error?: string; upgrade?: string };
-      if (!res.ok || !body.id || !body.uploadUrl) return fail(body.error ?? "Couldn't add the clip. Try again.", res.status === 403);
+      if (!res.ok || !body.id || !body.uploadUrl) return fail(body.error ?? "Could not add the clip · Try again", res.status === 403);
       const put = await fetch(body.uploadUrl, {
         method: "PUT",
         headers: { "Content-Type": "video/webm", "x-upsert": "false" },
@@ -180,8 +180,8 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
       if (!put.ok) {
         return fail(
           put.status === 413
-            ? "That recording is too large to upload. Record a shorter clip and add that one."
-            : "The upload didn't finish. Check your connection and try again."
+            ? "That recording is too large · Record a shorter clip"
+            : "The upload did not finish · Try again"
         );
       }
       if (body.posterUploadUrl && posterRef.current) {
@@ -190,11 +190,11 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
       const done = await academyFetch(`/academy/api/proof/clip?id=${encodeURIComponent(body.id)}`, { method: "PATCH" });
       if (!done.ok) {
         const b = (await done.json().catch(() => ({}))) as { error?: string };
-        return fail(b.error ?? "Couldn't add the clip. Try again.");
+        return fail(b.error ?? "Could not add the clip · Try again");
       }
       setClip({ kind: "done" });
     } catch {
-      fail("Couldn't add the clip. Try again.");
+      fail("Could not add the clip · Try again");
     }
   }, [take, challenge]);
 
@@ -231,10 +231,10 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
         <div className="ad-record__clip" role="status">
           {clip.kind === "done" ? (
             <span className="ad-record__clip-ok">
-              <BadgeCheck className="h-4 w-4" aria-hidden /> Added to your profile. <Link href="/range/portfolio">View portfolio</Link>
+              <BadgeCheck className="h-4 w-4" aria-hidden /> Added to your profile · <Link href="/range/portfolio">View portfolio</Link>
             </span>
           ) : tooBig ? (
-            <span>This recording is over 15 minutes, so it can&apos;t go on your profile. It&apos;s still saved in Downloads.</span>
+            <span>Over 15 minutes so it can&apos;t go on your profile · It&apos;s saved in Downloads</span>
           ) : (
             <>
               <button type="button" className="ad-record__add" onClick={addToProfile} disabled={clip.kind === "busy"}>
@@ -246,7 +246,7 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
                   {clip.text} {clip.upgrade ? <Link href="/range/upgrade">Upgrade</Link> : null}
                 </span>
               ) : (
-                <span>Saved to Downloads. Add it to your portfolio as a verified solve.</span>
+                <span>Saved to Downloads · Add it to your portfolio as a verified solve</span>
               )}
             </>
           )}
@@ -256,8 +256,8 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
         <div id={helpId} className="ad-record__guide" role="region" aria-label="How to record a challenge">
           <p className="ad-record__guide-title">How to record a challenge</p>
           <ol>
-            <li>Click <strong>Record your challenge</strong> and choose your screen or window.</li>
-            <li>Work the challenge as usual.</li>
+            <li>Click <strong>Record your challenge</strong> and choose your screen or window</li>
+            <li>Work the challenge as usual</li>
             <li>
               Click <strong>Stop recording</strong>. The video saves to your Downloads folder.
             </li>
@@ -265,7 +265,7 @@ export function ChallengeRecorder({ label, challenge = null }: { label: string; 
               Once a question in it lands correct, click <strong>Add to my profile</strong> to show it on your portfolio as a verified solve.
             </li>
           </ol>
-          <p className="ad-record__guide-note">Nothing is uploaded unless you add it to your profile.</p>
+          <p className="ad-record__guide-note">Nothing is uploaded unless you add it to your profile</p>
         </div>
       ) : null}
     </>

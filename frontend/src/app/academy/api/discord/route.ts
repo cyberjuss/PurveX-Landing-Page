@@ -15,7 +15,7 @@ export const runtime = "nodejs";
 export async function GET(request: Request) {
   if (!discordLinkConfigured()) return NextResponse.json({ configured: false });
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   // A class student or instructor has no Discord, so to them it is simply not there.
   if (await isClassAffiliated(student.id, student.email)) {
     if (await loadLink(student.id)) await unlink(student.id);
@@ -35,10 +35,10 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!discordLinkConfigured()) return NextResponse.json({ error: "Discord linking is not set up." }, { status: 404 });
+  if (!discordLinkConfigured()) return NextResponse.json({ error: "Discord linking is not set up" }, { status: 404 });
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
-  if (await isClassAffiliated(student.id, student.email)) return NextResponse.json({ error: "Discord isn't part of class accounts." }, { status: 403 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
+  if (await isClassAffiliated(student.id, student.email)) return NextResponse.json({ error: "Discord isn't part of class accounts" }, { status: 403 });
   const { url, nonce } = startLink(student.id, new URL(request.url).origin);
   (await cookies()).set(LINK_COOKIE, nonce, { httpOnly: true, secure: true, sameSite: "lax", path: "/range/discord", maxAge: 600 });
   return NextResponse.json({ url });
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   const student = await getAcademyStudent(request);
-  if (!student) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!student) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   await unlink(student.id);
   return NextResponse.json({ linked: null });
 }

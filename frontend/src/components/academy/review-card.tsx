@@ -70,8 +70,8 @@ export function ReviewCard() {
           </strong>
           <span className="rv-card__sub">
             {stats.due
-              ? "Two minutes now keeps them from fading."
-              : `Next review ${inDays(stats.next) ?? "soon"}.`}{" "}
+              ? "Two minutes now keeps them fresh"
+              : `Next review ${inDays(stats.next) ?? "soon"}`}{" "}
             {stats.strong} of {stats.total} known well.
           </span>
         </span>
@@ -159,7 +159,7 @@ export function ReviewSession({ onClose }: { onClose: () => void }) {
               {known} of {queue.length} recalled
             </strong>
             <p>
-              {known === queue.length ? "All of them. You'll see these less often now." : "The ones you missed come back tomorrow."}
+              {known === queue.length ? "All of them · You'll see these less often" : "The ones you missed come back tomorrow"}
             </p>
             <button type="button" className="rd-cta" onClick={onClose}>
               Done
@@ -177,7 +177,7 @@ export function ReviewSession({ onClose }: { onClose: () => void }) {
                 <span className="rv-from">{card.where}</span>
                 <strong>{card.term}</strong>
                 {entry && <span className="rv-cue">{entry.cue}</span>}
-                <span className="rv-hint">Say your answer, then tap to check.</span>
+                <span className="rv-hint">Say your answer then tap to check</span>
               </span>
               <span className="rv-face rv-back">
                 <strong>{card.term}</strong>

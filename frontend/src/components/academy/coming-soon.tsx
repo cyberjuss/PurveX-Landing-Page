@@ -28,7 +28,7 @@ export function PhaseLocked({ phase, title, summary }: { phase: string; title?: 
       </header>
       <div className="ax-soon">
         <span className="rd-stamp rd-text-none">Coming soon</span>
-        <p>Keep going in Phase 1 for now. Everything here builds on it.</p>
+        <p>Keep going in Phase 1 for now · Everything here builds on it</p>
         {preview && (
           <>
             <ul className="ax-soon__points">

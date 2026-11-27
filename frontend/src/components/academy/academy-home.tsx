@@ -18,19 +18,19 @@ const PHASE_COPY: { slug: string; href: string; title: string; body: string }[] 
     slug: "phase-1",
     href: "/range/phase-1",
     title: "Fundamentals",
-    body: "Name what failed then stand up PurveX Financial and work the directory yourself.",
+    body: "Name what failed then work the directory yourself",
   },
   {
     slug: "phase-2",
     href: "/range/phase-2",
     title: "Threat Detection & Log Analysis",
-    body: "An alert fires. Read the host, the account, and the log before you decide what happened.",
+    body: "Read the host and the log before you call it",
   },
   {
     slug: "phase-3",
     href: "/range/phase-3",
     title: "Incident Response",
-    body: "Triage, investigate, contain, and write it up.",
+    body: "Triage and contain then write it up",
   },
 ];
 
@@ -99,7 +99,7 @@ export function AcademyHome({ phases }: { phases: PhaseDef[] }) {
         <div className="ax-welcome">
           <div className="ax-titleblock">
             <h1>{firstName ? `${greeting}${dayPart && returning ? "," : ""} ${firstName}` : greeting}</h1>
-            <p>Work the same problems a new hire sees. Fundamentals first then a live directory then alerts and logs.</p>
+            <p>Work the same problems a new hire sees</p>
           </div>
           <Link href={READINESS_PATH} className="ax-status__score" data-tour="readiness">
             <span className="rd-kicker">Readiness</span>

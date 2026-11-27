@@ -19,14 +19,14 @@ async function auth(request: Request) {
 
 export async function GET(request: Request) {
   const me = await auth(request);
-  if (!me) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
+  if (!me) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
   const admin = isAcademyAdmin(me.email);
   const classes = await classesFor(me.email);
   // The account menu only needs to know whether to show the link.
   if (new URL(request.url).searchParams.get("check") === "1") {
     return NextResponse.json({ instructor: admin || classes.length > 0, owner: admin });
   }
-  if (!admin && !classes.length) return NextResponse.json({ error: "No classes for this account." }, { status: 403 });
+  if (!admin && !classes.length) return NextResponse.json({ error: "No classes for this account" }, { status: 403 });
   const reports = await Promise.all(classes.map(async (c) => classReport(c, await classMembers(c.id))));
   // Only the owner sees every account, not just one class's worth -- an
   // instructor asking "how are my students doing" has no reason to see the
@@ -37,20 +37,20 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const me = await auth(request);
-  if (!me) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
-  if (!isAcademyAdmin(me.email)) return NextResponse.json({ error: "Only an admin can create a class." }, { status: 403 });
+  if (!me) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
+  if (!isAcademyAdmin(me.email)) return NextResponse.json({ error: "Only an admin can create a class" }, { status: 403 });
   let body: { name?: unknown; instructorEmail?: unknown };
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   const name = String(body.name ?? "").replace(/\s+/g, " ").trim().slice(0, 80);
   const email = String(body.instructorEmail ?? "").trim().toLowerCase();
-  if (name.length < 2) return NextResponse.json({ error: "Give the class a name." }, { status: 400 });
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: "Enter the instructor's email." }, { status: 400 });
+  if (name.length < 2) return NextResponse.json({ error: "Give the class a name" }, { status: 400 });
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return NextResponse.json({ error: "Enter the instructor's email" }, { status: 400 });
   const cls = await createClass(name, email);
-  if (!cls) return NextResponse.json({ error: "Could not create the class. Check that academy.sql has run." }, { status: 500 });
+  if (!cls) return NextResponse.json({ error: "Could not create the class · Check that academy.sql has run" }, { status: 500 });
   const setup = instructorSetupEmail(cls, new URL(request.url).origin);
   const emailed = await sendEmail(cls.instructorEmail, setup.subject, setup.html).catch(() => false);
   return NextResponse.json({ class: cls, emailed });
@@ -58,11 +58,11 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   const me = await auth(request);
-  if (!me) return NextResponse.json({ error: "Sign in first." }, { status: 401 });
-  if (!isAcademyAdmin(me.email)) return NextResponse.json({ error: "Only an admin can delete a class." }, { status: 403 });
+  if (!me) return NextResponse.json({ error: "Sign in first" }, { status: 401 });
+  if (!isAcademyAdmin(me.email)) return NextResponse.json({ error: "Only an admin can delete a class" }, { status: 403 });
   const classId = new URL(request.url).searchParams.get("classId") ?? "";
   if (!classId) return NextResponse.json({ error: "Which class?" }, { status: 400 });
   const ok = await deleteClass(classId);
-  if (!ok) return NextResponse.json({ error: "Could not delete the class." }, { status: 500 });
+  if (!ok) return NextResponse.json({ error: "Could not delete the class" }, { status: 500 });
   return NextResponse.json({ ok: true });
 }

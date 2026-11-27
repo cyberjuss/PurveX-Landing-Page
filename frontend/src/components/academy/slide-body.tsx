@@ -419,8 +419,8 @@ export function Recap({ items, slides, activities, where }: { items: RecapItem[]
           )}
         </svg>
         <span className="lk-recap__lead">
-          <strong>{finish ? "Section complete." : done ? "All in your deck." : `${kept} of ${items.length} in your deck.`}</strong>{" "}
-          {done ? "They come back when it is time to practice." : "Say what each one means, then flip it to keep it for review."}
+          <strong>{finish ? "Section complete" : done ? "All in your deck" : `${kept} of ${items.length} in your deck`}</strong>{" "}
+          {done ? "They come back when it is time to practice" : "Say what each one means then flip it"}
         </span>
         <span className="lk-recap__meta">
           <span>
@@ -480,7 +480,7 @@ function FlipCards({ items, i, onReveal, numbered = false, kept }: { items: Card
   return (
     <div className="lk-flipwrap lk-build" style={{ ["--i" as string]: i }}>
       <div className="lk-fliphead">
-        <span>{numbered ? `${items.length} terms from this section` : "Say what each one means, then flip it"}</span>
+        <span>{numbered ? `${items.length} terms from this section` : "Say what each one means then flip it"}</span>
         <button type="button" onClick={() => {
             if (!all) items.forEach((_, j) => onReveal?.(j));
             setOpen(all ? new Set() : new Set(items.map((_, j) => j)));

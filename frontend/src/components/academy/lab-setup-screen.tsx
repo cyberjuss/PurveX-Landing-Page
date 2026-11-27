@@ -139,8 +139,8 @@ export function LabSetupScreen() {
           {elapsed <= total
             ? `About ${left} min left`
             : firstBoot
-              ? "Taking longer than usual. Can run to 20 minutes the first time."
-              : "Almost there. Running the last checks."}
+              ? "Taking longer than usual · The first time can take 20 minutes"
+              : "Almost there · Running the last checks"}
         </p>
 
         <button type="button" className="ls__hide" onClick={() => setHidden(true)}>
