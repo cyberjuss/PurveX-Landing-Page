@@ -6,7 +6,7 @@ import Link from "next/link";
 import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert,
   Lock, Unlock, KeyRound, UserPlus, UserMinus, UserX, UserCog, ArrowLeftRight, FolderTree, SprayCan, Target,
-  Crown, DoorOpen, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
+  Crown, DoorOpen, Bell, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
   Info, ArrowUpRight, Headset, X, Zap, Inbox, CheckCircle2, Radar, Hash, GraduationCap, Mail, BookOpen,
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
@@ -43,6 +43,8 @@ type Incident = {
   diagnosis: string;
   responseSaved: boolean;
   submitted?: boolean;
+  /** A ticket waiting for the student to set its priority; severity is a placeholder until then. */
+  untriaged?: boolean;
 };
 /** Tier 2's read of an escalation (Coach as the tier 2 lead), from the shift report. */
 type Review = { score: number; grade: string; handoff: string; couldHave: string; by: "coach" | "facts" };
@@ -55,7 +57,7 @@ type Report = {
   headline: string;
   habit: string;
   escalatedCount: number;
-  incidents: { title: string; severity: string; resolved: boolean; escalated: boolean; touched: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; hintsUsed: number; score: number; max: number; review?: Review | null }[];
+  incidents: { title: string; severity: string; resolved: boolean; escalated: boolean; touched: boolean; onTime: boolean; noHarm: boolean; diagnosisRight: boolean; hintsUsed: number; score: number; max: number; review?: Review | null; call?: { chose: string | null; actual: string; points: number; max: number } | null }[];
 } & Partial<DeskReport>;
 type Shift = {
   id: string;
@@ -413,7 +415,12 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   const handled = shift.incidents.filter((i) => i.resolved || i.escalated).length;
   // What is still open, by priority: the pressure the header shows.
   const openBy = { P1: 0, P2: 0, P3: 0 };
-  for (const i of shift.incidents) if (!i.resolved && !i.escalated) openBy[i.severity] += 1;
+  let untriagedOpen = 0;
+  for (const i of shift.incidents) {
+    if (i.resolved || i.escalated) continue;
+    if (i.untriaged) untriagedOpen += 1;
+    else openBy[i.severity] += 1;
+  }
   // How long ago each incident landed, from the shift's own clock.
   const ageOf = (inc: Incident) => ago(Math.max(0, now - start - inc.arriveSec * 1000));
   const escalated = shift.incidents.filter((i) => i.escalated).length;
@@ -421,17 +428,18 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   // Stable incident numbers follow the server's creation order.
   const numOf = new Map(shift.incidents.map((i, idx) => [i.uid, incNo(idx)]));
 
-  // Order: unresolved by severity first, then resolved.
+  // Order: untriaged tickets first (they need a call), then open by priority, then closed.
   const order = { P1: 0, P2: 1, P3: 2 };
+  const rankOf = (i: Incident) => (i.untriaged ? -1 : order[i.severity]);
   const done = (i: Incident) => i.resolved || i.escalated;
-  const queue = [...shift.incidents].sort((a, b) => (done(a) === done(b) ? order[a.severity] - order[b.severity] : done(a) ? 1 : -1));
+  const queue = [...shift.incidents].sort((a, b) => (done(a) === done(b) ? rankOf(a) - rankOf(b) : done(a) ? 1 : -1));
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = queue.find((i) => i.uid === selectedId) ?? queue.find((i) => !done(i)) ?? queue[0] ?? null;
 
   // The open incident to work next: highest priority, then oldest, skipping
   // the one already in front of the student.
-  const nextUp = queue.filter((i) => !done(i) && i.uid !== selected?.uid).sort((a, b) => order[a.severity] - order[b.severity] || a.arriveSec - b.arriveSec)[0] ?? null;
+  const nextUp = queue.filter((i) => !done(i) && i.uid !== selected?.uid).sort((a, b) => rankOf(a) - rankOf(b) || a.arriveSec - b.arriveSec)[0] ?? null;
 
   // Keys, so the queue can be worked without the mouse: J and K (or the
   // arrows) move through it, N jumps to the next priority. Never while typing.
@@ -464,6 +472,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
       const landed = shift.incidents.filter((i) => !known.current!.has(i.uid));
        
       if (landed.length) setFresh((f) => [...landed, ...f].slice(0, 3));
+      // A P1 from monitoring sounds and pulses the bar. Tickets are untriaged, so they never give their priority away.
+      if (landed.some((i) => i.severity === "P1" && !i.untriaged)) raiseP1();
     }
     known.current = ids;
   }, [shift.incidents]);
@@ -474,6 +484,49 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   }, [fresh]);
   const freshIds = new Set(fresh.map((f) => f.uid));
 
+  // The P1 alarm: a soft two-note tone (muteable, remembered) and a red pulse across the bar.
+  const [muted, setMuted] = useState(() => {
+    try {
+      return window.localStorage.getItem("purvex.shift.sound") === "off";
+    } catch {
+      return false;
+    }
+  });
+  const [alarm, setAlarm] = useState(false);
+  const audio = useRef<AudioContext | null>(null);
+  const mutedRef = useRef(muted);
+  mutedRef.current = muted;
+  const raiseP1 = () => {
+    setAlarm(true);
+    window.setTimeout(() => setAlarm(false), 6000);
+    if (mutedRef.current) return;
+    try {
+      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const ctx = (audio.current ??= new Ctx());
+      void ctx.resume();
+      [880, 660].forEach((hz, n) => {
+        const t = ctx.currentTime + n * 0.22;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = hz;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.12, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.22);
+      });
+    } catch {}
+  };
+  const toggleSound = () =>
+    setMuted((m) => {
+      try {
+        window.localStorage.setItem("purvex.shift.sound", m ? "on" : "off");
+      } catch {}
+      return !m;
+    });
+
   const unread = (shift.desk ?? []).filter((d) => !d.answered && !d.lapsed).length;
   const [deskSeen, setDeskSeen] = useState<Set<string>>(() => new Set());
   const markSeen = (uid: string) => setDeskSeen((s) => new Set(s).add(uid));
@@ -483,7 +536,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   // Coach knows which incident is open, so "help me" means this one, and it
   // coaches as the senior analyst at the next desk without doing the work.
   const { setPlace } = useCoach();
-  const placeTitle = selected ? `${selected.severity} ${selected.title}` : "the queue";
+  const placeTitle = selected ? `${selected.untriaged ? "untriaged" : selected.severity} ${selected.title}` : "the queue";
   useEffect(() => {
     setPlace({ kind: "shift", title: placeTitle, at: `${handled} of ${total} closed, ${clock(left)} left on the shift` });
     // Only the incident in focus changes what Coach should know; the clock is context.
@@ -505,7 +558,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
   return (
     <div className="shift-app" data-academy-theme={theme}>
-      <header className="sx-bar">
+      <header className={`sx-bar${alarm ? " is-alarm" : ""}`}>
         <div className="sx-bar__id">
           <Link href="/range/drill" className="sx-icon" aria-label="Back to the Desk" title="Back to the Desk (your shift keeps running)">
             <ArrowLeft className="h-4 w-4" />
@@ -523,6 +576,10 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           </div>
         </div>
         <div className="sx-board" aria-label="What is open on the queue">
+          <span className={`sx-board__cell is-un${untriagedOpen ? "" : " is-zero"}`} title={`${untriagedOpen} waiting for a priority`}>
+            <b>{untriagedOpen}</b>
+            <small>Untriaged</small>
+          </span>
           {(["P1", "P2", "P3"] as const).map((sev) => (
             <span key={sev} className={`sx-board__cell is-${sev.toLowerCase()}${openBy[sev] ? "" : " is-zero"}`} title={`${openBy[sev]} ${sev} open`}>
               <b>{openBy[sev]}</b>
@@ -538,6 +595,9 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           </span>
         </div>
         <div className="sx-bar__end">
+          <button type="button" className="sx-sound" onClick={toggleSound} aria-pressed={!muted} title={muted ? "P1 alert sound is off" : "P1 alert sound is on"}>
+            {muted ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+          </button>
           <button
             type="button"
             className="sx-next"
@@ -547,7 +607,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           >
             <Zap className="h-4 w-4" />
             Next
-            {nextUp && <b className={`sx-next__sev is-${nextUp.severity.toLowerCase()}`}>{nextUp.severity}</b>}
+            {nextUp && <b className={`sx-next__sev is-${nextUp.untriaged ? "un" : nextUp.severity.toLowerCase()}`}>{nextUp.untriaged ? "Triage" : nextUp.severity}</b>}
           </button>
           <div className={`sx-timer ${left <= 60 ? "is-low" : left <= 300 ? "is-warn" : ""}`}>
             <small>Shift ends in</small>
@@ -640,13 +700,13 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                           const closed = inc.resolved || inc.escalated;
                           const isSel = selected?.uid === inc.uid;
                           const urgent = !closed && !inc.acknowledged && inc.severity === "P1";
-                          const cls = ["sh-li", `sh-li--sev-${inc.severity.toLowerCase()}`, isSel && "sh-li--on", closed && "sh-li--done", urgent && "sh-li--urgent", freshIds.has(inc.uid) && "sh-li--fresh"].filter(Boolean).join(" ");
+                          const cls = ["sh-li", `sh-li--sev-${inc.untriaged ? "un" : inc.severity.toLowerCase()}`, isSel && "sh-li--on", closed && "sh-li--done", urgent && "sh-li--urgent", freshIds.has(inc.uid) && "sh-li--fresh"].filter(Boolean).join(" ");
                           const Icon = iconFor(inc.defId);
                           return (
                             <li key={inc.uid}>
                               <button type="button" role="tab" aria-selected={isSel} className={cls} data-uid={inc.uid} onClick={() => setSelectedId(inc.uid)}>
                                 <span className="sh-li__top">
-                                  <span className="sh-li__sev">{inc.severity}</span>
+                                  <span className="sh-li__sev">{inc.untriaged ? "Triage" : inc.severity}</span>
                                   <span className="sh-li__icon">
                                     <Icon className="h-3.5 w-3.5" />
                                   </span>
@@ -790,9 +850,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead }: { inc: Incident; no:
         {lead}
         <section className={`sx-case${inc.resolved ? " is-done" : ""}`}>
           <div className="sx-case__meta">
-            <span className={`sx-pri is-${inc.severity.toLowerCase()}`}>
-              {inc.severity} · {SEV_WORD[inc.severity]}
-            </span>
+            <span className={`sx-pri is-${inc.untriaged ? "un" : inc.severity.toLowerCase()}`}>{inc.untriaged ? "Untriaged" : `${inc.severity} · ${SEV_WORD[inc.severity]}`}</span>
             <span className="sx-chip">
               <Icon className="h-3.5 w-3.5" /> {inc.kind === "alert" ? "Alert" : "Ticket"}
             </span>
@@ -806,7 +864,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead }: { inc: Incident; no:
             <span className="sx-chip">
               <GraduationCap className="h-3.5 w-3.5" /> {cap(skillOf(inc.kind))}
             </span>
-            <span className="sx-case__sla">{inc.resolved ? "Solved" : inc.escalated ? "With tier 2" : cap(PRIORITY_NOTE[inc.severity].split(" · ")[1])}</span>
+            <span className="sx-case__sla">{inc.resolved ? "Solved" : inc.escalated ? "With tier 2" : inc.untriaged ? "Set its priority first" : cap(PRIORITY_NOTE[inc.severity].split(" · ")[1])}</span>
           </div>
           <h1 className="sx-case__title">{inc.title}</h1>
           <ol className="sx-life" aria-label="Where this incident stands">
@@ -877,6 +935,33 @@ function IncidentDetail({ inc, no, age, busy, post, lead }: { inc: Incident; no:
             <p>Coach reviews the handoff in your shift report</p>
             <p className="sx-closed__cost">You keep the finding points but not the fix points</p>
           </div>
+        ) : inc.untriaged ? (
+          <div className="sx-resp__scroll">
+            <p className="sx-k">Triage</p>
+            <div className="sx-triage">
+              <strong>Set the priority</strong>
+              <p>Weigh impact against urgency · The first call is the one on record</p>
+              <ul className="sx-triage__guide">
+                <li>
+                  <b className="is-p1">P1</b> An attack in progress or the business is stopped
+                </li>
+                <li>
+                  <b className="is-p2">P2</b> A real security risk or a whole team blocked
+                </li>
+                <li>
+                  <b className="is-p3">P3</b> One person affected or a workaround exists
+                </li>
+              </ul>
+              <div className="sx-triage__pick">
+                {(["P1", "P2", "P3"] as const).map((p) => (
+                  <button key={p} type="button" className={`is-${p.toLowerCase()}`} disabled={busy} onClick={() => void post({ action: "triage", uid: inc.uid, priority: p })}>
+                    <b>{p}</b>
+                    <small>{SEV_WORD[p]}</small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         ) : (
           <>
             <div className="sx-resp__scroll">
@@ -892,7 +977,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead }: { inc: Incident; no:
                         type="button"
                         onClick={() =>
                           ask(
-                            `I'm on shift working ${inc.severity} "${inc.title}". ${inc.brief} ${diagnosis.trim() ? `So far I think: ${diagnosis.trim()}.` : "I haven't found the evidence yet."} Help me decide what to check next, without giving me the answer.`
+                            `I'm on shift working ${inc.untriaged ? "an untriaged ticket" : inc.severity} "${inc.title}". ${inc.brief} ${diagnosis.trim() ? `So far I think: ${diagnosis.trim()}.` : "I haven't found the evidence yet."} Help me decide what to check next, without giving me the answer.`
                           )
                         }
                       >
@@ -1103,6 +1188,11 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
                     </span>
                     <span className="dk-ticket">
                       <strong>{i.title}</strong>
+                      {i.call && (
+                        <span className={`dk-call${i.call.points === i.call.max ? " is-good" : i.call.points ? " is-near" : " is-bad"}`}>
+                          {i.call.chose ? `Your call ${i.call.chose} · Actual ${i.call.actual}` : `Never triaged · Actual ${i.call.actual}`} · {i.call.points}/{i.call.max}
+                        </span>
+                      )}
                       <span className="dk-tags">
                         {i.touched && !i.noHarm && <em className="is-bad">Collateral</em>}
                         {i.resolved && !i.diagnosisRight && <em className="is-bad">Weak diagnosis</em>}

@@ -1543,6 +1543,8 @@ export type IncidentRun = {
   submits?: number;
   /** Tier 2's review of the handoff, written when the shift is graded. */
   review?: import("@/lib/academy-scenario").HandoffReview;
+  /** The priority the student gave a ticket. The first call is the one on record. */
+  triaged?: Severity;
   hintsUsed: number;
   diagnosis: string;
   response: string;
@@ -1569,6 +1571,8 @@ export type ShiftRun = {
   desk?: import("@/lib/academy-shift-desk").DeskRun[];
   /** What this shift leaned on. Absent on runs saved before shifts alternated. */
   mix?: ShiftMix;
+  /** Tickets arrive untriaged and the student sets their priority. Absent on runs saved before self-triage. */
+  selfTriage?: boolean;
   status: "active" | "done";
   finishedAt?: string;
   totalScore?: number;

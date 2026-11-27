@@ -40,6 +40,7 @@ import {
   SHIFT_SECONDS,
   type IncidentDef,
   type IncidentRun,
+  type Severity,
   type ShiftMix,
   type ShiftRun,
 } from "@/lib/academy-shift";
@@ -54,7 +55,10 @@ export type PublicIncident = {
   uid: string;
   defId: string;
   kind: "alert" | "ticket";
+  /** For an untriaged ticket this is a placeholder, so the real priority is never sent before the student calls it. */
   severity: "P1" | "P2" | "P3";
+  /** A ticket waiting for the student to set its priority. */
+  untriaged?: boolean;
   from: string;
   title: string;
   brief: string;
@@ -82,6 +86,8 @@ export type PublicIncident = {
 };
 
 export type IncidentReport = {
+  /** The student's priority call on a ticket, against the real priority. */
+  call?: { chose: string | null; actual: string; points: number; max: number } | null;
   title: string;
   severity: string;
   resolved: boolean;
@@ -149,11 +155,15 @@ function toPublic(run: ShiftRun, inc: IncidentRun, elapsed: number): PublicIncid
   const from = inc.text?.from ?? def.from;
   const title = inc.text?.title ?? def.title;
   const brief = inc.text?.brief ?? eff.brief;
+  // A ticket's priority is the student's call. Until it is made, the real one is not sent.
+  const untriaged = needsTriage(run, inc);
+  const severity = untriaged ? "P3" : run.selfTriage && def.kind === "ticket" && inc.triaged ? inc.triaged : def.severity;
   return {
     uid: inc.uid,
     defId: def.id,
     kind: def.kind,
-    severity: def.severity,
+    severity,
+    untriaged,
     from,
     title,
     brief,
@@ -332,6 +342,7 @@ export async function startShift(userId: string): Promise<{ shift?: PublicShift;
   const level = levelFor(entries);
   const mix: ShiftMix | undefined = canAlternate(phase, level) ? (existing?.mix === "alerts" ? "tickets" : "alerts") : undefined;
   const run = newShiftRun(`${userId}:${Date.now()}`, phase, level, roles, Date.now(), mix);
+  run.selfTriage = true;
   run.desk = planDesk(run.id, run.level, run.incidents);
   // Composing the shift (Claude's wording) takes a few seconds; don't let that
   // eat the clock. Stamp the start once setup is done, so the timer begins when
@@ -355,6 +366,33 @@ function activeIncident(run: ShiftRun | null, uid: string, now = Date.now()): { 
   const elapsed = shiftElapsed(run, now);
   if (!inc || !def || !incidentArrived(inc, elapsed)) return null;
   return { run, inc, def, elapsed };
+}
+
+/** A ticket on a self-triage shift that has no priority yet. Alerts arrive with the detection's own severity. */
+function needsTriage(run: ShiftRun, inc: IncidentRun): boolean {
+  return Boolean(run.selfTriage) && incidentDef(inc.defId)?.kind === "ticket" && !inc.triaged;
+}
+
+const SEVERITIES = ["P1", "P2", "P3"] as const;
+/** Points for a priority call: exact is full marks, one level off is partial, two off is none. */
+export const CALL_POINTS = 10;
+export function callPoints(chose: string | undefined, actual: string): number {
+  const a = SEVERITIES.indexOf(actual as (typeof SEVERITIES)[number]);
+  const c = SEVERITIES.indexOf(chose as (typeof SEVERITIES)[number]);
+  if (a < 0 || c < 0) return 0;
+  return c === a ? CALL_POINTS : Math.abs(c - a) === 1 ? 4 : 0;
+}
+
+/** The student sets a ticket's priority. Locked once set, as on a real queue: the first call is on record. */
+export async function triageIncident(userId: string, uid: string, priority: string): Promise<PublicShift | { error: string }> {
+  if (!(SEVERITIES as readonly string[]).includes(priority)) return { error: "Pick P1, P2 or P3" };
+  const found = activeIncident(await loadShift(userId), uid);
+  if (!found) return { error: "That incident is not open." };
+  if (!needsTriage(found.run, found.inc)) return { error: "This one already has its priority" };
+  found.inc.triaged = priority as Severity;
+  if (found.inc.ackedAtSec === null) found.inc.ackedAtSec = found.elapsed;
+  await saveShift(userId, found.run);
+  return publicShift(found.run);
 }
 
 export async function ackIncident(userId: string, uid: string): Promise<PublicShift | { error: string }> {
@@ -411,6 +449,7 @@ export async function submitIncident(
   const found = activeIncident(await loadShift(userId), uid);
   if (!found) return { error: "That incident is not open." };
   const { inc, def, run, elapsed } = found;
+  if (needsTriage(run, inc)) return { error: "Set the priority first" };
   inc.diagnosis = diagnosis.slice(0, 400);
   inc.response = response.slice(0, 4000);
 
@@ -622,8 +661,11 @@ async function gradeRun(userId: string, run: ShiftRun): Promise<ShiftRun> {
   // status given, and the P1 worked before the P3.
   const desk = run.desk ?? [];
   const order = triage(run.incidents);
-  run.totalScore = run.incidents.reduce((s, i) => s + (i.score ?? 0), 0) + deskScore(desk) + (run.incidents.length ? order.score : 0);
-  run.maxScore = run.incidents.reduce((s, i) => s + (incidentDef(i.defId)?.points ?? 0), 0) + deskMax(desk) + (run.incidents.length ? order.max : 0);
+  // The priority calls: every ticket on a self-triage shift, called or not.
+  const tickets = run.selfTriage ? run.incidents.filter((i) => incidentDef(i.defId)?.kind === "ticket") : [];
+  const calls = tickets.reduce((s, i) => s + callPoints(i.triaged, i.severity), 0);
+  run.totalScore = run.incidents.reduce((s, i) => s + (i.score ?? 0), 0) + deskScore(desk) + (run.incidents.length ? order.score : 0) + calls;
+  run.maxScore = run.incidents.reduce((s, i) => s + (incidentDef(i.defId)?.points ?? 0), 0) + deskMax(desk) + (run.incidents.length ? order.max : 0) + tickets.length * CALL_POINTS;
   run.status = "done";
   run.finishedAt = new Date().toISOString();
   return run;
@@ -645,6 +687,7 @@ function buildReport(run: ShiftRun): ShiftReport {
       score: inc.score ?? 0,
       max: def?.points ?? 0,
       review: inc.escalated ? (inc.review ?? null) : null,
+      call: run.selfTriage && def?.kind === "ticket" ? { chose: inc.triaged ?? null, actual: inc.severity, points: callPoints(inc.triaged, inc.severity), max: CALL_POINTS } : null,
     };
   });
   const resolvedCount = incidents.filter((i) => i.resolved).length;

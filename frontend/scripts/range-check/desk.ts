@@ -11,6 +11,7 @@ import { echoesChallenge } from "@/lib/academy-scenario";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
 import { triage } from "@/lib/academy-shift-desk";
 import { labFeed } from "@/lib/academy-lab-feed";
+import { CALL_POINTS, callPoints } from "@/lib/academy-shift-run";
 import type { IncidentRun } from "@/lib/academy-shift";
 
 let failures = 0;
@@ -95,6 +96,12 @@ console.log("\nThe Desk's live feed");
   check("a failure shows how many", feed.find((r) => r.id === 4625)?.count === 6);
   check("who did it is named when it was someone else", feed.find((r) => r.id === 4725)?.who === "kai.mendes by alex.rivera");
 }
+
+console.log("\nSelf-triage: the priority call is scored");
+check("the right priority earns the full points", callPoints("P2", "P2") === CALL_POINTS);
+check("one level off earns some", callPoints("P3", "P2") === 4 && callPoints("P1", "P2") === 4);
+check("two levels off earns none", callPoints("P3", "P1") === 0);
+check("never triaged earns none", callPoints(undefined, "P1") === 0);
 
 console.log("\nShift report: severity order is earned, not given");
 {

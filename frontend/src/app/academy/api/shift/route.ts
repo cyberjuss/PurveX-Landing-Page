@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAcademyUnlocked } from "@/lib/academy-auth";
 import { canUseHostedLab, hostedLabStatus } from "@/lib/academy-hosted";
-import { ackIncident, answerDesk, finishShift, getShift, hintIncident, startShift, submitIncident } from "@/lib/academy-shift-run";
+import { ackIncident, answerDesk, finishShift, getShift, hintIncident, startShift, submitIncident, triageIncident } from "@/lib/academy-shift-run";
 import { isRangePro, proRequired } from "@/lib/range-plan";
 import { getAcademyStudent } from "@/lib/academy-student";
 
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
   const { s, denied } = await student(request);
   if (denied === "pro") return NextResponse.json(proRequired("The Shift"), { status: 403 });
   if (!s) return NextResponse.json({ error: "Shifts need a hosted lab" }, { status: 403 });
-  let body: { action?: unknown; uid?: unknown; defId?: unknown; diagnosis?: unknown; response?: unknown; escalate?: unknown; choice?: unknown; text?: unknown };
+  let body: { action?: unknown; uid?: unknown; defId?: unknown; diagnosis?: unknown; response?: unknown; escalate?: unknown; choice?: unknown; text?: unknown; priority?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -54,6 +54,10 @@ export async function POST(request: Request) {
     }
     if (action === "ack") {
       const r = await ackIncident(s.id, uid);
+      return "error" in r ? NextResponse.json({ error: r.error }, { status: 409 }) : NextResponse.json({ shift: r });
+    }
+    if (action === "triage") {
+      const r = await triageIncident(s.id, uid, String(body.priority || ""));
       return "error" in r ? NextResponse.json({ error: r.error }, { status: 409 }) : NextResponse.json({ shift: r });
     }
     if (action === "hint") {

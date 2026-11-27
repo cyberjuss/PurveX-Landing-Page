@@ -1023,3 +1023,50 @@
   .sx-live i, .sx-timer.is-low b { animation: none; }
   .sx-bar__prog i { transition: none; }
 }
+
+/* ── Self-triage: untriaged tickets, the priority call, and the P1 alarm ── */
+.shift-app { --sx-un: var(--rd-accent); }
+.sx-board__cell.is-un b { color: var(--sx-un); }
+.sx-board__cell.is-un:not(.is-zero) { background: color-mix(in srgb, var(--sx-un) 10%, transparent); box-shadow: inset 0 -2px 0 var(--sx-un); }
+.sx-next__sev.is-un { background: var(--sx-un); color: #fff; }
+.sx-pri.is-un { background: none; color: var(--sx-un); box-shadow: inset 0 0 0 1.5px var(--sx-un); }
+.sh-li--sev-un::before { background: var(--sx-un); }
+.sh-li--sev-un .sh-li__sev { color: var(--sx-un); }
+.sh-li--sev-un .sh-li__icon { color: var(--sx-un); }
+
+.sx-sound { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--rd-line); background: none; color: var(--rd-ink-2); cursor: pointer; }
+.sx-sound:hover { border-color: var(--rd-accent); color: var(--rd-accent); }
+.sx-sound[aria-pressed="false"] { color: var(--rd-ink-3); }
+
+.sx-bar.is-alarm { animation: sx-alarm 1s ease-in-out 6; }
+.sx-bar.is-alarm .sx-board__cell.is-p1 { animation: sx-alarm-cell 0.5s ease-in-out 12 alternate; }
+@keyframes sx-alarm {
+  0%, 100% { box-shadow: inset 0 0 0 0 transparent; }
+  50% { box-shadow: inset 0 -3px 0 var(--sx-p1), inset 0 0 60px -20px color-mix(in srgb, var(--sx-p1) 55%, transparent); }
+}
+@keyframes sx-alarm-cell { from { background: color-mix(in srgb, var(--sx-p1) 10%, transparent); } to { background: color-mix(in srgb, var(--sx-p1) 32%, transparent); } }
+
+.sx-triage { display: grid; gap: 12px; padding: 18px; border: 1px solid color-mix(in srgb, var(--sx-un) 40%, var(--rd-line)); background: linear-gradient(160deg, color-mix(in srgb, var(--sx-un) 9%, transparent), transparent 70%); }
+.sx-triage > strong { font-size: 1.05rem; font-weight: 780; }
+.sx-triage > p { margin: 0; font-size: 0.8125rem; color: var(--rd-ink-3); }
+.sx-triage__guide { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 0.8125rem; color: var(--rd-ink-2); }
+.sx-triage__guide li { display: flex; align-items: baseline; gap: 10px; }
+.sx-triage__guide b { flex: none; width: 28px; font-family: var(--sx-mono); font-size: 0.75rem; font-weight: 800; }
+.sx-triage__guide b.is-p1 { color: var(--sx-p1); }
+.sx-triage__guide b.is-p2 { color: var(--sx-p2); }
+.sx-triage__guide b.is-p3 { color: var(--rd-ink-3); }
+.sx-triage__pick { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 4px; }
+.sx-triage__pick button { display: grid; justify-items: center; gap: 2px; padding: 12px 6px; border: 1px solid var(--rd-line); background: var(--panel); color: var(--rd-ink); cursor: pointer; transition: border-color var(--ax-dur-fast, 0.15s), background var(--ax-dur-fast, 0.15s), transform var(--ax-dur-fast, 0.15s); }
+.sx-triage__pick button b { font-family: var(--sx-mono); font-size: 1.15rem; font-weight: 800; }
+.sx-triage__pick button small { font-size: 0.6875rem; color: var(--rd-ink-3); }
+.sx-triage__pick button.is-p1:hover:not(:disabled) { border-color: var(--sx-p1); background: color-mix(in srgb, var(--sx-p1) 10%, transparent); }
+.sx-triage__pick button.is-p2:hover:not(:disabled) { border-color: var(--sx-p2); background: color-mix(in srgb, var(--sx-p2) 10%, transparent); }
+.sx-triage__pick button.is-p3:hover:not(:disabled) { border-color: var(--rd-ink-3); background: color-mix(in srgb, var(--rd-ink-3) 10%, transparent); }
+.sx-triage__pick button:active:not(:disabled) { transform: scale(0.97); }
+.sx-triage__pick button:disabled { opacity: 0.5; cursor: default; }
+
+.dk--report .dk-call { font-family: var(--sx-mono, ui-monospace, monospace); font-size: 0.75rem; font-weight: 700; }
+.dk--report .dk-call.is-good { color: var(--rd-good); }
+.dk--report .dk-call.is-near { color: var(--rd-warn); }
+.dk--report .dk-call.is-bad { color: var(--rd-bad); }
+@media (prefers-reduced-motion: reduce) { .sx-bar.is-alarm, .sx-bar.is-alarm .sx-board__cell.is-p1 { animation: none; } .sx-bar.is-alarm { box-shadow: inset 0 -3px 0 var(--sx-p1); } }
