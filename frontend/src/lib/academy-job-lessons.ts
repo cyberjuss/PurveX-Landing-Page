@@ -60,3 +60,39 @@ export function lessonFor(job: string | undefined, skill: Skill): LessonLink {
 }
 
 export const JOB_LESSON_IDS = Object.keys(JOB_LESSONS);
+
+/** Live-shift incidents, by the job their fix practices. */
+const INCIDENT_JOBS: Record<string, string> = {
+  "lockout-ticket": "enable-account",
+  spray: "lockout-policy",
+  "rogue-admin": "least-privilege",
+  "false-alarm": "verify-claim",
+  "compromised-account": "contain-account",
+  "weak-policy": "password-policy",
+  "wrong-disable": "enable-account",
+  "preauth-exposure": "harden-account",
+  "access-request": "group-access",
+  offboarding: "offboard",
+  "pwd-notreqd": "password-hygiene",
+  delegation: "least-privilege",
+  "pwd-expired": "reset-password",
+  "wrong-ou": "fix-ou",
+  "never-expires": "password-hygiene",
+  "rogue-computer": "stale-objects",
+  "audit-disabled": "enable-auditing",
+  "reversible-enc": "password-hygiene",
+  kerberoast: "harden-account",
+  "domain-admins": "least-privilege",
+  "backdoor-account": "contain-account",
+  "targeted-bruteforce": "lockout-policy",
+  "admin-pso": "admin-password-policy",
+  "dept-transfer": "fix-ou",
+  "threat-hunt-spn": "harden-account",
+};
+
+/** The lesson behind a live-shift incident. */
+export function lessonForIncident(defId: string, skill: Skill): LessonLink {
+  return lessonFor(INCIDENT_JOBS[defId], skill);
+}
+
+export const INCIDENT_LESSON_IDS = Object.keys(INCIDENT_JOBS);

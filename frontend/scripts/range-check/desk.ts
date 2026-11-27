@@ -4,7 +4,8 @@
 import { findEntry } from "@/lib/academy-content";
 import { JOBS } from "@/lib/academy-drills";
 import { SKILLS, type Skill } from "@/lib/academy-score";
-import { JOB_LESSON_IDS, lessonFor } from "@/lib/academy-job-lessons";
+import { INCIDENT_LESSON_IDS, JOB_LESSON_IDS, lessonFor } from "@/lib/academy-job-lessons";
+import { INCIDENTS } from "@/lib/academy-shift";
 import { echoesChallenge } from "@/lib/academy-scenario";
 import { MISSION_CATALOG } from "@/lib/academy-missions";
 import { triage } from "@/lib/academy-shift-desk";
@@ -37,6 +38,8 @@ const bad = [
 check("every job and skill links to a lesson tab that exists", bad.length === 0, bad.join("; "));
 const missing = JOBS.filter((j) => !JOB_LESSON_IDS.includes(j.id)).map((j) => j.id);
 check("every job has its own lesson, not just its skill's", missing.length === 0, missing.join(", "));
+const noLesson = INCIDENTS.filter((i) => !INCIDENT_LESSON_IDS.includes(i.id)).map((i) => i.id);
+check("every live-shift incident has a lesson to read up on", noLesson.length === 0, noLesson.join(", "));
 
 console.log("\nDesk cases stay apart from the challenges");
 const titles = Object.values(MISSION_CATALOG).map((m) => m.title);

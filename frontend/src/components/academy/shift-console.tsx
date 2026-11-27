@@ -7,12 +7,13 @@ import {
   AlertTriangle, ArrowLeft, ArrowRight, Check, Clock, Loader2, LifeBuoy, Power, RefreshCw, ShieldAlert,
   Lock, Unlock, KeyRound, UserPlus, UserMinus, UserX, UserCog, ArrowLeftRight, FolderTree, SprayCan, Target,
   Crown, DoorOpen, BellOff, ShieldOff, ShieldCheck, ShieldX, Ticket, Search, Share2, Server, EyeOff, Infinity as InfinityIcon,
-  Wrench, Info, ArrowUpRight, Headset, FileText, X, Zap, Inbox, CheckCircle2, Radar, Hash, GraduationCap, Mail,
+  Info, ArrowUpRight, Headset, X, Zap, Inbox, CheckCircle2, Radar, Hash, GraduationCap, Mail, BookOpen,
 } from "lucide-react";
 import { academyFetch } from "@/lib/academy-client";
 import { startHostedLabNow, useHostedLab } from "@/components/academy/hosted-lab-button";
 import { DeskLayer, DeskSummary, type DeskEvent, type DeskReport } from "./shift-desk";
 import { useCoach } from "./coach-context";
+import { lessonForIncident } from "@/lib/academy-job-lessons";
 import "./shift.css";
 import { useAcademyTheme } from "@/lib/use-academy-theme";
 
@@ -476,6 +477,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   const unread = (shift.desk ?? []).filter((d) => !d.answered && !d.lapsed).length;
   const [deskSeen, setDeskSeen] = useState<Set<string>>(() => new Set());
   const markSeen = (uid: string) => setDeskSeen((s) => new Set(s).add(uid));
+  // The rail shows the queue or the inbox, as two tabs, so the incident gets the room.
+  const [rail, setRail] = useState<"queue" | "inbox">("queue");
 
   // Coach knows which incident is open, so "help me" means this one, and it
   // coaches as the senior analyst at the next desk without doing the work.
@@ -502,75 +505,72 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
   return (
     <div className="shift-app" data-academy-theme={theme}>
-      <header className="sh-top">
-        <div className="sh-brand">
-          <Link href="/range" className="sh-top__home" aria-label="Back to Range" title="Back to Range (your shift keeps running)">
+      <header className="sx-bar">
+        <div className="sx-bar__id">
+          <Link href="/range/drill" className="sx-icon" aria-label="Back to the Desk" title="Back to the Desk (your shift keeps running)">
             <ArrowLeft className="h-4 w-4" />
           </Link>
-          <span className="sh-logo">P</span>
-          <div className="sh-top__title">
-            <p className="sh-top__name">Night shift · PurveX Financial</p>
-            <p className="sh-top__sub">
-              Help desk and SOC tier 1 · Level {shift.level}
+          <span className="sx-live">
+            <i aria-hidden />
+            On shift
+          </span>
+          <div className="sx-bar__name">
+            <strong>Night shift · PurveX Financial</strong>
+            <span>
+              Tier 1 desk · Level {shift.level}
               {shift.mix ? ` · ${shift.mix === "tickets" ? "Heavy on tickets tonight" : "Heavy on alerts tonight"}` : ""}
-            </p>
+            </span>
           </div>
         </div>
-        <div className="sh-pressure" aria-label="What is open on the queue">
+        <div className="sx-board" aria-label="What is open on the queue">
           {(["P1", "P2", "P3"] as const).map((sev) => (
-            <span key={sev} className={`sh-pressure__sev is-${sev.toLowerCase()}${openBy[sev] ? "" : " is-zero"}`} title={`${openBy[sev]} ${sev} open`}>
-              <i aria-hidden />
-              {sev}
+            <span key={sev} className={`sx-board__cell is-${sev.toLowerCase()}${openBy[sev] ? "" : " is-zero"}`} title={`${openBy[sev]} ${sev} open`}>
               <b>{openBy[sev]}</b>
+              <small>{sev} open</small>
             </span>
           ))}
-          <span className="sh-pressure__sep" aria-hidden />
-          <span className="sh-pressure__stat">
-            <b>{handled}</b>/{total} closed
+          <span className="sx-board__cell is-closed">
+            <b>
+              {handled}
+              <em>/{total}</em>
+            </b>
+            <small>closed{escalated > 0 ? ` · ${escalated} to tier 2` : ""}</small>
           </span>
-          {escalated > 0 && (
-            <span className="sh-pressure__stat">
-              <b>{escalated}</b> escalated
-            </span>
-          )}
         </div>
-        <div className="sh-top__right">
+        <div className="sx-bar__end">
           <button
             type="button"
-            className="sh-next"
+            className="sx-next"
             disabled={!nextUp}
             onClick={() => nextUp && setSelectedId(nextUp.uid)}
             title={nextUp ? `Open ${nextUp.severity} ${nextUp.title} (N)` : "Nothing else open"}
           >
             <Zap className="h-4 w-4" />
-            <span>Next priority</span>
-            {nextUp && <b className={`sh-next__sev is-${nextUp.severity.toLowerCase()}`}>{nextUp.severity} · {SEV_WORD[nextUp.severity]}</b>}
+            Next
+            {nextUp && <b className={`sx-next__sev is-${nextUp.severity.toLowerCase()}`}>{nextUp.severity}</b>}
           </button>
-          <div className={`sh-clock ${left <= 60 ? "sh-clock--low" : left <= 300 ? "sh-clock--warn" : ""}`}>
-            <span className="sh-clock__label">Shift ends in</span>
-            <span className="sh-clock__time">{clock(left)}</span>
+          <div className={`sx-timer ${left <= 60 ? "is-low" : left <= 300 ? "is-warn" : ""}`}>
+            <small>Shift ends in</small>
+            <b>{clock(left)}</b>
           </div>
-          {/* Ending grades the shift and there is no way back into it, so it
-              asks -- and says how much is still open, since that is what the
-              student is actually giving up. Every other destructive control on
-              the portal confirms; this one did not. */}
+          {/* Ending grades the shift and there is no way back into it, so it asks first. */}
           <button
             type="button"
-            className="sh-end"
+            className="sx-end"
             disabled={busy}
             onClick={() => {
               const open = shift.incidents.filter((i) => !i.resolved && !i.escalated).length;
               const warn = open
-                ? `End the shift now? ${open} incident${open === 1 ? " is" : "s are"} still open and will lose the points for fixing ${open === 1 ? "it" : "them"}. You cannot come back into this shift.`
-                : "End the shift now? It is graded as it stands and you cannot come back into it.";
+                ? `End the shift now? ${open} incident${open === 1 ? " is" : "s are"} still open and will lose the points for fixing ${open === 1 ? "it" : "them"} · You cannot come back into this shift`
+                : "End the shift now? It is graded as it stands and you cannot come back into it";
               if (window.confirm(warn)) void post({ action: "finish" });
             }}
           >
             End shift
           </button>
         </div>
-        <div className="sh-prog" aria-hidden="true">
-          <div className={`sh-prog__fill ${left <= 60 ? "sh-prog__fill--low" : left <= 300 ? "sh-prog__fill--warn" : ""}`} style={{ width: `${elapsedPct}%` }} />
+        <div className="sx-bar__prog" aria-hidden="true">
+          <i className={left <= 60 ? "is-low" : left <= 300 ? "is-warn" : ""} style={{ width: `${elapsedPct}%` }} />
         </div>
       </header>
 
@@ -605,9 +605,21 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
         })}
       </div>
 
-      <div className="sh-body">
-        <aside className="sh-side">
-          {queue.length === 0 ? (
+      <div className="sx-body">
+        <aside className="sx-rail">
+          <div className="sx-tabs" role="tablist" aria-label="Queue and inbox">
+            <button type="button" role="tab" aria-selected={rail === "queue"} className={rail === "queue" ? "is-on" : ""} onClick={() => setRail("queue")}>
+              <Inbox className="h-4 w-4" /> Queue <b>{queue.filter((i) => !done(i)).length}</b>
+            </button>
+            <button type="button" role="tab" aria-selected={rail === "inbox"} className={rail === "inbox" ? "is-on" : ""} onClick={() => setRail("inbox")}>
+              <Mail className="h-4 w-4" /> Inbox {unread > 0 && <b className="is-hot">{unread}</b>}
+            </button>
+          </div>
+          {rail === "inbox" ? (
+            <div className="sx-inbox">
+              <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline seen={deskSeen} onSeen={markSeen} />
+            </div>
+          ) : queue.length === 0 ? (
             <p className="sh-waiting sh-radar"><Radar className="h-5 w-5" /> Watching the queue…</p>
           ) : (
             <div className="sh-queue" role="tablist" aria-label="Incident queue">
@@ -634,13 +646,11 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                             <li key={inc.uid}>
                               <button type="button" role="tab" aria-selected={isSel} className={cls} data-uid={inc.uid} onClick={() => setSelectedId(inc.uid)}>
                                 <span className="sh-li__top">
-                                  {/* Severity is the coloured bar down the left; stated in text too, so it does not rest on colour alone. */}
                                   <span className="sh-li__sev">{inc.severity}</span>
                                   <span className="sh-li__icon">
                                     <Icon className="h-3.5 w-3.5" />
                                   </span>
                                   <span className="sh-li__no">{numOf.get(inc.uid)}</span>
-                                  <span className="sh-li__kind">{inc.kind}</span>
                                   <span className="sh-li__end">
                                     {inc.resolved ? (
                                       <span className="sh-li__state is-done">
@@ -685,19 +695,10 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
             busy={busy}
             post={post}
             lead={error ? <p className="sh-error">{error}</p> : null}
-            after={<section className="sh-inbox-sec" aria-label="Inbox">
-                  <p className="sh-rail__head">
-                    <Mail className="h-3.5 w-3.5" /> Inbox
-                    {unread > 0 && <b className="sh-rail__badge">{unread}</b>}
-                  </p>
-                  <div className="sh-inbox">
-                    <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline seen={deskSeen} onSeen={markSeen} />
-                  </div>
-                </section>}
           />
         ) : (
           <>
-            <main className="sh-main">
+            <main className="sx-main">
               {error && <p className="sh-error">{error}</p>}
               <div className="sh-empty">
                 <span className="sh-empty__radar" aria-hidden>
@@ -706,18 +707,8 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                 <p>The first incident lands shortly</p>
                 <small>Keep your lab open · Alerts arrive on their own</small>
               </div>
-
-              <section className="sh-inbox-sec" aria-label="Inbox">
-                <p className="sh-rail__head">
-                  <Mail className="h-3.5 w-3.5" /> Inbox
-                  {unread > 0 && <b className="sh-rail__badge">{unread}</b>}
-                </p>
-                <div className="sh-inbox">
-                  <DeskLayer desk={shift.desk ?? []} now={now} busy={busy} post={post} inline seen={deskSeen} onSeen={markSeen} />
-                </div>
-              </section>
             </main>
-            <aside className="sh-right" aria-label="Your response" />
+            <aside className="sx-resp" aria-label="Your response" />
           </>
         )}
       </div>
@@ -727,7 +718,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
 
 type SubmitResult = { resolved: boolean; escalated?: boolean; onTime: boolean; waiting: boolean; results: { label: string; ok: boolean }[]; needFinding?: boolean; evidencePending?: boolean; answerRight?: boolean | null };
 
-function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incident; no: string; age: string; lead?: React.ReactNode; after?: React.ReactNode; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
+function IncidentDetail({ inc, no, age, busy, post, lead }: { inc: Incident; no: string; age: string; lead?: React.ReactNode; busy: boolean; post: (p: Record<string, unknown>, opts?: { silent?: boolean }) => Promise<Record<string, unknown> | null> }) {
   // What they typed is kept per incident, so opening another one and coming
   // back does not lose it. Session storage only: it is a draft, not a record.
   const draftKey = `shift-draft:${inc.uid}`;
@@ -786,221 +777,246 @@ function IncidentDetail({ inc, no, age, busy, post, lead, after }: { inc: Incide
     setConfirming(false);
   }
 
-  // Two panes, placed straight into the console's grid: the incident in the
-  // middle with the inbox under it, and the response down the right side.
+  // Where the incident stands, as the lifecycle tracker shows it.
+  const stage = inc.resolved || inc.escalated ? 3 : submitted ? 2 : inc.acknowledged ? 1 : 0;
+  const stages = ["New", "Investigating", "Submitted", inc.escalated ? "With tier 2" : "Closed"];
+  const lesson = lessonForIncident(inc.defId, skillOf(inc.kind));
+  const Icon = iconFor(inc.defId);
+  const labOk = Boolean(result?.needFinding);
+
   return (
     <>
-    <main className="sh-main">
-    {lead}
-    <div className={`sh-detail ${inc.resolved ? "sh-detail--done" : ""}`}>
-      <div className="sh-detail__crumbs">
-        <span className={`sh-pill sh-pill--${inc.severity.toLowerCase()}`}>
-          {inc.severity} · {PRIORITY_NOTE[inc.severity].split(" · ")[0]}
-        </span>
-        {(() => {
-          const Icon = iconFor(inc.defId);
-          return (
-            <span className="sh-meta">
+      <main className="sx-main">
+        {lead}
+        <section className={`sx-case${inc.resolved ? " is-done" : ""}`}>
+          <div className="sx-case__meta">
+            <span className={`sx-pri is-${inc.severity.toLowerCase()}`}>
+              {inc.severity} · {SEV_WORD[inc.severity]}
+            </span>
+            <span className="sx-chip">
               <Icon className="h-3.5 w-3.5" /> {inc.kind === "alert" ? "Alert" : "Ticket"}
             </span>
-          );
-        })()}
-        <span className="sh-meta sh-meta--mono">
-          <Hash className="h-3.5 w-3.5" />
-          {no}
-        </span>
-        <span className="sh-meta">
-          <Clock className="h-3.5 w-3.5" /> Arrived {age} ago
-        </span>
-        <span className="sh-meta">
-          <GraduationCap className="h-3.5 w-3.5" /> {cap(skillOf(inc.kind))}
-        </span>
-        {inc.resolved ? (
-          <span className="sh-status sh-status--done">
-            <Check className="h-3.5 w-3.5" /> Solved
-          </span>
-        ) : inc.escalated ? (
-          <span className="sh-status sh-status--up">
-            <ArrowUpRight className="h-3.5 w-3.5" /> With tier 2
-          </span>
-        ) : (
-          <span className="sh-detail__left">{cap(PRIORITY_NOTE[inc.severity].split(" · ")[1])}</span>
-        )}
-      </div>
-
-      <h2 className="sh-detail__title">{inc.title}</h2>
-
-
-      <div className="sh-msg">
-        <span className={`sh-msg__avatar ${inc.kind === "alert" ? "sh-msg__avatar--alert" : ""}`}>
-          {inc.kind === "alert" ? <AlertTriangle className="h-4 w-4" /> : initials(s.name)}
-        </span>
-        <div className="sh-msg__body">
-          <p className="sh-msg__from">
-            <strong>{s.name}</strong>
-            {s.role ? <span className="sh-msg__role">{s.role}</span> : null}
-          </p>
-          <p className="sh-msg__text">{inc.brief}</p>
-          {inc.why && (
-            <p className="sh-why"><span className="sh-why__tag"><Info className="h-3.5 w-3.5" /> Why it matters</span>{inc.why}</p>
-          )}
-          {inc.attack && (
-            <a
-              className="sh-attack"
-              href={`https://attack.mitre.org/techniques/${inc.attack.id.replace(".", "/")}/`}
-              target="_blank"
-              rel="noreferrer"
-              title={`MITRE ATT&CK ${inc.attack.id}: ${inc.attack.name}`}
-            >
-              MITRE ATT&CK {inc.attack.id} · {inc.attack.name}
-            </a>
-          )}
-        </div>
-      </div>
-
-    </div>
-    {after}
-    </main>
-
-    <aside className="sh-right" aria-label="Your response">
-      {inc.resolved ? (
-        <div className="sh-resolved">
-          <span className="sh-resolved__seal" aria-hidden>
-            <Check className="h-5 w-5" />
-          </span>
-          <span>
-            <strong>Closed</strong> · Your lab shows the fix and it counts toward your score
-          </span>
-        </div>
-      ) : inc.escalated ? (
-        <div className="sh-handoff">
-          <p className="sh-handoff__head"><ArrowUpRight className="h-4 w-4" /> Handed to tier 2</p>
-          <p>Tier 2 owns this now · Coach reviews the handoff in your shift report</p>
-          <p className="sh-handoff__cost">It scores as a handoff · You keep the finding points but not the fix points</p>
-        </div>
-      ) : (
-        <div className="sh-work">
-          <p className="sh-work__head">Your response</p>
-          {/* The same four moves on every incident, as one line rather than a
-              paragraph repeated on each: the question below is what changes. */}
-          <ol className="sh-steps" aria-label="How to close it">
-            <li><Search className="h-3.5 w-3.5" /> Investigate</li>
-            <li><Wrench className="h-3.5 w-3.5" /> Fix in your lab</li>
-            <li><FileText className="h-3.5 w-3.5" /> Answer and note</li>
-            <li><Check className="h-3.5 w-3.5" /> Submit and check</li>
+            <span className="sx-chip sx-chip--mono">
+              <Hash className="h-3.5 w-3.5" />
+              {no}
+            </span>
+            <span className="sx-chip">
+              <Clock className="h-3.5 w-3.5" /> Arrived {age} ago
+            </span>
+            <span className="sx-chip">
+              <GraduationCap className="h-3.5 w-3.5" /> {cap(skillOf(inc.kind))}
+            </span>
+            <span className="sx-case__sla">{inc.resolved ? "Solved" : inc.escalated ? "With tier 2" : cap(PRIORITY_NOTE[inc.severity].split(" · ")[1])}</span>
+          </div>
+          <h1 className="sx-case__title">{inc.title}</h1>
+          <ol className="sx-life" aria-label="Where this incident stands">
+            {stages.map((label, i) => (
+              <li key={label} className={i < stage || (i === 3 && stage === 3) ? "is-done" : i === stage ? "is-now" : ""}>
+                <i aria-hidden>{i < stage || (i === 3 && stage === 3) ? <Check className="h-3 w-3" /> : null}</i>
+                {label}
+              </li>
+            ))}
           </ol>
-          <p className="sh-work__note">Your answer and your live lab both have to be right to close it</p>
-          <label className="sh-q">
-            <span className="sh-q__k">The question</span>
-            <span className="sh-q__p">{inc.diagnosisPrompt}</span>
-            <input value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} onKeyDown={submitKey} placeholder="Your answer" autoComplete="off" />
-          </label>
+        </section>
 
-          <label className="sh-field">
-            <span><FileText className="h-3.5 w-3.5" /> Closing note</span>
-            <textarea value={response} onChange={(e) => setResponse(e.target.value)} onKeyDown={submitKey} rows={3} placeholder="What happened and what you changed" />
-          </label>
+        <section className="sx-panel">
+          <header className="sx-panel__head">
+            <span className={`sx-avatar${inc.kind === "alert" ? " is-alert" : ""}`}>{inc.kind === "alert" ? <AlertTriangle className="h-4 w-4" /> : initials(s.name)}</span>
+            <span className="sx-panel__who">
+              <strong>{s.name}</strong>
+              <span>{s.role ?? (inc.kind === "alert" ? "Automated detection" : "Caller")}</span>
+            </span>
+            <span className="sx-k">{inc.kind === "alert" ? "Alert" : "Reported"}</span>
+          </header>
+          <p className="sx-brief">{inc.brief}</p>
+        </section>
 
-          {hints.length > 0 && (
-            <ul className="sh-hints">
-              {hints.map((h, i) => (
-                <li key={i}><LifeBuoy className="h-3.5 w-3.5" /> {h}</li>
-              ))}
-            </ul>
-          )}
+        {(inc.why || inc.attack) && (
+          <div className="sx-pair">
+            {inc.why && (
+              <section className="sx-panel sx-panel--why">
+                <span className="sx-k">
+                  <Info className="h-3.5 w-3.5" /> Why it matters
+                </span>
+                <p>{inc.why}</p>
+              </section>
+            )}
+            {inc.attack && (
+              <a
+                className="sx-panel sx-panel--attack"
+                href={`https://attack.mitre.org/techniques/${inc.attack.id.replace(".", "/")}/`}
+                target="_blank"
+                rel="noreferrer"
+                title={`MITRE ATT&CK ${inc.attack.id}: ${inc.attack.name}`}
+              >
+                <span className="sx-k">MITRE ATT&CK</span>
+                <strong>{inc.attack.id}</strong>
+                <span>{inc.attack.name}</span>
+                <ArrowUpRight className="sx-panel__out h-4 w-4" />
+              </a>
+            )}
+          </div>
+        )}
+      </main>
 
-          {/* Two separate verdicts, so it is clear which half is still wrong:
-              the answer to the question, and the fix in the lab. */}
-          {result && !result.resolved && (
-            <div className="sh-result sh-result--wait">
-              <ul className="sh-verdict">
-                <li className={result.answerRight ? "is-ok" : "is-no"}>
-                  {result.answerRight ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
-                  <strong>Your answer</strong> {result.answerRight ? "is right" : diagnosis.trim() ? "is not right yet" : "is blank"}
+      <aside className="sx-resp" aria-label="Your response">
+        {inc.resolved ? (
+          <div className="sx-closed">
+            <span className="sx-closed__seal" aria-hidden>
+              <Check className="h-6 w-6" />
+            </span>
+            <strong>Closed</strong>
+            <p>Your lab shows the fix · It counts toward your shift score</p>
+          </div>
+        ) : inc.escalated ? (
+          <div className="sx-closed is-up">
+            <span className="sx-closed__seal" aria-hidden>
+              <ArrowUpRight className="h-6 w-6" />
+            </span>
+            <strong>Handed to tier 2</strong>
+            <p>Coach reviews the handoff in your shift report</p>
+            <p className="sx-closed__cost">You keep the finding points but not the fix points</p>
+          </div>
+        ) : (
+          <>
+            <div className="sx-resp__scroll">
+              <p className="sx-k">Your response</p>
+              <ol className="sx-steps">
+                <li className={`sx-step${stage >= 1 ? " is-done" : ""}`}>
+                  <span className="sx-step__n">{stage >= 1 ? <Check className="h-3.5 w-3.5" /> : 1}</span>
+                  <div className="sx-step__body">
+                    <strong>Investigate</strong>
+                    <p>Read what your lab shows before you change anything</p>
+                    <div className="sx-step__tools">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          ask(
+                            `I'm on shift working ${inc.severity} "${inc.title}". ${inc.brief} ${diagnosis.trim() ? `So far I think: ${diagnosis.trim()}.` : "I haven't found the evidence yet."} Help me decide what to check next, without giving me the answer.`
+                          )
+                        }
+                      >
+                        <LifeBuoy className="h-3.5 w-3.5" /> Think it through
+                      </button>
+                      <a href={lesson.href} target="_blank" rel="noopener" title={`Opens the ${lesson.label} lesson in a new tab`}>
+                        <BookOpen className="h-3.5 w-3.5" /> Read up · {lesson.label}
+                      </a>
+                    </div>
+                  </div>
                 </li>
-                <li className={result.needFinding ? "is-ok" : "is-no"}>
-                  {result.needFinding ? <Check className="h-3.5 w-3.5" /> : result.waiting ? <Loader2 className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
-                  <strong>Your lab</strong>{" "}
-                  {result.needFinding
-                    ? "shows the fix"
-                    : result.waiting
-                      ? "did not report back in time, so nothing was marked wrong. Check again in a moment"
-                      : result.evidencePending && result.results.filter((r) => !r.ok).length === 1
-                        ? "has not received this incident yet. Give it a moment, then check again"
-                        : "does not show the fix yet"}
+                <li className={`sx-step${labOk ? " is-done" : ""}`}>
+                  <span className="sx-step__n">{labOk ? <Check className="h-3.5 w-3.5" /> : 2}</span>
+                  <div className="sx-step__body">
+                    <strong>Fix it in your lab</strong>
+                    <p>The check reads your live lab so the change has to be real</p>
+                  </div>
                 </li>
-              </ul>
-              {!result.waiting && !result.needFinding && (
-                <ul>
-                  {result.results
-                    .filter((r) => !r.ok)
-                    .map((r, i) => (
-                      <li key={i}>{r.label}</li>
-                    ))}
+                <li className={`sx-step${hasFinding ? " is-done" : ""}`}>
+                  <span className="sx-step__n">{hasFinding ? <Check className="h-3.5 w-3.5" /> : 3}</span>
+                  <label className="sx-step__body">
+                    <strong>Answer</strong>
+                    <span className="sx-q">{inc.diagnosisPrompt}</span>
+                    <input value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} onKeyDown={submitKey} placeholder="Your answer" autoComplete="off" />
+                  </label>
+                </li>
+                <li className={`sx-step${hasNote ? " is-done" : ""}`}>
+                  <span className="sx-step__n">{hasNote ? <Check className="h-3.5 w-3.5" /> : 4}</span>
+                  <label className="sx-step__body">
+                    <strong>Closing note</strong>
+                    <textarea value={response} onChange={(e) => setResponse(e.target.value)} onKeyDown={submitKey} rows={3} placeholder="What happened and what you changed" />
+                  </label>
+                </li>
+              </ol>
+
+              {hints.length > 0 && (
+                <ul className="sh-hints">
+                  {hints.map((h, i) => (
+                    <li key={i}>
+                      <LifeBuoy className="h-3.5 w-3.5" /> {h}
+                    </li>
+                  ))}
                 </ul>
               )}
-            </div>
-          )}
 
-          {confirming ? (
-            <div className="sh-confirm">
-              <p className="sh-confirm__head"><ArrowUpRight className="h-4 w-4" /> Hand this to tier 2?</p>
-              <p>Coach takes it as the tier 2 lead and grades the handoff after the shift</p>
-              <p className="sh-confirm__cost">
-                You keep the finding points but give up the fix points
-              </p>
-              <div className="sh-confirm__btns">
-                <button type="button" className="sh-escalate sh-escalate--go" disabled={busy} onClick={() => submit(true)}>
-                  {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpRight className="h-4 w-4" />} Hand it up
-                </button>
-                <button type="button" className="sh-coach" disabled={busy} onClick={() => setConfirming(false)}>
-                  Keep working it
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="sh-actions">
-              <button type="button" className="sh-submit" disabled={busy} onClick={() => submit(false)}>
-                {busy ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" /> Checking your lab…
-                  </>
-                ) : (
-                  <>
-                    <Check className="h-4 w-4" /> Submit and check
-                  </>
-                )}
-              </button>
-              {/* Nothing to hand up without a finding, so the button says so rather
-                  than failing on the server after the click. */}
-              <button
-                type="button"
-                className="sh-escalate"
-                disabled={busy || !canEscalate}
-                title={canEscalate ? "Hand this incident to tier 2 with your finding and closing note" : `To escalate, ${escalateNeeds.join(", ")}`}
-                onClick={() => setConfirming(true)}
-              >
-                <ArrowUpRight className="h-4 w-4" /> Escalate to tier 2
-              </button>
-              <button
-                type="button"
-                className="sh-coach sh-coach--talk"
-                onClick={() =>
-                  ask(
-                    `I'm on shift working ${inc.severity} "${inc.title}". ${inc.brief} ${diagnosis.trim() ? `So far I think: ${diagnosis.trim()}.` : "I haven't found the evidence yet."} Help me decide what to check next, without giving me the answer.`
-                  )
-                }
-              >
-                <LifeBuoy className="h-3.5 w-3.5" /> Think it through
-              </button>
-              {!canEscalate && (
-                <p className="sh-actions__why">To escalate: {escalateNeeds.join(", ")}.</p>
+              {/* Two separate verdicts, so it is clear which half is still wrong. */}
+              {result && !result.resolved && (
+                <div className="sx-verdict">
+                  <ul>
+                    <li className={result.answerRight ? "is-ok" : "is-no"}>
+                      {result.answerRight ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+                      <strong>Your answer</strong> {result.answerRight ? "is right" : diagnosis.trim() ? "is not right yet" : "is blank"}
+                    </li>
+                    <li className={result.needFinding ? "is-ok" : "is-no"}>
+                      {result.needFinding ? <Check className="h-3.5 w-3.5" /> : result.waiting ? <Loader2 className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
+                      <strong>Your lab</strong>{" "}
+                      {result.needFinding
+                        ? "shows the fix"
+                        : result.waiting
+                          ? "did not report back in time so nothing was marked wrong · Check again in a moment"
+                          : result.evidencePending && result.results.filter((r) => !r.ok).length === 1
+                            ? "has not received this incident yet · Check again in a moment"
+                            : "does not show the fix yet"}
+                    </li>
+                  </ul>
+                  {!result.waiting && !result.needFinding && (
+                    <ul className="sx-verdict__left">
+                      {result.results
+                        .filter((r) => !r.ok)
+                        .map((r, i) => (
+                          <li key={i}>{r.label}</li>
+                        ))}
+                    </ul>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
-      )}
-    </aside>
+
+            <div className="sx-resp__foot">
+              {confirming ? (
+                <div className="sx-confirm">
+                  <strong>
+                    <ArrowUpRight className="h-4 w-4" /> Hand this to tier 2?
+                  </strong>
+                  <p>Coach takes it as the tier 2 lead · You keep the finding points but give up the fix points</p>
+                  <div className="sx-foot__row">
+                    <button type="button" className="sx-submit" disabled={busy} onClick={() => submit(true)}>
+                      {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpRight className="h-4 w-4" />} Hand it up
+                    </button>
+                    <button type="button" className="sx-ghost" disabled={busy} onClick={() => setConfirming(false)}>
+                      Keep working
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <button type="button" className="sx-submit" disabled={busy} onClick={() => submit(false)}>
+                    {busy ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" /> Checking your lab…
+                      </>
+                    ) : (
+                      <>
+                        <Check className="h-4 w-4" /> Submit and check
+                        <kbd>Ctrl ↵</kbd>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    className="sx-ghost"
+                    disabled={busy || !canEscalate}
+                    title={canEscalate ? "Hand this incident to tier 2 with your finding and closing note" : `To escalate ${escalateNeeds.join(" · ")}`}
+                    onClick={() => setConfirming(true)}
+                  >
+                    <ArrowUpRight className="h-4 w-4" /> Escalate to tier 2
+                  </button>
+                  {!canEscalate && <p className="sx-foot__why">To escalate · {escalateNeeds.join(" · ")}</p>}
+                </>
+              )}
+            </div>
+          </>
+        )}
+      </aside>
     </>
   );
 }
