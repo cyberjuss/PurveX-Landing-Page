@@ -6608,3 +6608,7 @@ a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transpare
 .dk-who > span { display: grid; gap: 1px; }
 .dk-who > span { color: var(--rd-ink); font-weight: 600; }
 .dk-who small { font-size: 0.6875rem; font-weight: 500; color: var(--rd-ink-3); }
+
+/* Priority as a word (Critical, High, Routine), not a code. */
+.dk-pri b { width: auto; min-width: 0; padding: 0 9px; font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif); font-size: 0.75rem; letter-spacing: 0.01em; }
+@media (min-width: 1081px) { .dk-row { grid-template-columns: 100px minmax(0, 1fr) 160px 130px 120px 150px; } }

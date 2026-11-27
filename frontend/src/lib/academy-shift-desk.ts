@@ -261,7 +261,7 @@ export const DESK_EVENTS: DeskDef[] = [
     minLevel: 2,
     points: 10,
     lesson: "Priority decides the order, not volume or rank. Acknowledge the person, give an honest time, log it, and go back to the highest priority.",
-    source: "Shift rules: the queue is worked by priority, P1 first",
+    source: "Shift rules: the queue is worked by priority, Critical first",
     build: (who) => ({
       from: `${who.name} <${who.sam}@purvex.local>`,
       title: "URGENT!!! Conference room screen not working",
@@ -437,7 +437,7 @@ export const DESK_EVENTS: DeskDef[] = [
         },
         {
           id: "isolate",
-          text: "Tell them to disconnect from the network now without powering off, then raise a P1 to incident response with what they saw",
+          text: "Tell them to disconnect from the network now without powering off, then raise a Critical incident with what they saw",
           correct: true,
           why: "It is encrypting the shared drive too, so every minute connected spreads the damage. Isolating stops that and keeps the evidence for responders.",
         },

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { Database, Network, Server, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
+import { Check, Database, Lightbulb, Monitor, Network, Server, ShieldCheck, Workflow, X, type LucideIcon } from "lucide-react";
 import { useHostedLab } from "./hosted-lab-button";
 import "./lab-setup-screen.css";
 
@@ -29,6 +29,19 @@ const RESUME: Step[] = [
   { label: "Resuming Windows", until: 22, icon: Workflow },
   { label: "Reconnecting to Range", until: 32, icon: ShieldCheck },
 ];
+
+// Something worth reading while the server boots: one desk habit at a time.
+const TIPS = [
+  "4625 is a failed sign-in · 4740 is a lockout",
+  "Check the account before you change it",
+  "Disable a leaver · never delete them on day one",
+  "Grant access with a group · never one person at a time",
+  "Critical first then High then Routine",
+  "4728 means someone joined a security group",
+  "Read the log before you contain anything",
+  "A locked account and a disabled one need different fixes",
+];
+const TIP_SECONDS = 8;
 
 /** Black in the dark portal, white in the light one. The screen is portaled to
  *  <body>, so the academy's own tokens are out of scope and the theme has to be
@@ -90,7 +103,8 @@ export function LabSetupScreen() {
 
   return createPortal(
     <div className="ls" data-academy-theme={theme} role="status" aria-live="polite">
-      <div className="ls__inner">
+      <div className="ls__inner ls__inner--split">
+        <div className="ls__main">
         <p className="ls__brand">
           <Image src="/logo.png" alt="" width={34} height={34} priority />
           <span>PurveX</span>
@@ -121,12 +135,15 @@ export function LabSetupScreen() {
 
         <ul className="ls__log" aria-hidden="true">
           {steps.map((s, i) => {
-            const Icon = s.icon;
+            const Icon = i < current ? Check : s.icon;
             const rowState = i < current ? "done" : i === current ? "now" : "pending";
+            // How long the finished step took, so the screen visibly moves.
+            const took = Math.round(s.until - (i ? steps[i - 1].until : 0));
             return (
               <li key={s.label} className={`ls__log-row is-${rowState}`}>
                 <Icon aria-hidden="true" />
                 <span>{s.label}</span>
+                {rowState === "done" && <small className="ls__took">{took}s</small>}
               </li>
             );
           })}
@@ -146,6 +163,40 @@ export function LabSetupScreen() {
         <button type="button" className="ls__hide" onClick={() => setHidden(true)}>
           <X aria-hidden="true" /> Keep reading while it builds
         </button>
+        </div>
+
+        <aside className="ls__side" aria-label="Your environment">
+          <p className="ls__kicker">Your environment</p>
+          {[
+            { name: "dc01", os: "Windows Server 2022", role: "Domain controller · purvexfinancial.local", icon: Server, live: current >= steps.length - 1 ? "on" : current >= 1 ? "boot" : "off" },
+            { name: "web01", os: "Ubuntu 24.04", role: "Linux server", icon: Monitor, live: current >= steps.length - 1 ? "on" : current >= 1 ? "boot" : "off" },
+          ].map((m) => {
+            const Icon = m.icon;
+            return (
+              <div key={m.name} className={`ls__node is-${m.live}`}>
+                <span className="ls__node-icon">
+                  <Icon aria-hidden="true" />
+                </span>
+                <span className="ls__node-main">
+                  <b>{m.name}</b>
+                  <small>
+                    {m.os} · {m.role}
+                  </small>
+                </span>
+                <span className="ls__node-state">
+                  <i aria-hidden="true" />
+                  {m.live === "on" ? "Online" : m.live === "boot" ? "Booting" : "Off"}
+                </span>
+              </div>
+            );
+          })}
+          <div className="ls__tip" key={Math.floor(elapsed / TIP_SECONDS)}>
+            <p className="ls__kicker">
+              <Lightbulb aria-hidden="true" /> While you wait
+            </p>
+            <p>{TIPS[Math.floor(elapsed / TIP_SECONDS) % TIPS.length]}</p>
+          </div>
+        </aside>
       </div>
     </div>,
     document.body

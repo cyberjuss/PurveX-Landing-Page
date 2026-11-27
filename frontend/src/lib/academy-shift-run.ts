@@ -374,6 +374,8 @@ function needsTriage(run: ShiftRun, inc: IncidentRun): boolean {
 }
 
 const SEVERITIES = ["P1", "P2", "P3"] as const;
+/** The word a student sees for each priority. The codes stay internal. */
+const SEV_WORD: Record<Severity, string> = { P1: "Critical", P2: "High", P3: "Routine" };
 /** Points for a priority call: exact is full marks, one level off is partial, two off is none. */
 export const CALL_POINTS = 10;
 export function callPoints(chose: string | undefined, actual: string): number {
@@ -385,7 +387,7 @@ export function callPoints(chose: string | undefined, actual: string): number {
 
 /** The student sets a ticket's priority. Locked once set, as on a real queue: the first call is on record. */
 export async function triageIncident(userId: string, uid: string, priority: string): Promise<PublicShift | { error: string }> {
-  if (!(SEVERITIES as readonly string[]).includes(priority)) return { error: "Pick P1, P2 or P3" };
+  if (!(SEVERITIES as readonly string[]).includes(priority)) return { error: "Pick Critical, High or Routine" };
   const found = activeIncident(await loadShift(userId), uid);
   if (!found) return { error: "That incident is not open." };
   if (!needsTriage(found.run, found.inc)) return { error: "This one already has its priority" };
@@ -720,7 +722,7 @@ function buildReport(run: ShiftRun): ShiftReport {
   // Said last, so a desk mistake outranks the generic advice: these are the
   // habits that cost most on a real desk and never show up in a lab check.
   const emailWrong = deskRuns.find((d) => d.kind === "email" && d.answeredAtSec !== null && (d.score ?? 0) === 0);
-  if (order.misses.length) habit = "You opened lower-severity work while a higher one waited. Scan the queue and open the P1 first, every time.";
+  if (order.misses.length) habit = "You opened lower-severity work while a higher one waited. Scan the queue and open the Critical one first, every time.";
   // The email's own lesson is the habit: it is the one thing the inbox taught.
   if (emailWrong) habit = `The email talked you into the wrong move. ${toPublicDesk(emailWrong, end)?.verdict?.lesson ?? "Verify through what is already on file before you act on a request."}`;
   return {
@@ -738,8 +740,8 @@ function buildReport(run: ShiftRun): ShiftReport {
       max: run.incidents.length ? order.max : 0,
       worked: order.worked,
       misses: order.misses.map((m) => ({
-        opened: `${m.opened} ${titleOf(byUid.get(m.openedUid)!)}`,
-        waiting: `${m.waiting} ${titleOf(byUid.get(m.waitingUid)!)}`,
+        opened: `${SEV_WORD[m.opened]} ${titleOf(byUid.get(m.openedUid)!)}`,
+        waiting: `${SEV_WORD[m.waiting]} ${titleOf(byUid.get(m.waitingUid)!)}`,
         atSec: m.atSec,
       })),
     },

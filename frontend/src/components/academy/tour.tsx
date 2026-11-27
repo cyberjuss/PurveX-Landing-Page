@@ -262,7 +262,7 @@ const SHIFT: Tour = {
     {
       icon: Timer,
       title: "Every ticket has a clock",
-      body: "P1 five minutes · P2 eight · P3 twelve",
+      body: "Critical first then High then Routine",
     },
     {
       icon: ShieldAlert,

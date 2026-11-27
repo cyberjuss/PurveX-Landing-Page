@@ -1101,3 +1101,9 @@
   .dk--report .dk-kpis { gap: 20px 24px; }
   .dk--report .sdr__metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 24px; }
 }
+
+/* Priority as a word, not a code. */
+.sx-triage__guide b { width: 64px; font-family: inherit; }
+.sx-triage__pick button b { font-family: inherit; font-size: 0.95rem; }
+.sh-li__sev { width: auto !important; min-width: 0 !important; font-family: inherit; letter-spacing: 0; }
+@media (min-width: 721px) { .dk--report .dk-row--rep { grid-template-columns: 100px minmax(0, 1fr) 130px 72px; } }

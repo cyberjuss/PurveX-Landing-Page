@@ -768,7 +768,7 @@ export function DrillRunner() {
       <div className="rd dr dr--play dr--ws">
         <div className="dr-bar dr-bar--ticket">
           <span className="dr-ticket">
-            <span className={`dr-ticket__pri${run.mode === "ctf" ? " is-p2" : ""}`}>{run.mode === "ctf" ? "P2 · High" : "P3 · Routine"}</span>
+            <span className={`dr-ticket__pri${run.mode === "ctf" ? " is-p2" : ""}`}>{run.mode === "ctf" ? "High" : "Routine"}</span>
             <code className="dr-ticket__no">{run.mode === "ctf" ? `SEC-${isoWeek()}` : `INC-${20000 + dayOfYear()}`}</code>
           </span>
           <span className="rd-kicker">

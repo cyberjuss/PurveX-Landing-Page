@@ -190,8 +190,7 @@ export function DeskQueue({
           {sorted.map((t) => (
             <li key={t.key} className={`dk-row dk-row--p${t.priority} is-${t.state.tone}`} data-tour={t.tour}>
               <span className="dk-pri">
-                <b>P{t.priority}</b>
-                <small>{PRIORITY[t.priority]}</small>
+                <b>{PRIORITY[t.priority]}</b>
               </span>
               <span className="dk-ticket">
                 <span className="dk-ticket__meta">

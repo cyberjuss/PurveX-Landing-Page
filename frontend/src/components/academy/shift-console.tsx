@@ -300,7 +300,7 @@ function ShiftIntro({ theme, labState, busy, error, queued, onStart, onStartLab,
           <li>
             <span className="sh-rules__ic"><Clock className="h-4 w-4" /></span>
             <strong>One 30-minute window, worked by priority</strong>
-            <small>P1 before P2 before P3 · Anything open at the end loses its fix points</small>
+            <small>Critical before High before Routine · Anything open at the end loses its fix points</small>
           </li>
           <li>
             <span className="sh-rules__ic"><LifeBuoy className="h-4 w-4" /></span>
@@ -545,7 +545,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
   useEffect(() => () => setPlace(null), [setPlace]);
 
   // The tab title, so the shift can be watched from the lab's window.
-  const tabTitle = `${openBy.P1 ? `(${openBy.P1} P1) ` : ""}${clock(left)} · Shift`;
+  const tabTitle = `${openBy.P1 ? `(${openBy.P1} Critical) ` : ""}${clock(left)} · Shift`;
   useEffect(() => {
     const before = document.title;
     return () => {
@@ -581,9 +581,9 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
             <small>Untriaged</small>
           </span>
           {(["P1", "P2", "P3"] as const).map((sev) => (
-            <span key={sev} className={`sx-board__cell is-${sev.toLowerCase()}${openBy[sev] ? "" : " is-zero"}`} title={`${openBy[sev]} ${sev} open`}>
+            <span key={sev} className={`sx-board__cell is-${sev.toLowerCase()}${openBy[sev] ? "" : " is-zero"}`} title={`${openBy[sev]} ${SEV_WORD[sev]} open`}>
               <b>{openBy[sev]}</b>
-              <small>{sev} open</small>
+              <small>{SEV_WORD[sev]}</small>
             </span>
           ))}
           <span className="sx-board__cell is-closed">
@@ -595,7 +595,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
           </span>
         </div>
         <div className="sx-bar__end">
-          <button type="button" className="sx-sound" onClick={toggleSound} aria-pressed={!muted} title={muted ? "P1 alert sound is off" : "P1 alert sound is on"}>
+          <button type="button" className="sx-sound" onClick={toggleSound} aria-pressed={!muted} title={muted ? "Critical alert sound is off" : "Critical alert sound is on"}>
             {muted ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
           </button>
           <button
@@ -603,11 +603,11 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
             className="sx-next"
             disabled={!nextUp}
             onClick={() => nextUp && setSelectedId(nextUp.uid)}
-            title={nextUp ? `Open ${nextUp.severity} ${nextUp.title} (N)` : "Nothing else open"}
+            title={nextUp ? `Open ${nextUp.untriaged ? "untriaged" : SEV_WORD[nextUp.severity]} ${nextUp.title} (N)` : "Nothing else open"}
           >
             <Zap className="h-4 w-4" />
             Next
-            {nextUp && <b className={`sx-next__sev is-${nextUp.untriaged ? "un" : nextUp.severity.toLowerCase()}`}>{nextUp.untriaged ? "Triage" : nextUp.severity}</b>}
+            {nextUp && <b className={`sx-next__sev is-${nextUp.untriaged ? "un" : nextUp.severity.toLowerCase()}`}>{nextUp.untriaged ? "Triage" : SEV_WORD[nextUp.severity]}</b>}
           </button>
           <div className={`sx-timer ${left <= 60 ? "is-low" : left <= 300 ? "is-warn" : ""}`}>
             <small>Shift ends in</small>
@@ -706,7 +706,7 @@ function ActiveShift({ theme, shift, now, busy, error, post }: { theme: "light" 
                             <li key={inc.uid}>
                               <button type="button" role="tab" aria-selected={isSel} className={cls} data-uid={inc.uid} onClick={() => setSelectedId(inc.uid)}>
                                 <span className="sh-li__top">
-                                  <span className="sh-li__sev">{inc.untriaged ? "Triage" : inc.severity}</span>
+                                  <span className="sh-li__sev">{inc.untriaged ? "Triage" : SEV_WORD[inc.severity]}</span>
                                   <span className="sh-li__icon">
                                     <Icon className="h-3.5 w-3.5" />
                                   </span>
@@ -850,7 +850,7 @@ function IncidentDetail({ inc, no, age, busy, post, lead }: { inc: Incident; no:
         {lead}
         <section className={`sx-case${inc.resolved ? " is-done" : ""}`}>
           <div className="sx-case__meta">
-            <span className={`sx-pri is-${inc.untriaged ? "un" : inc.severity.toLowerCase()}`}>{inc.untriaged ? "Untriaged" : `${inc.severity} · ${SEV_WORD[inc.severity]}`}</span>
+            <span className={`sx-pri is-${inc.untriaged ? "un" : inc.severity.toLowerCase()}`}>{inc.untriaged ? "Untriaged" : SEV_WORD[inc.severity]}</span>
             <span className="sx-chip">
               <Icon className="h-3.5 w-3.5" /> {inc.kind === "alert" ? "Alert" : "Ticket"}
             </span>
@@ -943,20 +943,19 @@ function IncidentDetail({ inc, no, age, busy, post, lead }: { inc: Incident; no:
               <p>Weigh impact against urgency · The first call is the one on record</p>
               <ul className="sx-triage__guide">
                 <li>
-                  <b className="is-p1">P1</b> An attack in progress or the business is stopped
+                  <b className="is-p1">Critical</b> An attack in progress or the business is stopped
                 </li>
                 <li>
-                  <b className="is-p2">P2</b> A real security risk or a whole team blocked
+                  <b className="is-p2">High</b> A real security risk or a whole team blocked
                 </li>
                 <li>
-                  <b className="is-p3">P3</b> One person affected or a workaround exists
+                  <b className="is-p3">Routine</b> One person affected or a workaround exists
                 </li>
               </ul>
               <div className="sx-triage__pick">
                 {(["P1", "P2", "P3"] as const).map((p) => (
                   <button key={p} type="button" className={`is-${p.toLowerCase()}`} disabled={busy} onClick={() => void post({ action: "triage", uid: inc.uid, priority: p })}>
-                    <b>{p}</b>
-                    <small>{SEV_WORD[p]}</small>
+                    <b>{SEV_WORD[p]}</b>
                   </button>
                 ))}
               </div>
@@ -1183,14 +1182,13 @@ function ShiftReport({ theme, report, onAgain, busy, error }: { theme: "light" |
                 return (
                   <li key={n} className={`dk-row dk-row--rep dk-row--p${pri(i.severity)}`}>
                     <span className="dk-pri">
-                      <b>{i.severity}</b>
-                      <small>{SEV_WORD[i.severity as Sev] ?? ""}</small>
+                      <b>{SEV_WORD[i.severity as Sev] ?? i.severity}</b>
                     </span>
                     <span className="dk-ticket">
                       <strong>{i.title}</strong>
                       {i.call && (
                         <span className={`dk-call${i.call.points === i.call.max ? " is-good" : i.call.points ? " is-near" : " is-bad"}`}>
-                          {i.call.chose ? `Your call ${i.call.chose} · Actual ${i.call.actual}` : `Never triaged · Actual ${i.call.actual}`} · {i.call.points}/{i.call.max}
+                          {i.call.chose ? `Your call ${SEV_WORD[i.call.chose as Sev] ?? i.call.chose} · Actual ${SEV_WORD[i.call.actual as Sev] ?? i.call.actual}` : `Never triaged · Actual ${SEV_WORD[i.call.actual as Sev] ?? i.call.actual}`} · {i.call.points}/{i.call.max}
                         </span>
                       )}
                       <span className="dk-tags">
