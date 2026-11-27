@@ -115,12 +115,10 @@ function cfg() {
   };
 }
 
-/** Thrown when a student has spent their month. The route turns it into a 429
- *  with this message, which is written for the student rather than the log. */
+/** Thrown when a student has spent their month, or has so little left that a
+ *  session could not finish booting on it. The route turns it into a 429 with
+ *  this message, which is written for the student rather than the log. */
 export class LabHoursSpentError extends Error {
-  // Only thrown when the week is actually gone. A session no longer reserves
-  // its hours, it just runs for whatever is left, so there is no "a session
-  // needs three hours and you have two" case any more.
   constructor(public readonly used: number, public readonly limit: number, session = 0) {
     const left = Math.max(0, limit - used);
     super(
@@ -206,10 +204,20 @@ async function endSession(userId: string, row: HostedLabRow): Promise<void> {
   if (await claimLabSessionEnd(userId, row.stopAt)) await chargeElapsed(userId, row);
 }
 
+// A domain controller alone can take up to 20 minutes to boot and finish
+// promoting the forest (the build screen says as much). A session shorter
+// than this was handed out silently -- no idle, orphan, or lapsed-Pro log,
+// just the ordinary due-sweep -- and stopped the machine before it ever
+// finished becoming a domain, which is what "AD won't let me log in" turned
+// out to be. Refusing the start instead costs nothing: no session opened, no
+// hours charged.
+const MIN_USEFUL_SESSION_MINUTES = 30;
+
 /**
- * Refuses a start when the week is spent, and says how long the session may
- * run for. A student with forty minutes left gets forty minutes, not a
- * three-hour session they cannot pay for.
+ * Refuses a start when the week is spent, or when what's left could not
+ * finish a build, and says how long the session may run for otherwise. A
+ * student with forty minutes left gets forty minutes, not a three-hour
+ * session they cannot pay for.
  */
 async function sessionLengthMs(userId: string): Promise<number> {
   const c = cfg();
@@ -217,7 +225,10 @@ async function sessionLengthMs(userId: string): Promise<number> {
   if (!c.weeklyHours) return full;
   const { used, limit } = await labHours(userId);
   if (used >= limit) throw new LabHoursSpentError(Math.round(used), limit);
-  return Math.min(full, Math.max(5 * 60_000, (limit - used) * 3600_000));
+  const minHours = MIN_USEFUL_SESSION_MINUTES / 60;
+  const left = limit - used;
+  if (left < minHours) throw new LabHoursSpentError(Math.round(used * 10) / 10, limit, minHours);
+  return Math.min(full, left * 3600_000);
 }
 
 /** How long one session runs before the lab stops itself. The briefing and the
@@ -386,7 +397,15 @@ export function firstBootScript(key: string, password: string, url: string): str
     'Start-Transcript -Path "$dir\\first-boot.log" -Append',
     "# Active Directory takes a minute or two after boot.",
     "for ($i = 0; $i -lt 60; $i++) { try { Import-Module ActiveDirectory -ErrorAction Stop; Get-ADDomain -ErrorAction Stop | Out-Null; break } catch { Start-Sleep -Seconds 10 } }",
-    `Set-ADAccountPassword -Identity Administrator -Reset -NewPassword (ConvertTo-SecureString ${ps(password)} -AsPlainText -Force)`,
+    // Get-ADDomain answering means AD is reachable, not that a password write
+    // against it will succeed yet -- a change made within the next few seconds
+    // of that can still throw. This had no retry and no -ErrorAction Stop, so
+    // a throw here logged itself and the script carried on to build the rest
+    // of the lab, which still reached "ready": a pod that answered the brief
+    // perfectly while running the image's own baked-in password underneath,
+    // which is not the one Guacamole was handed. NLA then failed against it,
+    // and whatever the student saw next was the student's problem to explain.
+    `for ($pwi = 0; $pwi -lt 12; $pwi++) { try { Set-ADAccountPassword -Identity Administrator -Reset -NewPassword (ConvertTo-SecureString ${ps(password)} -AsPlainText -Force) -ErrorAction Stop; break } catch { if ($pwi -eq 11) { Write-Host "Administrator password reset never took: $($_.Exception.Message)" }; Start-Sleep -Seconds 10 } }`,
     // Prefer the script Range serves now over the copy baked into the image. A
     // ticket added to the script after the image was built is otherwise missing
     // from every pod cloned from it, with nothing that ever repairs it. The
@@ -892,14 +911,26 @@ export async function startHostedLab(userId: string): Promise<void> {
 }
 
 // How long a pod is allowed to spend becoming usable before the idle clock
-// means anything. A Windows domain controller boots, waits for Active
-// Directory, builds the forest and plants the tickets, and nobody is signed
-// in for any of it. Was 30: with the default 20-minute idle window that put
-// the earliest possible stop at 50 minutes of session time, which read as
-// "idle stop doesn't work" to a student who walked away at 30. Cut to 10,
-// a real but smaller margin, not removed outright -- this exact rule has
-// cost a student a paid session twice before by moving too fast.
+// means anything to someone who has *already* worked in it and then stopped.
+// Was 30: with the default 20-minute idle window that put the earliest
+// possible stop at 50 minutes of session time, which read as "idle stop
+// doesn't work" to a student who walked away at 30. Cut to 10, a real but
+// smaller margin, not removed outright -- this exact rule has cost a student
+// a paid session twice before by moving too fast.
 const IDLE_BUILD_GRACE_MINUTES = 10;
+
+// The same grace, but for a lab nobody has ever connected to yet -- which is
+// not "a student mid-session went quiet," it is "the build might still be
+// running." A domain controller can take up to 20 minutes to boot, join the
+// forest and plant the tickets (the build screen says so itself), and the
+// 10-minute margin above added to the 20-minute idle window left as little
+// as 10 minutes between a slow build finishing and the lab being killed for
+// having never been opened -- not much room to notice "ready" and click in.
+// Pods were observed dying at almost exactly session-minute 30, never
+// connected once, which is this number doing exactly what it was set to do,
+// just too eagerly. Large enough to clear a worst-case build with real room
+// to spare, since nothing here is refunded for being hard to notice in time.
+const UNOPENED_BUILD_GRACE_MINUTES = 30;
 
 /**
  * Should a lab be stopped for want of anyone using it?
@@ -921,7 +952,8 @@ export function shouldStopIdle(args: {
   now: number;
   idleStopMinutes: number;
   unopenedStopMinutes: number;
-  buildGraceMinutes: number;
+  openedBuildGraceMinutes: number;
+  unopenedBuildGraceMinutes: number;
 }): { stop: boolean; why: string } {
   const { idleMinutes, everConnected, sessionStartedMs, now } = args;
   if (typeof idleMinutes !== "number") return { stop: false, why: "the pod did not report its idleness" };
@@ -941,7 +973,11 @@ export function shouldStopIdle(args: {
   // build, and this makes a third mistake like it cost nothing.
   if (!Number.isFinite(sessionStartedMs)) return { stop: false, why: "the session start could not be read" };
   const sessionMinutes = (now - sessionStartedMs) / 60_000;
-  if (sessionMinutes < after + args.buildGraceMinutes) {
+  // Different grace for each: once opened, the build is over and the only
+  // question is how fast a real idle stop should bite. Never opened, the
+  // question is still whether the build is even done.
+  const buildGrace = opened ? args.openedBuildGraceMinutes : args.unopenedBuildGraceMinutes;
+  if (sessionMinutes < after + buildGrace) {
     return { stop: false, why: `the session is ${Math.round(sessionMinutes)} minutes old, inside the build grace` };
   }
   return { stop: true, why: opened ? `idle ${Math.round(idleMinutes)} minutes` : `never opened, ${Math.round(idleMinutes)} minutes` };
@@ -959,17 +995,25 @@ export async function stopIdleHostedLab(userId: string, idleMinutes: number | un
   const row = await loadHostedLab(userId);
   // stopAt is null on a lab that is already stopped, so this never fires twice.
   if (!row?.stopAt) return false;
-  // stopAt is set to now plus the session length on every start, so working
-  // back from it gives the start of the session in hand. createdAt would not:
-  // a restart boots and builds again and leaves createdAt where it was.
+  // updatedAt is the session's own start: a start and an extend both write
+  // it and nothing else touches the row before the lab stops (see sessionMinutes
+  // above). Working stopAt backward by the *configured* sessionHours used to
+  // stand in for this, which is only right when the session actually ran the
+  // full configured length -- a session capped short by the weekly-hour limit
+  // runs less than that, so the old math placed its start earlier than it
+  // really was and read every such session as older than it is, letting both
+  // build-grace windows expire too soon for exactly the students closest to
+  // their cap. createdAt would not do either: a restart boots and builds
+  // again and leaves createdAt where it was.
   const verdict = shouldStopIdle({
     idleMinutes,
     everConnected,
-    sessionStartedMs: Date.parse(row.stopAt) - c.sessionHours * 3600_000,
+    sessionStartedMs: Date.parse(row.updatedAt),
     now: Date.now(),
     idleStopMinutes: c.idleStopMinutes,
     unopenedStopMinutes: c.unopenedStopMinutes,
-    buildGraceMinutes: IDLE_BUILD_GRACE_MINUTES,
+    openedBuildGraceMinutes: IDLE_BUILD_GRACE_MINUTES,
+    unopenedBuildGraceMinutes: UNOPENED_BUILD_GRACE_MINUTES,
   });
   if (!verdict.stop) return false;
   const inst = await describe(row.instanceId).catch(() => null);
@@ -1461,14 +1505,13 @@ async function ssmOnline(instanceId: string): Promise<boolean> {
  * key, which is what lets Range check a lab's state without trusting the lab's
  * own report of it. The command text is always written by Range.
  */
-export async function runOnLab(userId: string, commands: string[], timeoutMs = 25_000): Promise<string | null> {
-  const id = await runningInstance(userId);
-  if (!id || !(await ssmOnline(id))) return null;
+async function runOnInstance(instanceId: string, documentName: string, commands: string[], timeoutMs: number): Promise<string | null> {
+  if (!(await ssmOnline(instanceId))) return null;
   try {
     const out = await ssm().send(
       new SendCommandCommand({
-        InstanceIds: [id],
-        DocumentName: "AWS-RunPowerShellScript",
+        InstanceIds: [instanceId],
+        DocumentName: documentName,
         Comment: "Range lab check",
         TimeoutSeconds: 60,
         Parameters: { commands },
@@ -1479,15 +1522,33 @@ export async function runOnLab(userId: string, commands: string[], timeoutMs = 2
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
       await new Promise((r) => setTimeout(r, 700));
-      const inv = await ssm().send(new GetCommandInvocationCommand({ CommandId: commandId, InstanceId: id })).catch(() => null);
+      const inv = await ssm().send(new GetCommandInvocationCommand({ CommandId: commandId, InstanceId: instanceId })).catch(() => null);
       if (!inv || inv.Status === "Pending" || inv.Status === "InProgress" || inv.Status === "Delayed") continue;
       return inv.Status === "Success" ? (inv.StandardOutputContent ?? "") : null;
     }
     return null;
   } catch (err) {
-    console.error("runOnLab failed", err instanceof Error ? err.message : err);
+    console.error("runOnInstance failed", documentName, err instanceof Error ? err.message : err);
     return null;
   }
+}
+
+export async function runOnLab(userId: string, commands: string[], timeoutMs = 25_000): Promise<string | null> {
+  const id = await runningInstance(userId);
+  if (!id) return null;
+  return runOnInstance(id, "AWS-RunPowerShellScript", commands, timeoutMs);
+}
+
+/** Same as runOnLab, but for the Ubuntu server beside the domain controller.
+ *  Built for the health check: the DC has runOnLab, and the pod's other half
+ *  had no way to ask "is anything actually listening" short of opening it in
+ *  the browser. */
+export async function runOnLinux(userId: string, commands: string[], timeoutMs = 25_000): Promise<string | null> {
+  const row = await loadHostedLab(userId);
+  if (!row?.linuxInstanceId) return null;
+  const inst = await describe(row.linuxInstanceId).catch(() => null);
+  if (inst?.state !== "running") return null;
+  return runOnInstance(row.linuxInstanceId, "AWS-RunShellScript", commands, timeoutMs);
 }
 
 /**
@@ -1923,7 +1984,13 @@ export async function stopDueHostedLabs(): Promise<number> {
   let stopped = 0;
   for (const { userId, row } of await hostedLabsDueToStop()) {
     try {
-      if (await stopPod(row)) stopped++;
+      const wasStopped = await stopPod(row);
+      if (wasStopped) stopped++;
+      // The only auto-stop path that used to leave no trace. A session ending
+      // on time is routine, but it needed to be routine *and visible* -- the
+      // silence here is what hid a six-minute session until someone went
+      // looking at AWS directly.
+      console.log("hosted lab auto-stop (session ended)", userId, row.instanceId, wasStopped);
       // Through endSession, not a bare write. Clearing the stop time here and
       // billing nowhere made a session that ran to its own end -- the most
       // ordinary stop there is -- free.
