@@ -252,6 +252,9 @@ export function SectionTabs({
     if (!nav || !bar) return;
     const place = () => {
       const tab = nav.querySelectorAll<HTMLElement>('[role="tab"]')[visibleActiveIndex];
+      // The challenge has no tab of its own, so while it is open no tab is
+      // active and the line hides rather than staying under the last one.
+      bar.style.visibility = tab ? "" : "hidden";
       if (!tab) return;
       // Measured from the boxes rather than offsetLeft/offsetWidth, which round
       // to whole pixels and left the line a pixel short of the tab's own.
