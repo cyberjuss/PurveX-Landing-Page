@@ -103,6 +103,14 @@ export function streakLine(s: DrillStatus["stats"]) {
   return "One scenario a day · About two minutes";
 }
 
+/** Who hands out a ticket on today's focus: the lead whose area it is, from PurveX's own staff. */
+function lead(focus: string | null | undefined): { requester: string; requesterRole: string } {
+  const f = (focus ?? "").toLowerCase();
+  if (/security|log/.test(f)) return { requester: "CISO", requesterRole: "Security" };
+  if (/access|risk/.test(f)) return { requester: "Devon Brooks", requesterRole: "Compliance Officer" };
+  return { requester: "Alex Rivera", requesterRole: "IT Systems Administrator" };
+}
+
 /** The day of the year, for the daily ticket number. Matches the Desk. */
 function dayOfYear(d = new Date()) {
   return Math.floor((d.getTime() - new Date(d.getFullYear(), 0, 0).getTime()) / 86_400_000);
@@ -1008,7 +1016,7 @@ export function DrillRunner() {
               ? "Open that task again tomorrow for the next one"
               : streakLine(s)
             : `One case from your own lab${status.focus ? ` on ${status.focus.toLowerCase()}` : ""} · About five minutes`,
-          requester: "Help desk queue",
+          ...lead(status.focus),
           due: s.today ? `Closed in ${clock(s.today.seconds)}` : "Today",
           state: s.today ? { label: scoreLabel(s.today), tone: s.today.correct ? "done" : "missed" } : { label: "New", tone: "new" },
           error: errorMode === "daily" ? error : null,
@@ -1039,7 +1047,8 @@ export function DrillRunner() {
                 : hostedLab
                   ? "Your lab is sending its Security log"
                   : "Waiting for your domain controller to send its Security log",
-        requester: "SOC monitoring",
+        requester: "CISO",
+        requesterRole: "Escalated from monitoring",
         due: ctfEntry ? "Next Monday" : "Sunday",
         state: ctfEntry
           ? ctfEntry.correct

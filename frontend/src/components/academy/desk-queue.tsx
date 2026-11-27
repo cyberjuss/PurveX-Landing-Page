@@ -19,7 +19,9 @@ export type DeskTicket = {
   type: string;
   title: string;
   summary: string;
+  /** Who assigned it: a name, or a role on its own (CISO). */
   requester: string;
+  requesterRole?: string;
   due: string;
   state: { label: string; tone: DeskTone };
   action?: ReactNode;
@@ -210,8 +212,11 @@ export function DeskQueue({
                 <span className="dk-ticket__sum">{t.summary}</span>
                 {t.error && <span className="dk-ticket__err">{t.error}</span>}
               </span>
-              <span className="dk-cell" data-label="Requested by">
-                {t.requester}
+              <span className="dk-cell dk-who" data-label="Requested by">
+                <span>
+                  {t.requester}
+                  {t.requesterRole && <small>{t.requesterRole}</small>}
+                </span>
               </span>
               <span className="dk-cell" data-label="Due">
                 <Clock3 className="h-3.5 w-3.5" /> {t.due}

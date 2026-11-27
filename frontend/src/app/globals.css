@@ -6603,3 +6603,8 @@ a.dr-home:hover { background: color-mix(in srgb, var(--rd-accent) 13%, transpare
 @keyframes dk-in { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: none; } }
 @media (max-width: 1180px) { .dk-split { grid-template-columns: minmax(0, 1fr); } .dk-feed__list { max-height: 300px; } }
 @media (prefers-reduced-motion: reduce) { .dk-feed__live i, .dk-feed__list li { animation: none; } }
+
+/* Requested by: the lead, with their role under it. */
+.dk-who > span { display: grid; gap: 1px; }
+.dk-who > span { color: var(--rd-ink); font-weight: 600; }
+.dk-who small { font-size: 0.6875rem; font-weight: 500; color: var(--rd-ink-3); }
