@@ -243,11 +243,6 @@ export function DeskSummary({ r, headline, totals }: { r: DeskReport; headline: 
           <small>Arrival to the fix in the lab</small>
         </div>
         <div>
-          <b className={r.metrics.breaches ? "is-bad" : ""}>{r.metrics.breaches}</b>
-          <span>Left open</span>
-          <small>at the end, of {r.metrics.arrived} that arrived</small>
-        </div>
-        <div>
           <b className={r.triage.misses.length || r.triage.worked === false ? "is-bad" : ""}>
             {r.triage.score}/{r.triage.max}
           </b>

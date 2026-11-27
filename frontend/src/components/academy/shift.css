@@ -1070,3 +1070,34 @@
 .dk--report .dk-call.is-near { color: var(--rd-warn); }
 .dk--report .dk-call.is-bad { color: var(--rd-bad); }
 @media (prefers-reduced-motion: reduce) { .sx-bar.is-alarm, .sx-bar.is-alarm .sx-board__cell.is-p1 { animation: none; } .sx-bar.is-alarm { box-shadow: inset 0 -3px 0 var(--sx-p1); } }
+
+/* ── Shift report, flattened: spacing and hairlines instead of a box around everything ── */
+.sh-report.dk--report { border: 0; box-shadow: none; background: none; padding: clamp(8px, 2vw, 16px) 0; gap: 34px; }
+
+/* Headline numbers: one open row, no tiles. */
+.dk--report .dk-kpis { border: 0; gap: 0 32px; }
+.dk--report .dk-kpis > div { border: 0 !important; padding: 0; }
+.dk--report .dk-kpis dd { font-size: 2rem; }
+
+/* Tickets: a list with dividers, not a card of cards. */
+.dk--report .dk-queue { border: 0; }
+.dk--report .dk-queue__bar { padding: 0 0 10px; }
+.dk--report .dk-queue li.dk-row { padding: 14px 0 14px 16px; }
+.dk--report .dk-queue li.dk-row:hover { background: none; }
+.dk--report .dk-queue li.dk-row::before { inset: 14px auto 14px 0; width: 2px; }
+.dk--report .dk-pri b { width: auto; height: auto; padding: 0; background: none; font-size: 0.8125rem; }
+
+/* States and tags as coloured words, not bordered chips. */
+.dk--report .dk-state { height: auto; padding: 0; border: 0; }
+.dk--report .dk-tags em { padding: 0; border: 0; }
+.dk--report .dk-tags { gap: 12px; }
+
+/* Timing and order: a quiet row of figures under a rule. */
+.dk--report .sdr__metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; border: 0; padding-top: 22px; border-top: 1px solid var(--rd-line); }
+.dk--report .sdr__metrics div { border: 0 !important; padding: 0; }
+.dk--report .sdr__misses li, .dk--report .sdr__desk div { box-shadow: none; background: none; padding: 8px 0; border-top: 1px solid var(--rd-line-2); }
+
+@media (max-width: 720px) {
+  .dk--report .dk-kpis { gap: 20px 24px; }
+  .dk--report .sdr__metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 24px; }
+}
