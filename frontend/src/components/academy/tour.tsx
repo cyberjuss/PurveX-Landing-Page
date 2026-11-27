@@ -74,8 +74,8 @@ const HOME: Tour = {
     {
       sel: '[data-tour="drills"]',
       icon: Flame,
-      title: "Drills",
-      body: "A named case a day in your own directory",
+      title: "The Desk",
+      body: "Your ticket queue · A new ticket every day",
     },
     {
       sel: '[data-tour="path"]',
@@ -137,29 +137,29 @@ const PORTAL: Tour = {
 // The drills page carries four separate things, and the numbered rows do not
 // say much about what any of them are until you open one.
 const DRILLS: Tour = {
-  key: "purvex.tour.drills.v2",
+  key: "purvex.tour.drills.v3",
   when: (p) => p.startsWith("/range/drill"),
   min: 3,
   kicker: "Getting started",
-  title: "Drills",
+  title: "The Desk",
   tiles: [
     {
       sel: '[data-tour="case"]',
       icon: PlayCircle,
-      title: "A case a day",
-      body: "One scenario a day in your own directory",
+      title: "A ticket a day",
+      body: "One new ticket from your own lab every day",
     },
     {
       sel: '[data-tour="ctf"]',
       icon: Flag,
-      title: "This week’s investigation",
-      body: "One hard investigation a week · A new one every Monday",
+      title: "The weekly alert",
+      body: "One hard security alert a week · A new one every Monday",
     },
     {
       sel: '[data-tour="shift"]',
       icon: Clock,
-      title: "Shift",
-      body: "Thirty minutes on the desk · Work the highest priority first",
+      title: "Clock in",
+      body: "Thirty minutes live · Work the highest priority first",
     },
   ],
 };

@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight, Check, ClipboardList, Flame, RefreshCw, Timer, X } from "lucide-react";
+import { ArrowRight, BookOpen, Check, ClipboardList, RefreshCw, Timer, X } from "lucide-react";
 import { useCoach } from "@/components/academy/coach-context";
 import { useHostedLab } from "@/components/academy/hosted-lab-button";
 import { academyFetch, localDay, READINESS_PATH, useResults } from "@/lib/academy-client";
+import { DeskQueue, type DeskTicket } from "@/components/academy/desk-queue";
+import { lessonFor } from "@/lib/academy-job-lessons";
 import { currentRank } from "@/lib/academy-badges";
 import { askForProofShot } from "@/lib/academy-proof";
 import { SKILLS, type Skill } from "@/lib/academy-score";
@@ -100,6 +102,13 @@ export function streakLine(s: DrillStatus["stats"]) {
   return "One scenario a day · About two minutes";
 }
 
+/** The ISO week number, for the weekly alert's ticket number. */
+function isoWeek(d = new Date()) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7));
+  return Math.ceil(((t.getTime() - Date.UTC(t.getUTCFullYear(), 0, 1)) / 86_400_000 + 1) / 7);
+}
+
 function lastSeven() {
   const out: { day: string; label: string; date: string }[] = [];
   for (let i = 6; i >= 0; i--) {
@@ -169,7 +178,9 @@ function Scenario({
   onHint,
   checkRes,
   unlock,
+  jobLabel,
 }: {
+  jobLabel?: string;
   caseNo: string;
   item: Item;
   picked: string | null;
@@ -179,12 +190,19 @@ function Scenario({
   checkRes: CheckRes | null;
   unlock: TaskInfo | null;
 }) {
+  const lesson = lessonFor(item.job, item.skill);
   return (
     <div className="dr-card">
-      <span className="rd-kicker">
-        Case {caseNo} · {SKILLS[item.skill].label}
-        {item.job ? ` · Job task: ${item.job}` : ""}
-      </span>
+      <div className="dr-card__top">
+        <span className="rd-kicker">
+          Case {caseNo} · {SKILLS[item.skill].label}
+          {jobLabel ? ` · ${jobLabel}` : ""}
+        </span>
+        {/* A new tab, so the case and its clock stay where they are. */}
+        <a className="dr-readup" href={lesson.href} target="_blank" rel="noopener" title={`Opens the ${lesson.label} lesson in a new tab`}>
+          <BookOpen className="h-3.5 w-3.5" /> Read up · {lesson.label}
+        </a>
+      </div>
       <h2 className="dr-card__title">{item.title}</h2>
       {item.story && <p className="dr-story">{item.story}</p>}
       {item.evidence && (
@@ -753,7 +771,7 @@ export function DrillRunner() {
         )}
 
         <div key={idx} className={dir === 1 ? "ax-enter-fwd" : "ax-enter-back"}>
-          <Scenario caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} />
+          <Scenario jobLabel={status?.jobs.find((j) => j.id === item.job)?.label} caseNo={String((status?.stats.total ?? 0) + 1).padStart(2, "0")} item={item} picked={picked} onPick={pick} hint={hint} onHint={() => void getHint(run.token)} checkRes={checkRes} unlock={unlock} />
         </div>
 
         <div className="dr-actions">
@@ -947,153 +965,104 @@ export function DrillRunner() {
   const today = localDay();
   const nameOf = (e: DrillEntry | null | undefined) => e?.detail?.[0]?.t ?? null;
   const aimed = wantJob ? (status?.jobs.find((j) => j.id === wantJob) ?? null) : null;
+  // The queue: the weekly alert and today's case as tickets, the shift as clocking in.
+  const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000);
+  const daily: DeskTicket | null =
+    status && s
+      ? {
+          key: "daily",
+          tour: "case",
+          number: `INC-${20000 + doy}`,
+          priority: 3,
+          type: aimed ? "Service request" : "Incident",
+          title: s.today ? (nameOf(s.today) ?? "Today’s case") : aimed ? aimed.label : "New ticket waiting for triage",
+          summary: s.today
+            ? aimed
+              ? "Open that task again tomorrow for the next one"
+              : streakLine(s)
+            : `One case from your own lab${status.focus ? ` on ${status.focus.toLowerCase()}` : ""} · About five minutes`,
+          requester: "Help desk queue",
+          due: s.today ? `Closed in ${clock(s.today.seconds)}` : "Today",
+          state: s.today ? { label: scoreLabel(s.today), tone: s.today.correct ? "done" : "missed" } : { label: "New", tone: "new" },
+          error: errorMode === "daily" ? error : null,
+          action: s.today ? null : (
+            <button type="button" className="dk-go" disabled={busy} onClick={() => void start("daily", undefined, wantJob)}>
+              {starting === "daily" ? "Writing…" : "Pick up"} <ArrowRight className="h-4 w-4" />
+            </button>
+          ),
+        }
+      : null;
+  const ctfEntry = status?.ctf.entry ?? null;
+  const weekly: DeskTicket | null = status
+    ? {
+        key: "weekly",
+        tour: "ctf",
+        number: `SEC-${isoWeek()}`,
+        priority: 2,
+        type: "Security alert",
+        title: ctfEntry ? (nameOf(ctfEntry) ?? "This week’s investigation") : "Escalated alert in your Security log",
+        summary: ctfEntry
+          ? "A new alert opens Monday"
+          : status.lab.events
+            ? "One hard investigation from your own lab · About twenty minutes"
+            : ctfQuietLog
+              ? "Nothing has happened in your lab to investigate yet · Work one ticket in the Ticket Queue to open this"
+              : hostedLab && labState !== "ready" && labState !== "starting"
+                ? "Your lab is off · Start it to open this alert"
+                : hostedLab
+                  ? "Your lab is sending its Security log"
+                  : "Waiting for your domain controller to send its Security log",
+        requester: "SOC monitoring",
+        due: ctfEntry ? "Next Monday" : "Sunday",
+        state: ctfEntry
+          ? ctfEntry.correct
+            ? { label: "Captured", tone: "done" }
+            : { label: "Not captured", tone: "missed" }
+          : status.lab.events
+            ? { label: "New", tone: "new" }
+            : { label: "Blocked", tone: "blocked" },
+        error: errorMode === "ctf" ? error : null,
+        action: ctfEntry ? null : status.lab.events ? (
+          <button type="button" className="dk-go" disabled={busy} onClick={() => void start("ctf")}>
+            {starting === "ctf" ? "Writing…" : "Investigate"} <ArrowRight className="h-4 w-4" />
+          </button>
+        ) : ctfQuietLog ? (
+          <Link className="dk-go dk-go--quiet" href="/range/phase-1/home-lab-challenges#challenge-ticket-queue">
+            Ticket Queue <ArrowRight className="h-4 w-4" />
+          </Link>
+        ) : hostedLab && (labState === "ready" || labState === "starting") ? (
+          <button type="button" className="dk-go dk-go--quiet" onClick={load}>
+            <RefreshCw className="h-4 w-4" /> Check again
+          </button>
+        ) : hostedLab ? (
+          <button type="button" className="dk-go dk-go--quiet" disabled={labBusy} onClick={startLabForCtf}>
+            {labBusy ? "Starting…" : "Start lab"} <ArrowRight className="h-4 w-4" />
+          </button>
+        ) : (
+          <Link className="dk-go dk-go--quiet" href="/range/phase-1/home-lab-setup#build-the-environment">
+            Update lab script <ArrowRight className="h-4 w-4" />
+          </Link>
+        ),
+      }
+    : null;
+
   return (
     <div className="rd dr dr--floor">
-      <header className="dr-mast">
-        <div className="ax-titleblock">
-          <h1>Drills</h1>
-          <p>Practice on your own directory · One named case a day</p>
-        </div>
-        {status && <JobTasks jobs={status.jobs} security={status.lab.security} />}
-      </header>
-
       {status && s ? (
         <>
-          <div className="dr-strip">
-            <span className="dr-streakline">
-              <Flame className="h-4 w-4" />
-              {s.streak} day streak
-            </span>
-            <span className="dr-days" aria-label="Last seven days, oldest on the left">
-              {week.map((d) => (
-                <i
-                  key={d.day}
-                  title={`${d.label} ${d.date}`}
-                  className={`${s.days.includes(d.day) ? "is-done" : ""}${d.day === today ? " is-today" : ""}`}
-                >
-                  {d.label.slice(0, 1)}
-                </i>
-              ))}
-            </span>
-            {rank && (
-              <Link href={`${READINESS_PATH}#rank`} className="dr-level dr-rank" title="Your rank and competencies">
-                {rank.title}
-              </Link>
-            )}
-            <span className="dr-difficulty" title="How hard today's cases are based on your recent answers">
-              Cases · {status.level.name}
-            </span>
-          </div>
-
-          <ol className="ax-path dr-rows">
-            <li data-tour="case">
-              <div className="ax-path__row">
-                <span className="ax-path__n ax-path__n--word">Today</span>
-                <span className="ax-path__main">
-                  <span className="ax-path__title">
-                    {/* The generated name is worth showing once it exists. Before that
-                        the row says what it is, rather than a case number that counts
-                        the student's own history and reads like a catalog id. */}
-                    {s.today ? (nameOf(s.today) ?? "Today’s case") : "Today’s case"}
-                    {s.today && <em className={`ax-tag ${s.today.correct ? "ax-tag--good" : ""}`}>{scoreLabel(s.today)}</em>}
-                  </span>
-                  <span className="ax-path__body">
-                    {s.today
-                      ? `Done in ${clock(s.today.seconds)} · ${aimed ? "Open that task again tomorrow for the next one" : streakLine(s)}`
-                      : aimed
-                        ? `Aimed at ${aimed.label} · About five minutes in your own lab`
-                        : `One scenario from your own lab, about five minutes${status.focus ? `, on ${status.focus.toLowerCase()}` : ""}. You make a call, write it up, or fix something for real.`}
-                  </span>
-                  {errorMode === "daily" && error && <span className="ax-path__err">{error}</span>}
-                </span>
-                <span className="ax-path__count">
-                  {!s.today && (
-                    <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("daily", undefined, wantJob)}>
-                      {starting === "daily" ? "Writing…" : "Start case"} <ArrowRight className="h-4 w-4" />
-                    </button>
-                  )}
-                </span>
-              </div>
-            </li>
-            <li data-tour="ctf">
-              <div className="ax-path__row">
-                <span className="ax-path__n ax-path__n--word">This week</span>
-                <span className="ax-path__main">
-                  <span className="ax-path__title">
-                    {status.ctf.entry ? (nameOf(status.ctf.entry) ?? "This week’s investigation") : "This week’s investigation"}
-                    {status.ctf.entry && <em className={`ax-tag ${status.ctf.entry.correct ? "ax-tag--good" : ""}`}>{status.ctf.entry.correct ? "Captured" : "Not captured"}</em>}
-                  </span>
-                  <span className="ax-path__body">
-                    {/* A hosted lab sends its Security log on its own, within a minute of
-                        coming online. None of that is the student's job, so the wait is
-                        reported rather than handed to them as a task. */}
-                    {status.ctf.entry
-                      ? "A new one opens Monday"
-                      : status.lab.events
-                        ? "One hard investigation a week from your own lab · About twenty minutes"
-                        : ctfQuietLog
-                          ? "Nothing has happened in your lab to investigate yet · Work one ticket in the Ticket Queue to open this"
-                        : hostedLab && labState !== "ready" && labState !== "starting"
-                          ? "Your lab is off · Start it to open this week's investigation"
-                          : hostedLab
-                            ? "One hard investigation a week from your own lab · About twenty minutes"
-                            : "Waiting for your domain controller to send its Security log"}
-                  </span>
-                  {errorMode === "ctf" && error && <span className="ax-path__err">{error}</span>}
-                </span>
-                <span className="ax-path__count">
-                  {!status.ctf.entry &&
-                    (status.lab.events ? (
-                      <button type="button" className="rd-cta" disabled={busy} onClick={() => void start("ctf")}>
-                        {starting === "ctf" ? "Writing…" : "Start investigation"} <ArrowRight className="h-4 w-4" />
-                      </button>
-                    ) : ctfQuietLog ? (
-                      <Link className="rd-cta" href="/range/phase-1/home-lab-challenges#challenge-ticket-queue">
-                        Open the Ticket Queue <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    ) : hostedLab && (labState === "ready" || labState === "starting") ? (
-                      // Up, and the Security log is on its way by itself.
-                      <button type="button" className="rd-cta" onClick={load}>
-                        <RefreshCw className="h-4 w-4" /> Waiting for your lab
-                      </button>
-                    ) : hostedLab ? (
-                      // Off. Waiting would have been forever, and the button
-                      // only re-read a status that could not change.
-                      <button type="button" className="rd-cta" disabled={labBusy} onClick={startLabForCtf}>
-                        {labBusy ? "Starting…" : "Start your lab"} <ArrowRight className="h-4 w-4" />
-                      </button>
-                    ) : (
-                      <Link className="rd-cta" href="/range/phase-1/home-lab-setup#build-the-environment">
-                        Update your lab script <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    ))}
-                </span>
-              </div>
-            </li>
-            <li data-tour="shift">
-              <div className="ax-path__row">
-                <span className="ax-path__n ax-path__n--word">Any time</span>
-                <span className="ax-path__main">
-                  <span className="ax-path__title">Shift</span>
-                  <span className="ax-path__body">
-                    30 minutes on the desk. Real incidents hit your own lab and you respond against the clock.
-                    {!hostedLab ? " It needs a hosted lab and that comes with Range Pro." : ""}
-                  </span>
-                </span>
-                <span className="ax-path__count">
-                  {hostedLab ? (
-                    <a className="rd-cta" href="/range/shift">
-                      Start shift <ArrowRight className="h-4 w-4" />
-                    </a>
-                  ) : (
-                    <a className="rd-cta" href="/range/upgrade">
-                      See Range Pro <ArrowRight className="h-4 w-4" />
-                    </a>
-                  )}
-                </span>
-              </div>
-            </li>
-          </ol>
+          <DeskQueue
+            tickets={[weekly, daily].filter((t): t is DeskTicket => Boolean(t))}
+            tools={<JobTasks jobs={status.jobs} security={status.lab.security} />}
+            shift={
+              hostedLab
+                ? { href: "/range/shift", label: "Clock in", note: "Three live incidents fire into your lab · Work them by priority before the clock runs out", locked: false }
+                : { href: "/range/upgrade", label: "See Range Pro", note: "Live shifts run in a hosted lab that comes with Range Pro", locked: true }
+            }
+            streak={s.streak}
+            week={week.map((d) => ({ ...d, done: s.days.includes(d.day), today: d.day === today }))}
+            level={status.level.name}
+            rank={rank ? { title: rank.title, href: `${READINESS_PATH}#rank` } : null}
+          />
           {error && !errorMode && <p className="dr-error">{error}</p>}
           {/* A hosted lab is verified by Range itself, so there is no code to plant. */}
           {status.lab.synced && !hostedLab && (

@@ -36,7 +36,8 @@
     "check:range:saved": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/saved.ts",
     "check:range:readiness": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/readiness.ts",
     "check:range:challenges": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/challenges.ts",
-    "check:progress-race": "npx -y tsx --tsconfig scripts/progress-race-check/tsconfig.json scripts/progress-race-check/check.ts"
+    "check:progress-race": "npx -y tsx --tsconfig scripts/progress-race-check/tsconfig.json scripts/progress-race-check/check.ts",
+    "check:range:desk": "npx -y tsx --tsconfig scripts/range-check/tsconfig.json scripts/range-check/desk.ts"
   },
   "dependencies": {
     "@aws-sdk/client-ec2": "^3.1142.0",

@@ -3,7 +3,8 @@ import { COACH_HAIKU_MODEL, COACH_SONNET_MODEL } from "@/lib/academy-coach";
 import { pickFinding } from "@/lib/academy-audit";
 import { isJob, JOBS, LEVEL_NAMES, pickSkill, seeded, shuffle, standardSnapshot, type Grader, type Item } from "@/lib/academy-drills";
 import type { LabSnapshot } from "@/lib/academy-lab";
-import { summarize, SKILLS, type Results, type Skill } from "@/lib/academy-score";
+import { MISSION_SKILLS, summarize, SKILLS, type Results, type Skill } from "@/lib/academy-score";
+import { MISSION_CATALOG } from "@/lib/academy-missions";
 
 // The daily drill and the weekly CTF are written by the model from the
 // student's own lab, their weak spots, and their level. The model only
@@ -70,8 +71,9 @@ const LEVEL_RULES = [
   "Level 4, Expert: combine directory facts with log evidence. Include an ambiguity or a tempting shortcut, and a tradeoff a senior would weigh, such as business impact against containment. Four to six evidence lines and no obvious giveaway.",
 ];
 
-// Objects the Ticket Queue and CTF use. The drill must not spoil them.
-const OFF_LIMITS = "old.intern, svc-backup-job, WM-WKS07, OPS-WKS03, the All Employees group, INC-1041 to INC-1046";
+// Objects the challenges plant for one ticket each. A desk case must not spoil them.
+const OFF_LIMITS =
+  "old.intern, svc-backup-job, WM-WKS07, OPS-WKS03, the All Employees group, INC-1041 to INC-1046, maya.okafor, kai.mendes, casey.reed, noor.ahmadi, frontdesk.shared, svc-settlements, FIN-LT14, IT-WKS01, the Finance Reports group, the Client Data Readers group, the files and payroll DNS records, the Northwind Advisory firewall rule, Wire_Approvals_Nov.csv";
 
 export type Recent = { t: string; p: string; th: string };
 
@@ -223,6 +225,33 @@ function context(params: { snapshot: LabSnapshot | null; results: Results }) {
   return { lab, scores };
 }
 
+// Titles without their "(INC-1042)" ticket number, which is not part of the situation.
+const CHALLENGE_TICKETS = Object.entries(MISSION_CATALOG).map(([id, m]) => ({ title: m.title.replace(/\s*\([A-Z]+-\d+\)\s*$/, ""), skill: MISSION_SKILLS[id] }));
+
+/**
+ * True when a case reads like a course challenge ticket. Desk cases practice the
+ * same jobs, but in situations of their own, so a student never meets a
+ * challenge question early or twice.
+ */
+export function echoesChallenge(item: { title: string; prompt: string }): boolean {
+  const mine = words(item.title);
+  if (!mine.size) return false;
+  return CHALLENGE_TICKETS.some(({ title }) => {
+    if (title.toLowerCase() === item.title.toLowerCase()) return true;
+    const theirs = words(title);
+    if (!theirs.size) return false;
+    let shared = 0;
+    for (const w of theirs) if (mine.has(w)) shared += 1;
+    return shared / theirs.size >= 0.75 && shared / mine.size >= 0.5;
+  });
+}
+
+function challengeBlock(skill: Skill) {
+  const titles = CHALLENGE_TICKETS.filter((c) => c.skill === skill).slice(0, 30).map((c) => `- ${c.title}`);
+  if (!titles.length) return "";
+  return `\n\nCourse challenge tickets the trainee works elsewhere. Write a different situation: not one of these reworded, and not the same problem on the same objects:\n${titles.join("\n")}`;
+}
+
 function avoidBlock(recent: Recent[]) {
   if (!recent.length) return "";
   const lines = recent.slice(0, 16).map((r) => `- ${r.t}${r.th && r.th !== r.t ? ` (${r.th})` : ""}`);
@@ -286,7 +315,7 @@ ${BASE_RULES}
 Return only JSON, no other text:
 {"title": "3 to 5 words", "skill": "accounts|directory|troubleshooting|security", "job": "one job id", "story": "...", "evidence": ["..."], "question": "...", "choices": ["...","...","...","..."], "answerIndex": 0, "explain": "two or three sentences: why the answer is right and what the trap was"}`;
 
-  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nToday's focus skill: ${SKILLS[skill].label}.\nScenario theme: ${theme}.${jobBlock(params.targetJob ?? null)}${examBlock(params.examFocus)}${avoidBlock(params.recent)}`;
+  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nToday's focus skill: ${SKILLS[skill].label}.\nScenario theme: ${theme}.${jobBlock(params.targetJob ?? null)}${examBlock(params.examFocus)}${avoidBlock(params.recent)}${challengeBlock(skill)}`;
 
   // One retry if the first draft reads like something they already had.
   const began = Date.now();
@@ -302,7 +331,7 @@ Return only JSON, no other text:
       Math.min(28_000, left)
     );
     const item = raw ? parseChoice(raw, skill, `${seed}:${attempt}`, theme) : null;
-    if (item && (attempt === 1 || !tooSimilar(item, params.recent))) return item;
+    if (item && (attempt === 1 || (!tooSimilar(item, params.recent) && !echoesChallenge(item)))) return item;
   }
   return null;
 }
@@ -333,7 +362,7 @@ ${BASE_RULES}
 Return only JSON, no other text:
 {"title": "3 to 5 words", "skill": "security", "story": "three to five sentences setting up the alert", "evidence": ["..."], "question": "one question with exactly one short answer", "answerFormat": "what to type, for example an account name like first.last", "answer": "the exact answer", "accept": ["other spellings that are also right"], "hint": "one sentence that points at the right evidence without giving the answer", "explain": "three or four sentences walking through how the evidence leads to the answer"}`;
 
-  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nCTF difficulty level: ${level} (${LEVEL_NAMES[level - 1]}).${avoidBlock(params.recent)}`;
+  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nCTF difficulty level: ${level} (${LEVEL_NAMES[level - 1]}).${avoidBlock(params.recent)}${challengeBlock(skill)}`;
 
   const began = Date.now();
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -341,7 +370,7 @@ Return only JSON, no other text:
     if (attempt && Date.now() - began > 24_000) break;
     const raw = await ask(params.apiKey, system, user, 3400, attempt ? 30_000 : 48_000);
     const item = raw ? parseCtf(raw, skill, "Weekly CTF") : null;
-    if (item && (attempt === 1 || !tooSimilar(item, params.recent))) return { ...item, theme: `CTF: ${item.title}` };
+    if (item && (attempt === 1 || (!tooSimilar(item, params.recent) && !echoesChallenge(item)))) return { ...item, theme: `CTF: ${item.title}` };
     if (item && attempt === 0) continue;
   }
   return null;
@@ -411,7 +440,7 @@ ${BASE_RULES}
 Return only JSON, no other text:
 {"title": "3 to 5 words", "skill": "accounts|directory|troubleshooting|security", "job": "one job id", "story": "...", "evidence": ["..."], "question": "...", "rubric": ["...","...","...","..."], "modelAnswer": "a strong answer in two to four sentences", "explain": "two or three sentences on the tradeoff and the common mistake"}`;
 
-  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nFocus skill: ${SKILLS[skill].label}.\nCase theme: ${theme}.${jobBlock(params.targetJob ?? null)}${examBlock(params.examFocus)}${avoidBlock(params.recent)}`;
+  const user = `Lab facts:\n${labFacts(lab)}\n\nTrainee skill scores: ${scores}.\nTrainee level: ${level} (${LEVEL_NAMES[level - 1]}).\nFocus skill: ${SKILLS[skill].label}.\nCase theme: ${theme}.${jobBlock(params.targetJob ?? null)}${examBlock(params.examFocus)}${avoidBlock(params.recent)}${challengeBlock(skill)}`;
   const raw = await ask(params.apiKey, system, user, 2400, 28_000);
   return raw ? parseRespond(raw, skill, theme) : null;
 }

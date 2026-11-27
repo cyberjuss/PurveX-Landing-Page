@@ -8,7 +8,7 @@ import { academyFetch } from "@/lib/academy-client";
 
 export const DRILL_PATH = "/range/drill";
 
-// Home-page nudge: today's drill, the streak, and how stale their lab is.
+// Home-page nudge into the Desk: today's ticket, the streak, and how stale their lab is.
 export function DrillCard() {
   const [status, setStatus] = useState<DrillStatus | null>(null);
 
@@ -30,8 +30,8 @@ export function DrillCard() {
         <b>{stats.streak}</b>
       </span>
       <span className="dr-home__main">
-        <span className="rd-kicker">{stats.today ? "Daily scenario · done" : "Daily scenario"}</span>
-        <strong>{stats.today ? `${scoreLabel(stats.today)} today` : "A scenario built from your lab"}</strong>
+        <span className="rd-kicker">{stats.today ? "The Desk · today's ticket closed" : "The Desk · a ticket is waiting"}</span>
+        <strong>{stats.today ? `${scoreLabel(stats.today)} today` : "Pick up today's ticket"}</strong>
         <em>{staleLab ? labLine(lab) : streakLine(stats)}</em>
       </span>
       <ArrowRight className="h-4 w-4" />
