@@ -1,14 +1,14 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Weekend Incident Report</h3>
-<p class="ad-brief__ask">Can you find the three things that went wrong at PurveX Financial over the weekend, name which part of the CIA triad each one broke, and put it right?</p>
-<p>It's 8:15 AM on Monday, and three tickets landed before you'd finished your coffee:</p>
+<p class="ad-brief__ask">Can you find the three things that went wrong at PurveX Financial over the weekend and name the part of the CIA triad each one broke?</p>
+<p>It's 8:15 AM on Monday and three tickets are already waiting</p>
 <ul>
-<li>Wealth Management client data turned up somewhere it should not be.</li>
-<li>Finance thinks a file of wire approvals was changed.</li>
-<li>Nobody in the firm can open a file share.</li>
+<li>Wealth Management client data turned up where it should not be</li>
+<li>Finance thinks a file of wire approvals was changed</li>
+<li>Nobody in the firm can open a file share</li>
 </ul>
-<p>All three are waiting in your lab, so work them on your domain controller.</p>
+<p>Work all three on your domain controller</p>
 </div>
 
 <div class="ad-progress">
@@ -19,8 +19,8 @@
 <div class="ad-mission" data-id="w1-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · Warm-up · Confidentiality · High · INC-1090</span>
 <h4>Close the Exposed Client Export</h4>
-<p><strong>Sam Whitfield · Wealth Management · 8:15 AM</strong><br>Someone in Operations just messaged me asking why our client list is in their share. Those are our clients' account numbers and balances. Can you find it and get it back where it belongs?</p>
-<p><strong>Task:</strong> Find the Wealth Management client export in the Operations share and move it into the Wealth Management share. Then report how many client records were exposed.</p>
+<p><strong>Sam Whitfield · Wealth Management · 8:15 AM</strong><br>Someone in Operations just asked why our client list is in their share<br>Those are our clients' account numbers and balances<br>Can you find it and get it back where it belongs?</p>
+<p><strong>Task:</strong> Find the Wealth Management client export in the Operations share and move it into the Wealth Management share<br>Report how many client records were exposed</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Close the Exposed Client Export" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{12}">Submit</button>
@@ -63,8 +63,8 @@
 <div class="ad-mission" data-id="w1-04" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 02 · Warm-up · Vulnerabilities and Threats · INC-1090</span>
 <h4>Weakness or Threat?</h4>
-<p><strong>Alex Rivera · IT · 8:24 AM</strong><br>I'm writing up the client export for Compliance. Which of these describes it correctly?<br><strong>A</strong> The vulnerability is the Operations staff, and the threat is the client file.<br><strong>B</strong> The vulnerability is client data stored where Operations can read it, and the threat is anyone using an Operations account, a curious colleague or an attacker who has stolen one.<br><strong>C</strong> The vulnerability is the CSV file format, and the threat is Wealth Management.</p>
-<p><strong>Task:</strong> Select the correct description and enter its letter.</p>
+<p><strong>Alex Rivera · IT · 8:24 AM</strong><br>I'm writing up the client export for Compliance<br>Which of these describes it correctly?<br><strong>A</strong> The vulnerability is the Operations staff and the threat is the client file<br><strong>B</strong> The vulnerability is client data stored where Operations can read it and the threat is anyone using an Operations account like a curious colleague or an attacker who stole one<br><strong>C</strong> The vulnerability is the CSV file format and the threat is Wealth Management</p>
+<p><strong>Task:</strong> Select the correct description and enter its letter</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Weakness or Threat?" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -93,8 +93,8 @@
 <div class="ad-mission" data-id="w1-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Availability · High · INC-1090</span>
 <h4>Bring the File Shares Back</h4>
-<p><strong>Priya Nair · IT · 8:31 AM</strong><br>The phones haven't stopped. Nobody on the fourth floor (the office network at 10.250.40.0/24) can open a file share this morning, whatever department they're in. The files are all still there on the server, and the only thing that happened this weekend was a maintenance window.</p>
-<p><strong>Task:</strong> Find the firewall rule the weekend's maintenance left behind on the domain controller and switch it off. Then report the port it was blocking.</p>
+<p><strong>Priya Nair · IT · 8:31 AM</strong><br>The phones haven't stopped<br>Nobody on the fourth floor (the office network at 10.250.40.0/24) can open a file share this morning in any department<br>The files are still on the server and the only thing that happened this weekend was a maintenance window</p>
+<p><strong>Task:</strong> Find the firewall rule the weekend's maintenance left on the domain controller and switch it off<br>Report the port it was blocking</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Bring the File Shares Back" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{445}">Submit</button>
@@ -139,8 +139,8 @@
 <div class="ad-mission" data-id="w1-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Apply it · Integrity · Critical · INC-1090</span>
 <h4>Catch the Altered Wire</h4>
-<p><strong>Jordan Ellis · Finance · 8:40 AM</strong><br>I approved November's wires on Friday and saved the file's SHA-256 hash next to it, like always. This morning the file looks fine to me, but I'd like it verified before the wires go out at noon. Can you check it against what I signed off?</p>
-<p><strong>Task:</strong> Prove whether <code>Wire_Approvals_Nov.csv</code> in the Finance share still matches the hash Jordan saved. If it doesn't, compare it with the approved copy in <code>C:\PurveX\Archive</code> and restore the approved version. Then report the Wire ID that was altered.</p>
+<p><strong>Jordan Ellis · Finance · 8:40 AM</strong><br>I approved November's wires on Friday and saved the file's SHA-256 hash next to it like always<br>The file looks fine to me but I'd like it verified before the wires go out at noon<br>Can you check it against what I signed off?</p>
+<p><strong>Task:</strong> Prove whether <code>Wire_Approvals_Nov.csv</code> in the Finance share still matches the hash Jordan saved<br>If it doesn't then restore the approved copy from <code>C:\PurveX\Archive</code><br>Report the Wire ID that was altered</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Wire" placeholder="a Wire ID" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{WR-2203}" data-accept="2203">Submit</button>
@@ -184,8 +184,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="w1-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 05 · Stretch · Risk · Report to the CISO · INC-1090</span>
 <h4>Rank the Weekend</h4>
-<p><strong>CISO · 9:30 AM</strong><br>Looking back at 8:15, when all three tickets were open at once, which one should have been escalated first?<br><strong>A</strong> The client export, because client data was exposed.<br><strong>B</strong> The altered wire, because $9,800 was due to leave the firm at noon to an account nobody approved and a sent wire is hard to get back.<br><strong>C</strong> The blocked file shares, because they affected the most people.</p>
-<p><strong>Task:</strong> Select the ticket with the highest risk at 8:15 and enter its letter.</p>
+<p><strong>CISO · 9:30 AM</strong><br>Looking back at 8:15 when all three tickets were open at once<br>Which one should have been escalated first?<br><strong>A</strong> The client export because client data was exposed<br><strong>B</strong> The altered wire because $9,800 was due to leave the firm at noon to an account nobody approved and a sent wire is hard to get back<br><strong>C</strong> The blocked file shares because they affected the most people</p>
+<p><strong>Task:</strong> Select the ticket with the highest risk at 8:15 and enter its letter</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Rank the Weekend" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Ticket Queue</h3>
-<p class="ad-brief__ask">When a request lands in your queue, can you check what's actually true in Active Directory, and then make the change the ticket needs?</p>
-<p>Welcome to the PurveX Financial help desk queue, where every request is a claim to verify before you change anything. The early tickets stay in Active Directory. The later ones take you further into DNS, the firewall, Group Policy and the file shares. Your lab has to show each change before your answer counts.</p>
+<p class="ad-brief__ask">When a request lands in your queue can you check what's actually true in Active Directory and then make the change the ticket needs?</p>
+<p>Welcome to the PurveX Financial help desk queue where every request is a claim to verify before you change anything<br>The early tickets stay in Active Directory and the later ones go into DNS and the firewall and Group Policy and the file shares<br>Your lab has to show each change before your answer counts</p>
 </div>
 
 <div class="ad-progress">
@@ -13,8 +13,8 @@
 <div class="ad-mission" data-id="tq-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · Warm-up · INC-1041 · Low</span>
 <h4>Missing Announcements</h4>
-<p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still have not gotten a single company-wide email, even though everyone else on my team has. Can you check my access?</p>
-<p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if they are missing. Then report how many members the group has.</p>
+<p><strong>Jamie Torres · Wealth Management · 9:12 AM</strong><br>I started last week and I still haven't gotten a single company-wide email even though everyone else on my team has<br>Can you check my access?</p>
+<p><strong>Task:</strong> Find the group that sends firm-wide announcements and add Jamie if they are missing<br>Report how many members the group has</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Missing Announcements" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{9}" data-lab-answer="members:All Employees">Submit</button>
@@ -54,8 +54,8 @@
 <div class="ad-mission" data-id="tq-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · Warm-up · INC-1042 · Low</span>
 <h4>Locked Out</h4>
-<p><strong>Riley Kwan · Operations · 8:47 AM</strong><br>It will not let me sign in. I have typed my password wrong a few times, so I think I locked myself out. Can you unlock me?</p>
-<p><strong>Task:</strong> Open Riley's account before you take the action they asked for. Restore sign-in if something is blocking them, then report what was wrong by typing <code>locked</code> or <code>disabled</code>.</p>
+<p><strong>Riley Kwan · Operations · 8:47 AM</strong><br>It won't let me sign in<br>I typed my password wrong a few times so I think I locked myself out<br>Can you unlock me?</p>
+<p><strong>Task:</strong> Open Riley's account before you take the action they asked for<br>Restore sign-in if something is blocking them then report what was wrong by typing <code>locked</code> or <code>disabled</code></p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Locked Out" placeholder="locked or disabled" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{disabled}" data-accept="account-is-disabled|account-disabled">Submit</button>
@@ -99,8 +99,8 @@
 <div class="ad-mission" data-id="tq-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · INC-1043 · Medium</span>
 <h4>New Hire Access</h4>
-<p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today and needs the same access as the rest of the IT team. I also suspect a few old accounts are still sitting in IT Users.</p>
-<p><strong>Task:</strong> Create <code>casey.reed</code> with IT Users only and remove anyone from <code>IT Users</code> who is not a current IT person. Before you delete the leftover intern account, report the ticket number written in its Description.</p>
+<p><strong>IT Manager · Information Technology · 10:30 AM</strong><br>Casey Reed starts on the help desk today and needs the same access as the rest of the IT team<br>I also suspect a few old accounts are still sitting in IT Users</p>
+<p><strong>Task:</strong> Create <code>casey.reed</code> with IT Users only and remove anyone from <code>IT Users</code> who is not current IT staff<br>Before you delete the leftover intern account report the ticket number in its Description</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for New Hire Access" placeholder="ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{ctf-ticket-1043}" data-accept="1043|ctf-1043">Submit</button>
@@ -150,8 +150,8 @@
 <div class="ad-mission" data-id="tq-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Apply it · INC-1044 · Medium</span>
 <h4>The Backup Account</h4>
-<p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br>Our review of <code>svc-backup-job</code> found no approved run window on the account, so we cannot sign off on it. IT tells us the approved hours were recorded in the directory when the account was set up.</p>
-<p><strong>Task:</strong> Find the approved run window on the folder that holds <code>svc-backup-job</code> and write it on the account's Description. Then type the same window here in the format 00:00-00:00.</p>
+<p><strong>Compliance Audit · Auditor request · 1:05 PM</strong><br>Our review of <code>svc-backup-job</code> found no approved run window on the account so we can't sign off on it<br>IT tells us the approved hours were recorded in the directory when the account was set up</p>
+<p><strong>Task:</strong> Find the approved run window on the folder that holds <code>svc-backup-job</code> and write it on the account's Description<br>Type the same window here in the format 00:00-00:00</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Backup Account" placeholder="00:00-00:00" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{01:00-03:00}" data-accept="1:00-3:00|0100-0300|1am-3am|1:00am-3:00am">Submit</button>
@@ -191,8 +191,8 @@
 <div class="ad-mission" data-id="tq-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · Apply it · INC-1045 · High</span>
 <h4>The Transfer That Did Not Happen</h4>
-<p><strong>Human Resources · Transfer notice · 11:20 AM</strong><br>Taylor Osei transferred from Operations to Compliance, effective today. Taylor reports to the Compliance manager now and starts on Compliance work this morning.</p>
-<p><strong>Task:</strong> Move Taylor's account into the Compliance Users folder and swap the department groups. Then report the title still written on <code>taylor.osei</code>, because an HR notice does not update every field.</p>
+<p><strong>Human Resources · Transfer notice · 11:20 AM</strong><br>Taylor Osei transferred from Operations to Compliance effective today<br>Taylor reports to the Compliance manager now and starts on Compliance work this morning</p>
+<p><strong>Task:</strong> Move Taylor's account into the Compliance Users folder and swap the department groups<br>Report the title still written on <code>taylor.osei</code> because an HR notice does not update every field</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Transfer That Did Not Happen" placeholder="title on the account" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{operations-analyst}">Submit</button>
@@ -233,8 +233,8 @@
 <div class="ad-mission" data-id="tq-11" data-attempts="0">
 <span class="ad-mission__num">Ticket 06 · Apply it · INC-1047 · Medium</span>
 <h4>Contractor Offboarding</h4>
-<p><strong>Operations Manager · Operations · 4:40 PM</strong><br>Kai Mendes was a contractor helping the settlements team, and the engagement is now over. We will still need Kai's records for the final invoice review next month.</p>
-<p><strong>Task:</strong> Disable <code>kai.mendes</code> and remove it from <code>Operations Users</code> without deleting the account. Then report the sponsor named in the account's Description.</p>
+<p><strong>Operations Manager · Operations · 4:40 PM</strong><br>Kai Mendes was a contractor helping the settlements team and the engagement is now over<br>We still need Kai's records for the final invoice review next month</p>
+<p><strong>Task:</strong> Disable <code>kai.mendes</code> and remove it from <code>Operations Users</code> without deleting the account<br>Report the sponsor named in the account's Description</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Contractor Offboarding" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{taylor-osei}">Submit</button>
@@ -280,8 +280,8 @@
 <div class="ad-mission" data-id="tq-12" data-attempts="0">
 <span class="ad-mission__num">Ticket 07 · Apply it · INC-1048 · Medium</span>
 <h4>Admin Rights Request</h4>
-<p><strong>Sam Whitfield · Wealth Management · 9:58 AM</strong><br>I need a charting tool installed before a client meeting this afternoon and the IT queue is backed up. A colleague said that if I am in the Server Admins group I can install it myself. Can you add me?</p>
-<p><strong>Task:</strong> Read the Description on <code>Server Admins</code> before you decide. Leave Sam's groups as they are and report the access level the group grants as a number.</p>
+<p><strong>Sam Whitfield · Wealth Management · 9:58 AM</strong><br>I need a charting tool installed before a client meeting this afternoon and the IT queue is backed up<br>A colleague said if I'm in the Server Admins group I can install it myself<br>Can you add me?</p>
+<p><strong>Task:</strong> Read the Description on <code>Server Admins</code> before you decide<br>Leave Sam's groups as they are and report the access level the group grants as a number</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Admin Rights Request" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}" data-accept="level-2|level2">Submit</button>
@@ -322,8 +322,8 @@
 <div class="ad-mission" data-id="tq-13" data-attempts="0">
 <span class="ad-mission__num">Ticket 08 · Apply it · INC-1049 · Medium</span>
 <h4>Audit Finding</h4>
-<p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our quarterly review found a staff account whose password never expires, even though policy allows that setting only on service accounts.</p>
-<p><strong>Task:</strong> Find the staff account with Password never expires set and clear the setting without disabling the account. Then report its username.</p>
+<p><strong>Internal Audit · Quarterly access review · 2:15 PM</strong><br>Our quarterly review found a staff account whose password never expires<br>Policy allows that setting only on service accounts</p>
+<p><strong>Task:</strong> Find the staff account with Password never expires set and clear it without disabling the account<br>Report its username</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Audit Finding" placeholder="username" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{noah-kim}">Submit</button>
@@ -367,8 +367,8 @@
 <div class="ad-mission" data-id="tq-14" data-attempts="0">
 <span class="ad-mission__num">Ticket 09 · Apply it · INC-1050 · Low</span>
 <h4>New Laptop Missing Policies</h4>
-<p><strong>Jordan Ellis · Finance and Accounting · 8:20 AM</strong><br>My new laptop FIN-LT14 is joined to the domain, but I still do not have the Finance drive maps my old one had. Can you take a look?</p>
-<p><strong>Task:</strong> Find where <code>FIN-LT14</code> sits in the directory and move it to Departments → FinanceAccounting → Workstations. Then report the name of the folder it was sitting in.</p>
+<p><strong>Jordan Ellis · Finance and Accounting · 8:20 AM</strong><br>My new laptop FIN-LT14 is joined to the domain but I still don't have the Finance drive maps my old one had<br>Can you take a look?</p>
+<p><strong>Task:</strong> Find where <code>FIN-LT14</code> sits in the directory and move it to Departments → FinanceAccounting → Workstations<br>Report the name of the folder it was sitting in</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for New Laptop Missing Policies" placeholder="folder name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{computers}" data-accept="cn=computers">Submit</button>
@@ -413,8 +413,8 @@
 <div class="ad-mission" data-id="tq-25" data-attempts="0">
 <span class="ad-mission__num">Ticket 10 · Apply it · INC-1063 · Low</span>
 <h4>A Workstation Nobody Uses</h4>
-<p><strong>Morgan Lee · Operations · 1:30 PM</strong><br>We are tidying up our asset list. One of the Operations machines in the directory went back to the leasing company months ago, but it still looks active to us. Can you close it off properly?</p>
-<p><strong>Task:</strong> Find the dormant Operations workstation, read its Description, and disable the computer object without deleting it. Then report the ticket number written in the Description.</p>
+<p><strong>Morgan Lee · Operations · 1:30 PM</strong><br>We're tidying up our asset list<br>One of the Operations machines in the directory went back to the leasing company months ago but it still looks active<br>Can you close it off properly?</p>
+<p><strong>Task:</strong> Find the dormant Operations workstation and read its Description then disable the computer object without deleting it<br>Report the ticket number written in the Description</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for A Workstation Nobody Uses" placeholder="a ticket number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{CTF-TICKET-201}">Submit</button>
@@ -458,8 +458,8 @@
 <div class="ad-mission" data-id="tq-16" data-attempts="0">
 <span class="ad-mission__num">Ticket 11 · Apply it · INC-1052 · High</span>
 <h4>Share Will Not Open by Name</h4>
-<p><strong>Riley Kwan · Operations · 8:05 AM</strong><br>None of us can open the shared drive at \\files this morning. Typing the server's IP address works, but the name times out.</p>
-<p><strong>Task:</strong> Find what the name <code>files</code> resolves to and correct its DNS record so it points at the domain controller, which hosts the shares. Then report the wrong address the record held.</p>
+<p><strong>Riley Kwan · Operations · 8:05 AM</strong><br>None of us can open the shared drive at \\files this morning<br>Typing the server's IP address works but the name times out</p>
+<p><strong>Task:</strong> Find what the name <code>files</code> resolves to and correct its DNS record so it points at the domain controller that hosts the shares<br>Report the wrong address the record held</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Share Will Not Open by Name" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{192.0.2.50}">Submit</button>
@@ -503,8 +503,8 @@
 <div class="ad-mission" data-id="tq-17" data-attempts="0">
 <span class="ad-mission__num">Ticket 12 · Apply it · INC-1053 · High</span>
 <h4>Vendor Remote Access Left Open</h4>
-<p><strong>Vendor Management · Vendor offboarding · 9:30 AM</strong><br>Northwind Advisory finished its support engagement last week. While it ran, IT opened remote access on the domain controller so their engineer could connect from home. We are closing out the vendor file now.</p>
-<p><strong>Task:</strong> Find the inbound firewall rule on the domain controller that was opened for the vendor and disable it. Leave the built-in Remote Desktop rules alone, then report the port the vendor rule allowed.</p>
+<p><strong>Vendor Management · Vendor offboarding · 9:30 AM</strong><br>Northwind Advisory finished its support engagement last week<br>While it ran IT opened remote access on the domain controller so their engineer could connect from home<br>We're closing out the vendor file now</p>
+<p><strong>Task:</strong> Find the inbound firewall rule on the domain controller that was opened for the vendor and disable it<br>Leave the built-in Remote Desktop rules alone and report the port the vendor rule allowed</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Vendor Remote Access Left Open" placeholder="port number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{3389}">Submit</button>
@@ -548,8 +548,8 @@
 <div class="ad-mission" data-id="tq-18" data-attempts="0">
 <span class="ad-mission__num">Ticket 13 · Apply it · INC-1054 · Medium</span>
 <h4>Screens That Never Lock</h4>
-<p><strong>Internal Audit · Control test · 3:40 PM</strong><br>Finance workstations are supposed to lock after ten minutes, but every Finance screen we tested stayed open over lunch. Operations staff mentioned their screens lock sooner than they would like.</p>
-<p><strong>Task:</strong> Find the screen lock GPO and link it to the Finance and Accounting OU, then remove its link from the wrong department. Report the name of the OU it was linked to.</p>
+<p><strong>Internal Audit · Control test · 3:40 PM</strong><br>Finance workstations are supposed to lock after ten minutes but every Finance screen we tested stayed open over lunch<br>Operations staff mentioned their screens lock sooner than they'd like</p>
+<p><strong>Task:</strong> Find the screen lock GPO and link it to the Finance and Accounting OU then remove its link from the wrong department<br>Report the name of the OU it was linked to</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Screens That Never Lock" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{operations}">Submit</button>
@@ -594,8 +594,8 @@
 <div class="ad-mission" data-id="tq-19" data-attempts="0">
 <span class="ad-mission__num">Ticket 14 · Apply it · INC-1055 · Critical</span>
 <h4>The Invoice Nobody Saved</h4>
-<p><strong>Jordan Ellis · Finance and Accounting · 7:50 AM</strong><br>There is a new invoice on our Finance share that nobody remembers saving. I double-clicked it to check the amount and nothing happened.</p>
-<p><strong>Task:</strong> Find the suspicious file in <code>C:\PurveX\Shares\Finance</code> on the domain controller and move it to <code>C:\PurveX\Quarantine</code> without opening it. Then report its full file name with every extension.</p>
+<p><strong>Jordan Ellis · Finance and Accounting · 7:50 AM</strong><br>There's a new invoice on our Finance share that nobody remembers saving<br>I double-clicked it to check the amount and nothing happened</p>
+<p><strong>Task:</strong> Find the suspicious file in <code>C:\PurveX\Shares\Finance</code> on the domain controller and move it to <code>C:\PurveX\Quarantine</code> without opening it<br>Report its full file name with every extension</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Invoice Nobody Saved" placeholder="full file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{invoice_0923.pdf.exe}">Submit</button>
@@ -639,8 +639,8 @@
 <div class="ad-mission" data-id="tq-23" data-attempts="0">
 <span class="ad-mission__num">Ticket 15 · Apply it · INC-1061 · Medium</span>
 <h4>The Security Log Runs Out</h4>
-<p><strong>Priya Nair · IT · 4:05 PM</strong><br>I went looking for a sign-in from last week and the Security log does not go back that far any more. It seems to be overwriting itself after a couple of days.</p>
-<p><strong>Task:</strong> Raise the Security log maximum size on the domain controller to at least 512 MB. Then report the size in MB it was set to before you changed it.</p>
+<p><strong>Priya Nair · IT · 4:05 PM</strong><br>I went looking for a sign-in from last week and the Security log doesn't go back that far any more<br>It seems to be overwriting itself after a couple of days</p>
+<p><strong>Task:</strong> Raise the Security log maximum size on the domain controller to at least 512 MB<br>Report the size in MB it was set to before you changed it</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Security Log Runs Out" placeholder="a number of MB" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{128}">Submit</button>
@@ -684,8 +684,8 @@
 <div class="ad-mission" data-id="tq-15" data-attempts="0">
 <span class="ad-mission__num">Ticket 16 · Stretch · INC-1051 · High</span>
 <h4>Group Cannot Open the Share</h4>
-<p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>IT created a Finance Reports group last week so our team could read the reports share. Jordan and Devon are both in it, but neither of them can open the share.</p>
-<p><strong>Task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members. Then report how many members it has.</p>
+<p><strong>Finance Manager · Finance and Accounting · 11:05 AM</strong><br>IT created a Finance Reports group last week so our team could read the reports share<br>Jordan and Devon are both in it but neither of them can open the share</p>
+<p><strong>Task:</strong> Find why <code>Finance Reports</code> grants no access and fix the group without changing its members<br>Report how many members it has</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Group Cannot Open the Share" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}">Submit</button>
@@ -729,8 +729,8 @@
 <div class="ad-mission" data-id="tq-20" data-attempts="0">
 <span class="ad-mission__num">Ticket 17 · Stretch · INC-1056 · High</span>
 <h4>Payroll Works for Some People</h4>
-<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>The payroll portal at payroll.purvexfinancial.local opens fine for me, but Morgan sitting next to me gets a timeout, though it sometimes loads after a few refreshes. This started after IT moved payroll to a new server last month.</p>
-<p><strong>Task:</strong> Find why the name <code>payroll</code> resolves differently between attempts and remove the stale record, so the name points only at the domain controller. In this lab the domain controller stands in for the new payroll server. Report the stale record's address.</p>
+<p><strong>Devon Brooks · Compliance · 1:20 PM</strong><br>The payroll portal at payroll.purvexfinancial.local opens fine for me<br>Morgan next to me gets a timeout though it sometimes loads after a few refreshes<br>This started after IT moved payroll to a new server last month</p>
+<p><strong>Task:</strong> Find why the name <code>payroll</code> resolves differently between attempts and remove the stale record so the name points only at the domain controller<br>In this lab the domain controller stands in for the new payroll server<br>Report the stale record's address</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Payroll Works for Some People" placeholder="IP address" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{192.0.2.80}">Submit</button>
@@ -774,8 +774,8 @@
 <div class="ad-mission" data-id="tq-21" data-attempts="0">
 <span class="ad-mission__num">Ticket 18 · Stretch · INC-1059 · High</span>
 <h4>Nothing Stops Password Guessing</h4>
-<p><strong>Priya Nair · IT · 9:40 AM</strong><br>Our insurer sent over a security questionnaire and one question is whether accounts lock after repeated failed sign-ins. I checked and I do not think ours do at all. Can you confirm and sort it if not?</p>
-<p><strong>Task:</strong> Set a domain lockout policy that locks an account after 10 wrong passwords or fewer, for at least 15 minutes, with the count resetting no sooner than 15 minutes. Then report the event ID a domain controller writes when an account is locked out.</p>
+<p><strong>Priya Nair · IT · 9:40 AM</strong><br>Our insurer sent a security questionnaire and one question is whether accounts lock after repeated failed sign-ins<br>I don't think ours do at all<br>Can you confirm and sort it if not?</p>
+<p><strong>Task:</strong> Set a domain lockout policy that locks an account after 10 wrong passwords or fewer for at least 15 minutes with the count resetting no sooner than 15 minutes<br>Report the event ID a domain controller writes when an account is locked out</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Nothing Stops Password Guessing" placeholder="an event ID" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4740}">Submit</button>
@@ -820,8 +820,8 @@
 <div class="ad-mission" data-id="tq-22" data-attempts="0">
 <span class="ad-mission__num">Ticket 19 · Stretch · INC-1060 · High</span>
 <h4>No Record of What Ran</h4>
-<p><strong>Devon Brooks · Compliance · 2:15 PM</strong><br>We were asked which programs ran on the domain controller last Tuesday and nobody can answer. I was told the information is simply not being collected. If that is right we need it turned on before the next review.</p>
-<p><strong>Task:</strong> Turn on auditing so the domain controller records every process that starts. Then report the event ID that records a new process.</p>
+<p><strong>Devon Brooks · Compliance · 2:15 PM</strong><br>We were asked which programs ran on the domain controller last Tuesday and nobody can answer<br>I was told the information is simply not being collected<br>If that's right we need it turned on before the next review</p>
+<p><strong>Task:</strong> Turn on auditing so the domain controller records every process that starts<br>Report the event ID that records a new process</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for No Record of What Ran" placeholder="an event ID" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{4688}">Submit</button>
@@ -861,8 +861,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="tq-24" data-attempts="0">
 <span class="ad-mission__num">Ticket 20 · Stretch · INC-1062 · High</span>
 <h4>Admins Under the Same Rules as Everyone</h4>
-<p><strong>Alex Rivera · IT · 10:20 AM</strong><br>The audit flagged that our administrator accounts follow the same password rules as every other user. They want the accounts that can change the domain held to something stronger.</p>
-<p><strong>Task:</strong> Apply a fine-grained password policy of at least 16 characters, locking after 5 wrong passwords or fewer, to the IT administrators group. Then report the name of the group you applied it to.</p>
+<p><strong>Alex Rivera · IT · 10:20 AM</strong><br>The audit flagged that our administrator accounts follow the same password rules as every other user<br>They want the accounts that can change the domain held to something stronger</p>
+<p><strong>Task:</strong> Apply a fine-grained password policy of at least 16 characters that locks after 5 wrong passwords or fewer to the IT administrators group<br>Report the name of the group you applied it to</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Admins Under the Same Rules as Everyone" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{IT Admins}">Submit</button>

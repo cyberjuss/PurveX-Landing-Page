@@ -2,7 +2,7 @@
 <p class="rd-kicker">Briefing</p>
 <h3>Operation Day One</h3>
 <p class="ad-brief__ask">Can you find your way around Active Directory well enough to handle a help desk technician's first day?</p>
-<p>It's your first day on the PurveX Financial help desk, so nobody expects you to close incidents yet. The lead on the desk does want to see that you can find any person, group or computer and read what the directory says about it.</p>
+<p>It's your first day on the PurveX Financial help desk so nobody expects you to close incidents yet<br>The lead on the desk wants to see that you can find any person or group or computer and read what the directory says about it</p>
 </div>
 
 <div class="ad-progress">
@@ -13,8 +13,8 @@
 <div class="ad-mission" data-id="d1-01" data-attempts="0">
 <span class="ad-mission__num">Task 01 · Warm-up · Find an Account</span>
 <h4>Which Group Is Jordan In?</h4>
-<p><strong>Situation:</strong> A ticket from Finance and Accounting says Jordan Ellis cannot open a shared folder. Nobody on the desk has looked at Jordan's account yet.</p>
-<p><strong>Task:</strong> Find the account <code>jordan.ellis</code> and name the department group it belongs to.</p>
+<p><strong>Situation:</strong> A ticket from Finance and Accounting says Jordan Ellis cannot open a shared folder<br>Nobody on the desk has looked at Jordan's account yet</p>
+<p><strong>Task:</strong> Find the account <code>jordan.ellis</code> and name the department group it belongs to</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Which Group Is Jordan In?" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{finance-accounting-users}">Submit</button>
@@ -59,8 +59,8 @@
 <div class="ad-mission" data-id="d1-07" data-attempts="0">
 <span class="ad-mission__num">Task 02 · Warm-up · Find by Title</span>
 <h4>Who Is the Settlements Coordinator?</h4>
-<p><strong>Situation:</strong> A manager calls about "the settlements coordinator" but does not know the person's username, so the request only names the job title.</p>
-<p><strong>Task:</strong> Find the person whose title is <strong>Settlements Coordinator</strong>, and answer with their first and last name.</p>
+<p><strong>Situation:</strong> A manager calls about "the settlements coordinator" but doesn't know the person's username<br>The request only names the job title</p>
+<p><strong>Task:</strong> Find the person whose title is <strong>Settlements Coordinator</strong> and answer with their first and last name</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Who Is the Settlements Coordinator?" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{riley-kwan}">Submit</button>
@@ -103,8 +103,8 @@
 <div class="ad-mission" data-id="d1-10" data-attempts="0">
 <span class="ad-mission__num">Task 03 · Warm-up · Count the Departments</span>
 <h4>How Many Departments Are There?</h4>
-<p><strong>Situation:</strong> HR is updating the new-hire guide and has asked IT how many departments the firm has in its directory. The lead on the desk passes the question to you.</p>
-<p><strong>Task:</strong> Count the department OUs that sit directly under <code>Departments</code>.</p>
+<p><strong>Situation:</strong> HR is updating the new-hire guide and asked IT how many departments the firm has in its directory<br>The lead on the desk passes the question to you</p>
+<p><strong>Task:</strong> Count the department OUs that sit directly under <code>Departments</code></p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for How Many Departments Are There?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
@@ -148,8 +148,8 @@
 <div class="ad-mission" data-id="d1-08" data-attempts="0">
 <span class="ad-mission__num">Task 04 · Warm-up · Find a Computer</span>
 <h4>What Is the Workstation Called?</h4>
-<p><strong>Situation:</strong> IT is planning a hardware refresh, and the asset list for the IT department has one workstation on it. The vendor needs the computer's exact name as it appears in the domain before they can quote a replacement.</p>
-<p><strong>Task:</strong> Give the exact name of the computer object in the IT department's <code>Workstations</code> OU.</p>
+<p><strong>Situation:</strong> IT is planning a hardware refresh and the asset list for the IT department has one workstation on it<br>The vendor needs the computer's exact name as it appears in the domain before they can quote a replacement</p>
+<p><strong>Task:</strong> Give the exact name of the computer object in the IT department's <code>Workstations</code> OU</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for What Is the Workstation Called?" placeholder="computer name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-wks01}">Submit</button>
@@ -188,8 +188,8 @@
 <div class="ad-mission" data-id="d1-02" data-attempts="0">
 <span class="ad-mission__num">Task 05 · Apply it · Find Who Has Admin Rights</span>
 <h4>Who Is an Admin?</h4>
-<p><strong>Situation:</strong> Your lead is preparing a list of accounts with elevated IT access, since those are the accounts attackers want most. At PurveX, that access comes from the <code>IT Admins</code> group.</p>
-<p><strong>Task:</strong> Name the person who is a member of <code>IT Admins</code>, using their first and last name.</p>
+<p><strong>Situation:</strong> Your lead is listing the accounts with elevated IT access since those are the accounts attackers want most<br>At PurveX that access comes from the <code>IT Admins</code> group</p>
+<p><strong>Task:</strong> Name the person who is a member of <code>IT Admins</code> using their first and last name</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Who Is an Admin?" placeholder="first and last name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{alex-rivera}">Submit</button>
@@ -233,8 +233,8 @@
 <div class="ad-mission" data-id="d1-09" data-attempts="0">
 <span class="ad-mission__num">Task 06 · Apply it · Count a Group</span>
 <h4>How Many People Hold IT's Elevated Access?</h4>
-<p><strong>Situation:</strong> An auditor wants a starting count of who holds elevated IT access beyond standard IT Users, so that any later change will stand out.</p>
-<p><strong>Task:</strong> Count the members of the <code>IT Admins</code> group.</p>
+<p><strong>Situation:</strong> An auditor wants a starting count of who holds elevated IT access beyond standard IT Users<br>That way any later change will stand out</p>
+<p><strong>Task:</strong> Count the members of the <code>IT Admins</code> group</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for How Many People Hold IT's Elevated Access?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{1}" data-lab-answer="members:IT Admins">Submit</button>
@@ -275,8 +275,8 @@
 <div class="ad-mission" data-id="d1-03" data-attempts="0">
 <span class="ad-mission__num">Task 07 · Apply it · Find Where Things Live</span>
 <h4>Where Are the Access Groups?</h4>
-<p><strong>Situation:</strong> An external auditor is reviewing who can administer servers and workstations. They want to know where the firm keeps its access-level groups, <code>Server Admins</code> and <code>Helpdesk</code>, since those groups sit outside the department folders.</p>
-<p><strong>Task:</strong> Name the top-level OU that holds <code>Server Admins</code> and <code>Helpdesk</code>.</p>
+<p><strong>Situation:</strong> An external auditor is reviewing who can administer servers and workstations<br>They want to know where the firm keeps its access-level groups <code>Server Admins</code> and <code>Helpdesk</code> since those sit outside the department folders</p>
+<p><strong>Task:</strong> Name the top-level OU that holds <code>Server Admins</code> and <code>Helpdesk</code></p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Where Are the Access Groups?" placeholder="OU name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{accesslevels}">Submit</button>
@@ -316,8 +316,8 @@
 <div class="ad-mission" data-id="d1-05" data-attempts="0">
 <span class="ad-mission__num">Task 08 · Apply it · Read a Description</span>
 <h4>What Is the Admin Group For?</h4>
-<p><strong>Situation:</strong> A request has come in to add someone to <code>IT Admins</code>. The group's Description is supposed to say who the group is meant for.</p>
-<p><strong>Task:</strong> Read the Description on <code>IT Admins</code> and name the role it is meant for.</p>
+<p><strong>Situation:</strong> A request came in to add someone to <code>IT Admins</code><br>The group's Description is supposed to say who the group is meant for</p>
+<p><strong>Task:</strong> Read the Description on <code>IT Admins</code> and name the role it is meant for</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for What Is the Admin Group For?" placeholder="role" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{it-systems-administrators}" data-accept="it-systems-administrator">Submit</button>
@@ -357,8 +357,8 @@
 <div class="ad-mission" data-id="d1-06" data-attempts="0">
 <span class="ad-mission__num">Task 09 · Apply it · Titles Are Not Access</span>
 <h4>Is Priya on the Help Desk Group?</h4>
-<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges they should not have. Their title is Help Desk Technician, but a title is only a label on the account, because privileges come from groups.</p>
-<p><strong>Task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group, and answer <code>yes</code> or <code>no</code>.</p>
+<p><strong>Situation:</strong> A ticket says Priya Nair has help desk privileges they should not have<br>Their title is Help Desk Technician but a title is only a label because privileges come from groups</p>
+<p><strong>Task:</strong> Check whether Priya is a member of the <code>Helpdesk</code> group and answer <code>yes</code> or <code>no</code></p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Is Priya on the Help Desk Group?" placeholder="yes or no" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{no}">Submit</button>
@@ -395,8 +395,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="d1-04" data-attempts="0">
 <span class="ad-mission__num">Task 10 · Stretch · Spot the Default Folder</span>
 <h4>The Folder That Is Not an OU</h4>
-<p><strong>Situation:</strong> Someone created an account without choosing a department, so Windows put it in the default folder for new users. That folder is a container rather than an OU, and as you will see, the difference matters for Group Policy.</p>
-<p><strong>Task:</strong> Give the name of that default folder exactly as Active Directory writes it in the object's distinguished name.</p>
+<p><strong>Situation:</strong> Someone created an account without choosing a department so Windows put it in the default folder for new users<br>That folder is a container rather than an OU and the difference matters for Group Policy</p>
+<p><strong>Task:</strong> Give the name of that default folder exactly as Active Directory writes it in the object's distinguished name</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Folder That Is Not an OU" placeholder="exact name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{cn=users}">Submit</button>

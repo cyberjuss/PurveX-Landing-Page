@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Client Data Review</h3>
-<p class="ad-brief__ask">Before the auditor arrives, can you find what client data sits on the file shares, check that it's sound, and make sure only the right people can read it?</p>
-<p>Compliance has asked the desk to review the department shares on the domain controller. Every record you'll find there is made up: the SSNs fall in a range that's never issued, the phone numbers are reserved for fiction, and the email addresses all use example.com.</p>
+<p class="ad-brief__ask">Before the auditor arrives can you find the client data on the file shares and check it's sound and make sure only the right people can read it?</p>
+<p>Compliance asked the desk to review the department shares on the domain controller<br>Every record there is made up: the SSNs fall in a range that's never issued and the phone numbers are reserved for fiction and the email addresses all use example.com</p>
 </div>
 
 <div class="ad-progress">
@@ -13,8 +13,8 @@
 <div class="ad-mission" data-id="cd-01" data-attempts="0">
 <span class="ad-mission__num">Task 01 · Warm-up · Data inventory · Low</span>
 <h4>Where the Numbers Live</h4>
-<p><strong>Situation:</strong> The auditor's first question is always the same: where does the firm keep Social Security numbers? Right now, nobody on the team is sure which file holds them.</p>
-<p><strong>Task:</strong> Look through the department folders under <code>C:\PurveX\Shares</code> and find the file with a column of Social Security numbers. Type its file name.</p>
+<p><strong>Situation:</strong> The auditor's first question is always where the firm keeps Social Security numbers<br>Nobody on the team is sure which file holds them</p>
+<p><strong>Task:</strong> Look through the department folders under <code>C:\PurveX\Shares</code> and find the file with a column of Social Security numbers<br>Type its file name</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Where the Numbers Live" placeholder="file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{client-register-sample.csv}" data-accept="client-register-sample|client-register">Submit</button>
@@ -57,8 +57,8 @@
 <div class="ad-mission" data-id="cd-02" data-attempts="0">
 <span class="ad-mission__num">Task 02 · Warm-up · Data inventory · Low</span>
 <h4>Counting the Book</h4>
-<p><strong>Situation:</strong> If the register ever leaked, the firm would have to notify every client in it, so Compliance needs that number now rather than after an incident.</p>
-<p><strong>Task:</strong> Count the clients in the register you found, and type the number.</p>
+<p><strong>Situation:</strong> If the register ever leaked the firm would have to notify every client in it<br>Compliance needs that number now rather than after an incident</p>
+<p><strong>Task:</strong> Count the clients in the register you found and type the number</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Counting the Book" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{8}" data-accept="eight">Submit</button>
@@ -99,8 +99,8 @@
 <div class="ad-mission" data-id="cd-03" data-attempts="0">
 <span class="ad-mission__num">Task 03 · Warm-up · Compliance · Low</span>
 <h4>Waiting on Paperwork</h4>
-<p><strong>Situation:</strong> A client whose identity hasn't been verified shouldn't be trading, so Compliance wants to know how many reviews are still open before the auditor asks.</p>
-<p><strong>Task:</strong> Open the KYC review log in the Compliance folder. Count the clients still awaiting documents and type the number.</p>
+<p><strong>Situation:</strong> A client whose identity hasn't been verified shouldn't be trading<br>Compliance wants to know how many reviews are still open before the auditor asks</p>
+<p><strong>Task:</strong> Open the KYC review log in the Compliance folder<br>Count the clients still awaiting documents and type the number</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Waiting on Paperwork" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{2}" data-accept="two">Submit</button>
@@ -141,8 +141,8 @@
 <div class="ad-mission" data-id="cd-04" data-attempts="0">
 <span class="ad-mission__num">Task 04 · Apply it · Finance · Medium</span>
 <h4>One Signature on Every Payment</h4>
-<p><strong>Situation:</strong> The auditor will ask who can send the firm's money, and who checks their work. To answer that, look at the vendor payments Finance keeps on the share.</p>
-<p><strong>Task:</strong> Open the vendor payments file in the Finance folder and find who approved the payments. Type the account name.</p>
+<p><strong>Situation:</strong> The auditor will ask who can send the firm's money and who checks their work<br>Start with the vendor payments Finance keeps on the share</p>
+<p><strong>Task:</strong> Open the vendor payments file in the Finance folder and find who approved the payments<br>Type the account name</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for One Signature on Every Payment" placeholder="account name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{jordan.ellis}" data-accept="jordan-ellis|jordan ellis">Submit</button>
@@ -179,8 +179,8 @@
 <div class="ad-mission" data-id="cd-05" data-attempts="0">
 <span class="ad-mission__num">Task 05 · Apply it · Operations · Medium</span>
 <h4>The Batch That Did Not Balance</h4>
-<p><strong>Situation:</strong> Operations reconciles each night's settlement batch, and the auditor will want to see how exceptions are handled, starting with any that are still open.</p>
-<p><strong>Task:</strong> Open the settlement batches file in the Operations folder and find the batch that did not reconcile. Type its batch number.</p>
+<p><strong>Situation:</strong> Operations reconciles each night's settlement batch<br>The auditor will want to see how exceptions are handled starting with any still open</p>
+<p><strong>Task:</strong> Open the settlement batches file in the Operations folder and find the batch that did not reconcile<br>Type its batch number</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Batch That Did Not Balance" placeholder="batch number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{sb-2026-1015}" data-accept="sb20261015|2026-1015">Submit</button>
@@ -216,8 +216,8 @@
 <div class="ad-mission" data-id="cd-06" data-attempts="0">
 <span class="ad-mission__num">Task 06 · Apply it · Integrity · Medium</span>
 <h4>Fingerprint the Register</h4>
-<p><strong>Situation:</strong> If anyone edits the client register without permission, the firm needs a way to prove it. A record of the file's hash today is that proof later on.</p>
-<p><strong>Task:</strong> Take the SHA-256 hash of the client register as it sits on the share, without opening and saving it first. Type the hash.</p>
+<p><strong>Situation:</strong> If anyone edits the client register without permission the firm needs a way to prove it<br>A record of the file's hash today is that proof later</p>
+<p><strong>Task:</strong> Take the SHA-256 hash of the client register as it sits on the share without opening and saving it first<br>Type the hash</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Fingerprint the Register" placeholder="64 hex characters" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{30a686be6a88e251ecdc84a4addc4336348f7edc32992a36ac2efff9404fcbea}">Submit</button>
@@ -254,8 +254,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="cd-07" data-attempts="0">
 <span class="ad-mission__num">Task 07 · Stretch · Access control · High</span>
 <h4>Who Can Read the Register</h4>
-<p><strong>Situation:</strong> Only four people need the register: the two advisors who own the clients and the two Compliance reviewers who check them. The auditor will ask who else can read it.</p>
-<p><strong>Task:</strong> Create a security group named <code>Client Data Readers</code> in AccessLevels holding exactly <code>sam.whitfield</code>, <code>jamie.torres</code>, <code>devon.brooks</code> and <code>morgan.lee</code>. Then check the permissions on the <code>Shares</code> share and type the group that can read it today.</p>
+<p><strong>Situation:</strong> Only four people need the register: the two advisors who own the clients and the two Compliance reviewers who check them<br>The auditor will ask who else can read it</p>
+<p><strong>Task:</strong> Create a security group named <code>Client Data Readers</code> in AccessLevels holding exactly <code>sam.whitfield</code> <code>jamie.torres</code> <code>devon.brooks</code> and <code>morgan.lee</code><br>Then check the permissions on the <code>Shares</code> share and type the group that can read it today</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Who Can Read the Register" placeholder="group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{domain-users}" data-accept="domain users|purvex\domain users">Submit</button>

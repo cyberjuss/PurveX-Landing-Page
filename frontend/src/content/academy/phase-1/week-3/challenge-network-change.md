@@ -1,11 +1,11 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Three-Minute Job</h3>
-<p class="ad-brief__ask">Something on web01 (the Ubuntu server) has been calling out to the domain controller every three minutes, day and night, and nobody on the current team remembers setting it up. Find out what it is, what it hands over, and shut it down the right way.</p>
-<p>You'll need your hosted lab running, with both machines reachable.</p>
+<p class="ad-brief__ask">Something on web01 (the Ubuntu server) has been calling the domain controller every three minutes day and night<br>Nobody on the team remembers setting it up<br>Find out what it is and what it hands over then shut it down the right way</p>
+<p>You'll need your hosted lab running with both machines reachable</p>
 <ul>
-<li>The job is already running in your lab, and web01 ships with Wireshark and Nmap, so there's nothing to download before you capture and read the traffic.</li>
-<li>Read a command before you run it as root, because <code>sudo</code> does not ask twice.</li>
+<li>The job is already running in your lab and web01 ships with Wireshark and Nmap so there is nothing to download</li>
+<li>Read a command before you run it as root because <code>sudo</code> does not ask twice</li>
 </ul>
 </div>
 
@@ -17,8 +17,8 @@
 <div class="ad-mission" data-id="w3-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 01 · Warm-up · Tools · High · Cron · INC-1057</span>
 <h4>What's Calling Out Every Three Minutes</h4>
-<p><strong>Priya Shah · Operations · 7:40 AM</strong><br>Our monitoring flagged web01 making a short outbound connection to the domain controller every few minutes, all night. Nobody on the current team remembers setting that up. Before I escalate this as an incident, find out what it actually is.</p>
-<p><strong>Task:</strong> Open a terminal on web01, confirm it can still reach the domain controller, then find the scheduled job behind the recurring connection. Report the name of the script it runs.</p>
+<p><strong>Priya Shah · Operations · 7:40 AM</strong><br>Our monitoring flagged web01 making a short connection to the domain controller every few minutes all night<br>Nobody on the team remembers setting that up<br>Before I escalate this as an incident find out what it actually is</p>
+<p><strong>Task:</strong> Open a terminal on web01 and confirm it can still reach the domain controller<br>Find the scheduled job behind the recurring connection<br>Report the name of the script it runs</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for What's Calling Out Every Three Minutes" placeholder="a script file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{settlement-push.sh}">Submit</button>
@@ -57,8 +57,8 @@
 <div class="ad-mission" data-id="w3-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · Apply it · Common Ports · High · Nmap · INC-1057</span>
 <h4>Scan the Door It Knocks On</h4>
-<p><strong>Alex Rivera · IT · 8:15 AM</strong><br>Good, so it is a cron job talking to the directory. Before we look at what it sends, I want to know whether it even has a safe way to send it. Scan the domain controller from web01 and check.</p>
-<p><strong>Task:</strong> From web01, scan dc01 with Nmap for the two directory ports, plain LDAP and encrypted LDAPS. Report the one that is open.</p>
+<p><strong>Alex Rivera · IT · 8:15 AM</strong><br>Good so it's a cron job talking to the directory<br>Before we look at what it sends I want to know whether it even has a safe way to send it<br>Scan the domain controller from web01 and check</p>
+<p><strong>Task:</strong> From web01 scan dc01 with Nmap for the two directory ports: plain LDAP and encrypted LDAPS<br>Report the one that is open</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Scan the Door It Knocks On" placeholder="a port number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{389}">Submit</button>
@@ -96,8 +96,8 @@
 <div class="ad-mission" data-id="w3-03" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Protocols · Critical · Wireshark · INC-1057</span>
 <h4>Capture the Bind</h4>
-<p><strong>Alex Rivera · IT · 8:50 AM</strong><br>Port 389, confirmed, so now capture the job itself. I want to know exactly what it hands the directory, not just that it can.</p>
-<p><strong>Task:</strong> Capture web01's traffic in Wireshark while the job runs, find the LDAP simple bind, and read the password it signs in with.</p>
+<p><strong>Alex Rivera · IT · 8:50 AM</strong><br>Port 389 confirmed<br>Now capture the job itself because I want to know exactly what it hands the directory</p>
+<p><strong>Task:</strong> Capture web01's traffic in Wireshark while the job runs<br>Find the LDAP simple bind and read the password it signs in with</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Capture the Bind" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Autumn2026}">Submit</button>
@@ -136,8 +136,8 @@
 <div class="ad-mission" data-id="w3-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Apply it · Protocols · Critical · Active Directory · INC-1057</span>
 <h4>Take the Account Out of Service</h4>
-<p><strong>Priya Shah · Operations · 9:30 AM</strong><br>If that password has been crossing the network in the clear this whole time, I do not want it trusted again. Disable the account, and find out what else that job has been sending while we are at it.</p>
-<p><strong>Task:</strong> Disable <code>svc-settlements</code> in Active Directory. On web01, remove the cron job and the sudo access that let it run unprompted. Then report the file the job pulled off the share, unencrypted, in the same run.</p>
+<p><strong>Priya Shah · Operations · 9:30 AM</strong><br>If that password has been crossing the network in the clear this whole time I don't want it trusted again<br>Disable the account and find out what else that job has been sending</p>
+<p><strong>Task:</strong> Disable <code>svc-settlements</code> in Active Directory<br>On web01 remove the cron job and the sudo access that let it run unprompted<br>Report the file the job pulled off the share unencrypted in the same run</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Take the Account Out of Service" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{settlement-batch-0930.csv}">Submit</button>
@@ -176,8 +176,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="w3-05" data-attempts="0">
 <span class="ad-mission__num">Ticket 05 · Stretch · TLS · Critical · Hardening · INC-1057</span>
 <h4>Name the Fix</h4>
-<p><strong>Jordan Ellis · Finance · 10:30 AM</strong><br>Operations still wants this report running, just not like that. Before they rebuild it, tell them which protocol actually closes this by name. That way it does not come back as a different job with the same problem.</p>
-<p><strong>Task:</strong> Name the encrypted replacement for the plain LDAP simple bind the job used.</p>
+<p><strong>Jordan Ellis · Finance · 10:30 AM</strong><br>Operations still wants this report running but not like that<br>Before they rebuild it tell them which protocol closes this by name<br>That way it does not come back as a new job with the same problem</p>
+<p><strong>Task:</strong> Name the encrypted replacement for the plain LDAP simple bind the job used</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Name the Fix" placeholder="a protocol name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{ldaps}">Submit</button>

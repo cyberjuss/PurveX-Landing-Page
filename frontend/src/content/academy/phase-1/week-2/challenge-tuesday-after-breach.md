@@ -1,7 +1,7 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>Tuesday After the Breach</h3>
-<p class="ad-brief__ask">A training vendor that PurveX staff use announced a breach last night. The IT desk is full of tickets this morning that come down to one question: is this encoded, encrypted or hashed, and what do you do about it?</p>
+<p class="ad-brief__ask">A training vendor that PurveX staff use announced a breach last night<br>Every ticket this morning comes down to one question: is this encoded or encrypted or hashed and what do you do about it?</p>
 </div>
 
 <div class="ad-progress">
@@ -12,8 +12,8 @@
 <div class="ad-mission" data-id="w2-03" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 01 · Warm-up · Encryption · Medium · INC-1091</span>
 <h4>The Recovery Key Call</h4>
-<p><strong>Phone call · 8:30 AM</strong><br>"Hi, this is Sam Whitfield from Wealth Management. My laptop rebooted for an update, and now there is a blue BitLocker screen asking for a 48-digit key. I am calling from my personal phone, and I have a client in ten minutes. Can you read me the key?"<br><strong>A</strong> Read the key out immediately, since the client meeting cannot wait.<br><strong>B</strong> Confirm this is really Sam first, for example by calling back on the number in the directory or checking with Sam's manager, then give the key.<br><strong>C</strong> Tell Sam the data cannot be recovered and the laptop must be wiped.</p>
-<p><strong>Task:</strong> Select what you would do and enter its letter.</p>
+<p><strong>Phone call · 8:30 AM</strong><br>"Hi this is Sam Whitfield from Wealth Management<br>My laptop rebooted for an update and now a blue BitLocker screen is asking for a 48-digit key<br>I'm calling from my personal phone and I have a client in ten minutes<br>Can you read me the key?"<br><strong>A</strong> Read the key out now since the client meeting cannot wait<br><strong>B</strong> Confirm this is really Sam first by calling back on the number in the directory or checking with Sam's manager then give the key<br><strong>C</strong> Tell Sam the data cannot be recovered and the laptop must be wiped</p>
+<p><strong>Task:</strong> Select what you would do and enter its letter</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Recovery Key Call" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -42,8 +42,8 @@
 <div class="ad-mission" data-id="w2-01" data-attempts="0">
 <span class="ad-mission__num">Ticket 02 · Apply it · Encoding · High · INC-1091</span>
 <h4>Decode the Settlement Script</h4>
-<p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>"The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer. The comment at the top says the password is encrypted, so I assume it is fine to send it straight from the IT share."</p>
-<p><strong>Task:</strong> Answer Taylor. Confirm whether the password is genuinely encrypted, and report what it is.</p>
+<p><strong>Taylor Osei · Operations · 8:40 AM</strong><br>"The clearing vendor's support team wants a copy of our settlement upload script to debug a failed transfer<br>The comment at the top says the password is encrypted so I assume it's fine to send it straight from the IT share"</p>
+<p><strong>Task:</strong> Answer Taylor<br>Confirm whether the password is really encrypted and report what it is</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Decode the Settlement Script" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Settle-Now-2026!}">Submit</button>
@@ -85,8 +85,8 @@
 <div class="ad-mission" data-id="w2-02" data-attempts="0">
 <span class="ad-mission__num">Ticket 03 · Apply it · Hashing · High · INC-1058 · INC-1091</span>
 <h4>Catch the Altered Download</h4>
-<p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>"The breach notice says to update the VPN client today, so I downloaded version 2.4.1 from the IT share. There are three different mirrors of it, each with a checksum IT posted next to it. Which one is safe to install?"</p>
-<p><strong>Task:</strong> Answer Riley. Determine which mirror is not safe to install, quarantine it, and report its file name.</p>
+<p><strong>Riley Kwan · Operations · 9:05 AM</strong><br>"The breach notice says to update the VPN client today so I downloaded version 2.4.1 from the IT share<br>There are three mirrors of it and IT posted a checksum next to each one<br>Which one is safe to install?"</p>
+<p><strong>Task:</strong> Answer Riley<br>Find the mirror that is not safe to install and quarantine it<br>Report its file name</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Catch the Altered Download" placeholder="a file name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{vpn-client-2.4.1-mirror-b.txt}" data-accept="vpn-client-2.4.1-mirror-b|mirror-b.txt|mirror-b">Submit</button>
@@ -128,9 +128,9 @@
 <div class="ad-mission" data-id="w2-04" data-attempts="0">
 <span class="ad-mission__num">Ticket 04 · Stretch · Storing Passwords · Critical · INC-1058 · INC-1091</span>
 <h4>Crack the Shared Hash</h4>
-<p><strong>Alex Rivera · IT · 10:15 AM</strong><br>"The breached vendor stored passwords as plain SHA-256, with no salt. I extracted the slice of its user table containing PurveX accounts into <code>exported-hashes.txt</code> in the IT share, and two of our staff return the exact same hash.</p>
-<p>Same hash with no salt means the same password. Can you identify who, and what the password is, before anyone else reuses it?"</p>
-<p><strong>Task:</strong> Answer Alex. Identify the password those two accounts share, ensure neither account can continue using it, and report the password.</p>
+<p><strong>Alex Rivera · IT · 10:15 AM</strong><br>"The breached vendor stored passwords as plain SHA-256 with no salt<br>I put the PurveX accounts from its user table into <code>exported-hashes.txt</code> in the IT share and two of our staff have the exact same hash</p>
+<p>Same hash with no salt means the same password<br>Can you find who it is and what the password is before anyone else reuses it?"</p>
+<p><strong>Task:</strong> Answer Alex<br>Find the password those two accounts share and make sure neither account can keep using it<br>Report the password</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Crack the Shared Hash" placeholder="the password" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Winter2026}">Submit</button>
@@ -175,8 +175,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="w2-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Ticket 05 · Stretch · Wrap-up · Report to the IT Lead · INC-1091</span>
 <h4>Fix the Script for Good</h4>
-<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>"Following up on the settlement script from this morning. Operations still needs it to run every night. What is the correct remediation?"<br><strong>A</strong> Encrypt the password with AES, and keep the key in the same script so it can decrypt at run time.<br><strong>B</strong> Remove the password from the script, store it in a secrets vault or run the job under a managed service account, and rotate the password that was exposed.<br><strong>C</strong> Replace the password with its SHA-256 hash, so no one can read it.</p>
-<p><strong>Task:</strong> Select the correct remediation and enter its letter.</p>
+<p><strong>Alex Rivera · IT · 11:00 AM</strong><br>"Following up on the settlement script from this morning<br>Operations still needs it to run every night<br>What is the correct remediation?"<br><strong>A</strong> Encrypt the password with AES and keep the key in the same script so it can decrypt at run time<br><strong>B</strong> Remove the password from the script and store it in a secrets vault or run the job under a managed service account then rotate the exposed password<br><strong>C</strong> Replace the password with its SHA-256 hash so no one can read it</p>
+<p><strong>Task:</strong> Select the correct remediation and enter its letter</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Fix the Script for Good" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>

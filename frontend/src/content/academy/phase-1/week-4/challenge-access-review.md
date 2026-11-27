@@ -1,8 +1,8 @@
 <div class="ad-brief">
 <p class="rd-kicker">Briefing</p>
 <h3>The Quarterly Access Review</h3>
-<p class="ad-brief__ask">Every quarter, PurveX Financial's auditors ask whether everyone has exactly the access their job needs and whether the firm can prove who did what, so can you find what fails that test in your own directory and fix it before they arrive?</p>
-<p>Compliance has sent IT this quarter's findings, and each one is a real account or setting in your lab. Auditors want evidence as well as a fix, so you'll pull some of it from the Security log with <strong>Event Viewer</strong>.</p>
+<p class="ad-brief__ask">Every quarter the auditors ask whether everyone has exactly the access their job needs and whether the firm can prove who did what<br>Can you find what fails that test in your directory and fix it before they arrive?</p>
+<p>Each finding Compliance sent is a real account or setting in your lab<br>Auditors want evidence as well as a fix so you'll pull some of it from the Security log with <strong>Event Viewer</strong></p>
 </div>
 
 <div class="ad-progress">
@@ -13,8 +13,8 @@
 <div class="ad-mission" data-id="w4-02" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Finding 01 · Warm-up · Authentication · Executive Request · INC-1093</span>
 <h4>The MFA Exemption Request</h4>
-<p><strong>CFO · 8:45 AM</strong><br>The MFA prompts slow me down when I'm approving payments between meetings. Can IT turn MFA off for the executive team? We're careful with our passwords.<br><strong>A</strong> Agree, since executives are busy and their passwords are long.<br><strong>B</strong> Keep MFA on, and offer a faster method, such as number matching on the phone app or a hardware key. Executives who approve payments are exactly who attackers phish.<br><strong>C</strong> Turn MFA off, but make executives change their password every month instead.</p>
-<p><strong>Task:</strong> Select how IT should answer and enter its letter.</p>
+<p><strong>CFO · 8:45 AM</strong><br>The MFA prompts slow me down when I'm approving payments between meetings<br>Can IT turn MFA off for the executive team? We're careful with our passwords<br><strong>A</strong> Agree since executives are busy and their passwords are long<br><strong>B</strong> Keep MFA on and offer a faster method like number matching on the phone app or a hardware key because executives who approve payments are exactly who attackers phish<br><strong>C</strong> Turn MFA off but make executives change their password every month instead</p>
+<p><strong>Task:</strong> Select how IT should answer and enter its letter</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The MFA Exemption Request" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
@@ -43,8 +43,8 @@
 <div class="ad-mission" data-id="w4-04" data-attempts="0">
 <span class="ad-mission__num">Finding 02 · Warm-up · Authorization · Critical · INC-1093</span>
 <h4>The Temporary Domain Admin</h4>
-<p><strong>Alex Rivera · IT · 9:00 AM</strong><br>During the server migration, someone added a member of staff to Domain Admins "just for the weekend," but the migration finished weeks ago and nobody has removed the access since. The auditors want to know who it is, and that it's been fixed.</p>
-<p><strong>Task:</strong> Find the staff account in Domain Admins that shouldn't be there, remove it, and report its username.</p>
+<p><strong>Alex Rivera · IT · 9:00 AM</strong><br>During the server migration someone added a member of staff to Domain Admins "just for the weekend"<br>The migration finished weeks ago and nobody removed the access<br>The auditors want to know who it is and that it's fixed</p>
+<p><strong>Task:</strong> Find the staff account in Domain Admins that shouldn't be there and remove it<br>Report its username</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for The Temporary Domain Admin" placeholder="a username" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{priya.nair}">Submit</button>
@@ -86,8 +86,8 @@
 <div class="ad-mission" data-id="w4-03" data-attempts="0">
 <span class="ad-mission__num">Finding 03 · Apply it · Authorization · High · INC-1071 · INC-1093</span>
 <h4>Access That Outlived the Audit</h4>
-<p><strong>Devon Brooks · Compliance · 9:30 AM</strong><br>Noor Ahmadi on the help desk can still open our case files. Noor was given access in March to export data for one audit, and nobody took it away. Please remove it today.</p>
-<p><strong>Task:</strong> Open <code>noor.ahmadi</code> and find the group that gives Compliance access. Remove Noor from it and report the group's name.</p>
+<p><strong>Devon Brooks · Compliance · 9:30 AM</strong><br>Noor Ahmadi on the help desk can still open our case files<br>Noor got access in March to export data for one audit and nobody took it away<br>Please remove it today</p>
+<p><strong>Task:</strong> Open <code>noor.ahmadi</code> and find the group that gives Compliance access<br>Remove Noor from it and report the group's name</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Access That Outlived the Audit" placeholder="a group name" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{Compliance Users}">Submit</button>
@@ -128,8 +128,8 @@
 <div class="ad-mission" data-id="w4-06" data-attempts="0">
 <span class="ad-mission__num">Finding 04 · Apply it · Authentication · Evidence · Event Viewer · INC-1093</span>
 <h4>Has Someone Been Guessing?</h4>
-<p><strong>Devon Brooks · Compliance · 10:00 AM</strong><br>Before we shut the shared reception login down, the auditors want to know one thing: has anyone been trying to guess its password? The Security log on the domain controller will say.</p>
-<p><strong>Task:</strong> Find the failed sign-ins for <code>frontdesk.shared</code> in the Security log and report how many there are.</p>
+<p><strong>Devon Brooks · Compliance · 10:00 AM</strong><br>Before we shut the shared reception login down the auditors want to know one thing<br>Has anyone been trying to guess its password? The Security log on the domain controller will say</p>
+<p><strong>Task:</strong> Find the failed sign-ins for <code>frontdesk.shared</code> in the Security log and report how many there are</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Has Someone Been Guessing?" placeholder="a number" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{5}">Submit</button>
@@ -171,8 +171,8 @@
 <div class="ad-mission" data-id="w4-01" data-attempts="0">
 <span class="ad-mission__num">Finding 05 · Apply it · Authentication · High · INC-1093</span>
 <h4>Retire the Shared Login</h4>
-<p><strong>Devon Brooks · Compliance · 10:30 AM</strong><br>The auditors found a login at reception that three people use, and the password is on a sticky note on the monitor. When something goes wrong at the front desk, we can't say which of them did it. Find the account and shut it down.</p>
-<p><strong>Task:</strong> Find the account in the Operations users folder that more than one person signs in with, disable it, and report its username.</p>
+<p><strong>Devon Brooks · Compliance · 10:30 AM</strong><br>The auditors found a reception login that three people use and the password is on a sticky note on the monitor<br>When something goes wrong at the front desk we can't say which of them did it<br>Find the account and shut it down</p>
+<p><strong>Task:</strong> Find the account in the Operations users folder that more than one person signs in with and disable it<br>Report its username</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Retire the Shared Login" placeholder="a username" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{frontdesk.shared}">Submit</button>
@@ -214,8 +214,8 @@
 <div class="ad-mission ad-mission--capstone" data-id="w4-05" data-attempts="0" data-hands-on="false">
 <span class="ad-mission__num">Finding 06 · Stretch · Broken Access Control · Client Portal · INC-1093</span>
 <h4>Change One Number in the URL</h4>
-<p><strong>Client complaint · 2:00 PM</strong><br>A client signed in to the PurveX client portal and viewed their statement at <code>/statements?client=1042</code>. Out of curiosity, they changed it to <code>1043</code> and saw another client's statement. What failed, and what is the fix?<br><strong>A</strong> Authentication failed, so the fix is to add MFA to the portal.<br><strong>B</strong> Broken access control. The server must check, on every request, that the signed-in client owns the statement being asked for.<br><strong>C</strong> Encryption failed, so the fix is to turn on HTTPS.</p>
-<p><strong>Task:</strong> Select the failure and the fix and enter its letter.</p>
+<p><strong>Client complaint · 2:00 PM</strong><br>A client signed in to the PurveX client portal and viewed their statement at <code>/statements?client=1042</code><br>Out of curiosity they changed it to <code>1043</code> and saw another client's statement<br>What failed and what is the fix?<br><strong>A</strong> Authentication failed so the fix is to add MFA to the portal<br><strong>B</strong> Broken access control so the server must check on every request that the signed-in client owns the statement<br><strong>C</strong> Encryption failed so the fix is to turn on HTTPS</p>
+<p><strong>Task:</strong> Select the failure and the fix and enter its letter</p>
 <div class="ad-guess">
 <input type="text" class="ad-guess__input" aria-label="Answer for Change One Number in the URL" placeholder="A, B, or C" autocomplete="off" autocapitalize="off" spellcheck="false">
 <button type="button" class="ad-guess__submit" data-answer="gtf{b}">Submit</button>
